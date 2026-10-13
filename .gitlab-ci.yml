@@ -926,6 +926,7 @@ release-driver-modules-ts:
       changes:
         - "scripts/lib/monorepo-release/**"
         - "scripts/lib/release-notes/**"
+        - "scripts/lib/sync-from-upstream/git.ts"
         - "scripts/lib/monorepo-release-lib.sh"
         - "scripts/lib/paths.ts"
         - "scripts/lib/node-floor-guard.js"
@@ -942,6 +943,7 @@ release-driver-modules-ts:
       changes:
         - "scripts/lib/monorepo-release/**"
         - "scripts/lib/release-notes/**"
+        - "scripts/lib/sync-from-upstream/git.ts"
         - "scripts/lib/monorepo-release-lib.sh"
         - "scripts/lib/paths.ts"
         - "scripts/lib/node-floor-guard.js"

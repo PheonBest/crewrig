@@ -27,7 +27,8 @@ function repositoryUrl(input: ReleasercInput): string {
 /** The configuration, serialised as the shell's `jq` does (two spaces, trailing newline). */
 export function emitReleaserc(input: ReleasercInput): string {
   const platform = input.platform ?? process.platform;
-  const notesDir = path.posix.join(configPath(input.libDir, platform), "release-notes");
+  // Plain concatenation, as the shell does: a normalising join would rewrite an unusual libDir.
+  const notesDir = `${configPath(input.libDir, platform)}/release-notes`;
   const tagOnly = input.forge === "github" && input.mode === "publish";
   const execCmd =
     input.mode === "prepare"
