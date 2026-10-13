@@ -149,8 +149,7 @@ chain keeps working when it next runs on `main`.
     compression, whatever platform runs it. On a platform
     that reports no execute bit (Windows) a file SHALL get mode `0755` when its first
     two bytes are `#!`. The refusal of a symbolic link keeps the archive path from
-    creating or following a link (parent requirement 21); the real build trees hold
-    none, which the pre-switch proof of requirement 26 asserts. Two runs on the same
+    creating or following a link (parent requirement 21). Two runs on the same
     tree SHALL yield the same decompressed stream on every platform.
 
 12. **Single and every extension.** `scripts/package-extension.ts` SHALL read `EXT`
@@ -208,9 +207,11 @@ chain keeps working when it next runs on `main`.
     `<v>` is the engine's own `${nextRelease.version}` template or, in the
     rehearsal, the validated literal version. The generation of the configuration
     SHALL refuse a `<root>` or `<out>` that holds a double quote, a percent sign, an
-    exclamation mark, a dollar sign, a backtick, a backslash or a line break, after the
-    path separators of a Windows path have been written as forward slashes, which
-    `node` and `cmd.exe` both accept, so that a native Windows path is not refused. The synchronisation SHALL rewrite
+    exclamation mark, a dollar sign, a backtick, a backslash or a line break, after, on
+    Windows only, the path separators have been written as forward slashes, which `node`
+    and `cmd.exe` both accept, so that a native drive path is not refused; a UNC path
+    SHALL be refused naming the path (on any other platform a backslash is a character
+    of the name and is refused). The synchronisation SHALL rewrite
     `version` of `package.json` and `extension.json` of the current directory when
     each exists, two-space indented with a trailing line feed, SHALL exit non-zero
     when a rewrite fails, and SHALL succeed in a directory with no `extension.json`.
@@ -529,8 +530,8 @@ step loads `js-yaml` from the clone.
 Given Windows with a checkout under `C:\work\crewrig`, no `bash` on the path and the
 development dependencies installed
 When `node scripts/monorepo-release.ts` runs a rehearsal against a hermetic fixture
-Then the prepare commands name the root and the output directory with forward
-slashes, are not refused, and the `REHEARSAL` line is printed.
+Then the generated configuration names the root and the output directory with forward
+slashes, the package step succeeds, and the `REHEARSAL` line is printed.
 
 **Scenario:** The Bash oracles pass through the shims
 
