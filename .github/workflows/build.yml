@@ -725,6 +725,53 @@ jobs:
         if: failure()
         uses: ./.github/actions/cancel-on-failure
 
+  # Spec 0257 (row of epic #1231, ticket #1336), PR 4a: the TypeScript monorepo release driver
+  # modules (refusals, forge, mode, branch, identity, credentials, classification, engine-log
+  # parsing, the release configuration and the prepare commands) and their unit suites. `bash` and
+  # `jq` are spawned on purpose by the differential and oracle suites that drive
+  # scripts/lib/monorepo-release-lib.sh, which retires with the shell driver. Linux only.
+  release-driver-modules-ts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            release-driver-modules-ts:
+              - 'scripts/lib/monorepo-release/**'
+              - 'scripts/lib/release-notes/**'
+              - 'scripts/lib/sync-from-upstream/git.ts'
+              - 'scripts/lib/monorepo-release-lib.sh'
+              - 'scripts/lib/paths.ts'
+              - 'scripts/lib/node-floor-guard.js'
+              - 'scripts/tests/monorepo-release-preflight.test.ts'
+              - 'scripts/tests/monorepo-release-credentials.test.ts'
+              - 'scripts/tests/monorepo-release-log-parse.test.ts'
+              - 'scripts/tests/monorepo-release-differential.test.ts'
+              - 'scripts/tests/monorepo-release-prepare-cmd.test.ts'
+              - 'scripts/tests/monorepo-release-config.test.ts'
+              - 'scripts/tests/monorepo-release-config-oracle.test.ts'
+              - 'scripts/tests/lib/release-preflight-tables.ts'
+              - 'scripts/tests/fixtures/release/**'
+      - uses: actions/setup-node@v4
+        if: steps.filter.outputs.release-driver-modules-ts == 'true'
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install production dependencies
+        if: steps.filter.outputs.release-driver-modules-ts == 'true'
+        run: npm ci --omit=dev --workspaces=false
+      - name: Floor guard accepts Node.js 24
+        if: steps.filter.outputs.release-driver-modules-ts == 'true'
+        run: node scripts/lib/node-floor-guard.js
+      - name: Test the TypeScript monorepo release driver modules
+        if: steps.filter.outputs.release-driver-modules-ts == 'true'
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
+
   # Spec 0250 R3, R27: the build entry prints nothing on the oldest Node.js 24
   # release. No path filter, like `mempalace-transcript-node-24-0`.
   build-components-ts-node-24-0:

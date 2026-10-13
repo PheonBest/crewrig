@@ -913,6 +913,50 @@ setup-modules-ts:
         - "scripts/tests/fixtures/setup-tls/**"
         - "scripts/tests/fixtures/setup-golden/**"
 
+release-driver-modules-ts:
+  image: node:24
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends jq
+  script:
+    - "npm ci --omit=dev --workspaces=false"
+    - "node scripts/lib/node-floor-guard.js"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
+      changes:
+        - "scripts/lib/monorepo-release/**"
+        - "scripts/lib/release-notes/**"
+        - "scripts/lib/sync-from-upstream/git.ts"
+        - "scripts/lib/monorepo-release-lib.sh"
+        - "scripts/lib/paths.ts"
+        - "scripts/lib/node-floor-guard.js"
+        - "scripts/tests/monorepo-release-preflight.test.ts"
+        - "scripts/tests/monorepo-release-credentials.test.ts"
+        - "scripts/tests/monorepo-release-log-parse.test.ts"
+        - "scripts/tests/monorepo-release-differential.test.ts"
+        - "scripts/tests/monorepo-release-prepare-cmd.test.ts"
+        - "scripts/tests/monorepo-release-config.test.ts"
+        - "scripts/tests/monorepo-release-config-oracle.test.ts"
+        - "scripts/tests/lib/release-preflight-tables.ts"
+        - "scripts/tests/fixtures/release/**"
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
+      changes:
+        - "scripts/lib/monorepo-release/**"
+        - "scripts/lib/release-notes/**"
+        - "scripts/lib/sync-from-upstream/git.ts"
+        - "scripts/lib/monorepo-release-lib.sh"
+        - "scripts/lib/paths.ts"
+        - "scripts/lib/node-floor-guard.js"
+        - "scripts/tests/monorepo-release-preflight.test.ts"
+        - "scripts/tests/monorepo-release-credentials.test.ts"
+        - "scripts/tests/monorepo-release-log-parse.test.ts"
+        - "scripts/tests/monorepo-release-differential.test.ts"
+        - "scripts/tests/monorepo-release-prepare-cmd.test.ts"
+        - "scripts/tests/monorepo-release-config.test.ts"
+        - "scripts/tests/monorepo-release-config-oracle.test.ts"
+        - "scripts/tests/lib/release-preflight-tables.ts"
+        - "scripts/tests/fixtures/release/**"
+
 extension-render:
   image: node:24
   before_script:
