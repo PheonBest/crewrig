@@ -88,7 +88,6 @@ scripts/lib/extension-manifest.sh
 scripts/lib/gemini-settings.sh
 scripts/lib/mcp-daemon-launcher.sh
 scripts/lib/model-resolve.sh
-scripts/lib/monorepo-release-lib.sh
 scripts/lib/provenance-carrier.sh
 scripts/lib/render-command.sh
 scripts/lib/tls-delegation.sh
