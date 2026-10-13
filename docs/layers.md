@@ -67,8 +67,8 @@ documentation subset. It is classified **core / `strict`** (upstream-owned;
 a local modification halts the sync). The generator
 `scripts/build-docs-index.sh` and its TypeScript twin
 `scripts/build-docs-index.ts` (both core/`strict`) derive it from the
-per-page blocks; CI runs `bash scripts/build-docs-index.sh --check` to guard
-against drift. Org-overlay documentation under `docs/org/` is `excluded` from
+per-page blocks; CI runs `node scripts/lib/node-floor-guard.js`, then
+`node scripts/build-docs-index.ts --check`, to guard against drift. Org-overlay documentation under `docs/org/` is `excluded` from
 sync and is unioned into the organization's own site build under the same
 contract — never flowing back upstream.
 

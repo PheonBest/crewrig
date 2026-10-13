@@ -312,7 +312,8 @@ trigger a release.
 3. `semantic-release-monorepo` scopes the analysis to that extension only.
 4. `semantic-release-gitmoji` determines the version bump from the emoji.
 5. A tag `my-extension-vX.Y.Z` is created.
-6. `scripts/release-package-extension.sh` renders the extension
+6. `scripts/release-package-extension.ts` (reached through the forwarding
+   shim `scripts/release-package-extension.sh`) renders the extension
    (`--target gemini`), asserts the built manifest's version matches the
    release version, and archives the rendered tree — `package.json` and
    `extension.json` (never `gemini-extension.json`, a build output that is
@@ -337,7 +338,9 @@ task package-extension EXT=my-extension
 task package
 ```
 
-Both delegate to `scripts/release-package-extension.sh`, packaging the
+Both delegate to `scripts/release-package-extension.ts` (Node.js 24 floor,
+behind `node scripts/lib/node-floor-guard.js`; the `.sh` name is a forwarding
+shim), packaging the
 extension's own currently-committed version — the same artifact shape a
 real release publishes (a rendered, installable tree, not a source-only
 tarball). The archive is written to `dist/release/<name>/`.

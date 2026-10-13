@@ -1,6 +1,6 @@
 // sync-manifests.ts — rewrite the `version` of the two sibling manifests (spec 0257 R16, D2).
-// Twin of `release_sync_cmd` and the loop of `release_prepare_cmd` in
-// scripts/lib/monorepo-release-lib.sh: `jq --arg v <v> '.version=$v'` on `package.json` and
+// Replaced `release_sync_cmd` and the loop of `release_prepare_cmd` in
+// the former shell library scripts/lib/monorepo-release-lib.sh (removed): `jq --arg v <v> '.version=$v'` on `package.json` and
 // `extension.json` of one directory, each only when the file exists (lockstep, spec 0044).
 
 import fs from "node:fs";

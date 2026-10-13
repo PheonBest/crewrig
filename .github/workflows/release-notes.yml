@@ -5,8 +5,12 @@ on:
     branches: [main, "release/**"]
     paths:
       - "scripts/monorepo-release.sh"
+      - "scripts/monorepo-release.ts"
+      - "scripts/release-sync-manifests.ts"
+      - "scripts/release-package-extension.ts"
+      - "scripts/lib/monorepo-release/**"
+      - "scripts/lib/packaging/**"
       - "scripts/lib/release-notes/**"
-      - "scripts/lib/monorepo-release-lib.sh"
       - "scripts/tests/test-monorepo-release-notes.sh"
       - "scripts/lib/release-rehearse.mjs"
       - "scripts/lib/release-pr.ts"
@@ -18,8 +22,12 @@ on:
     branches: [main, "release/**"]
     paths:
       - "scripts/monorepo-release.sh"
+      - "scripts/monorepo-release.ts"
+      - "scripts/release-sync-manifests.ts"
+      - "scripts/release-package-extension.ts"
+      - "scripts/lib/monorepo-release/**"
+      - "scripts/lib/packaging/**"
       - "scripts/lib/release-notes/**"
-      - "scripts/lib/monorepo-release-lib.sh"
       - "scripts/tests/test-monorepo-release-notes.sh"
       - "scripts/lib/release-rehearse.mjs"
       - "scripts/lib/release-pr.ts"
@@ -44,7 +52,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - name: Install dependencies

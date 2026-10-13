@@ -1,5 +1,5 @@
 // release-package-main.ts — argument handling of `release-package-extension` (spec 0257 R9).
-// Twin of scripts/release-package-extension.sh :51-79: `<name> --version <v> --out <dir>`, the
+// Replaced the argument handling of the former scripts/release-package-extension.sh (:51-79): `<name> --version <v> --out <dir>`, the
 // flags in any order, `--version` and `--out` taking a non-empty value (the shell's `${2:?...}`).
 
 import { repoDirOf } from "../extension/entry-ctx.ts";

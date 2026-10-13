@@ -1,7 +1,7 @@
 // package-one-main.ts — `package-extension`: package one extension's own committed version (spec
-// 0257 R12). Twin of scripts/package-extension.sh: the extension comes from `EXT`, its version from
+// 0257 R12). Replaced the shell script of the same name (scripts/package-extension.sh, now a forwarding shim): the extension comes from `EXT`, its version from
 // its `extension.json`, and the release lands in `dist/release/<EXT>/`, emptied first. The shell
-// delegated to release-package-extension.sh; this calls the packager in process.
+// script delegated to release-package-extension.sh; this calls the packager in process.
 
 import fs from "node:fs";
 import path from "node:path";

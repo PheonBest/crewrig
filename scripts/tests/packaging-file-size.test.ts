@@ -14,7 +14,7 @@ const LIMIT = 300;
 const COVERED = {
   directories: ["scripts/lib/packaging", "scripts/lib/docs-index"],
   patterns: [
-    /^scripts\/tests\/(tar-writer|packaging-file-size|docs-index|docs-index-differential|packaging-release-package|packaging-release-package-cli|packaging-spawn-tiers|packaging-entries|packaging-entries-differential|release-sync-manifests)\.test\.ts$/,
+    /^scripts\/tests\/(tar-writer|packaging-file-size|docs-index|packaging-release-package|packaging-release-package-cli|packaging-spawn-tiers|packaging-entries|release-sync-manifests)\.test\.ts$/,
     /^scripts\/tests\/(packaging-release-differential|packaging-release-golden-portable|windows-packaging-entries)\.test\.ts$/,
     /^scripts\/tests\/lib\/(tar-reader|docs-index-trees|release-sandbox)\.ts$/,
     /^scripts\/tests\/lib\/(packaging-release|windows-packaging)-[a-z-]+\.ts$/,

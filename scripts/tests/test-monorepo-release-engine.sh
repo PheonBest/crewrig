@@ -29,8 +29,11 @@
 #     well-formed URL (never a bare filesystem path — gitmoji's
 #     `git-url-parse` throws on one, see the header note on
 #     `write_global_gitconfig`) redirected via GIT_CONFIG_GLOBAL `insteadOf`
-#     to that bare repo. This is what lets 11b/11g's git operations succeed
+#     to that bare repo. This is what lets 11b's git operations succeed
 #     with no network and no credential.
+#
+# Case 11g (R21 note byte-identity) sourced the retired shell library; spec 0257
+# replaced it with the black-box case `rb-11g-release-note`.
 #
 # Usage:
 #   bash scripts/tests/test-monorepo-release-engine.sh
@@ -132,7 +135,7 @@ clean_git() {
 # repositoryUrl through git-url-parse, which throws "URL parsing failed" on a
 # plain path — verified empirically) to the real bare `origin`, so
 # `git ls-remote origin` and a config with no explicit `repositoryUrl` (test
-# 11g) both resolve locally with no network. An optional second mapping
+# 11b) resolve locally with no network (11g, retired, also relied on it). An optional second mapping
 # (<extra-url> -> <extra-target>) is added ONLY for scenarios that need one —
 # GitLab PUBLISH mode operates directly on the checkout with no clone-local
 # insteadOf layer of its own, so it needs an EXTERNAL redirect for its real
@@ -902,81 +905,12 @@ stop_stub() {
 }
 
 # =============================================================================
-# 11g — R21: two GitHub dry-run renders of foo's note, at a fixed date, from
-# (i) the golden main-heredoc config and (ii) emit_releaserc github publish —
-# both with the publish leg removed — must be byte-identical.
-#
-# VACUOUS-PASS GUARD (structural, not incidental): a byte-identity check
-# passes trivially whenever its two inputs are both empty (or both broken
-# the same way) — that was observed here firsthand while issue #1225 was
-# still open, when this same assertion passed for the wrong reason (both
-# renders rendered empty). The non-empty assertion immediately below is
-# therefore not optional decoration: without it, a future regression that
-# emptied (or identically broke) BOTH renders would keep reporting green
-# here. Both assertions are expected to PASS now that #1225 is fixed —
-# if either one fails, treat it as a real regression, not a known gap.
+# 11g — retired by spec 0257 (PR 7): it sourced scripts/lib/monorepo-release-lib.sh
+# to render two GitHub dry-run notes at a fixed date and compare them. The
+# library no longer exists; the black-box case `rb-11g-release-note` in
+# scripts/tests/monorepo-release-blackbox-*.test.ts asserts the same R21
+# byte-identity through the driver entry, with the same non-vacuity guard.
 # =============================================================================
-{
-  read -r FIX ORIGIN_BARE HOME_FIX GITCONFIG_BASE <<< "$(make_fixture | tr '\n' ' ')"
-  # This scenario relies on ORIGIN'S OWN url (no explicit repositoryUrl in
-  # either config), so the base fixture's neutral-origin-only gitconfig is
-  # exactly what's needed — no forge-url mapping.
-
-  # shellcheck source=lib/monorepo-release-lib.sh
-  . "$SCRIPT_DIR/lib/monorepo-release-lib.sh"
-
-  golden_i="$TMP_ROOT/golden-11g.json"
-  # The golden's facade path points at the driver's own library (issue #1225),
-  # which the fixture does not carry: map it to this checkout's library first,
-  # then map the remaining /ROOT paths to the fixture.
-  jq --arg root "$FIX" --arg lib "$REPO_DIR/scripts/lib/" '
-    walk(if type == "string" then (split("/ROOT/scripts/lib/") | join($lib) | gsub("/ROOT"; $root)) else . end)
-    | .plugins |= map(select(type != "array" or .[0] != "@semantic-release/github"))
-  ' "$FIXTURE_DIR/github-releaserc.golden.json" > "$golden_i"
-
-  config_ii="$TMP_ROOT/config-ii-11g.json"
-  emit_releaserc github publish foo "$FIX" "$FIX/dist/release/foo" main | jq '
-    .plugins |= map(select(type != "array" or .[0] != "@semantic-release/github"))
-  ' > "$config_ii"
-
-  render_notes() {
-    local config="$1"
-    ( cd "$FIX/extensions/core/foo" && \
-      env -i PATH="$CLEAN_PATH" HOME="$HOME_FIX" \
-        GIT_CONFIG_GLOBAL="$GITCONFIG_BASE" GIT_CONFIG_SYSTEM=/dev/null ${GH_ENV[@]+"${GH_ENV[@]}"} \
-        NODE_OPTIONS="--require $FIXTURE_DIR/fixed-date.cjs" \
-        node "$REPO_DIR/scripts/lib/release-rehearse.mjs" main "$config" )
-  }
-
-  result_i="$(render_notes "$golden_i" 2>"$TMP_ROOT/11g-i.err")"
-  rc_i=$?
-  result_ii="$(render_notes "$config_ii" 2>"$TMP_ROOT/11g-ii.err")"
-  rc_ii=$?
-
-  if [ "$rc_i" -eq 0 ] && [ "$rc_ii" -eq 0 ]; then
-    ok "11g: both fixed-date dry-run renders succeed"
-    notes_i="$(printf '%s' "$result_i" | jq -r '.notes')"
-    notes_ii="$(printf '%s' "$result_ii" | jq -r '.notes')"
-
-    # Guards the byte-identity check below against passing vacuously (see
-    # this block's header comment): two EMPTY strings are byte-identical
-    # too, so without this assertion a regression that emptied both renders
-    # would read as a pass, not a failure.
-    if grep -q '.' <<< "$notes_i" && grep -q '.' <<< "$notes_ii"; then
-      ok "11g: both rendered notes are non-empty (the byte-identity check below is meaningful)"
-    else
-      ng "11g: both rendered notes are non-empty (an empty render here makes the byte-identity check below vacuous)"
-    fi
-
-    if [ "$notes_i" = "$notes_ii" ]; then
-      ok "11g (R21): the two GitHub note renders are byte-identical at a fixed date"
-    else
-      ng "11g (R21): the two GitHub note renders differ: '$notes_i' vs '$notes_ii'"
-    fi
-  else
-    ng "11g: a fixed-date dry-run render failed (rc_i=$rc_i rc_ii=$rc_ii): $(cat "$TMP_ROOT/11g-i.err" "$TMP_ROOT/11g-ii.err")"
-  fi
-}
 
 # =============================================================================
 # 11h — GitHub release-PR flow (issue #1379): a push to main never pushes main;

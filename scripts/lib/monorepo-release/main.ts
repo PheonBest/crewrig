@@ -1,5 +1,5 @@
-// main.ts — the driver's top level (spec 0257 R13, R14, R19). Port of the preflight, the dispatch and
-// the summary of scripts/monorepo-release.sh: the forge, the mode, the branch, the identity and the
+// main.ts — the driver's top level (spec 0257 R13, R14, R19). Replaced the preflight, the dispatch and
+// the summary of the former scripts/monorepo-release.sh: the forge, the mode, the branch, the identity and the
 // credential are resolved up front and every refusal exits 2 before anything is written (spec 0213
 // R10); then the flow of the mode runs and the summary decides the exit status. The entry file only
 // forwards the process; every effect it needs arrives through `input` and `deps`.

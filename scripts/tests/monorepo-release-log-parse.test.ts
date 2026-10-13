@@ -1,5 +1,5 @@
 // monorepo-release-log-parse.test.ts — classify, engine-log parsing and SemVer shape of the monorepo release driver
-// (spec 0257 R13). Table-driven; the shell oracle runs the same tables in monorepo-release-differential.test.ts.
+// (spec 0257 R13). Table-driven.
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";

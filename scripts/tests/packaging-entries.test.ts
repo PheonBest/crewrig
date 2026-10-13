@@ -1,6 +1,6 @@
 // packaging-entries.test.ts — `package-extension` and `package-extensions` (spec 0257 R12): the
 // EXT contract, the version read, the cleared output directory, the tier walk in byte order that
-// stops at the first failure. The differential run is packaging-entries-differential.test.ts.
+// stops at the first failure. The entry-level proof against the goldens is packaging-release-differential.test.ts.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";

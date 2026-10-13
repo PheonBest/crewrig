@@ -35,7 +35,7 @@ reported success.
 
 ## Setup
 
-- Candidate archive: `scripts/release-package-extension.sh`'s output for the
+- Candidate archive: the output of `scripts/release-package-extension.sh` (now a forwarding shim to `scripts/release-package-extension.ts`) for the
   reference extension (`hello-world`), version `1.7.0` — the archive form
   spec 0183 R17/R22 mandate (Ruling A: `build/extensions/hello-world`,
   single-tool).

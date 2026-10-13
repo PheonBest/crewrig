@@ -535,13 +535,13 @@ tree through exactly one of three paths:
    in-place tool (Gemini CLI) alone — the default operating mode for that
    tool's install (spec 0183 requirements 17-24, as amended by
    `specs/0183-extension-model-migration.delta-01.md`; maintainer
-   arbitration, 2026-08-25, issue #1008). `scripts/release-package-extension.sh`
-   is the ONE place the artifact's shape is decided: it asserts the current
+   arbitration, 2026-08-25, issue #1008). `scripts/release-package-extension.ts`
+   (the `.sh` name is a forwarding shim) is the ONE place the artifact's shape is decided: it asserts the current
    declaration shape, renders `--target gemini`, and archives
    `build/extensions/<name>`'s contents at the archive root with no wrapper
    directory — a form pinned live against the installed tool, evidence in
    `docs/runbooks/extension-release-install-probe.md`.
-   `scripts/monorepo-release.sh` is the release driver that calls it. The
+   `scripts/monorepo-release.ts` is the release driver that calls it. The
    other three supported tools (Claude Code, Copilot CLI, Antigravity CLI)
    are not served by this artifact; they reach an adopter through path 2
    below, on their own local render.

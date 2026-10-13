@@ -272,11 +272,15 @@ tasks:
   package:
     desc: Package all extensions to dist/
     deps: [install-deps]
-    cmd: bash {{.REPO_DIR}}/scripts/package-extensions.sh
+    cmds:
+      - node {{.REPO_DIR}}/scripts/lib/node-floor-guard.js
+      - node {{.REPO_DIR}}/scripts/package-extensions.ts
 
   package-extension:
     desc: "Package a single extension (task package-extension EXT=hello-world)"
-    cmd: bash {{.REPO_DIR}}/scripts/package-extension.sh
+    cmds:
+      - node {{.REPO_DIR}}/scripts/lib/node-floor-guard.js
+      - node {{.REPO_DIR}}/scripts/package-extension.ts
 
   create-extension:
     desc: "Scaffold a new extension from skeleton (task create-extension NAME=my-ext)"

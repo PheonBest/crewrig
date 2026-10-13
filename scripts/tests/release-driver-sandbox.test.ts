@@ -72,10 +72,12 @@ describe("release driver sandbox", () => {
 
   it("mutates the sandbox copy only, and refuses a mutation that changes nothing", () => {
     const sb = createReleaseSandbox();
-    const file = "scripts/lib/monorepo-release-lib.sh";
+    const file = "scripts/lib/monorepo-release/branch.ts";
     const original = fs.readFileSync(path.join(REPO, file), "utf8");
-    sb.mutate(file, (text) => text.replace("release_classify()", "release_classify_x()"));
-    assert.match(fs.readFileSync(path.join(sb.root, file), "utf8"), /release_classify_x\(\)/);
+    sb.mutate(file, (text) =>
+      text.replace("function releasePrBranch(", "function releasePrBranchX("),
+    );
+    assert.match(fs.readFileSync(path.join(sb.root, file), "utf8"), /function releasePrBranchX\(/);
     assert.equal(fs.readFileSync(path.join(REPO, file), "utf8"), original);
     assert.throws(() => sb.mutate(file, (text) => text), /changed nothing/);
     sb.dispose();
