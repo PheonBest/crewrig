@@ -2,11 +2,39 @@
 // `FlowDeps` as its last parameter, so a test substitutes the engine, the mirror and the digest
 // without a network, a real git history or a release engine.
 
+import { spawn } from "node:child_process";
+import path from "node:path";
+
 import { sha256File } from "../packaging/digest.ts";
+import { git } from "../sync-from-upstream/git.ts";
+import type { GitResult } from "../sync-from-upstream/git.ts";
 import { stageCloneModules } from "./clone-modules.ts";
 import { runRehearse, runSemanticRelease } from "./engine.ts";
 import { makeMirror } from "./mirror.ts";
 import { prepareCmd } from "./prepare-cmd.ts";
+
+type ChildEnv = Readonly<Record<string, string | undefined>>;
+
+/** Run the sync of `release-pr.ts`, which inherits the driver's stdio; resolves to its exit status. */
+function spawnReleasePr(
+  argv: readonly string[],
+  opts: { cwd: string; env: ChildEnv; scriptsDir: string },
+): Promise<number> {
+  return new Promise((resolve) => {
+    // No shell: the arguments are branch names and a path, passed as separate argv entries.
+    const child = spawn(
+      process.execPath,
+      [
+        "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
+        path.join(opts.scriptsDir, "release-pr.ts"),
+        ...argv,
+      ],
+      { cwd: opts.cwd, env: { ...opts.env }, stdio: "inherit" },
+    );
+    child.once("error", () => resolve(127));
+    child.once("close", (code) => resolve(code ?? 1));
+  });
+}
 
 export interface FlowDeps {
   runSemanticRelease: typeof runSemanticRelease;
@@ -14,6 +42,13 @@ export interface FlowDeps {
   makeMirror: typeof makeMirror;
   stageCloneModules: typeof stageCloneModules;
   sha256File: (file: string) => string;
+  /** Git in the checkout: the release branch's fetch and push (never run in the clone). */
+  runGit: (args: readonly string[], opts: { cwd?: string; env: ChildEnv }) => GitResult;
+  /** `release-pr.ts <args>`: opens, updates or closes the release PR; resolves to its exit status. */
+  runReleasePr: (
+    argv: readonly string[],
+    opts: { cwd: string; env: ChildEnv; scriptsDir: string },
+  ) => Promise<number>;
   /** The command string the rehearsal runs as the exec plugin would; tests substitute a harmless one. */
   prepareCommand?: typeof prepareCmd;
 }
@@ -24,5 +59,7 @@ export const realDeps: FlowDeps = {
   makeMirror,
   stageCloneModules,
   sha256File,
+  runGit: (args, opts) => git(args, opts),
+  runReleasePr: spawnReleasePr,
   prepareCommand: prepareCmd,
 };
