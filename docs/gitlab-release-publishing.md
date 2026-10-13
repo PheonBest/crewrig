@@ -100,8 +100,8 @@ No token is needed or read in this mode.
 
 **There is no local rehearsal path.** The driver detects the forge from
 CI-provided environment variables and refuses to run at all outside a
-GitHub Actions or GitLab CI job — `RELEASE_DRY_RUN=true bash
-scripts/monorepo-release.sh` on a workstation exits with "unsupported
+GitHub Actions or GitLab CI job — `RELEASE_DRY_RUN=true node
+scripts/monorepo-release.ts` (after `node scripts/lib/node-floor-guard.js`) on a workstation exits with "unsupported
 release forge: none (not a CI environment)" before anything else runs.
 To inspect a computed release, push (or trigger a manual pipeline) and
 read the `release-rehearsal` job's log, rather than trying to reproduce it
@@ -164,7 +164,8 @@ the failed run would have produced.
 
    ```sh
    git checkout <ext>-v<version>
-   bash scripts/release-package-extension.sh <ext> --version <version> --out dist/release/<ext>
+   node scripts/lib/node-floor-guard.js
+   node scripts/release-package-extension.ts <ext> --version <version> --out dist/release/<ext>
    ```
 
 3. Create the release with that archive attached:
