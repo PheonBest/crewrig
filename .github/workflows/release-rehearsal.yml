@@ -34,4 +34,6 @@ jobs:
       - name: Rehearse monorepo release
         env:
           RELEASE_DRY_RUN: "true"
-        run: bash scripts/monorepo-release.sh
+        run: |
+          node scripts/lib/node-floor-guard.js
+          node scripts/monorepo-release.ts
