@@ -31,13 +31,19 @@ export interface NormaliseContext {
 export type GitFn = (args: readonly string[]) => GitResult;
 
 const SCRATCH = "<SCRATCH>";
+const CLOCK = "<TIME>";
+/** The most differing lines a report spells out; the rest is only counted. */
+const REPORT_CAP = 40;
 
 /**
- * Hides what legitimately differs between two runs: digests, the hash inside an archive name and
- * the scratch directory (`mktemp -d` in the shell, `crewrig-release-XXXX` in the port).
+ * Hides what legitimately differs between two runs: the engine's own clock (its logger prefixes
+ * every line with `[11:47:52 AM]`, and prints ISO instants), digests, the hash inside an archive
+ * name and the scratch directory (`mktemp -d` in the shell, `crewrig-release-XXXX` in the port).
  */
 export function normalise(text: string, ctx: NormaliseContext): string {
-  let out = text.replace(/sha256=[0-9a-fA-F]{8,}/g, "sha256=<SHA256>");
+  let out = text.replace(/\[\d{1,2}:\d{2}:\d{2}(?: [AP]M)?\]/g, `[${CLOCK}]`);
+  out = out.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?/g, CLOCK);
+  out = out.replace(/sha256=[0-9a-fA-F]{8,}/g, "sha256=<SHA256>");
   out = out.replace(/(archive=\S*?)[0-9a-f]{7,64}(?=[.\-_\s]|$)/gm, "$1<HEX>");
   const roots = [...ctx.tmpDirs].filter((d) => d !== "").sort((a, b) => b.length - a.length);
   for (const root of roots) {
@@ -49,18 +55,25 @@ export function normalise(text: string, ctx: NormaliseContext): string {
   return out.replace(/\/tmp\/[^/\s'":]+/g, SCRATCH);
 }
 
-function firstDifference(a: string, b: string): string {
+/** Every differing line, capped, so one run exposes all the differences rather than the first. */
+function differences(a: string, b: string): string {
   const left = a.split("\n");
   const right = b.split("\n");
   const count = Math.max(left.length, right.length);
+  const shown: string[] = [];
+  let total = 0;
   for (let i = 0; i < count; i++) {
-    if (left[i] !== right[i]) {
-      const l = left[i] === undefined ? "<end of output>" : left[i];
-      const r = right[i] === undefined ? "<end of output>" : right[i];
-      return `line ${i + 1}:\n--- shell\n+++ typescript\n-${l}\n+${r}`;
-    }
+    if (left[i] === right[i]) continue;
+    total++;
+    if (shown.length >= REPORT_CAP) continue;
+    const l = left[i] === undefined ? "<end of output>" : left[i];
+    const r = right[i] === undefined ? "<end of output>" : right[i];
+    shown.push(`line ${i + 1}:\n-${l}\n+${r}`);
   }
-  return "";
+  if (total === 0) return "";
+  const more =
+    total > shown.length ? `\n... and ${total - shown.length} more differing line(s)` : "";
+  return `${total} line(s) (--- shell, +++ typescript)\n${shown.join("\n")}${more}`;
 }
 
 /** Pure: the two legs are compared as given (normalise them first). */
@@ -70,10 +83,26 @@ export function compareRehearsals(shell: Leg, ts: Leg): { equal: boolean; report
     parts.push(`exit status differs: shell=${shell.status} typescript=${ts.status}`);
   }
   for (const stream of ["stdout", "stderr"] as const) {
-    const diff = firstDifference(shell[stream], ts[stream]);
-    if (diff !== "") parts.push(`${stream} differs at ${diff}`);
+    const diff = differences(shell[stream], ts[stream]);
+    if (diff !== "") parts.push(`${stream} differs in ${diff}`);
   }
   return { equal: parts.length === 0, report: parts.join("\n") };
+}
+
+/**
+ * Pure: two drivers that fail the same way agree trivially, so each leg must also have succeeded and
+ * reached the end of the analysis (a `REHEARSAL ` or `UNCHANGED ` line, then the closing sentence).
+ */
+export function requireSuccessfulRehearsal(name: string, leg: Leg): string[] {
+  const missing: string[] = [];
+  if (leg.status !== 0) missing.push(`the ${name} leg exited ${leg.status}, not 0`);
+  if (!/^(REHEARSAL|UNCHANGED) /m.test(leg.stdout)) {
+    missing.push(`the ${name} leg printed no "REHEARSAL " or "UNCHANGED " line`);
+  }
+  if (!leg.stdout.includes("Release analysis completed successfully.")) {
+    missing.push(`the ${name} leg did not print "Release analysis completed successfully."`);
+  }
+  return missing;
 }
 
 /** The named branch both legs run on; `restore` puts the detached HEAD back (no-op when it was named). */
@@ -208,6 +237,8 @@ export function main(argv: readonly string[]): number {
   if (shell === undefined || ts === undefined) return 2;
   const verdict = compareRehearsals(shell, ts);
   if (!verdict.equal) problems.push(verdict.report);
+  problems.push(...requireSuccessfulRehearsal("shell", shell));
+  problems.push(...requireSuccessfulRehearsal("typescript", ts));
   if (problems.length > 0) {
     process.stdout.write(`rehearsal comparison FAILED\n${problems.join("\n")}\n`);
     return 1;

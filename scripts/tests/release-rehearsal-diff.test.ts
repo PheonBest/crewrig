@@ -17,6 +17,7 @@ import {
   legEnvironment,
   normalise,
   repositoryFromRemote,
+  requireSuccessfulRehearsal,
 } from "./lib/release-rehearsal-diff.ts";
 import type { GitFn, Leg } from "./lib/release-rehearsal-diff.ts";
 
@@ -30,17 +31,34 @@ describe("compareRehearsals", () => {
     assert.deepEqual(verdict, { equal: true, report: "" });
   });
 
-  it("names the first differing line of stdout", () => {
+  it("names a differing line of stdout", () => {
     const verdict = compareRehearsals(leg("a\nb\nc\n"), leg("a\nB\nc\n"));
     assert.equal(verdict.equal, false);
-    assert.match(verdict.report, /stdout differs at line 2/);
-    assert.match(verdict.report, /-b\n\+B/);
+    assert.match(verdict.report, /stdout differs in 1 line\(s\)/);
+    assert.match(verdict.report, /line 2:\n-b\n\+B/);
   });
 
-  it("names the first differing line of stderr and a missing trailing line", () => {
+  it("names a differing line of stderr and a missing trailing line", () => {
     const verdict = compareRehearsals(leg("", 0, "x\ny"), leg("", 0, "x"));
-    assert.match(verdict.report, /stderr differs at line 2/);
+    assert.match(verdict.report, /stderr differs in 1 line\(s\)/);
+    assert.match(verdict.report, /line 2:/);
     assert.match(verdict.report, /<end of output>/);
+  });
+
+  it("reports every differing line, not only the first", () => {
+    const verdict = compareRehearsals(leg("a\nb\nc\nd"), leg("a\nB\nc\nD"));
+    assert.match(verdict.report, /stdout differs in 2 line\(s\)/);
+    assert.match(verdict.report, /line 2:\n-b\n\+B/);
+    assert.match(verdict.report, /line 4:\n-d\n\+D/);
+  });
+
+  it("caps the report at 40 lines and says how many more differ", () => {
+    const many = (suffix: string): string =>
+      Array.from({ length: 55 }, (_, i) => `l${i}${suffix}`).join("\n");
+    const report = compareRehearsals(leg(many("a")), leg(many("b"))).report;
+    assert.match(report, /stdout differs in 55 line\(s\)/);
+    assert.equal((report.match(/^line \d+:$/gm) ?? []).length, 40);
+    assert.match(report, /\.\.\. and 15 more differing line\(s\)/);
   });
 
   it("reports a differing exit status even when the output is equal", () => {
@@ -51,7 +69,63 @@ describe("compareRehearsals", () => {
   });
 });
 
+describe("requireSuccessfulRehearsal", () => {
+  const good = "REHEARSAL x version=1.0.0\nUNCHANGED y\nRelease analysis completed successfully.\n";
+
+  it("accepts a successful rehearsal that reached the end of the analysis", () => {
+    assert.deepEqual(requireSuccessfulRehearsal("shell", leg(good)), []);
+    assert.deepEqual(
+      requireSuccessfulRehearsal(
+        "shell",
+        leg("UNCHANGED y\nRelease analysis completed successfully."),
+      ),
+      [],
+    );
+  });
+
+  it("names a non-zero exit status", () => {
+    assert.deepEqual(requireSuccessfulRehearsal("typescript", leg(good, 1)), [
+      "the typescript leg exited 1, not 0",
+    ]);
+  });
+
+  it("names a missing REHEARSAL or UNCHANGED line", () => {
+    const missing = requireSuccessfulRehearsal(
+      "shell",
+      leg("noise REHEARSAL x\nRelease analysis completed successfully.\n"),
+    );
+    assert.equal(missing.length, 1);
+    assert.match(missing[0] ?? "", /no "REHEARSAL " or "UNCHANGED " line/);
+  });
+
+  it("names a missing closing sentence", () => {
+    const missing = requireSuccessfulRehearsal("shell", leg("REHEARSAL x\n"));
+    assert.equal(missing.length, 1);
+    assert.match(missing[0] ?? "", /did not print "Release analysis completed successfully\."/);
+  });
+
+  it("reports every failure at once when both drivers failed identically", () => {
+    assert.equal(requireSuccessfulRehearsal("shell", leg("boom", 1)).length, 3);
+  });
+});
+
 describe("normalise", () => {
+  it("hides the engine clock in its 12-hour and 24-hour forms", () => {
+    assert.equal(
+      normalise("[11:47:52 AM] [semantic-release] › ℹ  Running", CTX),
+      "[<TIME>] [semantic-release] › ℹ  Running",
+    );
+    assert.equal(normalise("[1:02:03 PM] x\n[23:59:59] y", CTX), "[<TIME>] x\n[<TIME>] y");
+  });
+
+  it("hides ISO instants and leaves a bare date alone", () => {
+    assert.equal(
+      normalise("at 2026-10-13T11:47:52.123Z and 2026-10-13T11:47:52+02:00", CTX),
+      "at <TIME> and <TIME>",
+    );
+    assert.equal(normalise("released 2026-10-13", CTX), "released 2026-10-13");
+  });
+
   it("hides the value of sha256= and keeps the surrounding line", () => {
     const hex = "0123456789abcdef".repeat(4);
     const out = normalise(`REHEARSAL x version=1.0.0 sha256=${hex}\nsha256=none`, CTX);
