@@ -1080,13 +1080,16 @@ capabilities:
       - node scripts/lib/node-floor-guard.js
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts
 
-  # Spec 0257 (ticket #1336), PR 2: the deterministic tar.gz archive writer and the documentation
-  # index modules, with their node:test suites. Dark modules until the entries switch over, so no
-  # entry twin on Node.js 24.0.0 exists yet. The differential suite spawns `bash` (the shell it
-  # compares against) and the archive suite cross-checks with `tar` and `gzip`; all three are on
-  # the runners and the suites skip themselves when one is absent.
+  # Spec 0257 (ticket #1336), PRs 2 and 3: the deterministic tar.gz archive writer, the
+  # documentation index, the release packager, the manifest synchronisation and the single and
+  # every-extension packaging modules, with their node:test suites. Dark modules until the entries
+  # switch over, so no entry twin on Node.js 24.0.0 exists yet. The differential suites spawn
+  # `bash`, `jq` and `tar` (the shell tools they compare against) and the archive suite
+  # cross-checks with `tar` and `gzip`; all are on the runners and the suites skip themselves when
+  # one is absent. The packaging suites build in a sandbox copy of `scripts/`, hence the broad
+  # builder paths.
   - id: packaging-modules-ts
-    name: "Run the TypeScript archive writer and documentation index module suites"
+    name: "Run the TypeScript archive writer, documentation index and release packaging module suites"
     trigger:
       - on: pull-request
         branches: [main, "release/**"]
@@ -1097,7 +1100,6 @@ capabilities:
           - "scripts/lib/paths.ts"
           - "scripts/lib/line-endings.ts"
           - "scripts/lib/tmp-file.ts"
-          - "scripts/lib/extension/types.ts"
           - "scripts/lib/node-floor-guard.js"
           - "scripts/tests/tar-writer.test.ts"
           - "scripts/tests/docs-index.test.ts"
@@ -1106,6 +1108,29 @@ capabilities:
           - "scripts/tests/lib/tar-reader.ts"
           - "scripts/tests/lib/docs-index-trees.ts"
           - "scripts/tests/lib/extension-trees.ts"
+          - "scripts/build-extension.ts"
+          - "scripts/release-package-extension.sh"
+          - "scripts/package-extension.sh"
+          - "scripts/package-extensions.sh"
+          - "scripts/lib/extension/**"
+          - "scripts/lib/worktree-claim/**"
+          - "scripts/lib/mempalace-python.ts"
+          - "scripts/lib/render-command.ts"
+          - "scripts/lib/yaml-text.ts"
+          - "scripts/lib/require-dependency.ts"
+          - "scripts/lib/extension-*.json"
+          - "extension-skeleton/**"
+          - "extensions/**"
+          - "package.json"
+          - "package-lock.json"
+          - "scripts/tests/packaging-release-package.test.ts"
+          - "scripts/tests/packaging-release-package-cli.test.ts"
+          - "scripts/tests/packaging-spawn-tiers.test.ts"
+          - "scripts/tests/packaging-entries.test.ts"
+          - "scripts/tests/packaging-entries-differential.test.ts"
+          - "scripts/tests/release-sync-manifests.test.ts"
+          - "scripts/tests/lib/release-sandbox.ts"
+          - "scripts/tests/lib/build-fixture-tree.ts"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -1115,7 +1140,6 @@ capabilities:
           - "scripts/lib/paths.ts"
           - "scripts/lib/line-endings.ts"
           - "scripts/lib/tmp-file.ts"
-          - "scripts/lib/extension/types.ts"
           - "scripts/lib/node-floor-guard.js"
           - "scripts/tests/tar-writer.test.ts"
           - "scripts/tests/docs-index.test.ts"
@@ -1124,13 +1148,36 @@ capabilities:
           - "scripts/tests/lib/tar-reader.ts"
           - "scripts/tests/lib/docs-index-trees.ts"
           - "scripts/tests/lib/extension-trees.ts"
+          - "scripts/build-extension.ts"
+          - "scripts/release-package-extension.sh"
+          - "scripts/package-extension.sh"
+          - "scripts/package-extensions.sh"
+          - "scripts/lib/extension/**"
+          - "scripts/lib/worktree-claim/**"
+          - "scripts/lib/mempalace-python.ts"
+          - "scripts/lib/render-command.ts"
+          - "scripts/lib/yaml-text.ts"
+          - "scripts/lib/require-dependency.ts"
+          - "scripts/lib/extension-*.json"
+          - "extension-skeleton/**"
+          - "extensions/**"
+          - "package.json"
+          - "package-lock.json"
+          - "scripts/tests/packaging-release-package.test.ts"
+          - "scripts/tests/packaging-release-package-cli.test.ts"
+          - "scripts/tests/packaging-spawn-tiers.test.ts"
+          - "scripts/tests/packaging-entries.test.ts"
+          - "scripts/tests/packaging-entries-differential.test.ts"
+          - "scripts/tests/release-sync-manifests.test.ts"
+          - "scripts/tests/lib/release-sandbox.ts"
+          - "scripts/tests/lib/build-fixture-tree.ts"
     portability: portable
     requires:
       runtime: node@24
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/packaging-entries-differential.test.ts scripts/tests/release-sync-manifests.test.ts
 
   # Spec 0254 R23: the extension builders' copy of the Windows template (windows-build-components).
   # The production dependencies are installed first, the floor guard runs, then

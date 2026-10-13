@@ -772,9 +772,9 @@ jobs:
         if: failure()
         uses: ./.github/actions/cancel-on-failure
 
-  # Spec 0257 (ticket #1336), PR 2: the deterministic tar.gz archive writer and the documentation
-  # index modules. The differential suite spawns `bash`, the archive suite cross-checks with `tar`
-  # and `gzip`; all three exist on the runner.
+  # Spec 0257 (ticket #1336), PRs 2 and 3: the deterministic tar.gz archive writer, the
+  # documentation index and the release packaging modules. The differential suites spawn `bash`,
+  # `jq` and `tar`, the archive suite cross-checks with `tar` and `gzip`; all exist on the runner.
   packaging-modules-ts:
     runs-on: ubuntu-latest
     steps:
@@ -790,7 +790,6 @@ jobs:
               - 'scripts/lib/paths.ts'
               - 'scripts/lib/line-endings.ts'
               - 'scripts/lib/tmp-file.ts'
-              - 'scripts/lib/extension/types.ts'
               - 'scripts/lib/node-floor-guard.js'
               - 'scripts/tests/tar-writer.test.ts'
               - 'scripts/tests/docs-index.test.ts'
@@ -799,6 +798,29 @@ jobs:
               - 'scripts/tests/lib/tar-reader.ts'
               - 'scripts/tests/lib/docs-index-trees.ts'
               - 'scripts/tests/lib/extension-trees.ts'
+              - 'scripts/build-extension.ts'
+              - 'scripts/release-package-extension.sh'
+              - 'scripts/package-extension.sh'
+              - 'scripts/package-extensions.sh'
+              - 'scripts/lib/extension/**'
+              - 'scripts/lib/worktree-claim/**'
+              - 'scripts/lib/mempalace-python.ts'
+              - 'scripts/lib/render-command.ts'
+              - 'scripts/lib/yaml-text.ts'
+              - 'scripts/lib/require-dependency.ts'
+              - 'scripts/lib/extension-*.json'
+              - 'extension-skeleton/**'
+              - 'extensions/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'scripts/tests/packaging-release-package.test.ts'
+              - 'scripts/tests/packaging-release-package-cli.test.ts'
+              - 'scripts/tests/packaging-spawn-tiers.test.ts'
+              - 'scripts/tests/packaging-entries.test.ts'
+              - 'scripts/tests/packaging-entries-differential.test.ts'
+              - 'scripts/tests/release-sync-manifests.test.ts'
+              - 'scripts/tests/lib/release-sandbox.ts'
+              - 'scripts/tests/lib/build-fixture-tree.ts'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.packaging-modules-ts == 'true'
         with:
@@ -810,9 +832,9 @@ jobs:
       - name: Floor guard accepts Node.js 24
         if: steps.filter.outputs.packaging-modules-ts == 'true'
         run: node scripts/lib/node-floor-guard.js
-      - name: Test the TypeScript archive writer and documentation index modules
+      - name: Test the TypeScript archive writer, documentation index and release packaging modules
         if: steps.filter.outputs.packaging-modules-ts == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/packaging-entries-differential.test.ts scripts/tests/release-sync-manifests.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
