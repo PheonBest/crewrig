@@ -1,5 +1,5 @@
-// package-extension.ts — package one extension at its committed version into dist/release/<EXT> (spec 0257). It replaced the shell script of the same name, which stays as a
-// forwarding shim.
+// package-extension.ts — package one extension at its committed version into dist/release/<EXT> (spec 0257). It replaces the shell script of the same name (reduced to a forwarding shim by the
+// switch pull request of spec 0257, requirement 28).
 //
 // Usage: EXT=<name> node scripts/package-extension.ts
 // Run `node scripts/lib/node-floor-guard.js` first on an unverified Node.js: the tool needs Node.js 24 or later.

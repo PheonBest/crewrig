@@ -32,8 +32,9 @@ export function makeSandbox(): Sandbox {
   fs.cpSync(path.join(REPO, "extension-skeleton"), tree.resolve("extension-skeleton"), {
     recursive: true,
   });
-  // Only what git tracks: an installed `node_modules` or a built `dist` of an extension directory is
-  // host state (workspace installs put one there), and would end up in every build tree and archive.
+  // Everything except the directories named `node_modules` and `dist`: an installed `node_modules` or a
+  // built `dist` of an extension directory is host state (workspace installs put one there), and would
+  // end up in every build tree and archive.
   fs.cpSync(path.join(REPO, "extensions"), tree.resolve("extensions"), {
     recursive: true,
     filter: (src) => !/(^|[\\/])(node_modules|dist)$/.test(src),

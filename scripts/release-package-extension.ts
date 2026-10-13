@@ -1,5 +1,5 @@
-// release-package-extension.ts — package one extension into the one-asset release archive (spec 0257). It replaced the shell script of the same name, which stays as a
-// forwarding shim.
+// release-package-extension.ts — package one extension into the one-asset release archive (spec 0257). It replaces the shell script of the same name (reduced to a forwarding shim by the
+// switch pull request of spec 0257, requirement 28).
 //
 // Usage: node scripts/release-package-extension.ts <name> --version <v> --out <dir>
 // Run `node scripts/lib/node-floor-guard.js` first on an unverified Node.js: the tool needs Node.js 24 or later.

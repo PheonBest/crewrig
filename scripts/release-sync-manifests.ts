@@ -1,5 +1,5 @@
-// release-sync-manifests.ts — rewrite the version of package.json and extension.json of the current directory (spec 0257). It replaced the shell script of the same name, which stays as a
-// forwarding shim.
+// release-sync-manifests.ts — rewrite the version of package.json and extension.json of the current directory (spec 0257). It has no shell predecessor: it replaces the `jq` calls of the engine's prepare command
+// (spec 0257 Decision D2).
 //
 // Usage: node scripts/release-sync-manifests.ts <version>
 // Run `node scripts/lib/node-floor-guard.js` first on an unverified Node.js: the tool needs Node.js 24 or later.

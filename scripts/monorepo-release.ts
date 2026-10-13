@@ -1,5 +1,5 @@
-// monorepo-release.ts — analyze and release every extension of the monorepo on GitHub Actions or GitLab CI (spec 0257). It replaced the shell script of the same name, which stays as a
-// forwarding shim.
+// monorepo-release.ts — analyze and release every extension of the monorepo on GitHub Actions or GitLab CI (spec 0257). It replaces the shell script of the same name (reduced to a forwarding shim by the
+// switch pull request of spec 0257, requirement 28).
 //
 // Usage: node scripts/monorepo-release.ts   (RELEASE_DRY_RUN=true for the credential-free rehearsal)
 // Run `node scripts/lib/node-floor-guard.js` first on an unverified Node.js: the tool needs Node.js 24 or later.

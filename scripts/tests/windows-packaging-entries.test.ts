@@ -1,7 +1,7 @@
 // windows-packaging-entries.test.ts — runs the cross-system proof of the packaging and release entries
 // (spec 0257 R27) on every platform: on Windows each entry runs through PowerShell or `cmd.exe`, on
-// POSIX directly, and the same assertions hold. The `windows-packaging-entries` job runs the proof as
-// its own step too. The PATH filter is also tested on simulated win32 data.
+// POSIX directly, and the same assertions hold. The `windows-packaging-entries` job runs this test file,
+// which runs the proof. The PATH filter is also tested on simulated win32 data.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";

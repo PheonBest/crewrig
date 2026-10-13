@@ -1,5 +1,5 @@
-// build-docs-index.ts — generate or check the public documentation index, docs/index.json (spec 0257). It replaced the shell script of the same name, which stays as a
-// forwarding shim.
+// build-docs-index.ts — generate or check the public documentation index, docs/index.json (spec 0257). It replaces the shell script of the same name (reduced to a forwarding shim by the
+// switch pull request of spec 0257, requirement 28).
 //
 // Usage: node scripts/build-docs-index.ts [--check]
 // Run `node scripts/lib/node-floor-guard.js` first on an unverified Node.js: the tool needs Node.js 24 or later.
