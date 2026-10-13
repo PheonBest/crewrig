@@ -6,9 +6,9 @@
 // restricted to the names a release engine could read a forge, a git identity or a credential
 // from: that is what the suite asserts on. What a stub PRINTS is scripted per extension (the
 // directory name of its cwd) in `$CAPTURE_DIR/<name>-script.json`:
-//   npx-script.json      { "<ext>": ["line", ...] | { "lines": [...], "status": 1 } }
+//   npx-script.json      { "<ext>": ["line", ...] | { "lines": [...], "status": 1, "archive"?: file } }
 //   rehearse-script.json { "<ext>": { released, version, gitTag, lastTag, notes,
-//                                      prepare?: boolean, exit?: number } }
+//                                      prepare?: boolean, commit?: boolean, exit?: number } }
 // Shared by the shell driver and the TypeScript one: both reach the same two engine entry points
 // (`npx semantic-release` and `scripts/lib/release-rehearse.mjs`), so one set of stubs serves
 // both legs of the suite.
@@ -64,16 +64,26 @@ const at = argv.indexOf("--extends");
 const spec = at === -1 ? "" : String(argv[at + 1] ?? "");
 const comma = spec.indexOf(",");
 const extendsFile = comma === -1 ? null : spec.slice(comma + 1);
+const extendsContent = extendsFile === null ? null : read(extendsFile);
 record("npx", {
   argv, cwd, ext,
   releaserc: read(path.join(cwd, ".releaserc.json")),
   extendsFile,
-  extendsContent: extendsFile === null ? null : read(extendsFile),
+  extendsContent,
   env: recordedEnv(),
 });
 const scripted = readScript("npx")[ext];
 const lines = Array.isArray(scripted) ? scripted : (scripted && scripted.lines) || [];
 const status = Array.isArray(scripted) || !scripted ? 0 : Number(scripted.status || 0);
+// "archive": write that file into the config's --out directory, as the packager would.
+const archive = Array.isArray(scripted) || !scripted ? "" : String(scripted.archive || "");
+const execPlugin = extendsContent === null ? undefined
+  : (JSON.parse(extendsContent).plugins ?? []).find((p) => Array.isArray(p) && p[0] === "@semantic-release/exec");
+const outAt = /--out (\S+)/.exec(execPlugin ? String(execPlugin[1].prepareCmd) : "");
+if (archive !== "" && outAt) {
+  fs.mkdirSync(outAt[1], { recursive: true });
+  fs.writeFileSync(path.join(outAt[1], archive), "archive of " + ext + "\n");
+}
 if (lines.length > 0) process.stdout.write(lines.join("\n") + "\n");
 process.exitCode = status;
 `;
@@ -115,7 +125,8 @@ if (scripted.exit) {
   process.stderr.write("release-rehearse: the release engine failed: scripted failure\n");
   process.exit(scripted.exit);
 }
-if (scripted.released && scripted.prepare && config !== null) {
+// The real engine runs prepare only for real (the apply argument); a dry run never does.
+if (scripted.released && scripted.prepare && config !== null && argv[2] === "apply") {
   const PLACEHOLDER = "$" + "{nextRelease.version}";
   const exec = (JSON.parse(config).plugins ?? []).find((p) => Array.isArray(p) && p[0] === "@semantic-release/exec");
   const cmd = exec ? String(exec[1].prepareCmd).split(PLACEHOLDER).join(scripted.version) : "";
@@ -125,6 +136,11 @@ if (scripted.released && scripted.prepare && config !== null) {
       ? spawnSync("cmd.exe", ["/d", "/s", "/c", cmd], { cwd, stdio: ["ignore", 2, 2], windowsVerbatimArguments: true })
       : spawnSync("sh", ["-c", cmd], { cwd, stdio: ["ignore", 2, 2] });
     if (res.status !== 0) process.exit(1);
+    // The real engine's git plugin commits what the prepare step changed: so does the stub.
+    if (scripted.commit) {
+      const git = (args) => spawnSync("git", args, { cwd, stdio: ["ignore", 2, 2] }).status;
+      if (git(["add", "-A"]) !== 0 || git(["commit", "-q", "--no-verify", "-m", "release " + (scripted.gitTag ?? "")]) !== 0) process.exit(1);
+    }
   }
 }
 const released = Boolean(scripted.released);
@@ -170,7 +186,7 @@ export function installRehearseStub(sandboxRoot: string): string {
 /** Script what `npx` prints, per extension directory name. */
 export type NpxScript = Record<
   string,
-  readonly string[] | { lines: readonly string[]; status: number }
+  readonly string[] | { lines: readonly string[]; status: number; archive?: string }
 >;
 
 /** What the rehearse stub reports, per extension directory name. */
@@ -180,8 +196,10 @@ export interface RehearseEntry {
   readonly gitTag?: string;
   readonly lastTag?: string | null;
   readonly notes?: string;
-  /** Run the config's exec `prepareCmd` for real (manifest sync + packaging). */
+  /** On an `apply` run, run the config's exec `prepareCmd` for real (manifest sync). */
   readonly prepare?: boolean;
+  /** With `prepare`: commit what the prepare step changed, as the engine's git plugin does. */
+  readonly commit?: boolean;
   /** Fail like an engine error with this exit status instead of reporting. */
   readonly exit?: number;
 }
