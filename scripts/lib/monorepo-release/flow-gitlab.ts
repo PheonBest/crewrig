@@ -1,5 +1,5 @@
-// flow-gitlab.ts — the publish flow (spec 0257 R14). Port of release_publish of
-// scripts/monorepo-release.sh: for each extension the engine runs in the extension directory with
+// flow-gitlab.ts — the publish flow (spec 0257 R14). Replaced release_publish of
+// the former scripts/monorepo-release.sh: for each extension the engine runs in the extension directory with
 // its output teed to the driver's stdout and to a log, and the log decides the report line
 // (PUBLISHED, UNCHANGED or RELEASE-FAILED with the failed step and any tag the run created).
 

@@ -1,5 +1,5 @@
-// branch.ts — the branch the release runs from (spec 0213, spec 0257 R13). Port of
-// release_branch, release_pr_branch and the release-PR-branch guard of monorepo-release.sh.
+// branch.ts — the branch the release runs from (spec 0213, spec 0257 R13). Replaced
+// release_branch, release_pr_branch and the release-PR-branch guard of the former monorepo-release.sh.
 
 import { git } from "../sync-from-upstream/git.ts";
 import type { Forge } from "./forge.ts";

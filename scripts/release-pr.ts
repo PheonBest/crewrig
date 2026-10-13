@@ -1,7 +1,7 @@
 // release-pr.ts — CLI entry of the GitHub release-PR sync (issue #1379).
 //
 // The logic lives in scripts/lib/release-pr.ts (exercised by
-// scripts/tests/release-pr.test.ts); scripts/monorepo-release.sh runs this
+// scripts/tests/release-pr.test.ts); scripts/monorepo-release.ts runs this
 // entry point after it has pushed the release branch.
 //
 // Usage:

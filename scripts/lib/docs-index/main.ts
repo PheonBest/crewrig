@@ -1,5 +1,5 @@
 // main.ts — the order of operations and the exit codes of build-docs-index (the body of
-// build-docs-index.sh): 0 on success or no drift, 1 on a lint failure or drift, 2 on a usage
+// the former build-docs-index.sh, now a forwarding shim): 0 on success or no drift, 1 on a lint failure or drift, 2 on a usage
 // error or a missing docs directory. Nothing here exits the process: the entry sets the code.
 //
 //   build-docs-index            regenerate docs/index.json

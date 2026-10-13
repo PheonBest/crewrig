@@ -1,6 +1,6 @@
 // mirror.ts — the throwaway bare mirror of HEAD (and its tags) and the clone the rehearsal runs the
-// release engine in (spec 0257 R17, Decision D4). Port of release_make_mirror and
-// release_reconcile_tags of scripts/monorepo-release.sh. Git is the only program spawned, and the
+// release engine in (spec 0257 R17, Decision D4). Replaced release_make_mirror and
+// release_reconcile_tags of the former scripts/monorepo-release.sh. Git is the only program spawned, and the
 // checkout and the remote are only ever read: every write lands in the mirror or the clone.
 
 import path from "node:path";

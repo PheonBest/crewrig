@@ -3,7 +3,7 @@
 //
 // The `main-protected` ruleset requires the `ratchet` and `lint-typescript`
 // checks on every commit reaching `main`, so the release workflow can no
-// longer push its version commit there. scripts/monorepo-release.sh instead
+// longer push its version commit there. scripts/monorepo-release.ts instead
 // commits the version bumps and changelogs to the release PR's head branch
 // (release_pr_branch, `release-pr/<base>`) and hands the pending releases to
 // this module, which:

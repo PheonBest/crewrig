@@ -28,7 +28,7 @@
 // Defence in depth (plan review v2-F2): the caller strips every credential
 // variable from this process's environment; this script refuses to call the
 // engine when one is still present, by the same name rule as
-// scripts/lib/monorepo-release-lib.sh release_is_credential_name — the
+// scripts/lib/monorepo-release/credentials.ts isCredentialName — the
 // release core's own masking pattern, plus CI_REPOSITORY_URL. Only names are
 // ever printed. The no-publication guarantee itself rests on the rehearsal
 // config having no publish plugin and on every git remote operation being

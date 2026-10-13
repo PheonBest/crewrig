@@ -1,6 +1,6 @@
 // release-package.ts — the one place a versioned release artifact's shape is decided (spec 0183
-// R17/R21/R22; ported by spec 0257 R9, R10, decision D1). Twin of
-// scripts/release-package-extension.sh: the five assertions in the shell's order with its messages
+// R17/R21/R22; ported by spec 0257 R9, R10, decision D1). Replaced
+// the body of the former scripts/release-package-extension.sh: the five assertions in the shell's order with its messages
 // and its stdout lines, then the archive.
 //
 // The fresh render is a SPAWNED `node scripts/build-extension.ts --target gemini <name>` with
