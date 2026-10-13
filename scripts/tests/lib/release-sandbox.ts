@@ -18,6 +18,9 @@ import type { FixtureTree } from "./build-fixture-tree.ts";
 
 export { REPO };
 
+/** The extension the sandbox carries. */
+export const NAME = "hello-world";
+
 export interface Sandbox extends FixtureTree {
   /** Name and version of the extension the sandbox carries. */
   readonly version: string;
@@ -58,13 +61,23 @@ export interface Run {
   readonly stderr: string;
 }
 
-/** `release-package-main.ts` of the sandbox, run in a child process with the sandbox as cwd. */
-export function runPackager(
+/** The packaging mains a sandbox can run, with the entry file each one is handed. */
+const ENTRIES = {
+  "release-package": ["release-package-main.ts", "release-package-extension.ts"],
+  "package-one": ["package-one-main.ts", "package-extension.ts"],
+  "package-all": ["package-all-main.ts", "package-extensions.ts"],
+} as const;
+export type EntryName = keyof typeof ENTRIES;
+
+/** One packaging main of the sandbox, run in a child process with the sandbox as cwd. */
+export function runEntry(
   sandbox: FixtureTree,
+  entry: EntryName,
   args: readonly string[],
   env: NodeJS.ProcessEnv,
 ): Run {
   const root = sandbox.root;
+  const [mainFile, entryFile] = ENTRIES[entry];
   const res = spawnSync(
     process.execPath,
     ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", "--input-type=module", "-e", DRIVER],
@@ -74,14 +87,21 @@ export function runPackager(
       env: {
         ...env,
         DRIVER_ARGS: JSON.stringify(args),
-        DRIVER_MAIN: pathToFileURL(
-          path.join(root, "scripts", "lib", "packaging", "release-package-main.ts"),
-        ).href,
-        DRIVER_ENTRY: path.join(root, "scripts", "release-package-extension.ts"),
+        DRIVER_MAIN: pathToFileURL(path.join(root, "scripts", "lib", "packaging", mainFile)).href,
+        DRIVER_ENTRY: path.join(root, "scripts", entryFile),
       },
     },
   );
   return { status: res.status, stdout: res.stdout, stderr: res.stderr };
+}
+
+/** `release-package-main.ts` of the sandbox. */
+export function runPackager(
+  sandbox: FixtureTree,
+  args: readonly string[],
+  env: NodeJS.ProcessEnv,
+): Run {
+  return runEntry(sandbox, "release-package", args, env);
 }
 
 const owned: string[] = [];
@@ -186,4 +206,35 @@ export function treeOfArchive(file: string): Record<string, string> {
     out[rel] = record.type === "dir" ? "<dir>" : record.data.toString("hex");
   }
   return Object.fromEntries(Object.entries(out).sort(([a], [b]) => (a < b ? -1 : 1)));
+}
+
+/** A stub builder: refuses the named extensions, builds every other one with the real builder. */
+export function stubBuilder(sandbox: Sandbox, failing: readonly string[]): void {
+  fs.renameSync(
+    sandbox.resolve("scripts/build-extension.ts"),
+    sandbox.resolve("scripts/build-extension-real.ts"),
+  );
+  sandbox.write(
+    "scripts/build-extension.ts",
+    [
+      `if (${JSON.stringify(failing)}.includes(process.argv[4])) process.exitCode = 1;`,
+      'else require("./build-extension-real.ts");',
+      "",
+    ].join("\n"),
+  );
+}
+
+/** `extensions/<tier>/<name>` as a copy of the committed extension; the builder names its output by manifest. */
+export function addExtension(sandbox: Sandbox, tier: string, name: string): void {
+  const dest = `extensions/${tier}/${name}`;
+  fs.cpSync(sandbox.resolve(`extensions/core/${NAME}`), sandbox.resolve(dest), { recursive: true });
+  const manifest = JSON.parse(sandbox.read(`${dest}/extension.json`)) as Record<string, unknown>;
+  sandbox.write(`${dest}/extension.json`, JSON.stringify({ ...manifest, name }));
+}
+
+export function twoPerTier(sandbox: Sandbox): void {
+  addExtension(sandbox, "core", "zz-core");
+  addExtension(sandbox, "library", "aa-lib");
+  addExtension(sandbox, "library", "ab-lib");
+  addExtension(sandbox, "org", "org-ext");
 }
