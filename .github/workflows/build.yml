@@ -753,6 +753,24 @@ jobs:
               - 'scripts/tests/monorepo-release-config.test.ts'
               - 'scripts/tests/monorepo-release-config-oracle.test.ts'
               - 'scripts/tests/lib/release-preflight-tables.ts'
+              - 'scripts/lib/packaging/digest.ts'
+              - 'scripts/lib/worktree-claim/**'
+              - 'scripts/lib/link-or-copy*.ts'
+              - 'scripts/lib/extension/tree-copy.ts'
+              - 'scripts/tests/monorepo-release-process.test.ts'
+              - 'scripts/tests/monorepo-release-scratch.test.ts'
+              - 'scripts/tests/monorepo-release-mirror.test.ts'
+              - 'scripts/tests/monorepo-release-clone-modules.test.ts'
+              - 'scripts/tests/monorepo-release-flows-publish.test.ts'
+              - 'scripts/tests/monorepo-release-flows-rehearsal.test.ts'
+              - 'scripts/tests/monorepo-release-github.test.ts'
+              - 'scripts/tests/monorepo-release-github-sync.test.ts'
+              - 'scripts/tests/monorepo-release-main.test.ts'
+              - 'scripts/tests/monorepo-release-main-flow.test.ts'
+              - 'scripts/tests/monorepo-release-file-size.test.ts'
+              - 'scripts/tests/lib/release-flow-ctx.ts'
+              - 'scripts/tests/lib/release-github-fixture.ts'
+              - 'scripts/tests/lib/release-main-fixture.ts'
               - 'scripts/tests/fixtures/release/**'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.release-driver-modules-ts == 'true'
@@ -767,7 +785,7 @@ jobs:
         run: node scripts/lib/node-floor-guard.js
       - name: Test the TypeScript monorepo release driver modules
         if: steps.filter.outputs.release-driver-modules-ts == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts scripts/tests/monorepo-release-process.test.ts scripts/tests/monorepo-release-scratch.test.ts scripts/tests/monorepo-release-mirror.test.ts scripts/tests/monorepo-release-clone-modules.test.ts scripts/tests/monorepo-release-flows-publish.test.ts scripts/tests/monorepo-release-flows-rehearsal.test.ts scripts/tests/monorepo-release-github.test.ts scripts/tests/monorepo-release-github-sync.test.ts scripts/tests/monorepo-release-main.test.ts scripts/tests/monorepo-release-main-flow.test.ts scripts/tests/monorepo-release-file-size.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
