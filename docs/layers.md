@@ -65,7 +65,8 @@ and the `docs/index.json` schema — lives in
 `docs/index.json` is the generated, **committed** manifest of the public
 documentation subset. It is classified **core / `strict`** (upstream-owned;
 a local modification halts the sync). The generator
-`scripts/build-docs-index.sh` (also core/`strict`) derives it from the
+`scripts/build-docs-index.sh` and its TypeScript twin
+`scripts/build-docs-index.ts` (both core/`strict`) derive it from the
 per-page blocks; CI runs `bash scripts/build-docs-index.sh --check` to guard
 against drift. Org-overlay documentation under `docs/org/` is `excluded` from
 sync and is unioned into the organization's own site build under the same
