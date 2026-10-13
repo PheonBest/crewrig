@@ -60,12 +60,13 @@ jobs:
       - name: Install dependencies
         run: npm install --include=dev
 
+      - name: Floor guard accepts Node.js 24
+        run: node scripts/lib/node-floor-guard.js
+
       # The driver sets the release commit identity itself on GitHub
       # (scripts/lib/monorepo-release/identity.ts) and reads the
       # credential from the portable key RELEASE_TOKEN (spec 0213).
       - name: Run monorepo release
         env:
           RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          node scripts/lib/node-floor-guard.js
-          node scripts/monorepo-release.ts
+        run: node scripts/monorepo-release.ts

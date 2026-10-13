@@ -915,28 +915,23 @@ setup-modules-ts:
 
 release-driver-modules-ts:
   image: node:24
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends jq
   script:
     - "npm ci --omit=dev --workspaces=false"
     - "node scripts/lib/node-floor-guard.js"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts scripts/tests/monorepo-release-process.test.ts scripts/tests/monorepo-release-scratch.test.ts scripts/tests/monorepo-release-mirror.test.ts scripts/tests/monorepo-release-clone-modules.test.ts scripts/tests/monorepo-release-flows-publish.test.ts scripts/tests/monorepo-release-flows-rehearsal.test.ts scripts/tests/monorepo-release-github.test.ts scripts/tests/monorepo-release-github-sync.test.ts scripts/tests/monorepo-release-main.test.ts scripts/tests/monorepo-release-main-flow.test.ts scripts/tests/monorepo-release-file-size.test.ts scripts/tests/monorepo-release-extension-dirs.test.ts scripts/tests/release-rehearsal-diff.test.ts"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-process.test.ts scripts/tests/monorepo-release-scratch.test.ts scripts/tests/monorepo-release-mirror.test.ts scripts/tests/monorepo-release-clone-modules.test.ts scripts/tests/monorepo-release-flows-publish.test.ts scripts/tests/monorepo-release-flows-rehearsal.test.ts scripts/tests/monorepo-release-github.test.ts scripts/tests/monorepo-release-github-sync.test.ts scripts/tests/monorepo-release-main.test.ts scripts/tests/monorepo-release-main-flow.test.ts scripts/tests/monorepo-release-file-size.test.ts scripts/tests/monorepo-release-extension-dirs.test.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
         - "scripts/lib/monorepo-release/**"
         - "scripts/lib/release-notes/**"
         - "scripts/lib/sync-from-upstream/git.ts"
-        - "scripts/lib/monorepo-release-lib.sh"
         - "scripts/lib/paths.ts"
         - "scripts/lib/node-floor-guard.js"
         - "scripts/tests/monorepo-release-preflight.test.ts"
         - "scripts/tests/monorepo-release-credentials.test.ts"
         - "scripts/tests/monorepo-release-log-parse.test.ts"
-        - "scripts/tests/monorepo-release-differential.test.ts"
         - "scripts/tests/monorepo-release-prepare-cmd.test.ts"
         - "scripts/tests/monorepo-release-config.test.ts"
-        - "scripts/tests/monorepo-release-config-oracle.test.ts"
         - "scripts/tests/lib/release-preflight-tables.ts"
         - "scripts/lib/packaging/digest.ts"
         - "scripts/lib/worktree-claim/**"
@@ -961,23 +956,18 @@ release-driver-modules-ts:
         - "scripts/tests/fixtures/release/**"
         - "scripts/monorepo-release.ts"
         - "scripts/monorepo-release.sh"
-        - "scripts/tests/release-rehearsal-diff.test.ts"
-        - "scripts/tests/lib/release-rehearsal-diff.ts"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/lib/monorepo-release/**"
         - "scripts/lib/release-notes/**"
         - "scripts/lib/sync-from-upstream/git.ts"
-        - "scripts/lib/monorepo-release-lib.sh"
         - "scripts/lib/paths.ts"
         - "scripts/lib/node-floor-guard.js"
         - "scripts/tests/monorepo-release-preflight.test.ts"
         - "scripts/tests/monorepo-release-credentials.test.ts"
         - "scripts/tests/monorepo-release-log-parse.test.ts"
-        - "scripts/tests/monorepo-release-differential.test.ts"
         - "scripts/tests/monorepo-release-prepare-cmd.test.ts"
         - "scripts/tests/monorepo-release-config.test.ts"
-        - "scripts/tests/monorepo-release-config-oracle.test.ts"
         - "scripts/tests/lib/release-preflight-tables.ts"
         - "scripts/lib/packaging/digest.ts"
         - "scripts/lib/worktree-claim/**"
@@ -1002,15 +992,13 @@ release-driver-modules-ts:
         - "scripts/tests/fixtures/release/**"
         - "scripts/monorepo-release.ts"
         - "scripts/monorepo-release.sh"
-        - "scripts/tests/release-rehearsal-diff.test.ts"
-        - "scripts/tests/lib/release-rehearsal-diff.ts"
 
 packaging-modules-ts:
   image: node:24
   script:
     - "npm ci --omit=dev --workspaces=false"
     - "node scripts/lib/node-floor-guard.js"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/packaging-entries-differential.test.ts scripts/tests/release-sync-manifests.test.ts scripts/tests/packaging-release-differential.test.ts scripts/tests/packaging-release-golden-portable.test.ts"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/release-sync-manifests.test.ts scripts/tests/packaging-release-differential.test.ts scripts/tests/packaging-release-golden-portable.test.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
@@ -1023,7 +1011,6 @@ packaging-modules-ts:
         - "scripts/lib/node-floor-guard.js"
         - "scripts/tests/tar-writer.test.ts"
         - "scripts/tests/docs-index.test.ts"
-        - "scripts/tests/docs-index-differential.test.ts"
         - "scripts/tests/packaging-file-size.test.ts"
         - "scripts/tests/lib/tar-reader.ts"
         - "scripts/tests/lib/docs-index-trees.ts"
@@ -1047,7 +1034,6 @@ packaging-modules-ts:
         - "scripts/tests/packaging-release-package-cli.test.ts"
         - "scripts/tests/packaging-spawn-tiers.test.ts"
         - "scripts/tests/packaging-entries.test.ts"
-        - "scripts/tests/packaging-entries-differential.test.ts"
         - "scripts/tests/release-sync-manifests.test.ts"
         - "scripts/tests/lib/release-sandbox.ts"
         - "scripts/tests/lib/build-fixture-tree.ts"
@@ -1073,7 +1059,6 @@ packaging-modules-ts:
         - "scripts/lib/node-floor-guard.js"
         - "scripts/tests/tar-writer.test.ts"
         - "scripts/tests/docs-index.test.ts"
-        - "scripts/tests/docs-index-differential.test.ts"
         - "scripts/tests/packaging-file-size.test.ts"
         - "scripts/tests/lib/tar-reader.ts"
         - "scripts/tests/lib/docs-index-trees.ts"
@@ -1097,7 +1082,6 @@ packaging-modules-ts:
         - "scripts/tests/packaging-release-package-cli.test.ts"
         - "scripts/tests/packaging-spawn-tiers.test.ts"
         - "scripts/tests/packaging-entries.test.ts"
-        - "scripts/tests/packaging-entries-differential.test.ts"
         - "scripts/tests/release-sync-manifests.test.ts"
         - "scripts/tests/lib/release-sandbox.ts"
         - "scripts/tests/lib/build-fixture-tree.ts"
@@ -1192,6 +1176,8 @@ extension-render:
         - "scripts/migrate-extension.ts"
         - "scripts/tests/test-migrate-extension.sh"
         - "scripts/release-package-extension.sh"
+        - "scripts/release-package-extension.ts"
+        - "scripts/lib/packaging/**"
         - "scripts/lib/extension-install.sh"
         - "scripts/tests/test-release-package-extension.sh"
         - "scripts/tests/test-create-extension-combinations.sh"
@@ -1250,6 +1236,8 @@ extension-render:
         - "scripts/migrate-extension.ts"
         - "scripts/tests/test-migrate-extension.sh"
         - "scripts/release-package-extension.sh"
+        - "scripts/release-package-extension.ts"
+        - "scripts/lib/packaging/**"
         - "scripts/lib/extension-install.sh"
         - "scripts/tests/test-release-package-extension.sh"
         - "scripts/tests/test-create-extension-combinations.sh"
@@ -1545,28 +1533,44 @@ ci-parity:
         - "docs/ci-reference-format.md"
 
 docs-index:
-  image: debian:stable-slim
+  image: node:24
   cache:
     key:
       files:
         - "scripts/build-docs-index.sh"
+        - "scripts/build-docs-index.ts"
+        - "scripts/lib/docs-index/**"
+        - "scripts/lib/paths.ts"
+        - "scripts/lib/line-endings.ts"
+        - "scripts/lib/node-floor-guard.js"
         - "scripts/tests/test-build-docs-index.sh"
         - "docs/**"
         - "scripts/ci-cache-guard.sh"
     paths:
       - .ci-cache/
   script:
-    - "bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files \"scripts/build-docs-index.sh,scripts/tests/test-build-docs-index.sh,docs/**,scripts/ci-cache-guard.sh\" --key-env \"\" -- bash scripts/build-docs-index.sh --check"
-    - "bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files \"scripts/build-docs-index.sh,scripts/tests/test-build-docs-index.sh,docs/**,scripts/ci-cache-guard.sh\" --key-env \"\" -- bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-build-docs-index.sh"
+    - "node scripts/lib/node-floor-guard.js"
+    - "node scripts/build-docs-index.ts --check"
+    - "bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files \"scripts/build-docs-index.sh,scripts/build-docs-index.ts,scripts/lib/docs-index/**,scripts/lib/paths.ts,scripts/lib/line-endings.ts,scripts/lib/node-floor-guard.js,scripts/tests/test-build-docs-index.sh,docs/**,scripts/ci-cache-guard.sh\" --key-env \"\" -- bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-build-docs-index.sh"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
         - "scripts/build-docs-index.sh"
+        - "scripts/build-docs-index.ts"
+        - "scripts/lib/docs-index/**"
+        - "scripts/lib/paths.ts"
+        - "scripts/lib/line-endings.ts"
+        - "scripts/lib/node-floor-guard.js"
         - "scripts/tests/test-build-docs-index.sh"
         - "docs/**"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/build-docs-index.sh"
+        - "scripts/build-docs-index.ts"
+        - "scripts/lib/docs-index/**"
+        - "scripts/lib/paths.ts"
+        - "scripts/lib/line-endings.ts"
+        - "scripts/lib/node-floor-guard.js"
         - "scripts/tests/test-build-docs-index.sh"
         - "docs/**"
 
@@ -2729,7 +2733,7 @@ usage-record-schema:
         - "package-lock.json"
 
 release-notes:
-  image: node:22
+  image: node:24
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends jq
   script:
@@ -2739,8 +2743,12 @@ release-notes:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
         - "scripts/monorepo-release.sh"
+        - "scripts/monorepo-release.ts"
+        - "scripts/release-sync-manifests.ts"
+        - "scripts/release-package-extension.ts"
+        - "scripts/lib/monorepo-release/**"
+        - "scripts/lib/packaging/**"
         - "scripts/lib/release-notes/**"
-        - "scripts/lib/monorepo-release-lib.sh"
         - "scripts/tests/test-monorepo-release-notes.sh"
         - "scripts/lib/release-rehearse.mjs"
         - "scripts/lib/release-pr.ts"
@@ -2751,8 +2759,12 @@ release-notes:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/monorepo-release.sh"
+        - "scripts/monorepo-release.ts"
+        - "scripts/release-sync-manifests.ts"
+        - "scripts/release-package-extension.ts"
+        - "scripts/lib/monorepo-release/**"
+        - "scripts/lib/packaging/**"
         - "scripts/lib/release-notes/**"
-        - "scripts/lib/monorepo-release-lib.sh"
         - "scripts/tests/test-monorepo-release-notes.sh"
         - "scripts/lib/release-rehearse.mjs"
         - "scripts/lib/release-pr.ts"
@@ -3124,7 +3136,8 @@ release:
     - chmod +x /usr/local/bin/yq
   script:
     - "npm install --include=dev"
-    - "bash scripts/monorepo-release.sh"
+    - "node scripts/lib/node-floor-guard.js"
+    - "node scripts/monorepo-release.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$/'
 
@@ -3140,7 +3153,8 @@ release-rehearsal:
     - chmod +x /usr/local/bin/yq
   script:
     - "npm install --include=dev"
-    - "bash scripts/monorepo-release.sh"
+    - "node scripts/lib/node-floor-guard.js"
+    - "node scripts/monorepo-release.ts"
   rules:
     - when: manual
 
@@ -3166,7 +3180,11 @@ release-tests:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
         - "scripts/monorepo-release.sh"
-        - "scripts/lib/monorepo-release-lib.sh"
+        - "scripts/monorepo-release.ts"
+        - "scripts/release-sync-manifests.ts"
+        - "scripts/release-package-extension.ts"
+        - "scripts/lib/monorepo-release/**"
+        - "scripts/lib/packaging/**"
         - "scripts/lib/release-rehearse.mjs"
         - "scripts/lib/release-pr.ts"
         - "scripts/release-pr.ts"
@@ -3193,7 +3211,11 @@ release-tests:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/monorepo-release.sh"
-        - "scripts/lib/monorepo-release-lib.sh"
+        - "scripts/monorepo-release.ts"
+        - "scripts/release-sync-manifests.ts"
+        - "scripts/release-package-extension.ts"
+        - "scripts/lib/monorepo-release/**"
+        - "scripts/lib/packaging/**"
         - "scripts/lib/release-rehearse.mjs"
         - "scripts/lib/release-pr.ts"
         - "scripts/release-pr.ts"

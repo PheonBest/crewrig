@@ -16,7 +16,6 @@ const COVERED = {
   patterns: [
     /^scripts\/tests\/monorepo-release-[a-z-]+\.test\.ts$/,
     /^scripts\/tests\/lib\/release-[a-z-]+\.ts$/,
-    /^scripts\/tests\/release-rehearsal-diff\.test\.ts$/,
     /^scripts\/monorepo-release\.ts$/,
   ] as readonly RegExp[],
 };

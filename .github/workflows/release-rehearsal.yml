@@ -31,9 +31,10 @@ jobs:
       - name: Install dependencies
         run: npm install --include=dev
 
+      - name: Floor guard accepts Node.js 24
+        run: node scripts/lib/node-floor-guard.js
+
       - name: Rehearse monorepo release
         env:
           RELEASE_DRY_RUN: "true"
-        run: |
-          node scripts/lib/node-floor-guard.js
-          node scripts/monorepo-release.ts
+        run: node scripts/monorepo-release.ts
