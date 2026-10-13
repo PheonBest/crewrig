@@ -24,9 +24,6 @@ export const GITLAB_ENV = {
   CI_PIPELINE_SOURCE: "push",
 } as const;
 
-export const FORGE_ENV = { github: GITHUB_ENV, gitlab: GITLAB_ENV } as const;
-export type Forge = keyof typeof FORGE_ENV;
-
 /** Run `body` against a fresh sandbox and dispose it, whatever the outcome. */
 export function withSandbox(body: (sb: ReleaseSandbox) => void): void {
   const sb = createReleaseSandbox();

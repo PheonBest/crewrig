@@ -8,7 +8,6 @@ import { describe, it } from "node:test";
 
 import { forEachLeg } from "./lib/release-blackbox-legs.ts";
 import {
-  FORGE_ENV,
   GITHUB_ENV,
   GITLAB_ENV,
   findNamed,
@@ -215,7 +214,6 @@ describe("release driver black box: (e) credentials", () => {
       for (const [env, message] of cases) {
         withSandbox((sb) => assertRefused(sb, sb.run(leg, env), message));
       }
-      assert.ok(FORGE_ENV.github !== FORGE_ENV.gitlab);
     });
   });
 });
