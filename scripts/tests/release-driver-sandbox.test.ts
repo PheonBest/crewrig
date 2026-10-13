@@ -9,7 +9,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, it } from "node:test";
 
-import { createReleaseSandbox } from "./lib/release-driver-sandbox.ts";
+import { REPO } from "./lib/build-fixture-tree.ts";
+import { OFFLINE_API_URL, createReleaseSandbox } from "./lib/release-driver-sandbox.ts";
 
 const GITHUB_REHEARSAL = {
   GITHUB_ACTIONS: "true",
@@ -37,12 +38,47 @@ describe("release driver sandbox", () => {
     const env = sb.env();
     assert.deepEqual(
       Object.keys(env).filter((k) => /^(CI|NODE_TEST_CONTEXT|GITHUB_|GITLAB_|CI_)/.test(k)),
-      [],
+      ["GITHUB_API_URL"],
     );
     assert.ok(fs.existsSync(path.join(sb.originBare, "HEAD")), "origin is a bare repository");
     assert.equal(sb.env({ GITHUB_ACTIONS: "true" })["GITHUB_ACTIONS"], "true");
     sb.dispose();
     assert.equal(fs.existsSync(sb.root), false);
+  });
+
+  it("never lets a GitHub publish run reach a non-loopback host", () => {
+    const sb = createReleaseSandbox();
+    assert.equal(sb.env()["GITHUB_API_URL"], "http://127.0.0.1:1");
+    assert.equal(OFFLINE_API_URL, "http://127.0.0.1:1");
+    // An unreachable API and a sentinel token: the release-PR sync must fail fast and offline.
+    sb.scriptNpx({ "hello-world": ["Created tag hello-world-v9.9.9"] });
+    sb.scriptRehearse({
+      "hello-world": { released: true, version: "1.3.0", gitTag: "hello-world-v1.3.0" },
+      "second-ext": { released: false },
+    });
+    const res = sb.run("shell", {
+      GITHUB_ACTIONS: "true",
+      GITHUB_EVENT_NAME: "push",
+      GITHUB_REF: "refs/heads/main",
+      GITHUB_REPOSITORY: "acme/fixture",
+      GITHUB_SERVER_URL: "https://github.com",
+      GITHUB_TOKEN: "sentinel-ghs-offline",
+    });
+    assert.match(res.stdout, /RELEASE-FAILED release-pr step=pr/, res.stdout + res.stderr);
+    assert.equal(res.status, 1);
+    assert.ok(!(res.stdout + res.stderr).includes("sentinel-ghs-offline"));
+    sb.dispose();
+  });
+
+  it("mutates the sandbox copy only, and refuses a mutation that changes nothing", () => {
+    const sb = createReleaseSandbox();
+    const file = "scripts/lib/monorepo-release-lib.sh";
+    const original = fs.readFileSync(path.join(REPO, file), "utf8");
+    sb.mutate(file, (text) => text.replace("release_classify()", "release_classify_x()"));
+    assert.match(fs.readFileSync(path.join(sb.root, file), "utf8"), /release_classify_x\(\)/);
+    assert.equal(fs.readFileSync(path.join(REPO, file), "utf8"), original);
+    assert.throws(() => sb.mutate(file, (text) => text), /changed nothing/);
+    sb.dispose();
   });
 
   it("refuses outside a CI environment without any engine call", () => {

@@ -7,10 +7,14 @@
 // in their place, so no case can reach a network or a real forge.
 //
 // API: createReleaseSandbox(opts?) -> { root, originBare, captureDir, env(extra), run(entry,
-// extraEnv?), readJsonl(name), scriptNpx, scriptRehearse, dispose }. The child environment starts
+// extraEnv?), readJsonl(name), scriptNpx, scriptRehearse, mutate(file, fn), dispose }. The child environment starts
 // EMPTY: PATH (stubs first, then the parent PATH read before narrowing), an isolated HOME and git
-// config, and CAPTURE_DIR. No CI, GITHUB_*, GITLAB_*, CI_* or credential variable survives from
-// the parent; each case adds its own through `extraEnv`.
+// config, CAPTURE_DIR and GITHUB_API_URL pointing at a closed loopback port: a GitHub publish run
+// reaches the release-PR sync, which would otherwise call the real API (an earlier run sent a
+// sentinel token there). No other CI, GITHUB_*, GITLAB_*, CI_* or credential variable survives
+// from the parent; each case adds its own through `extraEnv` (the flows start a forge stub and
+// override the API URL). The driver reads no GitLab API URL: only the release-PR sync calls a
+// forge API, and it is GitHub-only.
 
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
@@ -43,6 +47,12 @@ export interface ReleaseSandbox {
   readJsonl(name: string): Record<string, unknown>[];
   scriptNpx(script: NpxScript): void;
   scriptRehearse(script: RehearseScript): void;
+  /**
+   * Rewrite one file of the sandbox's own copy (a path relative to `root`) so a case can prove the
+   * oracle goes red on a broken driver. Throws when `fn` leaves the content unchanged: a mutation
+   * that did not apply would "prove" nothing.
+   */
+  mutate(file: string, fn: (content: string) => string): void;
   dispose(): void;
 }
 
@@ -51,6 +61,9 @@ after(() => {
   for (const dir of live) fs.rmSync(dir, { recursive: true, force: true });
   live.clear();
 });
+
+/** Port 1 is never listened on: connecting is refused at once, on this machine only. */
+export const OFFLINE_API_URL = "http://127.0.0.1:1";
 
 const SHELL_ENTRY = path.join("scripts", "monorepo-release.sh");
 const TS_ENTRY = path.join("scripts", "monorepo-release.ts");
@@ -131,6 +144,8 @@ export function createReleaseSandbox(opts: ReleaseSandboxOptions = {}): ReleaseS
     GIT_CONFIG_GLOBAL: path.join(home, "gitconfig"),
     GIT_CONFIG_SYSTEM: os.devNull,
     CAPTURE_DIR: captureDir,
+    // Closed loopback port: an unscripted GitHub publish fails offline instead of reaching the API.
+    GITHUB_API_URL: OFFLINE_API_URL,
   };
   if (process.platform === "win32" && process.env["SystemRoot"] !== undefined) {
     base["SystemRoot"] = process.env["SystemRoot"];
@@ -195,6 +210,13 @@ export function createReleaseSandbox(opts: ReleaseSandboxOptions = {}): ReleaseS
     },
     scriptNpx: (script) => writeScript(captureDir, "npx", script),
     scriptRehearse: (script) => writeScript(captureDir, "rehearse", script),
+    mutate(file, fn) {
+      const target = path.join(root, file);
+      const before = fs.readFileSync(target, "utf8");
+      const after = fn(before);
+      if (after === before) throw new Error(`mutate(${file}): the mutation changed nothing`);
+      fs.writeFileSync(target, after);
+    },
     dispose() {
       tree.dispose();
       fs.rmSync(aux, { recursive: true, force: true });

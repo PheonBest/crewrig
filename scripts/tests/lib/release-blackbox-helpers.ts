@@ -12,8 +12,6 @@ export const GITHUB_ENV = {
   GITHUB_ACTIONS: "true",
   GITHUB_SERVER_URL: "https://github.com",
   GITHUB_REPOSITORY: "acme/crewrig",
-  // The release-PR sync of a GitHub publish calls this API: a closed local port keeps it offline.
-  GITHUB_API_URL: "http://127.0.0.1:1",
 } as const;
 
 export const GITLAB_ENV = {
