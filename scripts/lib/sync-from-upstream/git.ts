@@ -15,12 +15,15 @@ export interface GitResult {
 export interface GitOptions {
   /** Working directory; the process cwd when absent (the shell's no-`-C` calls). */
   readonly cwd?: string;
+  /** The whole child environment (spawn semantics); this process's own when absent. */
+  readonly env?: Readonly<Record<string, string | undefined>>;
 }
 
 /** Run git, capturing both streams; never throws. A spawn failure reports status 127. */
 export function git(args: readonly string[], options: GitOptions = {}): GitResult {
   const result = spawnSync("git", [...args], {
     cwd: options.cwd,
+    env: options.env === undefined ? undefined : { ...options.env },
     encoding: "utf8",
     maxBuffer: 1 << 28,
   });
