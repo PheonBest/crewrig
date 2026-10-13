@@ -142,14 +142,15 @@ chain keeps working when it next runs on `main`.
 11. **Archive determinism.** The writer SHALL emit entries in byte order of their
     path; directories before their contents; fixed modification time, owner and group
     (zero, empty names); mode `0755` when any execute bit is set and `0644` otherwise
-    (directories `0755`); regular files, directories and symbolic links only (any
-    other file type fails the run naming the path); a PAX extended header for a path
+    (directories `0755`); regular files and directories only (any other file type,
+    a symbolic link included, fails the run naming the path, deviation (a)); a PAX extended header for a path
     that does not fit the ustar name and prefix fields; the gzip header with a zero
-    time and the Unix operating-system byte, whatever platform runs it. On a platform
+    time, and byte 9 (the operating-system byte) set to the Unix value after
+    compression, whatever platform runs it. On a platform
     that reports no execute bit (Windows) a file SHALL get mode `0755` when its first
-    two bytes are `#!`. A tree entry that is neither a regular file nor a directory,
-    a symbolic link included, SHALL fail the run naming its path, so that the archive
-    path never creates or follows a link (parent requirement 21). Two runs on the same
+    two bytes are `#!`. The refusal of a symbolic link keeps the archive path from
+    creating or following a link (parent requirement 21); the real build trees hold
+    none, which the pre-switch proof of requirement 26 asserts. Two runs on the same
     tree SHALL yield the same decompressed stream on every platform.
 
 12. **Single and every extension.** `scripts/package-extension.ts` SHALL read `EXT`
@@ -207,7 +208,7 @@ chain keeps working when it next runs on `main`.
     `<v>` is the engine's own `${nextRelease.version}` template or, in the
     rehearsal, the validated literal version. The generation of the configuration
     SHALL refuse a `<root>` or `<out>` that holds a double quote, a percent sign, an
-    exclamation mark, a dollar sign or a backtick. The synchronisation SHALL rewrite
+    exclamation mark, a dollar sign, a backtick, a backslash or a line break. The synchronisation SHALL rewrite
     `version` of `package.json` and `extension.json` of the current directory when
     each exists, two-space indented with a trailing line feed, SHALL exit non-zero
     when a rewrite fails, and SHALL succeed in a directory with no `extension.json`.
@@ -253,21 +254,41 @@ chain keeps working when it next runs on `main`.
 
 22. **The sourced library.** `scripts/lib/monorepo-release-lib.sh` is a sourced
     library; its oracle is the black-box tests of the driver. The tests that source
-    it — `scripts/tests/test-monorepo-release.sh` and the in-process part of
-    `test-monorepo-release-engine.sh` (the golden comparison of
-    `emit_releaserc github publish`) — SHALL be retired in the switch pull
+    it — `scripts/tests/test-monorepo-release.sh` (all of it but groups (f) and the
+    workflow reads of (g), which read no library and carry over) and the in-process
+    part of `test-monorepo-release-engine.sh` (the golden comparison of
+    `emit_releaserc github publish`, case 11g) — SHALL be retired in the switch pull
     request under the first bounded exception of parent requirement 13 (Decision
-    D3). Before that pull request, every behaviour they assert SHALL be covered by an
+    D3); the black-box remainder of the engine suite keeps its assertions unchanged.
+    Before that pull request every behaviour they assert SHALL be covered by an
     unchanged black-box test of the driver that runs the shell driver and then the
-    TypeScript one: a suite that runs the driver in a sandbox with a capturing `npx`
-    stub and a capturing `release-rehearse.mjs` stub, which records the generated
-    configuration, the environment the engine would see and the exit status, and
-    reaches the classification, the credential rule, the failed-step and created-tag
-    parsing and the version check through the driver's own output lines. The PLAN SHALL
-    list each retired group (a)-(g) and its substitute. A property no driver run can
-    reach SHALL be replaced by a `node:test` unit test of the module, named in the
-    PLAN, and SHALL be flagged for the owner. The shell library SHALL NOT remain as
-    a shim.
+    TypeScript one: a TypeScript suite that runs the driver in a sandbox with a
+    capturing `npx` stub and a capturing `release-rehearse.mjs` stub, recording the
+    generated configuration, the environment the engine would see and the exit status.
+    The retired groups, named as in the header of `test-monorepo-release.sh`, and
+    their substitutes are:
+    (a) each forge-detection refusal — the driver's refusal output and exit 2, with no
+    stub call and no configuration written; (b) the `RELEASE_DRY_RUN` and `DRY_RUN`
+    matrix and the GitLab merge-request and tag refusal — the driver's output and exit
+    status, and the mode seen through the stubs; (c) the GitHub publish configuration
+    against its golden, and the identity defaults and override — the configuration the
+    `npx` stub captures and the `GIT_*` variables it sees; (d) the GitHub and GitLab
+    structure, publish and rehearsal — the configurations the stubs capture in each
+    forge and mode; (e) the credential rules — a driver run with every credential-named
+    variable set, the engine stub's environment and the output lines, and the
+    `release-rehearse.mjs` refusal, whose file is unchanged and keeps its own
+    assertion; (f) the GitLab document carries no `extensions install` command — a
+    text read of a document, kept as is; (g) the classification table, the `prepare`
+    configuration, the release-PR branch name and the manifest synchronisation —
+    the rehearsal stub's answers against the driver's `UNCHANGED`, `PENDING` and
+    publish lines, the branch pushed to the sandbox origin and the manifests the
+    prepare commands rewrite, run for real; the workflow-permission reads of (g) are
+    kept as is; and the engine suite's case 11g — the captured configuration against
+    the golden of requirement 15. The parsers of the failed step, the created tag and
+    the version check are reached through the same lines. Every group is thus covered
+    at the consumer level; no unit test stands in for a group. The PLAN SHALL name
+    each substitute test by file and case. The shell library SHALL NOT remain as a
+    shim.
 
 23. **Static reads.** Every file that reads the text of a migrated script — Bash
     suites that `grep` or `source` it, `Taskfile.yml` `cmd:` entries, workflow and
@@ -325,7 +346,11 @@ chain keeps working when it next runs on `main`.
     `docs/cli-matrix.md`, `DEVELOPMENT.md`, `docs/publication-contract.md`,
     `docs/layers.md`, `docs/github-release-pr.md`, `docs/gitlab-release-publishing.md`
     and `docs/version-bump-convention.md`. A job or a trigger that lists the removed
-    library SHALL list the new modules instead.
+    library SHALL list the new modules instead, a path trigger or cache key that names
+    a migrated script SHALL also name its entry and `scripts/lib/**` modules, and a
+    job that runs a migrated entry SHALL provide Node.js 24 and the dependency step
+    (the `docs-index` job has neither today and the `release-notes` job runs Node.js
+    22).
 
 29. **Oracle mutation.** A suite that mutates the shell implementation in a sandbox
     SHALL also mutate its TypeScript twin, in a sandbox with `.git`, the root
@@ -345,8 +370,7 @@ chain keeps working when it next runs on `main`.
 
 31. **Deviations.** The only differences from the shell, in standard output, standard
     error and files written, SHALL be: (a) the release archive's bytes: sorted
-    entries, fixed time, owner and group, normalised modes, a fixed gzip header,
-    where the shell stores the filesystem's order, times and modes with the host
+    entries, fixed time, owner and group, normalised modes, a fixed gzip header, the refusal of a symbolic link, where the shell stores the filesystem's order, times and modes with the host
     `tar`'s format (requirements 10, 11 and 25); (b) the two `prepareCmd` strings of
     the engine configuration, which no longer name `bash` or `jq`, and the manifest
     synchronisation formatting of requirement 16; (c) the body of the drift report of
@@ -357,7 +381,9 @@ chain keeps working when it next runs on `main`.
     when `node` is absent or older than the floor (spec 0255 requirement 25); (g) one
     notice on standard error when a link in the release clone became a copy
     (parent requirement 21); (h) a prepare command that quotes its paths, and the refusal of a root or output path
-    holding one of the characters of requirement 16, where the shell leaves a path
+    holding one of the characters of requirement 16, a failed manifest rewrite that now
+    stops the run before packaging in publish and rehearsal modes (the shell packaged
+    regardless), where the shell leaves a path
     unquoted and breaks on a space. Letters (i) onward are reserved for what the
     differential test finds, each added through a delta of this spec.
 
