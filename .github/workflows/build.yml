@@ -772,6 +772,51 @@ jobs:
         if: failure()
         uses: ./.github/actions/cancel-on-failure
 
+  # Spec 0257 (ticket #1336), PR 2: the deterministic tar.gz archive writer and the documentation
+  # index modules. The differential suite spawns `bash`, the archive suite cross-checks with `tar`
+  # and `gzip`; all three exist on the runner.
+  packaging-modules-ts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            packaging-modules-ts:
+              - 'scripts/lib/packaging/**'
+              - 'scripts/lib/docs-index/**'
+              - 'scripts/build-docs-index.sh'
+              - 'scripts/lib/paths.ts'
+              - 'scripts/lib/line-endings.ts'
+              - 'scripts/lib/tmp-file.ts'
+              - 'scripts/lib/extension/types.ts'
+              - 'scripts/lib/node-floor-guard.js'
+              - 'scripts/tests/tar-writer.test.ts'
+              - 'scripts/tests/docs-index.test.ts'
+              - 'scripts/tests/docs-index-differential.test.ts'
+              - 'scripts/tests/packaging-file-size.test.ts'
+              - 'scripts/tests/lib/tar-reader.ts'
+              - 'scripts/tests/lib/docs-index-trees.ts'
+              - 'scripts/tests/lib/extension-trees.ts'
+      - uses: actions/setup-node@v4
+        if: steps.filter.outputs.packaging-modules-ts == 'true'
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install production dependencies
+        if: steps.filter.outputs.packaging-modules-ts == 'true'
+        run: npm ci --omit=dev --workspaces=false
+      - name: Floor guard accepts Node.js 24
+        if: steps.filter.outputs.packaging-modules-ts == 'true'
+        run: node scripts/lib/node-floor-guard.js
+      - name: Test the TypeScript archive writer and documentation index modules
+        if: steps.filter.outputs.packaging-modules-ts == 'true'
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
+
   # Spec 0250 R3, R27: the build entry prints nothing on the oldest Node.js 24
   # release. No path filter, like `mempalace-transcript-node-24-0`.
   build-components-ts-node-24-0:

@@ -957,6 +957,48 @@ release-driver-modules-ts:
         - "scripts/tests/lib/release-preflight-tables.ts"
         - "scripts/tests/fixtures/release/**"
 
+packaging-modules-ts:
+  image: node:24
+  script:
+    - "npm ci --omit=dev --workspaces=false"
+    - "node scripts/lib/node-floor-guard.js"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
+      changes:
+        - "scripts/lib/packaging/**"
+        - "scripts/lib/docs-index/**"
+        - "scripts/build-docs-index.sh"
+        - "scripts/lib/paths.ts"
+        - "scripts/lib/line-endings.ts"
+        - "scripts/lib/tmp-file.ts"
+        - "scripts/lib/extension/types.ts"
+        - "scripts/lib/node-floor-guard.js"
+        - "scripts/tests/tar-writer.test.ts"
+        - "scripts/tests/docs-index.test.ts"
+        - "scripts/tests/docs-index-differential.test.ts"
+        - "scripts/tests/packaging-file-size.test.ts"
+        - "scripts/tests/lib/tar-reader.ts"
+        - "scripts/tests/lib/docs-index-trees.ts"
+        - "scripts/tests/lib/extension-trees.ts"
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
+      changes:
+        - "scripts/lib/packaging/**"
+        - "scripts/lib/docs-index/**"
+        - "scripts/build-docs-index.sh"
+        - "scripts/lib/paths.ts"
+        - "scripts/lib/line-endings.ts"
+        - "scripts/lib/tmp-file.ts"
+        - "scripts/lib/extension/types.ts"
+        - "scripts/lib/node-floor-guard.js"
+        - "scripts/tests/tar-writer.test.ts"
+        - "scripts/tests/docs-index.test.ts"
+        - "scripts/tests/docs-index-differential.test.ts"
+        - "scripts/tests/packaging-file-size.test.ts"
+        - "scripts/tests/lib/tar-reader.ts"
+        - "scripts/tests/lib/docs-index-trees.ts"
+        - "scripts/tests/lib/extension-trees.ts"
+
 extension-render:
   image: node:24
   before_script:

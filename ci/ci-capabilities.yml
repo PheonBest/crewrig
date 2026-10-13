@@ -1080,6 +1080,58 @@ capabilities:
       - node scripts/lib/node-floor-guard.js
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts
 
+  # Spec 0257 (ticket #1336), PR 2: the deterministic tar.gz archive writer and the documentation
+  # index modules, with their node:test suites. Dark modules until the entries switch over, so no
+  # entry twin on Node.js 24.0.0 exists yet. The differential suite spawns `bash` (the shell it
+  # compares against) and the archive suite cross-checks with `tar` and `gzip`; all three are on
+  # the runners and the suites skip themselves when one is absent.
+  - id: packaging-modules-ts
+    name: "Run the TypeScript archive writer and documentation index module suites"
+    trigger:
+      - on: pull-request
+        branches: [main, "release/**"]
+        paths:
+          - "scripts/lib/packaging/**"
+          - "scripts/lib/docs-index/**"
+          - "scripts/build-docs-index.sh"
+          - "scripts/lib/paths.ts"
+          - "scripts/lib/line-endings.ts"
+          - "scripts/lib/tmp-file.ts"
+          - "scripts/lib/extension/types.ts"
+          - "scripts/lib/node-floor-guard.js"
+          - "scripts/tests/tar-writer.test.ts"
+          - "scripts/tests/docs-index.test.ts"
+          - "scripts/tests/docs-index-differential.test.ts"
+          - "scripts/tests/packaging-file-size.test.ts"
+          - "scripts/tests/lib/tar-reader.ts"
+          - "scripts/tests/lib/docs-index-trees.ts"
+          - "scripts/tests/lib/extension-trees.ts"
+      - on: push
+        branches: [main, "release/**"]
+        paths:
+          - "scripts/lib/packaging/**"
+          - "scripts/lib/docs-index/**"
+          - "scripts/build-docs-index.sh"
+          - "scripts/lib/paths.ts"
+          - "scripts/lib/line-endings.ts"
+          - "scripts/lib/tmp-file.ts"
+          - "scripts/lib/extension/types.ts"
+          - "scripts/lib/node-floor-guard.js"
+          - "scripts/tests/tar-writer.test.ts"
+          - "scripts/tests/docs-index.test.ts"
+          - "scripts/tests/docs-index-differential.test.ts"
+          - "scripts/tests/packaging-file-size.test.ts"
+          - "scripts/tests/lib/tar-reader.ts"
+          - "scripts/tests/lib/docs-index-trees.ts"
+          - "scripts/tests/lib/extension-trees.ts"
+    portability: portable
+    requires:
+      runtime: node@24
+    command:
+      - npm ci --omit=dev --workspaces=false
+      - node scripts/lib/node-floor-guard.js
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts
+
   # Spec 0254 R23: the extension builders' copy of the Windows template (windows-build-components).
   # The production dependencies are installed first, the floor guard runs, then
   # scripts/tests/lib/windows-extension-proof.ts builds every golden subject with the TypeScript
