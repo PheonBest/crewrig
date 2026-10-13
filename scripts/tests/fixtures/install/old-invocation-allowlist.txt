@@ -34,7 +34,6 @@ ci/ci-capabilities.yml
 .github/workflows/build.yml
 
 # Shell scripts that remain until their own migration row and comment on the shim path.
-scripts/release-package-extension.sh
 scripts/lib/extension-manifest.sh
 
 # Descriptive data in scripts/lib JSON tables: a `_readme` text and per-key evidence citations

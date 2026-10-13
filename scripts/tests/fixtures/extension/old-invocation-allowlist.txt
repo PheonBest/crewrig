@@ -18,7 +18,6 @@ scripts/migrate-extension.sh
 scripts/check-extension-manifest-version.sh
 scripts/check-extension-pivot.sh
 scripts/create-extension.sh
-scripts/release-package-extension.sh
 
 # Bash tests that have not migrated: each deliberately drives the shim or the shell oracle.
 scripts/tests/test-build-extension.sh
