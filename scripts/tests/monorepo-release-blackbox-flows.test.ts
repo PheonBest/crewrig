@@ -107,10 +107,13 @@ describe("monorepo release driver, black box: group (g) GitHub release-PR flow",
         assert.ok(message.startsWith("🔖 hello-world-v${nextRelease.version}"), message);
         assert.ok(!message.includes("[skip ci]"), message);
         const prepareCmd = String(pluginOf(config, "@semantic-release/exec")?.["prepareCmd"]);
-        // The manifest sync is still there: `jq` in the shell, the TypeScript sync on the ts leg
-        // (spec 0257 R31 (b): the two prepareCmd strings differ by design).
-        const sync = leg === "shell" ? /jq --arg v/ : /release-sync-manifests\.ts/;
-        assert.match(prepareCmd, sync, "the manifests are still synchronised");
+        // The manifest sync is still there: since the switch both legs run the TypeScript sync
+        // (the shell leg is the shim of the same driver).
+        assert.match(
+          prepareCmd,
+          /release-sync-manifests\.ts/,
+          "the manifests are still synchronised",
+        );
         assert.ok(!prepareCmd.includes("release-package-extension"), prepareCmd);
         assert.ok(!prepareCmd.includes("--out"), prepareCmd);
       } finally {

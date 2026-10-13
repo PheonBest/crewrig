@@ -1,9 +1,9 @@
-// packaging-release-differential.test.ts — the entry-level differential proof and goldens (spec
-// 0257 R24, R25). Each case runs through the ENTRIES as black boxes, a fresh sandbox per leg: the
-// shell leg `LC_ALL=C bash scripts/<x>.sh` and the TypeScript leg `node scripts/<x>.ts`. The
-// TypeScript leg is ALWAYS compared to the stored goldens, so the proof survives the shell
-// becoming a shim; when bash, jq and tar exist the legs are compared too, and every difference
-// must match a tagged rule of packaging-release-deviations.ts or the test fails naming it.
+// packaging-release-differential.test.ts — the entry-level proof against goldens (spec 0257 R24,
+// R25). Each case runs through the ENTRIES as black boxes, a fresh sandbox per leg: the shell leg
+// `LC_ALL=C bash scripts/<x>.sh` and the TypeScript leg `node scripts/<x>.ts`. The TypeScript leg
+// is compared to the stored goldens, which were generated from the original shell scripts before
+// the switch. Since the switch the `.sh` leg is a test of the shim: it forwards the entry's output
+// unchanged, so it must show no difference and match the same goldens.
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";

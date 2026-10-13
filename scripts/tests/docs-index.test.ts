@@ -1,5 +1,5 @@
 // docs-index.test.ts — the documentation index modules, run in process on temp trees (spec 0257
-// R5-R8). The shell/TypeScript differential lives in docs-index-differential.test.ts.
+// R5-R8). The entry-level proof against the goldens lives in packaging-release-differential.test.ts.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
