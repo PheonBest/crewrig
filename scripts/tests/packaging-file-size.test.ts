@@ -12,10 +12,10 @@ const REPO = path.resolve(import.meta.dirname, "..", "..");
 const LIMIT = 300;
 
 const COVERED = {
-  directories: ["scripts/lib/packaging"],
+  directories: ["scripts/lib/packaging", "scripts/lib/docs-index"],
   patterns: [
-    /^scripts\/tests\/(tar-writer|packaging-file-size)\.test\.ts$/,
-    /^scripts\/tests\/lib\/tar-reader\.ts$/,
+    /^scripts\/tests\/(tar-writer|packaging-file-size|docs-index|docs-index-differential)\.test\.ts$/,
+    /^scripts\/tests\/lib\/(tar-reader|docs-index-trees)\.ts$/,
   ] as readonly RegExp[],
 };
 
