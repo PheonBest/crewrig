@@ -225,4 +225,23 @@ describe("releasePublish files and environment", () => {
     assert.equal(seen.length, 1);
     assert.equal(h.stdout.includes("--- Analyzing: beta ---"), false);
   });
+  it("reports nothing for an engine child killed by the driver's own signal", async () => {
+    let signalled = false;
+    const h = setup({ aborted: () => signalled });
+    h.addExtension("core", "alpha");
+    h.addExtension("core", "beta");
+    const deps: FlowDeps = {
+      ...fakeDeps({}),
+      runSemanticRelease: () => {
+        signalled = true;
+        return Promise.resolve({ status: 143, output: failed("verifyConditions", "x") });
+      },
+    };
+    await releasePublish(h.ctx, undefined, deps);
+    assert.equal(
+      h.stdout.some((line) => line.startsWith("RELEASE-FAILED")),
+      false,
+    );
+    assert.equal(h.ctx.errors, 0);
+  });
 });

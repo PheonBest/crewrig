@@ -141,6 +141,46 @@ export async function spawnCapture(
   return { status, stdout };
 }
 
+/**
+ * Run `command` with the driver's own stdio and resolve to its exit status (`128 + n` when
+ * signalled, 127 when it cannot start). An argv runs without a shell; a string is the one input
+ * that asks for the platform shell (the exec plugin's own command line). The child is registered
+ * like the piped ones, so a termination signal stops it before the scratch directory, which may be
+ * its working directory, is removed.
+ */
+export function spawnInherit(
+  command: string | readonly string[],
+  opts: SpawnOptions,
+): Promise<number> {
+  const shell = typeof command === "string";
+  const argv = shell ? [command] : command;
+  const launch = shell ? { file: command, args: [], verbatim: false } : plan(argv, opts);
+  if ("error" in launch) {
+    process.stderr.write(`${launch.error}\n`);
+    return Promise.resolve(127);
+  }
+  return new Promise((resolve) => {
+    const posix = (opts.platform ?? process.platform) !== "win32";
+    const child = spawn(launch.file, [...launch.args], {
+      cwd: opts.cwd,
+      env: { ...opts.env },
+      stdio: "inherit",
+      shell,
+      detached: posix,
+      windowsVerbatimArguments: launch.verbatim,
+    });
+    running.add(child);
+    child.once("error", () => {
+      running.delete(child);
+      resolve(127);
+    });
+    child.once("close", (code, signal) => {
+      running.delete(child);
+      resolve(exitStatus(code, signal));
+    });
+  });
+}
+
 /** Terminate every running child (and, on POSIX, its process group). */
 export function killAll(signal: NodeJS.Signals = "SIGTERM"): void {
   for (const child of running) {

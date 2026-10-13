@@ -141,4 +141,43 @@ describe("releaseGithub environment and abort", () => {
     assert.equal(h.stdout.includes("--- Analyzing: beta ---"), false);
     assert.deepEqual(sync, []);
   });
+  it("reports nothing for an engine child killed by the driver's own signal", async () => {
+    let signalled = false;
+    const { h, deps, sync } = setup({ alpha: {}, beta: {} }, { aborted: () => signalled });
+    await releaseGithub(h.ctx, {
+      ...deps,
+      runRehearse: () => {
+        signalled = true;
+        return Promise.resolve({ status: 143, json: "" });
+      },
+    });
+    assert.equal(
+      h.stdout.some((line) => line.startsWith("RELEASE-FAILED")),
+      false,
+    );
+    assert.equal(h.ctx.errors, 0);
+    assert.deepEqual(sync, []);
+  });
+
+  it("reports nothing for a sync child killed by the driver's own signal", async () => {
+    let signalled = false;
+    const { h, deps } = setup(
+      { alpha: { classify: { json: NEXT }, prepare: { json: NEXT } } },
+      {
+        aborted: () => signalled,
+      },
+    );
+    await releaseGithub(h.ctx, {
+      ...deps,
+      runReleasePr: () => {
+        signalled = true;
+        return Promise.resolve(143);
+      },
+    });
+    assert.equal(
+      h.stdout.some((line) => line.startsWith("RELEASE-FAILED")),
+      false,
+    );
+    assert.equal(h.ctx.errors, 0);
+  });
 });

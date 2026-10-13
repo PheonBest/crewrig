@@ -61,21 +61,16 @@ export function installCleanup(scratch: Scratch, hooks: CleanupHooks = {}): () =
 
 /**
  * What `release_publish` leaves behind and removes at its end: the whole `dist/` when the run
- * created it, otherwise only this run's `dist/release/<ext>` directories and noted files, then
+ * created it, otherwise only this run's `dist/release/<ext>` directories and releaserc files, then
  * `dist/release` itself when that left it empty.
  */
 export class DistLedger {
   #distDir = "";
   #preexisted = false;
-  readonly #created: string[] = [];
 
   begin(distDir: string): void {
     this.#distDir = distDir;
     this.#preexisted = fs.existsSync(distDir);
-  }
-
-  noteCreated(created: string): void {
-    this.#created.push(created);
   }
 
   cleanup(extNames: readonly string[]): void {
@@ -85,9 +80,12 @@ export class DistLedger {
       return;
     }
     const release = path.join(this.#distDir, "release");
-    for (const name of extNames)
+    // The releaserc of an extension is normally removed right after its engine run; it is still
+    // here when the run was cut short by a throw.
+    for (const name of extNames) {
       fs.rmSync(path.join(release, name), { recursive: true, force: true });
-    for (const created of this.#created) fs.rmSync(created, { recursive: true, force: true });
+      fs.rmSync(path.join(release, `${name}.releaserc.json`), { force: true });
+    }
     try {
       fs.rmdirSync(release);
     } catch {

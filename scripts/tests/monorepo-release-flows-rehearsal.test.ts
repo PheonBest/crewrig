@@ -47,9 +47,17 @@ afterEach(() => harness?.dispose());
 
 function setup(
   verdicts: Record<string, Verdict>,
-  extra: { outcomes?: LinkOutcome[]; env?: Record<string, string | undefined> } = {},
+  extra: {
+    outcomes?: LinkOutcome[];
+    env?: Record<string, string | undefined>;
+    aborted?: () => boolean;
+  } = {},
 ): Run {
-  const h = makeFlowHarness({ forge: "github", env: extra.env ?? {} });
+  const h = makeFlowHarness({
+    forge: "github",
+    env: extra.env ?? {},
+    ...(extra.aborted === undefined ? {} : { aborted: extra.aborted }),
+  });
   harness = h;
   const engine: RehearseOptions[] = [];
   const mirror: Array<{ forgeUrl: string; dir: string }> = [];
@@ -215,5 +223,39 @@ describe("releaseRehearse", () => {
     const without = setup({ alpha: {} });
     await releaseRehearse(without.h.ctx, without.deps);
     assert.deepEqual(without.h.stderr, []);
+  });
+  it("reports nothing for an engine child killed by the driver's own signal", async () => {
+    let signalled = false;
+    const { h, deps } = setup({ alpha: {}, beta: {} }, { aborted: () => signalled });
+    await releaseRehearse(h.ctx, {
+      ...deps,
+      runRehearse: () => {
+        signalled = true;
+        return Promise.resolve({ status: 143, json: "" });
+      },
+    });
+    assert.equal(
+      h.stdout.some((line) => line.startsWith("RELEASE-FAILED")),
+      false,
+    );
+    assert.equal(h.stdout.includes("--- Rehearsing: beta ---"), false);
+    assert.equal(h.ctx.errors, 0);
+  });
+
+  it("reports nothing for a packaging child killed by the driver's own signal", async () => {
+    let signalled = false;
+    const { h, deps } = setup({ alpha: { json: RELEASED } }, { aborted: () => signalled });
+    await releaseRehearse(h.ctx, {
+      ...deps,
+      prepareCommand: () => {
+        signalled = true;
+        return `node -e "process.exit(143)"`;
+      },
+    });
+    assert.equal(
+      h.stdout.some((line) => line.startsWith("RELEASE-FAILED") || line.startsWith("REHEARSAL")),
+      false,
+    );
+    assert.equal(h.ctx.errors, 0);
   });
 });

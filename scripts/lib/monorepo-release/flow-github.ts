@@ -155,6 +155,7 @@ export async function releaseGithub(ctx: ReleaseCtx, deps: FlowDeps = realDeps):
     ctx.out(`--- Analyzing: ${ext} ---`);
     const json = path.join(r, `${ext}.classify.json`);
     const status = await engineRun(ctx, deps, eng, dir, "rehearsal", json);
+    if (ctx.aborted()) break;
     const verdict = status === 0 ? readVerdict(json) : undefined;
     if (verdict === undefined) {
       ctx.out(`RELEASE-FAILED ${ext} step=engine`);
@@ -187,6 +188,7 @@ export async function releaseGithub(ctx: ReleaseCtx, deps: FlowDeps = realDeps):
     ctx.out(`--- Preparing the release PR: ${ext} ---`);
     const json = path.join(r, `${ext}.prepare.json`);
     const status = await engineRun(ctx, deps, eng, dir, "prepare", json);
+    if (ctx.aborted()) break;
     const verdict = status === 0 ? readVerdict(json) : undefined;
     if (verdict === undefined || field(verdict, "released") !== "true") {
       ctx.out(
@@ -232,6 +234,7 @@ export async function releaseGithub(ctx: ReleaseCtx, deps: FlowDeps = realDeps):
     env: ctx.env,
     scriptsDir: ctx.scriptsDir,
   });
+  if (ctx.aborted()) return;
   if (synced !== 0) {
     ctx.out("RELEASE-FAILED release-pr step=pr");
     ctx.errors = 1;

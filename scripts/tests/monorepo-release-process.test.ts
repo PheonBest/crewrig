@@ -9,7 +9,7 @@ import path from "node:path";
 import { describe, it } from "node:test";
 
 import { runRehearse, runSemanticRelease } from "../lib/monorepo-release/engine.ts";
-import { killAll, spawnCapture, spawnTee } from "../lib/monorepo-release/spawn.ts";
+import { killAll, spawnCapture, spawnInherit, spawnTee } from "../lib/monorepo-release/spawn.ts";
 
 const NODE = process.execPath;
 const env = { ...process.env };
@@ -218,6 +218,74 @@ describe("engine", () => {
         ]);
         assert.equal(chunks.join(""), result.output);
         assert.equal(fs.readFileSync(logFile, "utf8"), result.output);
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    },
+  );
+});
+
+/** Poll until `file` exists, so the child is known to be running before it is signalled. */
+async function waitFor(file: string): Promise<void> {
+  for (let i = 0; i < 200 && !fs.existsSync(file); i += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+  assert.ok(fs.existsSync(file), "the child never started");
+}
+
+describe("spawnInherit", () => {
+  it("resolves to the exit status of an argv child, without a shell", async () => {
+    const status = await spawnInherit(
+      node("process.exitCode = process.argv[1] === '$(x)' ? 5 : 9", "$(x)"),
+      {
+        cwd: os.tmpdir(),
+        env,
+      },
+    );
+    assert.equal(status, 5);
+  });
+
+  it("resolves to 127 for a program that cannot start", async () => {
+    assert.equal(
+      await spawnInherit(["crewrig-no-such-program-xyz"], { cwd: os.tmpdir(), env }),
+      127,
+    );
+  });
+
+  it(
+    "settles with 128+n when killAll terminates an argv child",
+    { skip: !posix && "no POSIX signals" },
+    async () => {
+      const dir = tmpDir();
+      try {
+        const marker = path.join(dir, "up");
+        const pending = spawnInherit(
+          node(
+            `require('node:fs').writeFileSync(${JSON.stringify(marker)}, '');setTimeout(()=>{}, 60000)`,
+          ),
+          { cwd: dir, env },
+        );
+        await waitFor(marker);
+        killAll("SIGTERM");
+        assert.equal(await pending, 128 + os.constants.signals.SIGTERM);
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    },
+  );
+
+  it(
+    "settles with 128+n when killAll terminates a shell command",
+    { skip: !posix && "no POSIX signals" },
+    async () => {
+      const dir = tmpDir();
+      try {
+        const marker = path.join(dir, "up");
+        const command = `touch "${marker}"; exec sleep 60`;
+        const pending = spawnInherit(command, { cwd: dir, env });
+        await waitFor(marker);
+        killAll("SIGTERM");
+        assert.equal(await pending, 128 + os.constants.signals.SIGTERM);
       } finally {
         fs.rmSync(dir, { recursive: true, force: true });
       }

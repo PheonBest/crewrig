@@ -2,7 +2,6 @@
 // `FlowDeps` as its last parameter, so a test substitutes the engine, the mirror and the digest
 // without a network, a real git history or a release engine.
 
-import { spawn } from "node:child_process";
 import path from "node:path";
 
 import { sha256File } from "../packaging/digest.ts";
@@ -12,6 +11,7 @@ import { stageCloneModules } from "./clone-modules.ts";
 import { runRehearse, runSemanticRelease } from "./engine.ts";
 import { makeMirror } from "./mirror.ts";
 import { prepareCmd } from "./prepare-cmd.ts";
+import { spawnInherit } from "./spawn.ts";
 
 type ChildEnv = Readonly<Record<string, string | undefined>>;
 
@@ -20,20 +20,16 @@ function spawnReleasePr(
   argv: readonly string[],
   opts: { cwd: string; env: ChildEnv; scriptsDir: string },
 ): Promise<number> {
-  return new Promise((resolve) => {
-    // No shell: the arguments are branch names and a path, passed as separate argv entries.
-    const child = spawn(
+  // No shell: the arguments are branch names and a path, passed as separate argv entries.
+  return spawnInherit(
+    [
       process.execPath,
-      [
-        "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
-        path.join(opts.scriptsDir, "release-pr.ts"),
-        ...argv,
-      ],
-      { cwd: opts.cwd, env: { ...opts.env }, stdio: "inherit" },
-    );
-    child.once("error", () => resolve(127));
-    child.once("close", (code) => resolve(code ?? 1));
-  });
+      "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
+      path.join(opts.scriptsDir, "release-pr.ts"),
+      ...argv,
+    ],
+    { cwd: opts.cwd, env: opts.env },
+  );
 }
 
 export interface FlowDeps {

@@ -135,8 +135,6 @@ describe("DistLedger", () => {
       const ledger = new DistLedger();
       ledger.begin(dist);
       populate(dist, ["alpha", "beta"]);
-      ledger.noteCreated(path.join(dist, "release", "alpha.releaserc.json"));
-      ledger.noteCreated(path.join(dist, "release", "beta.releaserc.json"));
       ledger.cleanup(["alpha", "beta"]);
       assert.deepEqual(fs.readdirSync(dist), ["keep.txt"]);
     } finally {
@@ -151,7 +149,6 @@ describe("DistLedger", () => {
       const ledger = new DistLedger();
       ledger.begin(dist);
       populate(dist, ["alpha"]);
-      ledger.noteCreated(path.join(dist, "release", "alpha.releaserc.json"));
       ledger.cleanup(["alpha"]);
       assert.deepEqual(fs.readdirSync(path.join(dist, "release")), ["other"]);
     } finally {

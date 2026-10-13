@@ -14,6 +14,8 @@ function sortedDirs(parent: string): string[] {
   }
   return names
     .filter((name) => {
+      // The shell glob `*/` never matches a name that starts with a dot.
+      if (name.startsWith(".")) return false;
       try {
         return fs.statSync(path.join(parent, name)).isDirectory();
       } catch {

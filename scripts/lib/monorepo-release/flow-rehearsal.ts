@@ -3,7 +3,6 @@
 // local mirror, with every credential stripped from its environment, and the extension is packaged
 // exactly as the exec plugin would. Nothing is ever published.
 
-import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -18,6 +17,7 @@ import { isSemver } from "./log-parse.ts";
 import { mirrorPaths } from "./mirror.ts";
 import { prepareCmd } from "./prepare-cmd.ts";
 import { emitReleaserc } from "./releaserc.ts";
+import { spawnInherit } from "./spawn.ts";
 
 interface Verdict {
   readonly released: boolean;
@@ -65,11 +65,7 @@ function runPrepare(
   cwd: string,
   env: Readonly<Record<string, string | undefined>>,
 ): Promise<number> {
-  return new Promise((resolve) => {
-    const child = spawn(command, { shell: true, cwd, env: { ...env }, stdio: "inherit" });
-    child.once("error", () => resolve(127));
-    child.once("close", (code) => resolve(code ?? 1));
-  });
+  return spawnInherit(command, { cwd, env });
 }
 
 export async function releaseRehearse(ctx: ReleaseCtx, deps: FlowDeps = realDeps): Promise<void> {
@@ -125,6 +121,8 @@ export async function releaseRehearse(ctx: ReleaseCtx, deps: FlowDeps = realDeps
       env: engineEnv,
       stderr: ctx.errRaw,
     });
+    // A child stopped by the driver's own signal is an interruption, not an engine failure.
+    if (ctx.aborted()) break;
     if (run.status !== 0) {
       ctx.out(`RELEASE-FAILED ${ext} step=engine`);
       ctx.errors = 1;
@@ -160,6 +158,7 @@ export async function releaseRehearse(ctx: ReleaseCtx, deps: FlowDeps = realDeps
       platform: ctx.platform,
     });
     const packaged = await runPrepare(command, dir, ctx.env);
+    if (ctx.aborted()) break;
     const archive = packaged === 0 ? firstArchive(out) : undefined;
     if (archive === undefined) {
       ctx.out(`RELEASE-FAILED ${ext} step=package`);

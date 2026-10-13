@@ -80,6 +80,8 @@ export async function releasePublish(
         platform: ctx.platform,
       });
       fs.rmSync(releaserc, { force: true });
+      // A child stopped by the driver's own signal is an interruption, not a failed release.
+      if (ctx.aborted()) break;
 
       const tag = createdTag(output);
       if (status !== 0) {
