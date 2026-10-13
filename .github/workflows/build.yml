@@ -774,6 +774,10 @@ jobs:
               - 'scripts/tests/lib/release-github-fixture.ts'
               - 'scripts/tests/lib/release-main-fixture.ts'
               - 'scripts/tests/fixtures/release/**'
+              - 'scripts/monorepo-release.ts'
+              - 'scripts/monorepo-release.sh'
+              - 'scripts/tests/release-rehearsal-diff.test.ts'
+              - 'scripts/tests/lib/release-rehearsal-diff.ts'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.release-driver-modules-ts == 'true'
         with:
@@ -787,7 +791,7 @@ jobs:
         run: node scripts/lib/node-floor-guard.js
       - name: Test the TypeScript monorepo release driver modules
         if: steps.filter.outputs.release-driver-modules-ts == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts scripts/tests/monorepo-release-process.test.ts scripts/tests/monorepo-release-scratch.test.ts scripts/tests/monorepo-release-mirror.test.ts scripts/tests/monorepo-release-clone-modules.test.ts scripts/tests/monorepo-release-flows-publish.test.ts scripts/tests/monorepo-release-flows-rehearsal.test.ts scripts/tests/monorepo-release-github.test.ts scripts/tests/monorepo-release-github-sync.test.ts scripts/tests/monorepo-release-main.test.ts scripts/tests/monorepo-release-main-flow.test.ts scripts/tests/monorepo-release-file-size.test.ts scripts/tests/monorepo-release-extension-dirs.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts scripts/tests/monorepo-release-process.test.ts scripts/tests/monorepo-release-scratch.test.ts scripts/tests/monorepo-release-mirror.test.ts scripts/tests/monorepo-release-clone-modules.test.ts scripts/tests/monorepo-release-flows-publish.test.ts scripts/tests/monorepo-release-flows-rehearsal.test.ts scripts/tests/monorepo-release-github.test.ts scripts/tests/monorepo-release-github-sync.test.ts scripts/tests/monorepo-release-main.test.ts scripts/tests/monorepo-release-main-flow.test.ts scripts/tests/monorepo-release-file-size.test.ts scripts/tests/monorepo-release-extension-dirs.test.ts scripts/tests/release-rehearsal-diff.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -841,6 +845,17 @@ jobs:
               - 'scripts/tests/release-sync-manifests.test.ts'
               - 'scripts/tests/lib/release-sandbox.ts'
               - 'scripts/tests/lib/build-fixture-tree.ts'
+              - 'scripts/build-docs-index.ts'
+              - 'scripts/package-extension.ts'
+              - 'scripts/package-extensions.ts'
+              - 'scripts/release-package-extension.ts'
+              - 'scripts/release-sync-manifests.ts'
+              - 'scripts/tests/packaging-release-differential.test.ts'
+              - 'scripts/tests/packaging-release-golden-portable.test.ts'
+              - 'scripts/tests/fixtures/packaging-release/**'
+              - 'scripts/tests/lib/packaging-release-*.ts'
+              - 'scripts/tests/lib/golden-normalize.ts'
+              - 'scripts/tests/lib/release-driver-sandbox.ts'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.packaging-modules-ts == 'true'
         with:
@@ -854,7 +869,51 @@ jobs:
         run: node scripts/lib/node-floor-guard.js
       - name: Test the TypeScript archive writer, documentation index and release packaging modules
         if: steps.filter.outputs.packaging-modules-ts == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/packaging-entries-differential.test.ts scripts/tests/release-sync-manifests.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/packaging-entries-differential.test.ts scripts/tests/release-sync-manifests.test.ts scripts/tests/packaging-release-differential.test.ts scripts/tests/packaging-release-golden-portable.test.ts
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
+
+  # Spec 0257 R26: the real-repository rehearsal of the shell and TypeScript release drivers. GitHub
+  # only, read-only and without any secret; the switch pull request of ticket #1336 removes it.
+  release-driver-rehearsal-diff:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            release-driver-rehearsal-diff:
+              - 'scripts/monorepo-release.sh'
+              - 'scripts/monorepo-release.ts'
+              - 'scripts/lib/monorepo-release-lib.sh'
+              - 'scripts/lib/monorepo-release/**'
+              - 'scripts/lib/packaging/**'
+              - 'scripts/release-package-extension.ts'
+              - 'scripts/release-sync-manifests.ts'
+              - 'scripts/lib/release-notes/**'
+              - 'scripts/lib/release-rehearse.mjs'
+              - 'scripts/tests/lib/release-rehearsal-diff.ts'
+              - 'extensions/**'
+      - uses: actions/setup-node@v4
+        if: steps.filter.outputs.release-driver-rehearsal-diff == 'true'
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies, development ones included
+        if: steps.filter.outputs.release-driver-rehearsal-diff == 'true'
+        run: npm ci
+      - name: Floor guard accepts Node.js 24
+        if: steps.filter.outputs.release-driver-rehearsal-diff == 'true'
+        run: node scripts/lib/node-floor-guard.js
+      - name: Rehearse both release drivers and compare them
+        if: steps.filter.outputs.release-driver-rehearsal-diff == 'true'
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/tests/lib/release-rehearsal-diff.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -2879,6 +2938,34 @@ jobs:
       # files, stdout, statuses and the absence of carriage returns, and prints each step's time.
       - name: Install entries proof
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/tests/lib/windows-install-proof.ts
+
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
+
+  # Spec 0257 R27: the packaging and release entries from pwsh and cmd.exe on Windows.
+  windows-packaging-entries:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install production dependencies
+        run: npm ci --omit=dev --workspaces=false
+
+      - name: Floor guard accepts Node.js 24
+        run: node scripts/lib/node-floor-guard.js
+
+      # Runs each of the six entries through pwsh and cmd.exe against a sandbox with stub tools and
+      # no bash, and checks the PATH filter on simulated win32 data.
+      - name: Packaging entries proof
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/windows-packaging-entries.test.ts
 
       - name: Cancel workflow on job failure
         if: failure()
