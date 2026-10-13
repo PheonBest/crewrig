@@ -41,7 +41,9 @@ const REPORT_CAP = 40;
  * name and the scratch directory (`mktemp -d` in the shell, `crewrig-release-XXXX` in the port).
  */
 export function normalise(text: string, ctx: NormaliseContext): string {
-  let out = text.replace(/\[\d{1,2}:\d{2}:\d{2}(?: [AP]M)?\]/g, `[${CLOCK}]`);
+  // Node's own warnings carry the process id (`(node:3597) [MODULE_TYPELESS_PACKAGE_JSON] ...`).
+  let out = text.replace(/\(node:\d+\)/g, "(node:<PID>)");
+  out = out.replace(/\[\d{1,2}:\d{2}:\d{2}(?: [AP]M)?\]/g, `[${CLOCK}]`);
   out = out.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?/g, CLOCK);
   out = out.replace(/sha256=[0-9a-fA-F]{8,}/g, "sha256=<SHA256>");
   out = out.replace(/(archive=\S*?)[0-9a-f]{7,64}(?=[.\-_\s]|$)/gm, "$1<HEX>");
@@ -222,8 +224,12 @@ export function main(argv: readonly string[]): number {
         stderr: normalise(leg.stderr, ctx),
         status: leg.status,
       };
-      if (checkoutState(git) !== before) {
-        problems.push(`the ${name} leg changed the checkout (git status --ignored or the refs)`);
+      const after = checkoutState(git);
+      if (after !== before) {
+        const changed = differences(before, after);
+        problems.push(
+          `the ${name} leg changed the checkout (status --ignored or refs): ${changed}`,
+        );
       }
       for (const link of extensionSymlinks(repo)) {
         problems.push(`the ${name} leg left a symbolic link: build/extensions/${link}`);

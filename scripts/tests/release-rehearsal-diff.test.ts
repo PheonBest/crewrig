@@ -118,6 +118,13 @@ describe("normalise", () => {
     assert.equal(normalise("[1:02:03 PM] x\n[23:59:59] y", CTX), "[<TIME>] x\n[<TIME>] y");
   });
 
+  it("hides the process id of a Node warning", () => {
+    assert.equal(
+      normalise("(node:3597) [MODULE_TYPELESS_PACKAGE_JSON] Warning: x", CTX),
+      "(node:<PID>) [MODULE_TYPELESS_PACKAGE_JSON] Warning: x",
+    );
+  });
+
   it("hides ISO instants and leaves a bare date alone", () => {
     assert.equal(
       normalise("at 2026-10-13T11:47:52.123Z and 2026-10-13T11:47:52+02:00", CTX),
