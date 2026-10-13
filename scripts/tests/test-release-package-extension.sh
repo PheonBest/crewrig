@@ -73,6 +73,10 @@ make_sandbox() {
   cp -r "$REPO_DIR/extensions/core" "$sandbox/extensions/"
   cp -r "$REPO_DIR/extensions/library" "$sandbox/extensions/" 2>/dev/null || true
   cp -r "$REPO_DIR/extensions/org" "$sandbox/extensions/" 2>/dev/null || true
+  # Only the committed tree: a workspace install leaves a node_modules (and a build a dist) in an
+  # extension directory. With them the archive is large enough that `tar -tzf | grep -q` is cut off by
+  # SIGPIPE under pipefail once the entries are written in byte order, whatever the entry holds.
+  find "$sandbox/extensions" -type d \( -name node_modules -o -name dist \) -prune -exec rm -rf {} +
   echo "$sandbox"
 }
 
