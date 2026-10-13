@@ -79,10 +79,12 @@ const status = Array.isArray(scripted) || !scripted ? 0 : Number(scripted.status
 const archive = Array.isArray(scripted) || !scripted ? "" : String(scripted.archive || "");
 const execPlugin = extendsContent === null ? undefined
   : (JSON.parse(extendsContent).plugins ?? []).find((p) => Array.isArray(p) && p[0] === "@semantic-release/exec");
-const outAt = /--out (\S+)/.exec(execPlugin ? String(execPlugin[1].prepareCmd) : "");
-if (archive !== "" && outAt) {
-  fs.mkdirSync(outAt[1], { recursive: true });
-  fs.writeFileSync(path.join(outAt[1], archive), "archive of " + ext + "\n");
+// The shell leaves the --out path bare, the TypeScript driver quotes it (spec 0257 R31 (h)).
+const outAt = /--out (?:"([^"]*)"|(\S+))/.exec(execPlugin ? String(execPlugin[1].prepareCmd) : "");
+const outDir = outAt ? (outAt[1] ?? outAt[2]) : undefined;
+if (archive !== "" && outDir !== undefined) {
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(path.join(outDir, archive), "archive of " + ext + "\n");
 }
 if (lines.length > 0) process.stdout.write(lines.join("\n") + "\n");
 process.exitCode = status;

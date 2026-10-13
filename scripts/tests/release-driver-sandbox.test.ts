@@ -1,7 +1,7 @@
 // release-driver-sandbox.test.ts — smoke test of the black-box suite's sandbox and capturing stubs
 // (spec 0257 R22): the sandbox builds hermetically, a refused run touches no engine, and a GitHub
-// rehearsal reaches the (scripted) rehearsal helper once per extension. It runs against the shell
-// driver; the ts leg is added with the TypeScript entry.
+// rehearsal reaches the (scripted) rehearsal helper once per extension. The ts leg is smoke-tested
+// against the shell's refusal; the flow suites run both legs.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -91,11 +91,16 @@ describe("release driver sandbox", () => {
     sb.dispose();
   });
 
-  it("refuses the ts leg while the TypeScript driver does not exist", () => {
+  it("runs the ts leg, which refuses outside a CI environment exactly like the shell", () => {
     const sb = createReleaseSandbox();
-    if (!fs.existsSync(path.join(sb.root, "scripts", "monorepo-release.ts"))) {
-      assert.throws(() => sb.run("ts"), /ts leg is not available/);
-    }
+    const shell = sb.run("shell");
+    const ts = sb.run("ts");
+    assert.equal(ts.status, 2, ts.stderr);
+    assert.equal(ts.status, shell.status);
+    assert.equal(ts.stderr, shell.stderr);
+    assert.match(ts.stderr, /Error: unsupported release forge: none \(not a CI environment\)/);
+    assert.deepEqual(sb.readJsonl("npx"), []);
+    assert.deepEqual(sb.readJsonl("rehearse"), []);
     sb.dispose();
   });
 
