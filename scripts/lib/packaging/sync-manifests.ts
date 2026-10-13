@@ -1,0 +1,59 @@
+// sync-manifests.ts — rewrite the `version` of the two sibling manifests (spec 0257 R16, D2).
+// Twin of `release_sync_cmd` and the loop of `release_prepare_cmd` in
+// scripts/lib/monorepo-release-lib.sh: `jq --arg v <v> '.version=$v'` on `package.json` and
+// `extension.json` of one directory, each only when the file exists (lockstep, spec 0044).
+
+import fs from "node:fs";
+import path from "node:path";
+
+import { writeFileAtomic } from "../tmp-file.ts";
+
+/** The manifests kept in lockstep, in the order the shell loop visits them. */
+const MANIFESTS: readonly string[] = ["package.json", "extension.json"];
+
+interface Rewrite {
+  readonly file: string;
+  readonly text: string;
+}
+
+function reason(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+/** The rewritten text of one manifest; the key order is kept, a missing `version` goes last. */
+function rewrite(file: string, version: string): Rewrite {
+  let parsed: unknown;
+  try {
+    // JSON whitespace includes CR, so CRLF input parses; the output is always LF.
+    parsed = JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch (error) {
+    throw new Error(`cannot read ${file}: ${reason(error)}`);
+  }
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    throw new Error(`cannot rewrite ${file}: not a JSON object`);
+  }
+  // Assigning an existing key keeps its position; a new key lands last, as `jq` does.
+  const manifest = parsed as Record<string, unknown>;
+  manifest["version"] = version;
+  return { file, text: `${JSON.stringify(manifest, null, 2)}\n` };
+}
+
+/**
+ * Set `version` in the `package.json` and `extension.json` of `dir` and return the files
+ * rewritten. A file that fails to parse or write throws an Error naming it. Every manifest is
+ * parsed before the first is written, so a malformed sibling never leaves the pair half-synced
+ * (the shell loop could).
+ */
+export function syncManifests(dir: string, version: string): string[] {
+  const rewrites = MANIFESTS.map((name) => path.join(dir, name))
+    .filter((file) => fs.existsSync(file))
+    .map((file) => rewrite(file, version));
+  for (const { file, text } of rewrites) {
+    try {
+      writeFileAtomic(file, text);
+    } catch (error) {
+      throw new Error(`cannot write ${file}: ${reason(error)}`);
+    }
+  }
+  return rewrites.map((r) => r.file);
+}
