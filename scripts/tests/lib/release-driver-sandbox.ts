@@ -125,6 +125,8 @@ export function createReleaseSandbox(opts: ReleaseSandboxOptions = {}): ReleaseS
   const binDir = path.join(aux, "bin");
   const home = path.join(aux, "home");
   for (const dir of [captureDir, home]) fs.mkdirSync(dir, { recursive: true });
+  const globalConfig = path.join(home, "gitconfig");
+  fs.writeFileSync(globalConfig, "");
 
   fs.copyFileSync(path.join(REPO, "package.json"), path.join(root, "package.json"));
   fs.mkdirSync(path.join(root, "node_modules"), { recursive: true });
@@ -141,8 +143,10 @@ export function createReleaseSandbox(opts: ReleaseSandboxOptions = {}): ReleaseS
     PATH: [binDir, parentPath].filter((p) => p !== "").join(path.delimiter),
     HOME: home,
     USERPROFILE: home,
-    GIT_CONFIG_GLOBAL: path.join(home, "gitconfig"),
-    GIT_CONFIG_SYSTEM: os.devNull,
+    // An empty real file, not the null device: on Windows `os.devNull` is `\\.\nul`, which git cannot open as a
+    // config file. `GIT_CONFIG_NOSYSTEM` is git's own portable switch to skip the system config.
+    GIT_CONFIG_GLOBAL: globalConfig,
+    GIT_CONFIG_NOSYSTEM: "1",
     CAPTURE_DIR: captureDir,
     // Closed loopback port: an unscripted GitHub publish fails offline instead of reaching the API.
     GITHUB_API_URL: OFFLINE_API_URL,
