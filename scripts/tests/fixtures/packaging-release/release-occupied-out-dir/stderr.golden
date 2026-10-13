@@ -1,0 +1,1 @@
+Error: dist/release/out already carries 1 file(s) — a release publishes exactly ONE asset (the installed tool resolves the generic asset only when the release carries exactly one; a checksums file or a second archive defeats it just as a second archive would). Clear dist/release/out before packaging.

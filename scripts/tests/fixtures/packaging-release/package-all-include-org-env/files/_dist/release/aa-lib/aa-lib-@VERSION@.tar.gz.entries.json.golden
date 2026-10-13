@@ -1,0 +1,677 @@
+{
+  "entries": [
+    {
+      "path": "CHANGELOG.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "b584f32c7923821c74719972aab8427fd6d7663c2ebf75c3409b711c0bf9781c"
+    },
+    {
+      "path": "CONTEXT.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "63581c2852b20bd71d426fcf333706a853e1b63baefe53dfdab6434eb73379ef"
+    },
+    {
+      "path": "GEMINI.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "774318c969afcf8446203ded340ed528b60cf92adaecf940d53c198e91e8b08b"
+    },
+    {
+      "path": "README.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "688839397412e1d4412b5da6964a8d27f8565b8240f5e31522837e8c7b056c5d"
+    },
+    {
+      "path": "accepted-gaps.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "1087904284a9566d124c6c8b499ce0eb1c68bb8aaeaddedb4cd3e404637b4026"
+    },
+    {
+      "path": "agents",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "agents/reference-guide",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "agents/reference-guide/AGENT.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "57ea1bc11609f8ad64945cb389cc6b7b595271392051e8ebed4af89fd2e06fa3"
+    },
+    {
+      "path": "commands",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "commands/hello.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "7118ec7d98d5b6b329c027dfc75dc7aa447ab646a03fef76e1ec3e77aca94727"
+    },
+    {
+      "path": "commands/hello.toml",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "240fbfd2ec0780633253e4bc8a019e39cd95cad5a6eb9d4e0a68a3b83c42ec81"
+    },
+    {
+      "path": "dist",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "dist/index.js",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "b970a7ee70632ad1d080c892e58f2e5f16b4191ad18c46eb28cae826b56d92ad"
+    },
+    {
+      "path": "extension.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "0cc882e627fab2aa49540085015e993595b6049b1353b551450d8c35dfdc389d"
+    },
+    {
+      "path": "gemini-extension.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "7ee5caafbc56f1a7d9c3dfcd9e0909296468efafdc77426e63bf8a0cd7d1aa37"
+    },
+    {
+      "path": "hooks",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "hooks/hooks.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "e1bd5ff4e00c071c62f3014410b7daff9b82bc290c91b858608a3036406bc9b4"
+    },
+    {
+      "path": "hooks/prompt-logger.sh",
+      "type": "file",
+      "modeClass": "exec",
+      "sha256": "edd7ff856d35cc4f04b417004abfaee087a6b6f74b1f6e1d09d86302c14639f6"
+    },
+    {
+      "path": "hooks/shell-logger.sh",
+      "type": "file",
+      "modeClass": "exec",
+      "sha256": "27e70ffccc78b92ce827e43c6c1edbd139aaa829eb4175e8a442ceb0c5c097cc"
+    },
+    {
+      "path": "node_modules",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "node_modules/@types",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "node_modules/@types/node",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "node_modules/@types/node/LICENSE",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    {
+      "path": "node_modules/@types/node/README.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "28fcc33ef4f108421a2ba89fac9502bd758b2482edb33b1573989e860e8478a0"
+    },
+    {
+      "path": "node_modules/@types/node/assert",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "node_modules/@types/node/assert.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "0fa06ada475b910e2106c98c68b10483dc8811d0c14a8a8dd36efb2672485b29"
+    },
+    {
+      "path": "node_modules/@types/node/assert/strict.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "33e5e9aba62c3193d10d1d33ae1fa75c46a1171cf76fef750777377d53b0303f"
+    },
+    {
+      "path": "node_modules/@types/node/async_hooks.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "2b06b93fd01bcd49d1a6bd1f9b65ddcae6480b9a86e9061634d6f8e354c1468f"
+    },
+    {
+      "path": "node_modules/@types/node/buffer.buffer.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "698bfeeac083f070bc77b9eaf302d2c7894c5b6bd5934314407a7c290636ac92"
+    },
+    {
+      "path": "node_modules/@types/node/buffer.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "f8754a3f078147fd2c21fc0eec0f1f5f93683a04d8537ddea3e2e245209adcb5"
+    },
+    {
+      "path": "node_modules/@types/node/child_process.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "77dab43257f9f25e307271a25bfc31850b4214e186d4bbc1d9436278973a3e0c"
+    },
+    {
+      "path": "node_modules/@types/node/cluster.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "b9c6032a95397aa7bcf88f0a793cb46995f6be9f59835c062532f566061d90f5"
+    },
+    {
+      "path": "node_modules/@types/node/compatibility",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "node_modules/@types/node/compatibility/disposable.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "6c7176368037af28cb72f2392010fa1cef295d6d6744bca8cfb54985f3a18c3e"
+    },
+    {
+      "path": "node_modules/@types/node/compatibility/index.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "21d819c173c0cf7cc3ce57c3276e77fd9a8a01d35a06ad87158781515c9a438a"
+    },
+    {
+      "path": "node_modules/@types/node/compatibility/indexable.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "ab41ef1f2cdafb8df48be20cd969d875602483859dc194e9c97c8a576892c052"
+    },
+    {
+      "path": "node_modules/@types/node/compatibility/iterators.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "437e20f2ba32abaeb7985e0afe0002de1917bc74e949ba585e49feba65da6ca1"
+    },
+    {
+      "path": "node_modules/@types/node/console.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "f8b6ecedeb98022aba27127a0cc1e68a25b1464528806b6ef3bb60dd36a8fca7"
+    },
+    {
+      "path": "node_modules/@types/node/constants.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "5524481e56c48ff486f42926778c0a3cce1cc85dc46683b92b1271865bcf015a"
+    },
+    {
+      "path": "node_modules/@types/node/crypto.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "4c829ab315f57c5442c6667b53769975acbf92003a66aef19bce151987675bd1"
+    },
+    {
+      "path": "node_modules/@types/node/dgram.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "b2ade7657e2db96d18315694789eff2ddd3d8aea7215b181f8a0b303277cc579"
+    },
+    {
+      "path": "node_modules/@types/node/diagnostics_channel.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "78dbea00e90d2df8ea3dbef0cc379d95b8be9b71cd6bde4c28728f306811803b"
+    },
+    {
+      "path": "node_modules/@types/node/dns",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "node_modules/@types/node/dns.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "9781677a5641adbf9629af67058ff0a81da9ca1c397172954d80ae3908ca4525"
+    },
+    {
+      "path": "node_modules/@types/node/dns/promises.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "f0d8f700bc73dc1901272a0b61daee3fc18d6565cab8ea52686534712db74ddf"
+    },
+    {
+      "path": "node_modules/@types/node/domain.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "1e0d1f8b0adfa0b0330e028c7941b5a98c08b600efe7f14d2d2a00854fb2f393"
+    },
+    {
+      "path": "node_modules/@types/node/events.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "41670ee38943d9cbb4924e436f56fc19ee94232bc96108562de1a734af20dc2c"
+    },
+    {
+      "path": "node_modules/@types/node/fs",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "node_modules/@types/node/fs.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "d1f7674a40b16840b7a55a715d316fbd4e0645da00729507e94808c018f50ed2"
+    },
+    {
+      "path": "node_modules/@types/node/fs/promises.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "272ca407e0c9068bdc5152552d876e68037ceae3de62e529306403e973dec8e1"
+    },
+    {
+      "path": "node_modules/@types/node/globals.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "808069bba06b6768b62fd22429b53362e7af342da4a236ed2d2e1c89fcca3b4a"
+    },
+    {
+      "path": "node_modules/@types/node/globals.typedarray.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "98cffbf06d6bab333473c70a893770dbe990783904002c4f1a960447b4b53dca"
+    },
+    {
+      "path": "node_modules/@types/node/http.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "6672301eabf1c68f0b1fcc59c874b10e86b3a4550448bdca711eb9c365d746a1"
+    },
+    {
+      "path": "node_modules/@types/node/http2.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "22dfb07a7ab15b66ac043829056fe70124844636ae719551812ac631ba04985b"
+    },
+    {
+      "path": "node_modules/@types/node/https.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "a10f0e1854f3316d7ee437b79649e5a6ae3ae14ffe6322b02d4987071a95362e"
+    },
+    {
+      "path": "node_modules/@types/node/index.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "71d3ae6a5e73ca4130762560425e00984ebaff64d5353a3333d1bb7eb86ef336"
+    },
+    {
+      "path": "node_modules/@types/node/inspector.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "cbada0f1698753c41e525e0e0ddd7361557bccfffd4052bbe69dbfe9a1e40761"
+    },
+    {
+      "path": "node_modules/@types/node/inspector.generated.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "d163b6bc2372b4f07260747cbc6c0a6405ab3fbcea3852305e98ac43ca59f5bc"
+    },
+    {
+      "path": "node_modules/@types/node/module.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "ae8db1e4dcac3b230ba1ea70a01d55f9e82f1f81a3879827a2938e62bb8a1fac"
+    },
+    {
+      "path": "node_modules/@types/node/net.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "a6f137d651076822d4fe884287e68fd61785a0d3d1fdb250a5059b691fa897db"
+    },
+    {
+      "path": "node_modules/@types/node/os.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "24826ed94a78d5c64bd857570fdbd96229ad41b5cb654c08d75a9845e3ab7dde"
+    },
+    {
+      "path": "node_modules/@types/node/package.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "34684a189ac9e707cae6b45d9d891607d52f44d4c7e5594766b063581df86e0d"
+    },
+    {
+      "path": "node_modules/@types/node/path.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "8b479a130ccb62e98f11f136d3ac80f2984fdc07616516d29881f3061f2dd472"
+    },
+    {
+      "path": "node_modules/@types/node/perf_hooks.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "928af3d90454bf656a52a48679f199f64c1435247d6189d1caf4c68f2eaf921f"
+    },
+    {
+      "path": "node_modules/@types/node/process.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "dcbd73269aab33d254434b2186aa9c1414e3d9285b1c49295800d26eb0c66a02"
+    },
+    {
+      "path": "node_modules/@types/node/punycode.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "abbb48498eb12620dd7a8c098e5e1e4ff47d0e5db4c317c251ce05b6ca7092a3"
+    },
+    {
+      "path": "node_modules/@types/node/querystring.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "2e9b02775f4f40be40a5dfd239371e9bc11d116e7df0c6d05ac1480695d183c9"
+    },
+    {
+      "path": "node_modules/@types/node/readline",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "node_modules/@types/node/readline.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "71a0f3ad612c123b57239a7749770017ecfe6b66411488000aba83e4546fde25"
+    },
+    {
+      "path": "node_modules/@types/node/readline/promises.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "77fbe5eecb6fac4b6242bbf6eebfc43e98ce5ccba8fa44e0ef6a95c945ff4d98"
+    },
+    {
+      "path": "node_modules/@types/node/repl.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "4f9d8ca0c417b67b69eeb54c7ca1bedd7b56034bb9bfd27c5d4f3bc4692daca7"
+    },
+    {
+      "path": "node_modules/@types/node/sea.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "0cb167c371eaa8c869f8a7656a7296f2e4fae43b4d8b803a680236b24794e5f9"
+    },
+    {
+      "path": "node_modules/@types/node/sqlite.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "0a839dba0287cc0481ad4beedd48a1c64acf1e212ae865d1315f7007ca215161"
+    },
+    {
+      "path": "node_modules/@types/node/stream",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "node_modules/@types/node/stream.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "38dc4655376cd1a4bd6bb3763d92949233e33d38d3dd3cbea7bbf218175a38ef"
+    },
+    {
+      "path": "node_modules/@types/node/stream/consumers.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "45650f47bfb376c8a8ed39d4bcda5902ab899a3150029684ee4c10676d9fbaee"
+    },
+    {
+      "path": "node_modules/@types/node/stream/promises.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "37ba7b45141a45ce6e80e66f2a96c8a5ab1bcef0fc2d0f56bb58df96ec67e972"
+    },
+    {
+      "path": "node_modules/@types/node/stream/web.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "208a6a0bfb227bdf8fb964799d0a206c75cf03ccd72e63bf5495c9331354c6d6"
+    },
+    {
+      "path": "node_modules/@types/node/string_decoder.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "0eb3f61b0d2d501bd663a06a8013b805f011f55f360e70c3dc1e9b258df605e1"
+    },
+    {
+      "path": "node_modules/@types/node/test.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "48a679952eefe4cb776d5a0e1ccba2d3eb53b57448bbb7abc1fcebcbd5440188"
+    },
+    {
+      "path": "node_modules/@types/node/timers",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "node_modules/@types/node/timers.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "f0be1b8078cd549d91f37c30c222c2a187ac1cf981d994fb476a1adc61387b14"
+    },
+    {
+      "path": "node_modules/@types/node/timers/promises.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "0aaed1d72199b01234152f7a60046bc947f1f37d78d182e9ae09c4289e06a592"
+    },
+    {
+      "path": "node_modules/@types/node/tls.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "2d14da6ecb49bf828d83948765ec2d3a579d476bbb9645e749610baa6ec880ca"
+    },
+    {
+      "path": "node_modules/@types/node/trace_events.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "66ba1b2c3e3a3644a1011cd530fb444a96b1b2dfe2f5e837a002d41a1a799e60"
+    },
+    {
+      "path": "node_modules/@types/node/ts5.6",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "node_modules/@types/node/ts5.6/buffer.buffer.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "757b868b646d62fec4eab8d45e4ec882a0b5d6a461ff5767c84b8eefd03cd9f4"
+    },
+    {
+      "path": "node_modules/@types/node/ts5.6/globals.typedarray.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "1456e80bd8a3870034d89f91bd7df12ac29acfb083e31c0bb1fb38ca7bf5fbc2"
+    },
+    {
+      "path": "node_modules/@types/node/ts5.6/index.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "7844b611e67ef2810e907f479dd21c3ffada87473c07602b356af988d43ba290"
+    },
+    {
+      "path": "node_modules/@types/node/tty.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "7e514f5b852fdbc166b539fdd1f4e9114f29911592a5eb10a94bb3a13ccac3c4"
+    },
+    {
+      "path": "node_modules/@types/node/url.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "098ca18e26e187dbade4c13a56a42e648f30c5d94ef7f24f64f40c868263d0a8"
+    },
+    {
+      "path": "node_modules/@types/node/util.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "5987a903da92c7462e0b35704ce7da94d7fdc4b89a984871c0e2b87a8aae9e69"
+    },
+    {
+      "path": "node_modules/@types/node/v8.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "503ac4cbb1d0be70d4c1fc60c675f9a37e8177ec22fed8d5e2459b5d4e34e299"
+    },
+    {
+      "path": "node_modules/@types/node/vm.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "0aef708fb4c7a6b915e8305cbfac40cd207b032dbaabe9a01889a5fff3254681"
+    },
+    {
+      "path": "node_modules/@types/node/wasi.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "ae062ce7d9510060c5d7e7952ae379224fb3f8f2dd74e88959878af2057c143b"
+    },
+    {
+      "path": "node_modules/@types/node/web-globals",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "node_modules/@types/node/web-globals/abortcontroller.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "1db0b7dca579049ca4193d034d835f6bfe73096c73663e5ef9a0b5779939f3d0"
+    },
+    {
+      "path": "node_modules/@types/node/web-globals/domexception.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "9798340ffb0d067d69b1ae5b32faa17ab31b82466a3fc00d8f2f2df0c8554aaa"
+    },
+    {
+      "path": "node_modules/@types/node/web-globals/events.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "f26b11d8d8e4b8028f1c7d618b22274c892e4b0ef5b3678a8ccbad85419aef43"
+    },
+    {
+      "path": "node_modules/@types/node/web-globals/fetch.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "b52476feb4a0cbcb25e5931b930fc73cb6643fb1a5060bf8a3dda0eeae5b4b68"
+    },
+    {
+      "path": "node_modules/@types/node/web-globals/navigator.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "f9501cc13ce624c72b61f12b3963e84fad210fbdf0ffbc4590e08460a3f04eba"
+    },
+    {
+      "path": "node_modules/@types/node/web-globals/storage.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "e7721c4f69f93c91360c26a0a84ee885997d748237ef78ef665b153e622b36c1"
+    },
+    {
+      "path": "node_modules/@types/node/web-globals/streams.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "d97fb21da858fb18b8ae72c314e9743fd52f73ebe2764e12af1db32fc03f853f"
+    },
+    {
+      "path": "node_modules/@types/node/worker_threads.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "e0b088c6aa2790de3b9f7ad9557196126417cf236e879886366acef8ef59ba96"
+    },
+    {
+      "path": "node_modules/@types/node/zlib.d.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "358765d5ea8afd285d4fd1532e78b88273f18cb3f87403a9b16fef61ac9fdcfe"
+    },
+    {
+      "path": "package.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "8ad10385b06958b614f81de04652fc93b1ff308c188cfb021d307ef731c09137"
+    },
+    {
+      "path": "skills",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "skills/greeter",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "skills/greeter/SKILL.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "1d0dfb4bf6daaf991ad97f38c8dca8f6a318b6f8e6800332d4821299a14004b8"
+    },
+    {
+      "path": "src",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "src/index.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "a2860c58cf222fb81487b1a55a7d8147f98a447026c0cf03ce7fdc7b2ac1f96b"
+    },
+    {
+      "path": "tsconfig.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "be00e63686a93f4aedb0af19b865a58f0c33d4831422da7a725f7d761b7b34c5"
+    }
+  ],
+  "stream": "b0ed41e1abef3225594e76dfd04ed580aca63a26b1c772007f8dae6ad7748426"
+}
