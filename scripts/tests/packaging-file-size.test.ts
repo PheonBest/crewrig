@@ -14,8 +14,8 @@ const LIMIT = 300;
 const COVERED = {
   directories: ["scripts/lib/packaging", "scripts/lib/docs-index"],
   patterns: [
-    /^scripts\/tests\/(tar-writer|packaging-file-size|docs-index|docs-index-differential)\.test\.ts$/,
-    /^scripts\/tests\/lib\/(tar-reader|docs-index-trees)\.ts$/,
+    /^scripts\/tests\/(tar-writer|packaging-file-size|docs-index|docs-index-differential|packaging-release-package|packaging-release-package-cli|packaging-spawn-tiers|packaging-entries|packaging-entries-differential|release-sync-manifests)\.test\.ts$/,
+    /^scripts\/tests\/lib\/(tar-reader|docs-index-trees|release-sandbox)\.ts$/,
   ] as readonly RegExp[],
 };
 
