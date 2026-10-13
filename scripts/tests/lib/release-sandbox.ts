@@ -32,7 +32,12 @@ export function makeSandbox(): Sandbox {
   fs.cpSync(path.join(REPO, "extension-skeleton"), tree.resolve("extension-skeleton"), {
     recursive: true,
   });
-  fs.cpSync(path.join(REPO, "extensions"), tree.resolve("extensions"), { recursive: true });
+  // Only what git tracks: an installed `node_modules` or a built `dist` of an extension directory is
+  // host state (workspace installs put one there), and would end up in every build tree and archive.
+  fs.cpSync(path.join(REPO, "extensions"), tree.resolve("extensions"), {
+    recursive: true,
+    filter: (src) => !/(^|[\\/])(node_modules|dist)$/.test(src),
+  });
   const manifest = JSON.parse(tree.read("extensions/core/hello-world/extension.json")) as {
     version: string;
   };
