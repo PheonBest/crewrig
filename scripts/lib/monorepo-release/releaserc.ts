@@ -7,8 +7,6 @@
 // leg (issue #1379). Keys keep the shell's order: extends, branches, tagFormat,
 // plugins, then repositoryUrl last when non-empty.
 
-import path from "node:path";
-
 import { prepareCmd, syncCmd } from "./prepare-cmd.ts";
 import { configPath, gitLeg, gitmojiEntry, publishLeg } from "./releaserc-legs.ts";
 import type { PluginEntry, Releaserc, ReleasercInput } from "./releaserc-types.ts";
