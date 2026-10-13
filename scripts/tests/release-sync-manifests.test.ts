@@ -182,3 +182,21 @@ test(
     }
   },
 );
+
+test("a manifest keeps the permission bits it had", { skip: process.platform === "win32" }, () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "sync-mode-"));
+  try {
+    for (const [name, mode] of [
+      ["package.json", 0o644],
+      ["extension.json", 0o664],
+    ] as const) {
+      fs.writeFileSync(path.join(dir, name), '{"version":"1.0.0"}\n');
+      fs.chmodSync(path.join(dir, name), mode);
+    }
+    syncManifests(dir, "1.2.3");
+    assert.equal(fs.statSync(path.join(dir, "package.json")).mode & 0o777, 0o644);
+    assert.equal(fs.statSync(path.join(dir, "extension.json")).mode & 0o777, 0o664);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

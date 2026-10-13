@@ -139,6 +139,7 @@ const SHELL_TOOLS = [
   "node",
   "jq",
   "tar",
+  "gzip", // GNU tar runs `gzip` for `-z`; bsdtar compresses in-process
   "dirname",
   "find",
   "wc",

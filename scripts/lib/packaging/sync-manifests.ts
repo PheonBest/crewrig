@@ -50,7 +50,12 @@ export function syncManifests(dir: string, version: string): string[] {
     .map((file) => rewrite(file, version));
   for (const { file, text } of rewrites) {
     try {
+      // The mode the manifest already has is kept: the temporary file is created 0600, and a
+      // manifest committed 0644 must not turn private (the shell's `jq > tmp && mv` made a
+      // fresh file at the umask's default instead).
+      const mode = fs.statSync(file).mode & 0o777;
       writeFileAtomic(file, text);
+      fs.chmodSync(file, mode);
     } catch (error) {
       throw new Error(`cannot write ${file}: ${reason(error)}`);
     }
