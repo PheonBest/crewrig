@@ -57,6 +57,12 @@ function indexBytes(root: string): Buffer | undefined {
   return fs.existsSync(file) ? fs.readFileSync(file) : undefined;
 }
 
+/** The permission bits of the written manifest: a redirect keeps an existing mode, a temporary file would not. */
+function indexMode(root: string): number | undefined {
+  const file = path.join(root, "docs", "index.json");
+  return fs.existsSync(file) ? fs.statSync(file).mode & 0o777 : undefined;
+}
+
 async function compare(testCase: DifferentialCase): Promise<void> {
   const shellRoot = docsRoot(testCase.files);
   const tsRoot = docsRoot(testCase.files);
@@ -75,6 +81,7 @@ async function compare(testCase: DifferentialCase): Promise<void> {
       `${label}: stderr`,
     );
     assert.deepEqual(indexBytes(tsRoot), indexBytes(shellRoot), `${label}: docs/index.json`);
+    assert.equal(indexMode(tsRoot), indexMode(shellRoot), `${label}: docs/index.json mode`);
   }
 }
 

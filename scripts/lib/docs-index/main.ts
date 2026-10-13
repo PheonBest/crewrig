@@ -8,7 +8,6 @@
 import fs from "node:fs";
 
 import type { Io } from "../extension/types.ts";
-import { writeFileAtomic } from "../tmp-file.ts";
 import { isFile, isStale, lineDiff, orphanErrors } from "./check.ts";
 import { lintPage } from "./lint.ts";
 import { renderIndex } from "./render.ts";
@@ -16,7 +15,6 @@ import { listPages } from "./walk.ts";
 
 export interface MainInput {
   readonly argv: readonly string[];
-  readonly cwd?: string;
   readonly repoRoot: string;
   readonly io: Io;
 }
@@ -89,8 +87,9 @@ export async function main(input: MainInput): Promise<number> {
     return 0;
   }
 
-  // Not writeTextLf: a lone CR inside a title is kept byte for byte, as the shell's redirect kept it.
-  writeFileAtomic(indexFile, generated);
+  // Not writeTextLf, and written in place rather than through a temporary file: a lone CR inside a
+  // title is kept byte for byte and the file keeps its mode, as the shell's redirect did.
+  fs.writeFileSync(indexFile, generated);
   io.out(`Wrote docs/index.json (${rows.length} published pages).`);
   return 0;
 }
