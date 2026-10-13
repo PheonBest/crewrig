@@ -208,7 +208,9 @@ chain keeps working when it next runs on `main`.
     `<v>` is the engine's own `${nextRelease.version}` template or, in the
     rehearsal, the validated literal version. The generation of the configuration
     SHALL refuse a `<root>` or `<out>` that holds a double quote, a percent sign, an
-    exclamation mark, a dollar sign, a backtick, a backslash or a line break. The synchronisation SHALL rewrite
+    exclamation mark, a dollar sign, a backtick, a backslash or a line break, after the
+    path separators of a Windows path have been written as forward slashes, which
+    `node` and `cmd.exe` both accept, so that a native Windows path is not refused. The synchronisation SHALL rewrite
     `version` of `package.json` and `extension.json` of the current directory when
     each exists, two-space indented with a trailing line feed, SHALL exit non-zero
     when a rewrite fails, and SHALL succeed in a directory with no `extension.json`.
@@ -283,8 +285,9 @@ chain keeps working when it next runs on `main`.
     the rehearsal stub's answers against the driver's `UNCHANGED`, `PENDING` and
     publish lines, the branch pushed to the sandbox origin and the manifests the
     prepare commands rewrite, run for real; the workflow-permission reads of (g) are
-    kept as is; and the engine suite's case 11g — the captured configuration against
-    the golden of requirement 15. The parsers of the failed step, the created tag and
+    kept as is; and the engine suite's case 11g — the real engine's rendering of the release note from
+    the captured GitHub publish configuration, publish leg removed, against its rendering
+    from the golden configuration, byte for byte, with the shell's vacuity guard kept. The parsers of the failed step, the created tag and
     the version check are reached through the same lines. Every group is thus covered
     at the consumer level; no unit test stands in for a group. The PLAN SHALL name
     each substitute test by file and case. The shell library SHALL NOT remain as a
@@ -320,7 +323,9 @@ chain keeps working when it next runs on `main`.
     release or push. Before the switch, a CI job SHALL run the shell and the
     TypeScript driver in rehearsal mode on the real repository checkout and require
     the same output once the archive hash and scratch paths are normalised, and the
-    PLAN SHALL say how a release run is exercised before the switch.
+    PLAN SHALL say how a release run is exercised before the switch. That job, or the
+    archive proof of requirement 25, SHALL also assert that no extension build tree
+    holds a symbolic link.
 
 27. **Windows.** The pull request that adds the entries SHALL add a `windows-latest`
     job, declared in `ci/ci-capabilities.yml` and mirrored in the generated
@@ -369,9 +374,10 @@ chain keeps working when it next runs on `main`.
     diff that touches its rows 13 and 17.
 
 31. **Deviations.** The only differences from the shell, in standard output, standard
-    error and files written, SHALL be: (a) the release archive's bytes: sorted
-    entries, fixed time, owner and group, normalised modes, a fixed gzip header, the refusal of a symbolic link, where the shell stores the filesystem's order, times and modes with the host
-    `tar`'s format (requirements 10, 11 and 25); (b) the two `prepareCmd` strings of
+    error and files written, SHALL be: (a) the release archive: sorted entries, fixed time, owner and group, normalised
+    modes and a fixed gzip header where the shell stores the filesystem's order, times
+    and modes in the host `tar`'s format, and the refusal of a symbolic link, which the
+    shell archives (requirements 10, 11 and 25); (b) the two `prepareCmd` strings of
     the engine configuration, which no longer name `bash` or `jq`, and the manifest
     synchronisation formatting of requirement 16; (c) the body of the drift report of
     `--check`, a line diff without the headers and times of `diff -u`; (d) the
@@ -380,11 +386,11 @@ chain keeps working when it next runs on `main`.
     (the shell's order follows the host locale); (f) the two lines the shim adds
     when `node` is absent or older than the floor (spec 0255 requirement 25); (g) one
     notice on standard error when a link in the release clone became a copy
-    (parent requirement 21); (h) a prepare command that quotes its paths, and the refusal of a root or output path
-    holding one of the characters of requirement 16, a failed manifest rewrite that now
-    stops the run before packaging in publish and rehearsal modes (the shell packaged
-    regardless), where the shell leaves a path
-    unquoted and breaks on a space. Letters (i) onward are reserved for what the
+    (parent requirement 21); (h) a prepare command that quotes its paths, where the shell leaves a path unquoted
+    and breaks on a space, with the refusal of a root or output path that holds one of the
+    characters of requirement 16; and a failed manifest rewrite that stops the run
+    before packaging in publish and rehearsal modes, where the shell packaged
+    regardless. Letters (i) onward are reserved for what the
     differential test finds, each added through a delta of this spec.
 
 32. **Staging.** The work SHALL ship as: oracle hardening and black-box coverage of the
@@ -517,6 +523,14 @@ When a rehearsal builds its clone
 Then `js-yaml` and `argparse` in the clone are real directories, every other entry
 is a link or, where the link was refused, a copy reported once, and the packaging
 step loads `js-yaml` from the clone.
+
+**Scenario:** The release driver rehearses from PowerShell on a native Windows path
+
+Given Windows with a checkout under `C:\work\crewrig`, no `bash` on the path and the
+development dependencies installed
+When `node scripts/monorepo-release.ts` runs a rehearsal against a hermetic fixture
+Then the prepare commands name the root and the output directory with forward
+slashes, are not refused, and the `REHEARSAL` line is printed.
 
 **Scenario:** The Bash oracles pass through the shims
 
