@@ -1052,6 +1052,26 @@ capabilities:
           - "scripts/tests/monorepo-release-config.test.ts"
           - "scripts/tests/monorepo-release-config-oracle.test.ts"
           - "scripts/tests/lib/release-preflight-tables.ts"
+          - "scripts/lib/packaging/digest.ts"
+          - "scripts/lib/worktree-claim/**"
+          - "scripts/lib/link-or-copy*.ts"
+          - "scripts/lib/extension/tree-copy.ts"
+          - "scripts/lib/extension/types.ts"
+          - "scripts/tests/monorepo-release-process.test.ts"
+          - "scripts/tests/monorepo-release-scratch.test.ts"
+          - "scripts/tests/monorepo-release-mirror.test.ts"
+          - "scripts/tests/monorepo-release-clone-modules.test.ts"
+          - "scripts/tests/monorepo-release-flows-publish.test.ts"
+          - "scripts/tests/monorepo-release-flows-rehearsal.test.ts"
+          - "scripts/tests/monorepo-release-github.test.ts"
+          - "scripts/tests/monorepo-release-github-sync.test.ts"
+          - "scripts/tests/monorepo-release-main.test.ts"
+          - "scripts/tests/monorepo-release-main-flow.test.ts"
+          - "scripts/tests/monorepo-release-file-size.test.ts"
+          - "scripts/tests/monorepo-release-extension-dirs.test.ts"
+          - "scripts/tests/lib/release-flow-ctx.ts"
+          - "scripts/tests/lib/release-github-fixture.ts"
+          - "scripts/tests/lib/release-main-fixture.ts"
           - "scripts/tests/fixtures/release/**"
       - on: push
         branches: [main, "release/**"]
@@ -1070,6 +1090,26 @@ capabilities:
           - "scripts/tests/monorepo-release-config.test.ts"
           - "scripts/tests/monorepo-release-config-oracle.test.ts"
           - "scripts/tests/lib/release-preflight-tables.ts"
+          - "scripts/lib/packaging/digest.ts"
+          - "scripts/lib/worktree-claim/**"
+          - "scripts/lib/link-or-copy*.ts"
+          - "scripts/lib/extension/tree-copy.ts"
+          - "scripts/lib/extension/types.ts"
+          - "scripts/tests/monorepo-release-process.test.ts"
+          - "scripts/tests/monorepo-release-scratch.test.ts"
+          - "scripts/tests/monorepo-release-mirror.test.ts"
+          - "scripts/tests/monorepo-release-clone-modules.test.ts"
+          - "scripts/tests/monorepo-release-flows-publish.test.ts"
+          - "scripts/tests/monorepo-release-flows-rehearsal.test.ts"
+          - "scripts/tests/monorepo-release-github.test.ts"
+          - "scripts/tests/monorepo-release-github-sync.test.ts"
+          - "scripts/tests/monorepo-release-main.test.ts"
+          - "scripts/tests/monorepo-release-main-flow.test.ts"
+          - "scripts/tests/monorepo-release-file-size.test.ts"
+          - "scripts/tests/monorepo-release-extension-dirs.test.ts"
+          - "scripts/tests/lib/release-flow-ctx.ts"
+          - "scripts/tests/lib/release-github-fixture.ts"
+          - "scripts/tests/lib/release-main-fixture.ts"
           - "scripts/tests/fixtures/release/**"
     portability: portable
     requires:
@@ -1078,7 +1118,7 @@ capabilities:
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts scripts/tests/monorepo-release-process.test.ts scripts/tests/monorepo-release-scratch.test.ts scripts/tests/monorepo-release-mirror.test.ts scripts/tests/monorepo-release-clone-modules.test.ts scripts/tests/monorepo-release-flows-publish.test.ts scripts/tests/monorepo-release-flows-rehearsal.test.ts scripts/tests/monorepo-release-github.test.ts scripts/tests/monorepo-release-github-sync.test.ts scripts/tests/monorepo-release-main.test.ts scripts/tests/monorepo-release-main-flow.test.ts scripts/tests/monorepo-release-file-size.test.ts scripts/tests/monorepo-release-extension-dirs.test.ts
 
   # Spec 0257 (ticket #1336), PRs 2 and 3: the deterministic tar.gz archive writer, the
   # documentation index, the release packager, the manifest synchronisation and the single and
