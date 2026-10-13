@@ -1,9 +1,8 @@
 // monorepo-release-config.test.ts — the engine configuration and the prepare
-// commands of the TypeScript release driver (spec 0257 R15, R16), with a
-// differential against the shell oracle where bash and jq are available.
+// commands of the TypeScript release driver (spec 0257 R15, R16). The differential against the
+// shell library that these tests carried was retired with the library (spec 0257 R22).
 
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
