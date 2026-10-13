@@ -62,6 +62,8 @@ const REACHING = new RegExp(
     "test-check-extension-provenance\\.sh",
     "test-monorepo-release",
     "monorepo-release\\.sh",
+    // The TypeScript entries (spec 0257), run directly once the shell scripts are forwarding shims.
+    "scripts/(monorepo-release|release-package-extension|build-docs-index|package-extensions?)\\.ts",
     "check-extension-pivot\\.sh",
   ].join("|"),
 );
