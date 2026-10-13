@@ -1,0 +1,45 @@
+{
+  "branches": [
+    "main"
+  ],
+  "extends": "semantic-release-monorepo",
+  "plugins": [
+    [
+      "<LIBDIR>/release-notes/gitmoji-esm-shim.mjs",
+      {
+        "releaseRules": {
+          "major": [
+            ":boom:"
+          ],
+          "minor": [
+            ":sparkles:"
+          ],
+          "patch": [
+            ":bug:",
+            ":ambulance:",
+            ":lock:",
+            ":zap:"
+          ]
+        }
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": ""
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          {
+            "label": "hello-world (installable tree)",
+            "path": "<ROOT>/dist/release/hello-world/*.tar.gz"
+          }
+        ]
+      }
+    ]
+  ],
+  "tagFormat": "hello-world-v${version}"
+}
