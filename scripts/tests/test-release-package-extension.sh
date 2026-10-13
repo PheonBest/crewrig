@@ -162,6 +162,24 @@ cp -r "$REPO_DIR/extensions/core/$NAME/." "$REPO_DIR/build/extensions/$NAME/" 2>
 exit 0
 EOF
 chmod +x "$sandbox6/scripts/build-extension.sh"
+# The same stub in Node: once release-package-extension.sh is a forwarding shim, the packager is
+# TypeScript and spawns `node scripts/build-extension.ts`, not the shell shim. Both stubs behave
+# identically, so the case holds whichever of the two the packager reaches.
+cat > "$sandbox6/scripts/build-extension.ts" <<'EOF'
+// Stub: reports success but writes only the (already-existing) source tree, no rendered
+// gemini-extension.json — for Case 6 of test-release-package-extension.sh. Always invoked as
+// `build-extension.ts --target gemini <name>`, so the extension name is the third argument.
+const fs = require("node:fs");
+const path = require("node:path");
+const name = process.argv[4];
+const repo = path.resolve(__dirname, "..");
+fs.mkdirSync(path.join(repo, "build", "extensions", name), { recursive: true });
+try {
+  fs.cpSync(path.join(repo, "extensions", "core", name), path.join(repo, "build", "extensions", name), { recursive: true });
+} catch {
+  // the source tree may be absent: the stub still reports success
+}
+EOF
 out6="$(cd "$sandbox6" && bash scripts/release-package-extension.sh hello-world --version "$VERSION" --out "$sandbox6/release-out-6" 2>&1)"
 rc6=$?
 if [ "$rc6" -ne 0 ] && echo "$out6" | grep -q "gemini-extension.json"; then

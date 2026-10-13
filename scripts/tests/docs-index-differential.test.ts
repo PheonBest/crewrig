@@ -16,7 +16,6 @@ import { differentialCases, docsRoot, memoryIo } from "./lib/docs-index-trees.ts
 import type { DifferentialCase } from "./lib/docs-index-trees.ts";
 
 const REPO = path.resolve(import.meta.dirname, "..", "..");
-const SHELL = path.join(REPO, "scripts", "build-docs-index.sh");
 const HAS_BASH = spawnSync("bash", ["-c", "exit 0"]).status === 0;
 
 interface Observed {
@@ -66,8 +65,13 @@ function indexMode(root: string): number | undefined {
 async function compare(testCase: DifferentialCase): Promise<void> {
   const shellRoot = docsRoot(testCase.files);
   const tsRoot = docsRoot(testCase.files);
-  fs.mkdirSync(path.join(shellRoot, "scripts"), { recursive: true });
-  fs.copyFileSync(SHELL, path.join(shellRoot, "scripts", "build-docs-index.sh"));
+  // The whole scripts/ tree minus scripts/tests: a forwarding shim needs its entry and modules.
+  const scriptsDir = path.join(REPO, "scripts");
+  const testsDir = path.join(scriptsDir, "tests");
+  fs.cpSync(scriptsDir, path.join(shellRoot, "scripts"), {
+    recursive: true,
+    filter: (source) => source !== testsDir,
+  });
 
   for (const args of testCase.steps) {
     const label = `${testCase.name} [${args.join(" ")}]`;

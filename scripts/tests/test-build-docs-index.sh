@@ -39,7 +39,10 @@ new_tree() {
   local dir
   dir="$(mktemp -d "$TMP_ROOT/tree.XXXXXX")"
   mkdir -p "$dir/scripts" "$dir/docs"
-  cp "$SCRIPT_UNDER_TEST" "$dir/scripts/build-docs-index.sh"
+  # The whole scripts/ tree minus scripts/tests (like the other suites), so that a forwarding
+  # shim finds its TypeScript entry and its modules next to it.
+  cp -R "$SCRIPT_DIR/." "$dir/scripts/"
+  rm -rf "$dir/scripts/tests"
   echo "$dir"
 }
 
