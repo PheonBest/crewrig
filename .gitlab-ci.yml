@@ -920,7 +920,7 @@ release-driver-modules-ts:
   script:
     - "npm ci --omit=dev --workspaces=false"
     - "node scripts/lib/node-floor-guard.js"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts scripts/tests/monorepo-release-process.test.ts scripts/tests/monorepo-release-scratch.test.ts scripts/tests/monorepo-release-mirror.test.ts scripts/tests/monorepo-release-clone-modules.test.ts scripts/tests/monorepo-release-flows-publish.test.ts scripts/tests/monorepo-release-flows-rehearsal.test.ts scripts/tests/monorepo-release-github.test.ts scripts/tests/monorepo-release-github-sync.test.ts scripts/tests/monorepo-release-main.test.ts scripts/tests/monorepo-release-main-flow.test.ts scripts/tests/monorepo-release-file-size.test.ts scripts/tests/monorepo-release-extension-dirs.test.ts"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts scripts/tests/monorepo-release-process.test.ts scripts/tests/monorepo-release-scratch.test.ts scripts/tests/monorepo-release-mirror.test.ts scripts/tests/monorepo-release-clone-modules.test.ts scripts/tests/monorepo-release-flows-publish.test.ts scripts/tests/monorepo-release-flows-rehearsal.test.ts scripts/tests/monorepo-release-github.test.ts scripts/tests/monorepo-release-github-sync.test.ts scripts/tests/monorepo-release-main.test.ts scripts/tests/monorepo-release-main-flow.test.ts scripts/tests/monorepo-release-file-size.test.ts scripts/tests/monorepo-release-extension-dirs.test.ts scripts/tests/release-rehearsal-diff.test.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
@@ -959,6 +959,10 @@ release-driver-modules-ts:
         - "scripts/tests/lib/release-github-fixture.ts"
         - "scripts/tests/lib/release-main-fixture.ts"
         - "scripts/tests/fixtures/release/**"
+        - "scripts/monorepo-release.ts"
+        - "scripts/monorepo-release.sh"
+        - "scripts/tests/release-rehearsal-diff.test.ts"
+        - "scripts/tests/lib/release-rehearsal-diff.ts"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/lib/monorepo-release/**"
@@ -996,13 +1000,17 @@ release-driver-modules-ts:
         - "scripts/tests/lib/release-github-fixture.ts"
         - "scripts/tests/lib/release-main-fixture.ts"
         - "scripts/tests/fixtures/release/**"
+        - "scripts/monorepo-release.ts"
+        - "scripts/monorepo-release.sh"
+        - "scripts/tests/release-rehearsal-diff.test.ts"
+        - "scripts/tests/lib/release-rehearsal-diff.ts"
 
 packaging-modules-ts:
   image: node:24
   script:
     - "npm ci --omit=dev --workspaces=false"
     - "node scripts/lib/node-floor-guard.js"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/packaging-entries-differential.test.ts scripts/tests/release-sync-manifests.test.ts"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/packaging-entries-differential.test.ts scripts/tests/release-sync-manifests.test.ts scripts/tests/packaging-release-differential.test.ts scripts/tests/packaging-release-golden-portable.test.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
@@ -1043,6 +1051,17 @@ packaging-modules-ts:
         - "scripts/tests/release-sync-manifests.test.ts"
         - "scripts/tests/lib/release-sandbox.ts"
         - "scripts/tests/lib/build-fixture-tree.ts"
+        - "scripts/build-docs-index.ts"
+        - "scripts/package-extension.ts"
+        - "scripts/package-extensions.ts"
+        - "scripts/release-package-extension.ts"
+        - "scripts/release-sync-manifests.ts"
+        - "scripts/tests/packaging-release-differential.test.ts"
+        - "scripts/tests/packaging-release-golden-portable.test.ts"
+        - "scripts/tests/fixtures/packaging-release/**"
+        - "scripts/tests/lib/packaging-release-*.ts"
+        - "scripts/tests/lib/golden-normalize.ts"
+        - "scripts/tests/lib/release-driver-sandbox.ts"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/lib/packaging/**"
@@ -1082,6 +1101,17 @@ packaging-modules-ts:
         - "scripts/tests/release-sync-manifests.test.ts"
         - "scripts/tests/lib/release-sandbox.ts"
         - "scripts/tests/lib/build-fixture-tree.ts"
+        - "scripts/build-docs-index.ts"
+        - "scripts/package-extension.ts"
+        - "scripts/package-extensions.ts"
+        - "scripts/release-package-extension.ts"
+        - "scripts/release-sync-manifests.ts"
+        - "scripts/tests/packaging-release-differential.test.ts"
+        - "scripts/tests/packaging-release-golden-portable.test.ts"
+        - "scripts/tests/fixtures/packaging-release/**"
+        - "scripts/tests/lib/packaging-release-*.ts"
+        - "scripts/tests/lib/golden-normalize.ts"
+        - "scripts/tests/lib/release-driver-sandbox.ts"
 
 extension-render:
   image: node:24

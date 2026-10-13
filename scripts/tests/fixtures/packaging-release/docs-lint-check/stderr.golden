@@ -1,0 +1,12 @@
+Documentation publication contract violations:
+  - docs/badnav.md: nav_order must be a non-negative integer, got '-1'
+  - docs/badpub.md: 'published' must be 'true' or 'false', got 'yes'
+  - docs/badsection.md: unknown section 'nope'
+  - docs/forbidden.md: value for key 'title' contains a forbidden '"' or '>' character
+  - docs/missing.md: published page missing required field 'title'
+  - docs/missing.md: published page missing required field 'section'
+  - docs/missing.md: published page missing required field 'nav_order'
+  - docs/noeq.md: malformed metadata token (no '='): 'published'
+  - docs/none.md: no crewrig-doc metadata block found
+  - docs/unknown.md: unknown metadata key 'colour'
+  - docs/unterminated.md: unterminated quoted value for key 'title'

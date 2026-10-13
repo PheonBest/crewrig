@@ -1,0 +1,1 @@
+Usage: release-package-extension.sh <name> --version <v> --out <dir>

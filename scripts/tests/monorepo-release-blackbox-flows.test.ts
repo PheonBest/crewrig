@@ -107,7 +107,10 @@ describe("monorepo release driver, black box: group (g) GitHub release-PR flow",
         assert.ok(message.startsWith("🔖 hello-world-v${nextRelease.version}"), message);
         assert.ok(!message.includes("[skip ci]"), message);
         const prepareCmd = String(pluginOf(config, "@semantic-release/exec")?.["prepareCmd"]);
-        assert.match(prepareCmd, /jq --arg v/, "the manifests are still synchronised");
+        // The manifest sync is still there: `jq` in the shell, the TypeScript sync on the ts leg
+        // (spec 0257 R31 (b): the two prepareCmd strings differ by design).
+        const sync = leg === "shell" ? /jq --arg v/ : /release-sync-manifests\.ts/;
+        assert.match(prepareCmd, sync, "the manifests are still synchronised");
         assert.ok(!prepareCmd.includes("release-package-extension"), prepareCmd);
         assert.ok(!prepareCmd.includes("--out"), prepareCmd);
       } finally {
@@ -203,6 +206,36 @@ describe("monorepo release driver, black box: group (g) GitHub release-PR flow",
         );
       } finally {
         stub.stop();
+        sb.dispose();
+      }
+    });
+
+    it(`[${leg}] rb-g-package-real: a rehearsal packages for real through the platform shell`, () => {
+      const sb = createReleaseSandbox();
+      try {
+        sb.scriptRehearse({
+          "hello-world": { released: true, version: "9.0.0", gitTag: "hello-world-v9.0.0" },
+          "second-ext": { released: false },
+        });
+        const res = sb.run(leg, {
+          GITHUB_ACTIONS: "true",
+          RELEASE_DRY_RUN: "true",
+          GITHUB_SERVER_URL: "https://github.com",
+          GITHUB_REPOSITORY: "acme/fixture",
+        });
+        assert.equal(res.status, 0, res.stdout + res.stderr);
+        assert.ok(!res.stdout.includes("RELEASE-FAILED"), res.stdout + res.stderr);
+        // The driver ran the real prepare command (manifest sync, then the packager) in its clone.
+        const line = res.stdout
+          .split("\n")
+          .find((l) => l.startsWith("REHEARSAL hello-world version=9.0.0 "));
+        assert.match(
+          line ?? "",
+          /^REHEARSAL hello-world version=9\.0\.0 tag=hello-world-v9\.0\.0 baseline=\S+ archive=hello-world-9\.0\.0\.tar\.gz sha256=[0-9a-f]{64}$/,
+          res.stdout,
+        );
+        assert.ok(res.stdout.split("\n").includes("UNCHANGED second-ext"));
+      } finally {
         sb.dispose();
       }
     });

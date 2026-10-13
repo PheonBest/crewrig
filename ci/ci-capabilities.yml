@@ -1073,6 +1073,10 @@ capabilities:
           - "scripts/tests/lib/release-github-fixture.ts"
           - "scripts/tests/lib/release-main-fixture.ts"
           - "scripts/tests/fixtures/release/**"
+          - "scripts/monorepo-release.ts"
+          - "scripts/monorepo-release.sh"
+          - "scripts/tests/release-rehearsal-diff.test.ts"
+          - "scripts/tests/lib/release-rehearsal-diff.ts"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -1111,6 +1115,10 @@ capabilities:
           - "scripts/tests/lib/release-github-fixture.ts"
           - "scripts/tests/lib/release-main-fixture.ts"
           - "scripts/tests/fixtures/release/**"
+          - "scripts/monorepo-release.ts"
+          - "scripts/monorepo-release.sh"
+          - "scripts/tests/release-rehearsal-diff.test.ts"
+          - "scripts/tests/lib/release-rehearsal-diff.ts"
     portability: portable
     requires:
       runtime: node@24
@@ -1118,7 +1126,7 @@ capabilities:
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts scripts/tests/monorepo-release-process.test.ts scripts/tests/monorepo-release-scratch.test.ts scripts/tests/monorepo-release-mirror.test.ts scripts/tests/monorepo-release-clone-modules.test.ts scripts/tests/monorepo-release-flows-publish.test.ts scripts/tests/monorepo-release-flows-rehearsal.test.ts scripts/tests/monorepo-release-github.test.ts scripts/tests/monorepo-release-github-sync.test.ts scripts/tests/monorepo-release-main.test.ts scripts/tests/monorepo-release-main-flow.test.ts scripts/tests/monorepo-release-file-size.test.ts scripts/tests/monorepo-release-extension-dirs.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-preflight.test.ts scripts/tests/monorepo-release-credentials.test.ts scripts/tests/monorepo-release-log-parse.test.ts scripts/tests/monorepo-release-differential.test.ts scripts/tests/monorepo-release-prepare-cmd.test.ts scripts/tests/monorepo-release-config.test.ts scripts/tests/monorepo-release-config-oracle.test.ts scripts/tests/monorepo-release-process.test.ts scripts/tests/monorepo-release-scratch.test.ts scripts/tests/monorepo-release-mirror.test.ts scripts/tests/monorepo-release-clone-modules.test.ts scripts/tests/monorepo-release-flows-publish.test.ts scripts/tests/monorepo-release-flows-rehearsal.test.ts scripts/tests/monorepo-release-github.test.ts scripts/tests/monorepo-release-github-sync.test.ts scripts/tests/monorepo-release-main.test.ts scripts/tests/monorepo-release-main-flow.test.ts scripts/tests/monorepo-release-file-size.test.ts scripts/tests/monorepo-release-extension-dirs.test.ts scripts/tests/release-rehearsal-diff.test.ts
 
   # Spec 0257 (ticket #1336), PRs 2 and 3: the deterministic tar.gz archive writer, the
   # documentation index, the release packager, the manifest synchronisation and the single and
@@ -1171,6 +1179,17 @@ capabilities:
           - "scripts/tests/release-sync-manifests.test.ts"
           - "scripts/tests/lib/release-sandbox.ts"
           - "scripts/tests/lib/build-fixture-tree.ts"
+          - "scripts/build-docs-index.ts"
+          - "scripts/package-extension.ts"
+          - "scripts/package-extensions.ts"
+          - "scripts/release-package-extension.ts"
+          - "scripts/release-sync-manifests.ts"
+          - "scripts/tests/packaging-release-differential.test.ts"
+          - "scripts/tests/packaging-release-golden-portable.test.ts"
+          - "scripts/tests/fixtures/packaging-release/**"
+          - "scripts/tests/lib/packaging-release-*.ts"
+          - "scripts/tests/lib/golden-normalize.ts"
+          - "scripts/tests/lib/release-driver-sandbox.ts"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -1211,13 +1230,24 @@ capabilities:
           - "scripts/tests/release-sync-manifests.test.ts"
           - "scripts/tests/lib/release-sandbox.ts"
           - "scripts/tests/lib/build-fixture-tree.ts"
+          - "scripts/build-docs-index.ts"
+          - "scripts/package-extension.ts"
+          - "scripts/package-extensions.ts"
+          - "scripts/release-package-extension.ts"
+          - "scripts/release-sync-manifests.ts"
+          - "scripts/tests/packaging-release-differential.test.ts"
+          - "scripts/tests/packaging-release-golden-portable.test.ts"
+          - "scripts/tests/fixtures/packaging-release/**"
+          - "scripts/tests/lib/packaging-release-*.ts"
+          - "scripts/tests/lib/golden-normalize.ts"
+          - "scripts/tests/lib/release-driver-sandbox.ts"
     portability: portable
     requires:
       runtime: node@24
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/packaging-entries-differential.test.ts scripts/tests/release-sync-manifests.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-differential.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/packaging-entries-differential.test.ts scripts/tests/release-sync-manifests.test.ts scripts/tests/packaging-release-differential.test.ts scripts/tests/packaging-release-golden-portable.test.ts
 
   # Spec 0254 R23: the extension builders' copy of the Windows template (windows-build-components).
   # The production dependencies are installed first, the floor guard runs, then
@@ -1276,6 +1306,34 @@ capabilities:
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0255 R28).
+
+  # Spec 0257 R27 (ticket #1336): the packaging and release entries from a non-POSIX interpreter.
+  # The production dependencies are installed first, the floor guard runs, then the cross-system
+  # proof scripts/tests/lib/windows-packaging-proof.ts runs through
+  # scripts/tests/windows-packaging-entries.test.ts: each of the six entries goes through pwsh or
+  # cmd.exe against a sandbox with stub tools and no bash, and the PATH filter is checked on
+  # simulated win32 data. No timing budget and no `paths:` filter, like the Windows jobs above: the
+  # proof must not skip silently on a change it does not list.
+  - id: windows-packaging-entries
+    name: "Windows packaging and release entries: production install, floor guard and the cross-system proof"
+    trigger:
+      - on: pull-request
+        branches: [main, "release/**"]
+      - on: push
+        branches: [main, "release/**"]
+    portability: specific
+    exception:
+      engine: github-actions
+      evidence: >
+        Runs on the GitHub-hosted `windows-latest` runner
+        (.github/workflows/build.yml, job `windows-packaging-entries`). GitLab
+        CI, as configured for this repository, exposes no Windows runner:
+        every generated GitLab job derives its `image` from
+        `requires.runtime` through `runtime_to_image`
+        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        images, and .gitlab-ci.yml declares no runner `tags:` that could
+        select a Windows executor. There is no faithful equivalent on the
+        other supported engines (spec 0240 R15, spec 0257 R27).
 
   # Spec 0256 R40 (ticket #1335), PR B1, plan finding v1-F3: the Windows exercise of layer 1. The
   # production dependencies are installed first, the floor guard runs as its own step, then the
@@ -4372,3 +4430,54 @@ capabilities:
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-blackbox-config.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-blackbox-flows.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-blackbox-flows2.test.ts
+
+  # Spec 0257 R26 (ticket #1336), PR 5: the real-repository rehearsal of the two release drivers.
+  # `RELEASE_DRY_RUN=true` runs the shell driver, then the TypeScript driver, on the same named
+  # branch with no credential, and requires the same output, the same status and an untouched
+  # checkout (scripts/tests/lib/release-rehearsal-diff.ts). It needs the real engine
+  # (semantic-release, a development dependency), the network and the full tag history, so it is
+  # a GitHub-only job: it is the only place both drivers coexist, and the pull request that
+  # switches the entry to the TypeScript driver removes it together with the shell driver.
+  - id: release-driver-rehearsal-diff
+    name: "Compare the shell and TypeScript release drivers in rehearsal on the real repository"
+    trigger:
+      - on: pull-request
+        branches: [main, "release/**"]
+        paths:
+          - "scripts/monorepo-release.sh"
+          - "scripts/monorepo-release.ts"
+          - "scripts/lib/monorepo-release-lib.sh"
+          - "scripts/lib/monorepo-release/**"
+          - "scripts/lib/packaging/**"
+          - "scripts/release-package-extension.ts"
+          - "scripts/release-sync-manifests.ts"
+          - "scripts/lib/release-notes/**"
+          - "scripts/lib/release-rehearse.mjs"
+          - "scripts/tests/lib/release-rehearsal-diff.ts"
+          - "extensions/**"
+      - on: push
+        branches: [main, "release/**"]
+        paths:
+          - "scripts/monorepo-release.sh"
+          - "scripts/monorepo-release.ts"
+          - "scripts/lib/monorepo-release-lib.sh"
+          - "scripts/lib/monorepo-release/**"
+          - "scripts/lib/packaging/**"
+          - "scripts/release-package-extension.ts"
+          - "scripts/release-sync-manifests.ts"
+          - "scripts/lib/release-notes/**"
+          - "scripts/lib/release-rehearse.mjs"
+          - "scripts/tests/lib/release-rehearsal-diff.ts"
+          - "extensions/**"
+    portability: specific
+    exception:
+      engine: github-actions
+      evidence: >
+        Runs against the real semantic-release engine with the full tag
+        history and the network, read-only (`permissions: contents: read`, no
+        secret), as a temporary comparison of two drivers that coexist only
+        until the switch pull request of spec 0257 (ticket #1336) removes the
+        shell driver and this job with it
+        (.github/workflows/build.yml, job `release-driver-rehearsal-diff`).
+        The comparison is a one-off migration proof, not a capability of the
+        pipeline, so no GitLab equivalent is generated for it.

@@ -1,0 +1,19 @@
+{
+  "build/extensions/hello-world/CHANGELOG.md": "253803d1921954e12c977bda5b9e4b64e1cd1c7c33fa0acf4cf41fbac45f9f8a",
+  "build/extensions/hello-world/CONTEXT.md": "cfcb1f1f0d10e9d4e20a06b7cd978a02de79219d9ec32492c77d51abe70dccbc",
+  "build/extensions/hello-world/GEMINI.md": "774318c969afcf8446203ded340ed528b60cf92adaecf940d53c198e91e8b08b",
+  "build/extensions/hello-world/README.md": "d03d0914c3e480d0ae89064c7e8ab51dbbd8473bfbf11a61ad5a76adac60db63",
+  "build/extensions/hello-world/accepted-gaps.json": "1087904284a9566d124c6c8b499ce0eb1c68bb8aaeaddedb4cd3e404637b4026",
+  "build/extensions/hello-world/agents/reference-guide/AGENT.md": "f7c2afdf1e21814456466662d291e4080d719e3051954ec82fcb71249f7649e7",
+  "build/extensions/hello-world/commands/hello.md": "7118ec7d98d5b6b329c027dfc75dc7aa447ab646a03fef76e1ec3e77aca94727",
+  "build/extensions/hello-world/commands/hello.toml": "240fbfd2ec0780633253e4bc8a019e39cd95cad5a6eb9d4e0a68a3b83c42ec81",
+  "build/extensions/hello-world/extension.json": "52b4f54b1a85645bed88c30e670498ba69be2b395d76fa2de5d5934a80c47def",
+  "build/extensions/hello-world/gemini-extension.json": "df5013cd93cd32997d98d310e8593e844cbd573a6a055f2d827e609cd6b14edf",
+  "build/extensions/hello-world/hooks/hooks.json": "e1bd5ff4e00c071c62f3014410b7daff9b82bc290c91b858608a3036406bc9b4",
+  "build/extensions/hello-world/hooks/prompt-logger.sh": "cb648374b39f4e6334a92d0e50e03b083d8a1274436630c32263ec2d43d8b53a",
+  "build/extensions/hello-world/hooks/shell-logger.sh": "ac4f48f6934379854ca23a395fd7d3607fd63ccb40e0f7118e6fcbaa908d1825",
+  "build/extensions/hello-world/package.json": "8ad10385b06958b614f81de04652fc93b1ff308c188cfb021d307ef731c09137",
+  "build/extensions/hello-world/skills/greeter/SKILL.md": "1d0dfb4bf6daaf991ad97f38c8dca8f6a318b6f8e6800332d4821299a14004b8",
+  "build/extensions/hello-world/src/index.ts": "a2860c58cf222fb81487b1a55a7d8147f98a447026c0cf03ce7fdc7b2ac1f96b",
+  "build/extensions/hello-world/tsconfig.json": "be00e63686a93f4aedb0af19b865a58f0c33d4831422da7a725f7d761b7b34c5"
+}

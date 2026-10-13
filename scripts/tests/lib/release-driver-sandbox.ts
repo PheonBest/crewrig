@@ -1,6 +1,6 @@
 // release-driver-sandbox.ts — a hermetic repository the monorepo release driver can be run in,
-// from either implementation (spec 0257 R22): `scripts/monorepo-release.sh` today, the TypeScript
-// entry once it lands. A sandbox is a `createFixtureTree` root holding a real git repository
+// from either implementation (spec 0257 R22): `scripts/monorepo-release.sh` or the TypeScript
+// entry `scripts/monorepo-release.ts`. A sandbox is a `createFixtureTree` root holding a real git repository
 // (branch `main`, a bare `origin`, one tag per released extension), a copy of `scripts/`, two
 // extensions, and REAL copies of `js-yaml` and `argparse` (the builders refuse a link, spec 0240
 // R7). The engine and the forge CLI never run: `release-capture-stubs.ts` puts capturing stand-ins
@@ -125,6 +125,8 @@ export function createReleaseSandbox(opts: ReleaseSandboxOptions = {}): ReleaseS
   const binDir = path.join(aux, "bin");
   const home = path.join(aux, "home");
   for (const dir of [captureDir, home]) fs.mkdirSync(dir, { recursive: true });
+  const globalConfig = path.join(home, "gitconfig");
+  fs.writeFileSync(globalConfig, "");
 
   fs.copyFileSync(path.join(REPO, "package.json"), path.join(root, "package.json"));
   fs.mkdirSync(path.join(root, "node_modules"), { recursive: true });
@@ -141,8 +143,10 @@ export function createReleaseSandbox(opts: ReleaseSandboxOptions = {}): ReleaseS
     PATH: [binDir, parentPath].filter((p) => p !== "").join(path.delimiter),
     HOME: home,
     USERPROFILE: home,
-    GIT_CONFIG_GLOBAL: path.join(home, "gitconfig"),
-    GIT_CONFIG_SYSTEM: os.devNull,
+    // An empty real file, not the null device: on Windows `os.devNull` is `\\.\nul`, which git cannot open as a
+    // config file. `GIT_CONFIG_NOSYSTEM` is git's own portable switch to skip the system config.
+    GIT_CONFIG_GLOBAL: globalConfig,
+    GIT_CONFIG_NOSYSTEM: "1",
     CAPTURE_DIR: captureDir,
     // Closed loopback port: an unscripted GitHub publish fails offline instead of reaching the API.
     GITHUB_API_URL: OFFLINE_API_URL,
@@ -186,9 +190,6 @@ export function createReleaseSandbox(opts: ReleaseSandboxOptions = {}): ReleaseS
     env,
     run(entry, extraEnv = {}) {
       const childEnv = env(extraEnv);
-      if (entry === "ts" && !fs.existsSync(path.join(root, TS_ENTRY))) {
-        throw new Error(`the ts leg is not available yet: ${TS_ENTRY} does not exist in this tree`);
-      }
       const [cmd, args] =
         entry === "shell"
           ? (["bash", [SHELL_ENTRY]] as const)

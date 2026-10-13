@@ -1,0 +1,1 @@
+Error: <ROOT>/build/extensions/hello-world/gemini-extension.json declares version '<VERSION>', which does not equal the requested release version '0.0.0-mismatch' (spec 0183 R22).

@@ -1,0 +1,11 @@
+Extension render — BUILD (--target gemini)
+Building extension: hello-world
+  Rendered: build/extensions/hello-world/gemini-extension.json
+  Rendered: build/extensions/hello-world/GEMINI.md
+  Rendered: build/extensions/hello-world/commands/hello.toml
+
+Done.
+  gemini CLI not on PATH — skipping the best-effort 'gemini extensions validate' check.
+Packaged: dist/release/out/hello-world-<VERSION>.tar.gz
+  Archive root: build/extensions/hello-world's CONTENTS, no wrapper directory (byte-for-byte — Ruling A, single-tool; see the R20 probe runbook for why no wrapper)
+  Version: <VERSION>
