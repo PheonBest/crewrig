@@ -20,6 +20,14 @@ import { findTool, linkTools } from "./hermetic-env.ts";
 
 export type Leg = "shell" | "entry" | "auto";
 export type ResolvedLeg = "shell" | "entry";
+/** The `package.json` beside an isolated entry copy: spec 0258 R2 (`none` writes no package.json). */
+export type Layout = "module" | "commonjs" | "typeless" | "none";
+export const LAYOUT_PACKAGE: Readonly<Record<Layout, string | undefined>> = {
+  module: '{"type":"module"}\n',
+  commonjs: '{"type":"commonjs"}\n',
+  typeless: "{}\n",
+  none: undefined,
+};
 
 export const SKILLS_ROOT = path.resolve(
   import.meta.dirname,
@@ -86,9 +94,24 @@ export function scriptFile(script: string, ext: "sh" | "ts"): string {
   return path.join(SKILLS_ROOT, skill, "scripts", `${name}.${ext}`);
 }
 
+/**
+ * `auto` honours env `SKILL_ORACLE_LEG=shell|entry` (a proof forces a leg while both files exist),
+ * else picks the `.ts` when it exists and the `.sh` when it does not.
+ */
 export function resolveLeg(script: string, leg: Leg): ResolvedLeg {
   if (leg !== "auto") return leg;
+  const forced = process.env["SKILL_ORACLE_LEG"];
+  if (forced === "shell" || forced === "entry") return forced;
   return fs.existsSync(scriptFile(script, "ts")) ? "entry" : "shell";
+}
+
+/**
+ * A `lint-skill` case that links no `yq` declares "no YAML parser": its entry runs from an isolated
+ * copy of the single `.ts` file with no `node_modules` above it, so `js-yaml` cannot resolve and
+ * the line fallback is measured. A case that links `yq` runs from the repository (`js-yaml` found).
+ */
+export function isolatedEntry(testCase: Pick<SkillCase, "script" | "tools">): boolean {
+  return testCase.script === "pr-reviewer/lint-skill" && testCase.tools?.includes("yq") !== true;
 }
 
 /** Files and symlinks under `root` outside `bin/`, `calls.log` and `.git`, by signature. */
@@ -148,8 +171,8 @@ function gitSetup(testCase: SkillCase, work: string, home: string): void {
   }
 }
 
-/** One leg of one case in a fresh sandbox. */
-export function observe(testCase: SkillCase, leg: ResolvedLeg): Observed {
+/** One leg of one case in a fresh sandbox; a `layout` runs the entry as an isolated copy of its file. */
+export function observe(testCase: SkillCase, leg: ResolvedLeg, layout?: Layout): Observed {
   if (process.platform === "win32") throw new Error("skill-scripts-observe: POSIX only");
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "skill-oracle-")));
   try {
@@ -160,7 +183,7 @@ export function observe(testCase: SkillCase, leg: ResolvedLeg): Observed {
     const workDir = work as string;
 
     const allowed = [...BASE_TOOLS, ...(testCase.tools ?? [])].filter(
-      (tool) => !(testCase.without ?? []).includes(tool),
+      (tool) => !(testCase.without ?? []).includes(tool) && !(leg === "entry" && tool === "yq"), // no entry spawns yq
     );
     const missing = linkTools(dirs.bin, [...new Set(allowed)]);
     if (missing.length > 0)
@@ -184,7 +207,15 @@ export function observe(testCase: SkillCase, leg: ResolvedLeg): Observed {
 
     const bash = findTool("bash");
     if (leg === "shell" && bash === undefined) throw new Error("skill-scripts-observe: no bash");
-    const entry = scriptFile(testCase.script, leg === "shell" ? "sh" : "ts");
+    let entry = scriptFile(testCase.script, leg === "shell" ? "sh" : "ts");
+    if (leg === "entry" && (layout !== undefined || isolatedEntry(testCase))) {
+      const iso = path.join(root, "iso");
+      fs.mkdirSync(iso);
+      const pkg = layout === undefined ? undefined : LAYOUT_PACKAGE[layout];
+      if (pkg !== undefined) fs.writeFileSync(path.join(iso, "package.json"), pkg);
+      fs.copyFileSync(entry, path.join(iso, path.basename(entry)));
+      entry = path.join(iso, path.basename(entry));
+    }
     const args = (testCase.args ?? []).map((a) => a.replaceAll("{WORK}", workDir));
     const before = snapshot(root);
     const res = spawnSync(leg === "shell" ? (bash as string) : process.execPath, [entry, ...args], {
@@ -201,7 +232,7 @@ export function observe(testCase: SkillCase, leg: ResolvedLeg): Observed {
       tmp: dirs.tmp,
       node: process.execPath,
       script: testCase.script.split("/")[1] as string,
-      jsonMessage: testCase.jsonMessage === true,
+      jsonMessage: leg === "entry" && testCase.jsonMessage === true, // the shell goldens keep the raw jq text
     };
     const norm = (text: string): string => skillPlaceholder(text, names);
     const files: Record<string, string> = {};
