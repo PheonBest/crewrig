@@ -123,7 +123,12 @@ export function dockerless(c: Ctx): void {
   });
   check(c, run(c, "scripts/e2e/auth-claude.ts", []), (x) => {
     assert.equal(x.status, 1, "exit status");
-    assert.match(x.err, /ERROR: docker is required and was not found on \$PATH\./);
+    // A runner may ship docker in a system directory: the entry then stops one check later, still
+    // with status 1 and before any login, on the absent image.
+    assert.match(
+      x.err,
+      /ERROR: (docker is required and was not found on \$PATH\.|image 'crewrig\/e2e-claude:latest' is not present locally\.)/,
+    );
   });
 }
 

@@ -2,6 +2,7 @@
 // EXIT trap) before reporting the exit status 0 / 1 / 2.
 
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 import { cleanupAgy, probeQ2Q3Antigravity, type AgyState } from "./q2q3-antigravity.ts";
@@ -30,7 +31,7 @@ export interface RunParams {
 /** Returns the exit status; the scratch directory and the Antigravity install never outlive the call. */
 export function runProbe(p: RunParams): number {
   const what = p.args[0] ?? "all";
-  const tmp = p.env["TMPDIR"] !== undefined && p.env["TMPDIR"] !== "" ? p.env["TMPDIR"] : "/tmp";
+  const tmp = p.env["TMPDIR"] || (process.platform === "win32" ? os.tmpdir() : "/tmp");
   const work = fs.mkdtempSync(path.join(tmp, "tmp."));
   const ctx: Ctx = {
     env: p.env,
