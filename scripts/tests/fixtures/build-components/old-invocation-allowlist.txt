@@ -30,6 +30,10 @@ scripts/tests/setup-tier-install.test.ts
 # The golden transcripts of the setup entries record the hint as the shell printed it.
 scripts/tests/fixtures/setup-golden/
 
+# Spec 0261 R15: the recorded shell verdicts of scenario 03 hold the build log, which names the
+# invocation as the scenario printed it; goldens are history, not an instruction.
+scripts/tests/fixtures/e2e-oracle/scenarios/03-skill-build/
+
 # The shim header names the Bash tests that have not migrated: each deliberately drives the shim.
 scripts/tests/test-model-resolution.sh
 scripts/tests/test-pr-logbook-label-scope.sh
