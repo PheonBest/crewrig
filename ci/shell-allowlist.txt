@@ -111,7 +111,6 @@ scripts/test-build-components.sh
 scripts/tests/fixtures/release/generate-github-golden.sh
 scripts/tests/test-agent-profile-migration.sh
 scripts/tests/test-antigravity-component-install.sh
-scripts/tests/test-antigravity-discovery-probe.sh
 scripts/tests/test-artifact-build-install-scope.sh
 scripts/tests/test-assembly-verification.sh
 scripts/tests/test-build-ci.sh
@@ -143,7 +142,6 @@ scripts/tests/test-check-test-strays.sh
 scripts/tests/test-check-test-wiring.sh
 scripts/tests/test-component-tier-resolution.sh
 scripts/tests/test-create-extension-combinations.sh
-scripts/tests/test-e2e-probes.sh
 scripts/tests/test-extension-render-conformance.sh
 scripts/tests/test-extract-frontmatter.sh
 scripts/tests/test-gemini-agent-frontmatter.sh
