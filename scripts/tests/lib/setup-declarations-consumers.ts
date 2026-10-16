@@ -83,7 +83,7 @@ export const CONSUMERS: readonly Consumer[] = [
     ],
   },
   {
-    suite: "scripts/tests/test-mcp-daemon.sh (r3 #6)",
+    suite: "scripts/tests/mcp-daemon-registration.test.ts (r3 #6)",
     keys: ["step:mcp", "substeps.mcp", "mcp.handler"],
   },
   {
