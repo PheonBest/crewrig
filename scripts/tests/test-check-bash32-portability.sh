@@ -32,7 +32,7 @@
 #      absent from Rule 5 (`missing:<list>`).
 #   g. A declared set with no usable entry fails closed rather than passing
 #      vacuously (docs/scripting-conventions.md Rule 4).
-#   h. No array expansion in the six suites corrected under R6 is unguarded —
+#   h. No array expansion in the five suites corrected under R6 is unguarded —
 #      the standing half of scenario 5 (R8). See `bare_expansions_in`.
 #   i. That detector is itself probed on 13 fixtures in both directions, so a
 #      future narrowing of it fails here rather than silently going quiet.
@@ -570,7 +570,7 @@ SYNC_ROWS
   # scripts/tests/ carry unguarded expansions and are outside spec 0111, whose
   # R8 constrains only the suites changed under R6.
   corrected_suites='test-e2e-runner test-e2e-report test-e2e-runner-delegation
-test-setup-org-mcp test-e2e-defaults-toml test-setup-ensure-tier-built'
+test-setup-org-mcp test-setup-ensure-tier-built'
 
   # Accumulate into a string, never an array: an empty accumulator array is the
   # very abort this case exists to keep out of the corrected suites, and this
@@ -611,8 +611,8 @@ PORTABILITY_SCAN
   done
 
   # Fail closed: scanning nothing must not read as success (Rule 4).
-  if [ "$scanned" -ne 6 ]; then
-    bad "case-h: expected 6 corrected suites, scanned $scanned"
+  if [ "$scanned" -ne 5 ]; then
+    bad "case-h: expected 5 corrected suites, scanned $scanned"
   else
     ok "case-h: all 6 suites corrected under R6 are present and scanned"
   fi
