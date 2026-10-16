@@ -243,4 +243,46 @@ describe("check-figure-labels", () => {
     ]);
     assert.equal(r.status, 1);
   });
+
+  it("flushes earlier lines then reports one Error line on a malformed TSV integer", () => {
+    const bad = tsvOf([at("x", 1)]).replace("\t1\t10\t", "\tX\t10\t");
+    const standIn = setup([
+      { name: "a", prompt: box("Alpha"), words: [at("Alpha", 0)] },
+      { name: "b", prompt: box("Beta"), words: [at("Beta", 0)] },
+    ]);
+    try {
+      writeFileSync(path.join(standIn.binDir, "tsv", "b.png.tsv"), bad);
+      const r = runTs(standIn.env());
+      assert.equal(r.status, 1);
+      assert.equal(
+        r.stdout,
+        [
+          "Checking docs/assets/a.png (1 expected labels)...",
+          "  ✓ [PASS] Label: 'Alpha'",
+          "  RESULT: PASS for docs/assets/a.png",
+          "",
+        ].join("\n") + "\n",
+      );
+      assert.equal(r.stderr, "Error: docs/assets/b.png: invalid literal for int(): 'X'\n");
+    } finally {
+      standIn.dispose();
+    }
+  });
+
+  it("reports an Error line on invalid UTF-8 in the tesseract output", () => {
+    const standIn = setup([{ name: "u8", prompt: box("Alpha"), words: [at("Alpha", 0)] }]);
+    try {
+      const good = Buffer.from(tsvOf([at("Alpha", 0)]));
+      writeFileSync(
+        path.join(standIn.binDir, "tsv", "u8.png.tsv"),
+        Buffer.concat([good, Buffer.from([0xff, 0x0a])]),
+      );
+      const r = runTs(standIn.env());
+      assert.equal(r.status, 1);
+      assert.equal(r.stdout, "");
+      assert.equal(r.stderr, "Error: docs/assets/u8.png: tesseract output is not valid UTF-8\n");
+    } finally {
+      standIn.dispose();
+    }
+  });
 });

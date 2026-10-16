@@ -8,6 +8,8 @@
 // Reuses findFiles (walk.ts), parseTesseractTsv (tesseract-tsv.ts), buildClusters and
 // matchLabel (figure-cluster.ts).
 // Exit codes: 0 pass, SKIP or no sidecar; 1 at least one figure failed.
+// A figure that raises (malformed TSV integer, invalid UTF-8) ends the run: out.lines holds the
+// lines produced so far and out.error the one `Error: <png>: <reason>` line (deviation (j)).
 // Output: the shell's lines byte for byte; paths use forward slashes.
 
 import { spawnSync } from "node:child_process";
@@ -22,6 +24,8 @@ export const SKIP_NOTE = "[SKIP] tesseract is not installed. Skipping figure lab
 export interface Outcome {
   lines: string[];
   code: number;
+  /** Set when processing a figure raised: the single `Error: ...` line for standard error. */
+  error?: string;
 }
 
 /** True unless spawning `tesseract` fails because it does not exist or cannot run. */
@@ -49,11 +53,12 @@ export function extractLabels(content: string): string[] {
 
 function clustersOf(png: string): Cluster[] {
   const res = spawnSync("tesseract", [png, "stdout", "tsv"], {
-    encoding: "utf8",
     maxBuffer: 256 * 1024 * 1024,
   });
   if (res.error !== undefined || res.status !== 0) return [];
-  return buildClusters(parseTesseractTsv(res.stdout));
+  // Strict decoding, like Python text=True: invalid UTF-8 raises; a BOM is kept.
+  const text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(res.stdout);
+  return buildClusters(parseTesseractTsv(text));
 }
 
 function isSidecar(rel: string): boolean {
@@ -107,7 +112,18 @@ export function checkFigureLabels(root: string): Outcome {
     const png = `${sidecar.slice(0, -".prompt.md".length)}.png`;
     if (!existsSync(png)) continue;
     total += 1;
-    if (!checkFigure(sidecar, png, root, lines)) failed += 1;
+    try {
+      if (!checkFigure(sidecar, png, root, lines)) failed += 1;
+    } catch (err) {
+      const relPng = path.relative(root, png).split(path.sep).join("/");
+      const reason =
+        err instanceof TypeError && /utf-8|encoded data/i.test(err.message)
+          ? "tesseract output is not valid UTF-8"
+          : err instanceof Error
+            ? err.message
+            : String(err);
+      return { lines, code: 1, error: `Error: ${relPng}: ${reason}` };
+    }
   }
   if (failed > 0) {
     lines.push(`[FAIL] ${failed}/${total} figure(s) failed label OCR verification.`);

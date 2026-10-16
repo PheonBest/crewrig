@@ -9,6 +9,13 @@
 // Finding lines (stdout): `  ❌ [FAIL] Missing label: '<label>'`,
 // `  ❌ [FAIL] Label out of order: '<label>' found at cluster <i> (x=<n>px), expected after cluster <j>`,
 // a `[FAIL] <k>/<n> figure(s) failed label OCR verification.` summary.
+//
+// Deviations from the Python twin (spec 0259 requirement 24):
+// (j) an error raised while processing a figure (a malformed tesseract TSV integer, invalid
+//     UTF-8 in the tesseract output) flushes the lines already produced to stdout, prints one
+//     `Error: <png path>: <reason>` line on stderr and exits 1; Python printed a traceback.
+// (k) symlinked sidecars and symlinked directories under docs/assets are not traversed.
+// (l) the TSV integer parser accepts ASCII digits only (Python int() accepts any Unicode digit).
 
 import path from "node:path";
 import {
@@ -16,12 +23,13 @@ import {
   SKIP_NOTE,
   tesseractAvailable,
 } from "./lib/governance/figure-labels.ts";
-import { ok } from "./lib/governance/report.ts";
+import { fatal, ok } from "./lib/governance/report.ts";
 
 if (!tesseractAvailable()) {
   ok(SKIP_NOTE);
 } else {
   const outcome = checkFigureLabels(path.resolve(import.meta.dirname, ".."));
   for (const line of outcome.lines) ok(line);
+  if (outcome.error !== undefined) fatal(outcome.error);
   process.exitCode = outcome.code;
 }
