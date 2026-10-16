@@ -13,6 +13,8 @@ import {
   type EntryBox,
   type EntryCase,
 } from "./lib/e2e-entry-diff.ts";
+import { REPO_ROOT } from "./lib/e2e-normalise.ts";
+import { shellLegSkipReason } from "./lib/e2e-shim.ts";
 
 const skip = shellLegPrerequisites() ?? false;
 
@@ -226,12 +228,18 @@ const cases: EntryCase[] = [
 
 describe("e2e auth entries: shell leg vs TypeScript leg", { skip }, () => {
   for (const c of cases) {
-    it(c.id, { skip: !entryExists(c, "entry") }, () => {
-      const sh = runEntry(c, "shell");
-      const ts = runEntry(c, "entry");
-      assert.ok(sh !== null && ts !== null);
-      assert.deepEqual(ts, sh);
-    });
+    it(
+      c.id,
+      {
+        skip: !entryExists(c, "entry") || shellLegSkipReason(path.join(REPO_ROOT, `${c.file}.sh`)),
+      },
+      () => {
+        const sh = runEntry(c, "shell");
+        const ts = runEntry(c, "entry");
+        assert.ok(sh !== null && ts !== null);
+        assert.deepEqual(ts, sh);
+      },
+    );
   }
 
   const probe = (id: string) => cases.find((c) => c.id === id) as EntryCase;

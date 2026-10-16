@@ -15,6 +15,7 @@ import path from "node:path";
 
 import { writeLauncher, type FixtureEntry } from "./e2e-docker-standin.ts";
 import { REPO_ROOT, normalise, normaliseArgv } from "./e2e-normalise.ts";
+import { isForwardingShim } from "./e2e-shim.ts";
 import { findTool } from "./hermetic-env.ts";
 
 export type Leg = "shell" | "entry";
@@ -64,7 +65,10 @@ export function shellLegPrerequisites(): string | null {
 }
 
 export function entryExists(c: EntryCase, leg: Leg): boolean {
-  return fs.existsSync(path.join(REPO_ROOT, `${c.file}.${leg === "shell" ? "sh" : "ts"}`));
+  const file = path.join(REPO_ROOT, `${c.file}.${leg === "shell" ? "sh" : "ts"}`);
+  // A forwarding shim is not a shell implementation: there is no shell leg to compare with.
+  if (leg === "shell" && isForwardingShim(file)) return false;
+  return fs.existsSync(file);
 }
 
 function walk(dir: string, base: string, out: Record<string, { content: string; mode: string }>) {

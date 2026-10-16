@@ -9,6 +9,7 @@ import { describe, it } from "node:test";
 import {
   copilotStandIn,
   hostLacksProbeTools,
+  shellLegUnavailable,
   runProbe,
   shStandIn,
   type CopilotMode,
@@ -16,6 +17,8 @@ import {
 } from "./lib/e2e-probe-blackbox.ts";
 
 const SCRIPT = "probe-extension-hooks";
+const legSkip = (leg: "shell" | "entry"): string | false =>
+  hostLacksProbeTools() || (leg === "shell" && shellLegUnavailable(SCRIPT));
 const AGY_DOC = ".gemini/antigravity-cli/builtin/skills/agy-customizations/docs/hooks.md";
 const AGY_DOC_TEXT =
   "The working directory is set to the directory containing hooks.json.\nDefaults to `30` seconds.\n";
@@ -64,7 +67,7 @@ function assertClean(run: ProbeRun, seeded: readonly string[] = []): void {
 const withoutR10 = (text: string): string => text.replace(/^ {2}R10 time-unit check.*\n/m, "");
 
 for (const leg of LEGS)
-  describe(`probe-extension-hooks black box (${leg} leg)`, { skip: hostLacksProbeTools() }, () => {
+  describe(`probe-extension-hooks black box (${leg} leg)`, { skip: legSkip(leg) }, () => {
     const probe = (o: Options = {}): ProbeRun => probeOn(leg, o);
     describe("all four CLIs present", () => {
       it("B1A when the root hooks.json fires: verdict, extra probes, exit 0, nothing left", () => {
@@ -197,27 +200,31 @@ for (const leg of LEGS)
     });
   });
 
-describe("probe-extension-hooks: both legs agree", { skip: hostLacksProbeTools() }, () => {
-  const cases: readonly [string, Options][] = [
-    ["B1A root", { copilot: "root" }],
-    ["B1A subdir", { copilot: "subdir" }],
-    ["B2", { copilot: "none" }],
-    ["B3", { copilot: "fail" }],
-    ["no claude evidence", { claudeEvidence: false }],
-    ["no agy doc", { agyDoc: false }],
-    ["claude missing", { missing: ["claude"] }],
-    ["all missing", { missing: ["claude", "gemini", "agy", "copilot"] }],
-  ];
-  for (const [name, o] of cases) {
-    it(`same status, streams, files, calls and leftovers: ${name}`, () => {
-      const sh = probeOn("shell", o);
-      const ts = probeOn("entry", o);
-      assert.equal(ts.status, sh.status);
-      assert.equal(withoutR10(ts.stdout), withoutR10(sh.stdout));
-      assert.equal(ts.stderr, sh.stderr);
-      assert.deepEqual(ts.files, sh.files);
-      assert.equal(ts.calls, sh.calls);
-      assert.deepEqual(ts.tmpLeft, sh.tmpLeft);
-    });
-  }
-});
+describe(
+  "probe-extension-hooks: both legs agree",
+  { skip: hostLacksProbeTools() || shellLegUnavailable(SCRIPT) },
+  () => {
+    const cases: readonly [string, Options][] = [
+      ["B1A root", { copilot: "root" }],
+      ["B1A subdir", { copilot: "subdir" }],
+      ["B2", { copilot: "none" }],
+      ["B3", { copilot: "fail" }],
+      ["no claude evidence", { claudeEvidence: false }],
+      ["no agy doc", { agyDoc: false }],
+      ["claude missing", { missing: ["claude"] }],
+      ["all missing", { missing: ["claude", "gemini", "agy", "copilot"] }],
+    ];
+    for (const [name, o] of cases) {
+      it(`same status, streams, files, calls and leftovers: ${name}`, () => {
+        const sh = probeOn("shell", o);
+        const ts = probeOn("entry", o);
+        assert.equal(ts.status, sh.status);
+        assert.equal(withoutR10(ts.stdout), withoutR10(sh.stdout));
+        assert.equal(ts.stderr, sh.stderr);
+        assert.deepEqual(ts.files, sh.files);
+        assert.equal(ts.calls, sh.calls);
+        assert.deepEqual(ts.tmpLeft, sh.tmpLeft);
+      });
+    }
+  },
+);

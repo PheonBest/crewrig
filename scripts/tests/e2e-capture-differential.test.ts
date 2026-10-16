@@ -12,6 +12,8 @@ import {
   type EntryCase,
   type EntryTuple,
 } from "./lib/e2e-entry-diff.ts";
+import { REPO_ROOT } from "./lib/e2e-normalise.ts";
+import { shellLegSkipReason } from "./lib/e2e-shim.ts";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -127,7 +129,7 @@ const gemini: EntryCase[] = [
 
 describe("e2e capture and gemini smoke: shell leg versus TypeScript twin", { skip }, () => {
   for (const c of [...capture, ...gemini]) {
-    it(c.id, (t) => {
+    it(c.id, { skip: shellLegSkipReason(path.join(REPO_ROOT, `${c.file}.sh`)) }, (t) => {
       const ts = runEntry(c, "entry");
       if (ts === null) return t.todo("no TypeScript twin yet");
       const sh = runEntry(c, "shell");
