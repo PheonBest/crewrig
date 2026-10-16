@@ -11,6 +11,8 @@ import path from "node:path";
 import { after, describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { shellLegSkipReason } from "./lib/e2e-shim.ts";
+
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const shellProbe = path.join(repo, "scripts/probe-antigravity-discovery.sh");
 const tsProbe = path.join(repo, "scripts/probe-antigravity-discovery.ts");
@@ -51,7 +53,8 @@ esac
 );
 
 const hasBash = spawnSync("bash", ["--version"]).status === 0;
-const shellSkip = hasBash ? false : "the shell leg needs bash on the PATH";
+const shellSkip =
+  (hasBash ? false : "the shell leg needs bash on the PATH") || shellLegSkipReason(shellProbe);
 
 interface Run {
   readonly stdout: string;

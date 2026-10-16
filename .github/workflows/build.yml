@@ -1682,6 +1682,16 @@ jobs:
         if: steps.filter.outputs.e2e == 'true'
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
+        with:
+          node-version: 24
+      - name: Install the production dependencies
+        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
+        run: npm ci --omit=dev --workspaces=false
+      - name: Floor guard accepts Node.js 24
+        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
+        run: node scripts/lib/node-floor-guard.js
       - name: Test E2E Assert Lib
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-assert-lib.sh
@@ -1754,16 +1764,6 @@ jobs:
       - name: Test E2E Versions Lock
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-versions-lock.sh
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
-        with:
-          node-version: 24
-      - name: Install the production dependencies
-        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Floor guard accepts Node.js 24
-        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
-        run: node scripts/lib/node-floor-guard.js
       - name: Test E2E Docker Stand-in And Oracle
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-docker-standin.test.ts scripts/tests/e2e-oracle-scenarios.test.ts scripts/tests/e2e-oracle-libs.test.ts scripts/tests/e2e-oracle-judge.test.ts scripts/tests/e2e-libs-differential.test.ts scripts/tests/e2e-auth-differential.test.ts scripts/tests/e2e-publisher-differential.test.ts scripts/tests/e2e-publisher-differential-edge.test.ts scripts/tests/e2e-capture-differential.test.ts scripts/tests/e2e-toml-subset.test.ts scripts/tests/e2e-judge-differential.test.ts scripts/tests/e2e-runner-differential.test.ts scripts/tests/e2e-scenario-05-differential.test.ts scripts/tests/e2e-scenario-06-differential.test.ts scripts/tests/e2e-scenario-07-differential.test.ts scripts/tests/e2e-probe-hooks-blackbox.test.ts scripts/tests/e2e-probe-mcp-token-blackbox.test.ts scripts/tests/e2e-probe-antigravity-differential.test.ts scripts/tests/e2e-usage-headless.test.ts
@@ -3211,6 +3211,35 @@ jobs:
       # `.cmd` launch refusals.
       - name: Skill scripts proof
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/windows-skill-scripts.test.ts
+
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
+
+  # Spec 0261 R17, R20, R21 (ticket #1342): the end-to-end harness entries from pwsh and cmd.exe on
+  # Windows. No path filter, like the Windows jobs above. Docker-driving scenarios are POSIX only.
+  windows-e2e-harness:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install production dependencies
+        run: npm ci --omit=dev --workspaces=false
+
+      - name: Floor guard accepts Node.js 24
+        run: node scripts/lib/node-floor-guard.js
+
+      # Runs the runner dry run, toml_merge, report, the verdict publisher dry run, the docker
+      # diagnostics and the three probes (no vendor CLI) through pwsh and cmd.exe.
+      - name: End-to-end harness proof
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/windows-e2e-harness.test.ts
 
       - name: Cancel workflow on job failure
         if: failure()

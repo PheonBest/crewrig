@@ -12,6 +12,7 @@ import path from "node:path";
 import { describe, it } from "node:test";
 
 import { REPO_ROOT, shellPrerequisites } from "./lib/e2e-oracle-observe.ts";
+import { shellLegSkipReason } from "./lib/e2e-shim.ts";
 
 const NODE_FLAG = "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON";
 const LOCAL_TOML = '[scenarios.01-layered-context]\napplies_to = ["claude"]\n';
@@ -88,6 +89,7 @@ function runLeg(kind: "shell" | "entry", args: string[], local: boolean, seed: s
 }
 
 const skip = shellPrerequisites() ?? false;
+const shimSkip = shellLegSkipReason(path.join(REPO_ROOT, "tests/e2e/run.sh"));
 
 describe("e2e runner: shell and entry agree", { skip }, () => {
   const cases: Array<{ name: string; args: string[]; local?: boolean; seed?: string[] }> = [
@@ -110,7 +112,7 @@ describe("e2e runner: shell and entry agree", { skip }, () => {
     { name: "missing credential skips", args: ["--cli", "claude"] },
   ];
   for (const c of cases) {
-    it(c.name, () => {
+    it(c.name, { skip: shimSkip }, () => {
       const shell = runLeg("shell", c.args, c.local ?? false, c.seed ?? []);
       const entry = runLeg("entry", c.args, c.local ?? false, c.seed ?? []);
       assert.deepEqual(entry, shell);

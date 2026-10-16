@@ -2,6 +2,7 @@
 // four arms in order, and scratch cleanup in a finally. Returns the exit status.
 
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 import { findOnPath } from "../../../tests/e2e/lib/exec.ts";
@@ -38,7 +39,9 @@ export function runProbe(ctx: ProbeContext): number {
   geminiArm(ctx);
   agyArm(ctx);
 
-  const work = fs.mkdtempSync(path.join(ctx.env["TMPDIR"] || "/tmp", "tmp."));
+  const work = fs.mkdtempSync(
+    path.join(ctx.env["TMPDIR"] || (process.platform === "win32" ? os.tmpdir() : "/tmp"), "tmp."),
+  );
   try {
     copilotArm(ctx, copilotBin, Number.isFinite(seconds) ? seconds : 120, work);
   } finally {

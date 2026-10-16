@@ -15,6 +15,7 @@ import { describe, it } from "node:test";
 
 import { writeLauncher } from "./lib/e2e-docker-standin.ts";
 import { REPO_ROOT, shellPrerequisites } from "./lib/e2e-oracle-observe.ts";
+import { shellLegSkipReason } from "./lib/e2e-shim.ts";
 
 const NODE_FLAG = "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON";
 const RUN_ID = "20000101T000000Z-0000";
@@ -138,6 +139,7 @@ function runLeg(kind: "shell" | "entry", local: string, fixtures: Fx[]): Result 
 }
 
 const skip = shellPrerequisites() ?? false;
+const shimSkip = shellLegSkipReason(path.join(REPO_ROOT, "tests/e2e/run.sh"));
 
 describe("scenario 05: shell and entry agree", { skip }, () => {
   const cases: Array<{
@@ -201,7 +203,7 @@ describe("scenario 05: shell and entry agree", { skip }, () => {
     },
   ];
   for (const c of cases) {
-    it(c.name, () => {
+    it(c.name, { skip: shimSkip }, () => {
       const shell = runLeg("shell", c.local, c.fixtures);
       const entry = runLeg("entry", c.local, c.fixtures);
       assert.deepEqual(entry, shell);

@@ -8,6 +8,7 @@ import { describe, it } from "node:test";
 import { findTool } from "./lib/hermetic-env.ts";
 import {
   hostLacksProbeTools,
+  shellLegUnavailable,
   runProbe,
   shStandIn,
   type ProbeRun,
@@ -20,7 +21,10 @@ const HAS_JQ = findTool("jq") !== undefined;
 type Leg = "shell" | "entry";
 const LEGS: readonly Leg[] = ["shell", "entry"];
 const needsJq = (leg: Leg): string | false =>
-  leg === "shell" && !HAS_JQ ? "skipped: the shell probe needs jq and the host has none" : false;
+  leg !== "shell"
+    ? false
+    : shellLegUnavailable(SCRIPT) ||
+      (HAS_JQ ? false : "skipped: the shell probe needs jq and the host has none");
 
 interface Options {
   readonly args?: readonly string[];

@@ -1473,6 +1473,32 @@ capabilities:
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0258 R27).
 
+  # Spec 0261 R17, R20, R21 (ticket #1342): the end-to-end harness entries from a non-POSIX
+  # interpreter. scripts/tests/windows-e2e-harness.test.ts runs the runner dry run, toml_merge,
+  # report, the verdict publisher dry run, the docker diagnostics and the three probes (no vendor
+  # CLI) through pwsh and cmd.exe; a direct leg runs the same assertions on any host. No `paths:`
+  # filter, like the Windows jobs above.
+  - id: windows-e2e-harness
+    name: "Windows end-to-end harness entries: production install, floor guard and the cross-system proof"
+    trigger:
+      - on: pull-request
+        branches: [main, "release/**"]
+      - on: push
+        branches: [main, "release/**"]
+    portability: specific
+    exception:
+      engine: github-actions
+      evidence: >
+        Runs on the GitHub-hosted `windows-latest` runner
+        (.github/workflows/build.yml, job `windows-e2e-harness`). GitLab
+        CI, as configured for this repository, exposes no Windows runner:
+        every generated GitLab job derives its `image` from
+        `requires.runtime` through `runtime_to_image`
+        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        images, and .gitlab-ci.yml declares no runner `tags:` that could
+        select a Windows executor. There is no faithful equivalent on the
+        other supported engines (spec 0261 R17, R21).
+
   # Spec 0259 R26-R28 (ticket #1338): the governance-check suites. Linux only. The shell oracle legs
   # retired with the switch PR (the shell originals are forwarding shims), so no jq or yq is
   # needed. The floor guard runs after the production dependency step, before the first test call.
@@ -2460,6 +2486,8 @@ capabilities:
       runtime: [python@3.12, node@24]
       tools: [yq, jq]
     command:
+      - npm ci --omit=dev --workspaces=false
+      - node scripts/lib/node-floor-guard.js
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-assert-lib.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-auth-claude-json.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-auth-common.sh
@@ -2484,8 +2512,6 @@ capabilities:
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-taskfile.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-toml-merge.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-versions-lock.sh
-      - npm ci --omit=dev --workspaces=false
-      - node scripts/lib/node-floor-guard.js
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-docker-standin.test.ts scripts/tests/e2e-oracle-scenarios.test.ts scripts/tests/e2e-oracle-libs.test.ts scripts/tests/e2e-oracle-judge.test.ts scripts/tests/e2e-libs-differential.test.ts scripts/tests/e2e-auth-differential.test.ts scripts/tests/e2e-publisher-differential.test.ts scripts/tests/e2e-publisher-differential-edge.test.ts scripts/tests/e2e-capture-differential.test.ts scripts/tests/e2e-toml-subset.test.ts scripts/tests/e2e-judge-differential.test.ts scripts/tests/e2e-runner-differential.test.ts scripts/tests/e2e-scenario-05-differential.test.ts scripts/tests/e2e-scenario-06-differential.test.ts scripts/tests/e2e-scenario-07-differential.test.ts scripts/tests/e2e-probe-hooks-blackbox.test.ts scripts/tests/e2e-probe-mcp-token-blackbox.test.ts scripts/tests/e2e-probe-antigravity-differential.test.ts scripts/tests/e2e-usage-headless.test.ts
 
   - id: setup

@@ -11,6 +11,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
+import { isForwardingShim } from "./e2e-shim.ts";
 import { findTool, linkTools } from "./hermetic-env.ts";
 
 const SCRIPTS = path.resolve(import.meta.dirname, "..", "..");
@@ -59,6 +60,13 @@ export interface ProbeRun {
 }
 
 export type Subject = { kind: "entry"; file: string } | { kind: "shell"; file: string };
+
+/** A skip reason when the shell leg of `script` is unavailable (the `.sh` is a forwarding shim). */
+export function shellLegUnavailable(script: string): string | false {
+  return isForwardingShim(path.join(SCRIPTS, `${script}.sh`))
+    ? "the .sh is a forwarding shim: the recorded goldens are the oracle once the shell implementation is gone"
+    : false;
+}
 
 /** The subject by file presence: the `.ts` twin when it exists, else the `.sh`. */
 export function subjectOf(script: string, leg?: "shell" | "entry"): Subject {

@@ -9,7 +9,7 @@ tool is delivered." R13 requires each target's own name-collision resolution
 to be recorded with evidence rather than assumed uniform across tools.
 
 This runbook is that procedure's documentation.
-`scripts/probe-extension-mcp-token.sh` is the procedure.
+`scripts/probe-extension-mcp-token.ts` is the procedure (the `scripts/probe-extension-mcp-token.sh` path is a forwarding shim until its final removal).
 
 ## Why observation and not the vendor guide
 
@@ -27,7 +27,7 @@ unstated — the same lesson spec 0123 already drew for skill/agent discovery.
 ## Running it
 
 ```sh
-bash scripts/probe-extension-mcp-token.sh [q1|q2q3|q4|all]
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/probe-extension-mcp-token.ts [q1|q2q3|q4|all]
 ```
 
 Preconditions: `jq`, `copilot`, `agy`, `claude` on `PATH`; `gh` authenticated
@@ -35,7 +35,7 @@ Preconditions: `jq`, `copilot`, `agy`, `claude` on `PATH`; `gh` authenticated
 probed under an **isolated `HOME`** (their plugin/user config never touches
 the real `~/.copilot` or `~/.claude`). Antigravity is probed against the
 **real** `~/.gemini/config/plugins/` root, mirroring
-`scripts/probe-antigravity-discovery.sh`'s own precedent: Antigravity has no
+`scripts/probe-antigravity-discovery.ts`'s own precedent: Antigravity has no
 per-invocation `--plugin-dir` equivalent that also exercises `agy plugin
 install`'s copy/rewrite behaviour, so the only way to observe the real
 install-and-resolve path is to use it, under a uniquely-named artifact,
