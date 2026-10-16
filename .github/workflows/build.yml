@@ -1760,7 +1760,7 @@ jobs:
         run: node scripts/lib/node-floor-guard.js
       - name: Test E2E Docker Stand-in And Oracle
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-docker-standin.test.ts scripts/tests/e2e-oracle-scenarios.test.ts scripts/tests/e2e-oracle-libs.test.ts scripts/tests/e2e-oracle-judge.test.ts scripts/tests/e2e-libs-differential.test.ts scripts/tests/e2e-auth-differential.test.ts scripts/tests/e2e-publisher-differential.test.ts scripts/tests/e2e-publisher-differential-edge.test.ts scripts/tests/e2e-capture-differential.test.ts scripts/tests/e2e-toml-subset.test.ts scripts/tests/e2e-judge-differential.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-docker-standin.test.ts scripts/tests/e2e-oracle-scenarios.test.ts scripts/tests/e2e-oracle-libs.test.ts scripts/tests/e2e-oracle-judge.test.ts scripts/tests/e2e-libs-differential.test.ts scripts/tests/e2e-auth-differential.test.ts scripts/tests/e2e-publisher-differential.test.ts scripts/tests/e2e-publisher-differential-edge.test.ts scripts/tests/e2e-capture-differential.test.ts scripts/tests/e2e-toml-subset.test.ts scripts/tests/e2e-judge-differential.test.ts scripts/tests/e2e-runner-differential.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
