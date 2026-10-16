@@ -53,6 +53,10 @@ fi
 echo "2. Exact-token (b) — mutate the TRANSLATOR only"
 sandbox="$(make_sandbox)"
 sed -i.bak 's/claude:PreToolUse) echo "PreToolUse" ;;/claude:PreToolUse) echo "WrongEvent" ;;/' "$sandbox/scripts/lib/extension-hooks.sh"
+# Same mutation on the TypeScript twin (the claude row of TARGET_EVENTS); tolerant when absent.
+if [ -f "$sandbox/scripts/lib/extension/hooks-vocab.ts" ]; then
+  sed -i.bak 's/claude: { PreToolUse: "PreToolUse",/claude: { PreToolUse: "WrongEvent",/' "$sandbox/scripts/lib/extension/hooks-vocab.ts"
+fi
 out="$( cd "$sandbox" && bash scripts/check-extension-hook-map.sh 2>&1 )"
 rc=$?
 if [ "$rc" -ne 0 ] && echo "$out" | grep -q "PreToolUse" && echo "$out" | grep -q "claude"; then
@@ -79,6 +83,10 @@ fi
 echo "4. Growth (d) — add an event to the translator with no table row"
 sandbox="$(make_sandbox)"
 sed -i.bak 's/EXT_HOOKS_KNOWN_EVENTS="PreToolUse UserPromptSubmit"/EXT_HOOKS_KNOWN_EVENTS="PreToolUse UserPromptSubmit NeverInTheTable"/' "$sandbox/scripts/lib/extension-hooks.sh"
+# Same mutation on the TypeScript twin (the EXT_HOOKS_KNOWN_EVENTS array literal); tolerant when absent.
+if [ -f "$sandbox/scripts/lib/extension/hooks-vocab.ts" ]; then
+  sed -i.bak 's/\["PreToolUse", "UserPromptSubmit"\]/["PreToolUse", "UserPromptSubmit", "NeverInTheTable"]/' "$sandbox/scripts/lib/extension/hooks-vocab.ts"
+fi
 out="$( cd "$sandbox" && bash scripts/check-extension-hook-map.sh 2>&1 )"
 rc=$?
 if [ "$rc" -ne 0 ] && echo "$out" | grep -q "NeverInTheTable"; then

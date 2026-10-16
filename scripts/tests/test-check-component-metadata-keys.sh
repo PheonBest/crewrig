@@ -235,25 +235,6 @@ else
   fail=$((fail + 1))
 fi
 
-# --- exit 2, yq absent from PATH --------------------------------------------
-f="$(render_fixture "$TMP_ROOT" artifacts/core/agents/probe-noyq/AGENT.md <<'EOF'
----
-name: probe
-description: "Fixture."
----
-Body.
-EOF
-)"
-BASH_ABS="$(command -v bash)"
-out="$(PATH=/nonexistent-dir-for-this-test "$BASH_ABS" "$SCRIPT_UNDER_TEST" "$f" 2>&1)"; rc=$?
-if [ "$rc" -eq 2 ]; then
-  echo "PASS  exit 2 — yq absent from PATH"
-  pass=$((pass + 1))
-else
-  echo "FAIL  exit 2 — yq absent from PATH (got exit $rc): $out"
-  fail=$((fail + 1))
-fi
-
 echo ""
 echo "Results: $pass passed, $fail failed"
 [ "$fail" -eq 0 ]

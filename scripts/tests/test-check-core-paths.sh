@@ -196,6 +196,28 @@ for name in demo; do
 done
 '
 
+# ts_twin_of BODY — derive the TypeScript twin `scripts/build-components.ts` of a
+# stub `scripts/build-components.sh` body, from that SAME body, so the two cannot
+# drift. Only the `--list-output-dirs` block is translated: `echo X` becomes
+# console.log, `echo X >&2` becomes console.error, `exit N` becomes process.exit.
+# Lines outside the block (call sites) are carried over as comments.
+ts_twin_of() {
+  printf '%s\n' "$1" | awk '
+    BEGIN { print "#!/usr/bin/env node"; inblk = 0 }
+    NR == 1 { next }
+    /^if \[ "\$1" = "--list-output-dirs" \]; then$/ { print "if (process.argv[2] === \"--list-output-dirs\") {"; inblk = 1; next }
+    inblk && /^fi$/ { print "}"; inblk = 0; next }
+    inblk {
+      line = $0; sub(/^ +/, "", line)
+      if (line ~ /^echo .* >&2$/) { sub(/^echo /, "", line); sub(/ >&2$/, "", line); print "  console.error(" line ");"; next }
+      if (line ~ /^echo /)        { sub(/^echo /, "", line); print "  console.log(" line ");"; next }
+      if (line ~ /^exit [0-9]+$/) { sub(/^exit /, "", line); print "  process.exit(" line ");"; next }
+      next
+    }
+    { print "// " $0 }
+  '
+}
+
 # ---------------------------------------------------------------------------
 # Case a — Phantom strict entry → exit 1, stderr names the failing entry.
 # ---------------------------------------------------------------------------
@@ -204,7 +226,8 @@ done
   init_git_repo "$repo"
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
-    "scripts/build-components.sh" "$BUILD_STUB_NONE"
+    "scripts/build-components.sh" "$BUILD_STUB_NONE" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NONE")"
   write_manifest "$repo" $'real.txt\tstrict\nphantom.txt\tstrict\n'
 
   run_check "$repo"
@@ -235,7 +258,8 @@ done
   init_git_repo "$repo"
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
-    "scripts/build-components.sh" "$BUILD_STUB_NONE"
+    "scripts/build-components.sh" "$BUILD_STUB_NONE" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NONE")"
   write_manifest "$repo" $'real.txt\tstrict\nphantom.txt\tadopt-on-edit\n'
 
   run_check "$repo"
@@ -267,7 +291,8 @@ done
   make_initial_commit "$repo" \
     "real.txt"  "tracked content" \
     "other.txt" "other tracked content" \
-    "scripts/build-components.sh" "$BUILD_STUB_NONE"
+    "scripts/build-components.sh" "$BUILD_STUB_NONE" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NONE")"
   write_manifest "$repo" $'real.txt\tstrict\nother.txt\tadopt-on-edit\n'
 
   run_check "$repo"
@@ -300,7 +325,8 @@ done
   init_git_repo "$repo"
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
-    "scripts/build-components.sh" "$BUILD_STUB_NONE"
+    "scripts/build-components.sh" "$BUILD_STUB_NONE" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NONE")"
   # phantom-excluded.txt resolves nowhere at HEAD, but `excluded` is skipped.
   write_manifest "$repo" $'real.txt\tstrict\nphantom-excluded.txt\texcluded\n'
 
@@ -337,7 +363,8 @@ done
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
     ".newcli/skills/demo/SKILL.md" "built output" \
-    "scripts/build-components.sh" "$BUILD_STUB_NEWCLI"
+    "scripts/build-components.sh" "$BUILD_STUB_NEWCLI" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NEWCLI")"
   # The manifest never mentions .newcli/skills — the whole point of the case.
   write_manifest "$repo" $'real.txt\tstrict\n'
 
@@ -373,7 +400,8 @@ done
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
     ".newcli/skills/demo/SKILL.md" "built output" \
-    "scripts/build-components.sh" "$BUILD_STUB_NEWCLI"
+    "scripts/build-components.sh" "$BUILD_STUB_NEWCLI" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NEWCLI")"
   write_manifest "$repo" $'real.txt\tstrict\n.newcli/skills\tstrict\n'
 
   run_check "$repo"
@@ -403,7 +431,8 @@ done
   init_git_repo "$repo"
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
-    "scripts/build-components.sh" "$BUILD_STUB_UNCLASSIFIABLE"
+    "scripts/build-components.sh" "$BUILD_STUB_UNCLASSIFIABLE" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_UNCLASSIFIABLE")"
   write_manifest "$repo" $'real.txt\tstrict\n'
 
   run_check "$repo"
@@ -442,7 +471,8 @@ done
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
     ".newcli/skills/demo/SKILL.md" "built output" \
-    "scripts/build-components.sh" "$BUILD_STUB_NEWCLI"
+    "scripts/build-components.sh" "$BUILD_STUB_NEWCLI" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NEWCLI")"
   # .newcli is strict, but the excluded child carves the built output back out.
   write_manifest "$repo" $'real.txt\tstrict\n.newcli\tstrict\n.newcli/skills\texcluded\n'
 
@@ -559,7 +589,8 @@ done
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
     ".newcli/skills/demo/SKILL.md" "built output" \
-    "scripts/build-components.sh" "$BUILD_STUB_NESTED_CALL"
+    "scripts/build-components.sh" "$BUILD_STUB_NESTED_CALL" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NESTED_CALL")"
   write_manifest "$repo" $'real.txt\tstrict\n'
 
   run_check "$repo"
@@ -602,7 +633,8 @@ done
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
     ".newcli/skills/demo/SKILL.md" "built output" \
-    "scripts/build-components.sh" "$BUILD_STUB_NEWCLI"
+    "scripts/build-components.sh" "$BUILD_STUB_NEWCLI" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NEWCLI")"
   write_manifest "$repo" $'real.txt\tstrict\n.newcli\texcluded\n.newcli/skills\tstrict\n'
 
   run_check "$repo"
@@ -634,7 +666,8 @@ done
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
     ".newcli/skills/demo/SKILL.md" "built output" \
-    "scripts/build-components.sh" "$BUILD_STUB_INDENTED_COMMENT"
+    "scripts/build-components.sh" "$BUILD_STUB_INDENTED_COMMENT" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_INDENTED_COMMENT")"
   write_manifest "$repo" $'real.txt\tstrict\n'
 
   run_check "$repo"
@@ -671,7 +704,8 @@ done
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
     ".newcli/skills/demo/SKILL.md" "built output" \
-    "scripts/build-components.sh" "$BUILD_STUB_NEWCLI"
+    "scripts/build-components.sh" "$BUILD_STUB_NEWCLI" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NEWCLI")"
   write_manifest "$repo" $'real.txt\tstrict\n.newcli/skills\tregenerable\n'
 
   run_check "$repo"
@@ -697,7 +731,8 @@ done
   init_git_repo "$repo"
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
-    "scripts/build-components.sh" "$BUILD_STUB_NONE"
+    "scripts/build-components.sh" "$BUILD_STUB_NONE" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NONE")"
   write_manifest "$repo" $'real.txt\tstrict\n.newcli/skills\tregenerable\n'
 
   run_check "$repo"
@@ -730,7 +765,8 @@ done
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
     "model-mappings/claude.yml" "core mapping content" \
-    "scripts/build-components.sh" "$BUILD_STUB_NONE"
+    "scripts/build-components.sh" "$BUILD_STUB_NONE" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NONE")"
   write_manifest "$repo" $'real.txt\tstrict\n'
 
   run_check "$repo"
@@ -765,7 +801,8 @@ done
     "real.txt" "tracked content" \
     "model-mappings/claude.yml" "core mapping content" \
     "model-mappings/claude.org.yml" "org channel content" \
-    "scripts/build-components.sh" "$BUILD_STUB_NONE"
+    "scripts/build-components.sh" "$BUILD_STUB_NONE" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NONE")"
   write_manifest "$repo" $'real.txt\tstrict\nmodel-mappings/claude.org.yml\texcluded\n'
 
   run_check "$repo"
@@ -791,7 +828,8 @@ done
   make_initial_commit "$repo" \
     "real.txt" "tracked content" \
     "model-mappings/onlyorg.org.yml" "org-only channel content" \
-    "scripts/build-components.sh" "$BUILD_STUB_NONE"
+    "scripts/build-components.sh" "$BUILD_STUB_NONE" \
+    "scripts/build-components.ts" "$(ts_twin_of "$BUILD_STUB_NONE")"
   write_manifest "$repo" $'real.txt\tstrict\n'
 
   run_check "$repo"

@@ -51,7 +51,7 @@
 #     S10c Reference validity: portable without command.
 #     S10d Reference validity: portable with an unmet requirement.
 #     R4d  Missing fetch-depth: 0 where requires history-depth: full.
-#     R4t  Missing tool install (yq).
+#     R4t  Missing tool install (tesseract).
 #     R4r  Wrong runtime version (node-version).
 #     S12  Negative twin of P6: `python3` required, no setup-python AND no
 #          explicit install → still fails closed (guards against
@@ -471,18 +471,21 @@ refute_in() {
 }
 
 # ---------------------------------------------------------------------------
-# R4t — Missing tool install (yq) for a capability that requires it.
+# R4t — Missing tool install (tesseract) for a capability that requires it.
+# Retargeted from check-feedback-routing: once that job drops its "Install yq"
+# step (yq no longer a requires.tools entry), figure-labels is the remaining
+# capability whose tool needs an explicit install recipe.
 # ---------------------------------------------------------------------------
 {
   f="$(make_fixture)"
-  # check-feedback-routing GHA job step[1] is the "Install yq" recipe.
-  yq -i 'del(.jobs.check-feedback-routing.steps[1])' \
+  # figure-labels GHA job step[2] is the "Install tesseract" recipe.
+  yq -i 'del(.jobs."figure-labels".steps[2])' \
     "$f/.github/workflows/build.yml"
 
   run_check "$f"
   expect_exit 1 "R4t: missing tool install fails closed"
-  expect_in err "check-feedback-routing" "R4t: names the capability"
-  expect_in err "requires tool 'yq'"     "R4t: names the unmet tool requirement"
+  expect_in err "figure-labels"          "R4t: names the capability"
+  expect_in err "requires tool 'tesseract'" "R4t: names the unmet tool requirement"
 }
 
 # ---------------------------------------------------------------------------
