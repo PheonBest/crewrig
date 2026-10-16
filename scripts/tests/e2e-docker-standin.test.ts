@@ -9,7 +9,7 @@ import path from "node:path";
 import { afterEach, describe, it } from "node:test";
 
 import { writeLauncher } from "./lib/e2e-docker-standin.ts";
-import { normalise, normaliseArgv } from "./lib/e2e-normalise.ts";
+import { REPO_ROOT, normalise, normaliseArgv } from "./lib/e2e-normalise.ts";
 
 const dirs: string[] = [];
 afterEach(() => dirs.splice(0).forEach((d) => fs.rmSync(d, { recursive: true, force: true })));
@@ -127,6 +127,7 @@ describe("normalise", () => {
       "name crewrig-e2e-claude-20260102T030405Z-ab12",
       "tmp /scratch/t/tmp/crewrig-e2e-probe-b.tnKtFY:/x",
       "nonce crewrig-probe-b-baseline-0123456789abcdef",
+      `repo ${REPO_ROOT}/tests/e2e/run.sh`,
     ].join("\n");
     assert.equal(
       normalise(text, ctx),
@@ -141,6 +142,7 @@ describe("normalise", () => {
         "name <CONTAINER>",
         "tmp <TMP>/tmp/crewrig-e2e-probe-b.<RAND>:/x",
         "nonce crewrig-probe-b-baseline-<NONCE>",
+        "repo <REPO>/tests/e2e/run.sh",
       ].join("\n"),
     );
   });

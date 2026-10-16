@@ -1,6 +1,7 @@
 // e2e-normalise.ts — placeholders for the end-to-end harness oracle (spec 0261 R5, R7, R8).
 //
 // Rules, applied in this order (longest first, so a path is named before the directory it sits in):
+//   0. the repository root (the checkout the oracle runs from)   -> <REPO>
 //   1. node executable path (ctx.node, default process.execPath) -> <NODE>
 //   2. scratch dirs ctx.tmp and its realpath               -> <TMP>
 //   3. ctx.e2eHome                                           -> <E2E_HOME>
@@ -13,6 +14,10 @@
 //  10. probe nonces `crewrig-probe-<x>-<word>-<16 hex>`        -> <NONCE>
 
 import fs from "node:fs";
+import path from "node:path";
+
+/** The checkout root: a path in a golden must not depend on where the oracle ran (/work, /home/runner/...). */
+export const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
 
 export interface NormaliseContext {
   readonly tmp: string;
@@ -38,6 +43,7 @@ function real(dir: string): string {
 
 export function normalise(text: string, ctx: NormaliseContext): string {
   const named: Array<[string, string]> = [
+    [REPO_ROOT, "<REPO>"],
     [ctx.node ?? process.execPath, "<NODE>"],
     [ctx.tmp, "<TMP>"],
     [real(ctx.tmp), "<TMP>"],
