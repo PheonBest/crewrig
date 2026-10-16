@@ -2669,6 +2669,9 @@ jobs:
       - name: Both entries run, each CLI and Antigravity surface command line launches through its interpreter, guarded-form b1-b3 legs
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-capture-windows.test.ts
 
+      - name: Install dependencies (ajv for the schema and derivation suites)
+        run: npm ci
+
       - name: Usage record schema, derivation, headless and backfill suites (POSIX-only files skip themselves)
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-record-schema.test.ts scripts/tests/usage-capture-derivation.test.ts scripts/tests/usage-capture-headless.test.ts scripts/tests/usage-capture-backfill.test.ts
 
