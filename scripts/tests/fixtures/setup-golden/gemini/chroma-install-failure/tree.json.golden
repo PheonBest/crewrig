@@ -26,7 +26,7 @@
     {"path":"<HOME>/.mempalace","kind":"dir"},
     {"path":"<HOME>/.mempalace/palace","kind":"dir"},
     {"path":"<REPO>/.crewrig-state","kind":"dir"},
-    {"path":"<REPO>/.crewrig-state/production-deps.sha256","kind":"file","mode":"0600","sha256":"344db3f739063179909376ea1a0370f4ecf094efc489188e278c90cbbbb6e8ba"}
+    {"path":"<REPO>/.crewrig-state/production-deps.sha256","kind":"file","mode":"0600","sha256":"2a95986b778fe580a34a96cabc9d9661eb0c1f10e3aa46b9c5f086272430fdf6"}
   ],
   "bakCount": {},
   "fzf": [

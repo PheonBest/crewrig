@@ -64,6 +64,12 @@ export interface SetupSandbox {
   dispose(): void;
 }
 
+/** The lockfile every setup sandbox carries; stored with a `.golden` suffix so tooling ignores it. */
+export const LOCK_FIXTURE = path.join(
+  REPO,
+  "scripts/tests/fixtures/setup-golden/package-lock.json.golden",
+);
+
 const live = new Set<() => void>();
 after(() => live.forEach((dispose) => dispose()));
 
@@ -77,7 +83,9 @@ function buildRepo(repo: string, options: SetupSandboxOptions): void {
   fs.rmSync(path.join(repo, ".git"), { recursive: true, force: true });
   const init = spawnSync("git", ["init", "-q", repo], { encoding: "utf8" });
   if (init.status !== 0) throw new Error(`git init failed: ${init.stderr}`);
-  fs.copyFileSync(path.join(REPO, "package-lock.json"), path.join(repo, "package-lock.json"));
+  // A fixed one-package lockfile: the dependency step stamps its sha256 into the goldens, so the
+  // repository's real `package-lock.json` must never reach the sandbox (issue #1614).
+  fs.copyFileSync(LOCK_FIXTURE, path.join(repo, "package-lock.json"));
   const identity = /\/config\/(SOUL|PROFILE)\.md$/;
   copy("config", repo, (src) => !identity.test(src));
   copy("hooks", repo);
