@@ -280,7 +280,7 @@ function isNonNegativeNumber(v) {
 // schemas/usage-record/v1.schema.json (ajv is a devDependency, unavailable
 // in a hook's own process) — but sink.js's own header states the invariant
 // this function MUST uphold regardless: it never passes a record the merged
-// schema rejects (scripts/tests/test-usage-capture.sh proves it against
+// schema rejects (scripts/tests/usage-capture-headless.test.ts proves it against
 // every scripts/tests/fixtures/usage-records/mutants/*.json and
 // derivation/recordid-mismatch.json). Returns { ok: true } or
 // { ok: false, reason }.

@@ -2,7 +2,7 @@
 -- token values. The sibling home/.copilot/session-state/<session_id>/events.jsonl
 -- fixture carries a "session.start" line (legitimately read, for
 -- copilotVersion ONLY) and a decoy "usage.poison" line carrying an
--- obviously-wrong token value (999999999). scripts/tests/test-usage-capture.sh
+-- obviously-wrong token value (999999999). scripts/tests/usage-capture-derivation.test.ts
 -- asserts the derived record's tokens equal THIS file's own columns, never the
 -- poison value — proving events.jsonl is never opened for a token value.
 

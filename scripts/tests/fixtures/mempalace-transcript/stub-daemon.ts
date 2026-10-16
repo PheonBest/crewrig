@@ -1,5 +1,5 @@
 // stub-daemon.ts — a loopback stand-in for the shared MemPalace MCP HTTP
-// daemon (ADR-0016), used by scripts/tests/test-mempalace-transcript-hook.sh
+// daemon (ADR-0016), used by scripts/tests/mempalace-transcript-*.test.ts
 // (spec 0247 R32, issue #1329) and, later, by the golden differential of the
 // TypeScript transcript hook. It never talks to the real daemon at
 // 127.0.0.1:41893: it binds an ephemeral loopback port and reports it.

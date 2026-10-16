@@ -89,7 +89,7 @@ contract — never flowing back upstream.
 
 | Path | Description |
 |---|---|
-| `schemas/` | The CLI-agnostic, versioned contract for a unit of model-token consumption (`schemas/usage-record/v1.schema.json`, JSON Schema draft 2020-12) plus its per-CLI conforming samples (`schemas/usage-record/samples/`). Core/`strict`; its normative shape is `docs/usage-record-format.md`; its hermetic gate is `scripts/lib/usage-record-validator.js` run by `scripts/tests/test-usage-record-schema.sh`. Top-level rather than under `artifacts/`: the schema is a build input read by every downstream seam of the token-consumption epic, not a component, and nothing deploys it to a CLI — the same reasoning `model-mappings/` above rests on (spec 0197 Decision 1). |
+| `schemas/` | The CLI-agnostic, versioned contract for a unit of model-token consumption (`schemas/usage-record/v1.schema.json`, JSON Schema draft 2020-12) plus its per-CLI conforming samples (`schemas/usage-record/samples/`). Core/`strict`; its normative shape is `docs/usage-record-format.md`; its hermetic gate is `scripts/lib/usage-record-validator.js` run by `scripts/tests/usage-record-schema.test.ts`. Top-level rather than under `artifacts/`: the schema is a build input read by every downstream seam of the token-consumption epic, not a component, and nothing deploys it to a CLI — the same reasoning `model-mappings/` above rests on (spec 0197 Decision 1). |
 
 ### Build and install tooling
 

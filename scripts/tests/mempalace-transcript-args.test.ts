@@ -3,7 +3,7 @@
 // transcript hook (spec 0247 R3-R7, R9), black-box against the stub daemon.
 //
 // Also the Git top level from a linked worktree (R9, issue #92), which replaces
-// the source-text case of scripts/tests/test-mempalace-transcript-hook.sh that
+// the source-text case of the former Bash hook suite (test-mempalace-transcript-hook.sh, deleted by this row) that
 // spec 0247 R32 removed.
 
 import assert from "node:assert/strict";
