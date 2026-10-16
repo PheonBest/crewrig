@@ -1,7 +1,7 @@
 ---
 id: "0260"
 slug: hook-ops-tests-typescript
-status: approved
+status: implemented
 complexity: standard
 interaction-mode: MINIMAL
 related-issue: 1340

@@ -211,7 +211,6 @@ scripts/tests/test-setup-validation-backend.sh
 scripts/tests/test-spec-linter.sh
 scripts/tests/test-system-context-store.sh
 scripts/tests/test-tls-delegation.sh
-scripts/tests/test-usage-dashboard.sh
 scripts/uninstall-mcp-daemon.sh
 scripts/unlink-component.sh
 scripts/unlink-extensions.sh
