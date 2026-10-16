@@ -212,8 +212,6 @@ scripts/tests/test-spec-linter.sh
 scripts/tests/test-system-context-store.sh
 scripts/tests/test-tls-delegation.sh
 scripts/tests/test-usage-dashboard.sh
-scripts/tests/test-usage-pricing.sh
-scripts/tests/test-usage-storage-mirror.sh
 scripts/uninstall-mcp-daemon.sh
 scripts/unlink-component.sh
 scripts/unlink-extensions.sh

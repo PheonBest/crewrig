@@ -21,7 +21,13 @@ on:
       - "scripts/usage-backfill.sh"
       - "scripts/usage-backfill.ts"
       - "scripts/build-usage-validator.js"
-      - "scripts/tests/test-usage-storage*.sh"
+      - "scripts/tests/usage-mirror-catchup.test.ts"
+      - "scripts/tests/usage-mirror-prune.test.ts"
+      - "scripts/tests/usage-mirror-failures.test.ts"
+      - "scripts/tests/usage-mirror-mutants.test.ts"
+      - "scripts/tests/lib/usage-mirror-rig.ts"
+      - "scripts/tests/lib/usage-mirror-records.ts"
+      - "scripts/tests/lib/usage-mirror-backlog.ts"
       - "scripts/tests/usage-storage-journal.test.ts"
       - "scripts/tests/usage-storage-query.test.ts"
       - "scripts/tests/usage-storage-gate.test.ts"
@@ -65,7 +71,13 @@ on:
       - "scripts/usage-backfill.sh"
       - "scripts/usage-backfill.ts"
       - "scripts/build-usage-validator.js"
-      - "scripts/tests/test-usage-storage*.sh"
+      - "scripts/tests/usage-mirror-catchup.test.ts"
+      - "scripts/tests/usage-mirror-prune.test.ts"
+      - "scripts/tests/usage-mirror-failures.test.ts"
+      - "scripts/tests/usage-mirror-mutants.test.ts"
+      - "scripts/tests/lib/usage-mirror-rig.ts"
+      - "scripts/tests/lib/usage-mirror-records.ts"
+      - "scripts/tests/lib/usage-mirror-backlog.ts"
       - "scripts/tests/usage-storage-journal.test.ts"
       - "scripts/tests/usage-storage-query.test.ts"
       - "scripts/tests/usage-storage-gate.test.ts"
@@ -120,7 +132,7 @@ jobs:
         run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-storage-journal.test.ts scripts/tests/usage-storage-query.test.ts scripts/tests/usage-storage-gate.test.ts scripts/tests/usage-storage-wing.test.ts scripts/tests/usage-storage-drain.test.ts scripts/tests/usage-storage-prune.test.ts
 
       - name: Validate the usage-record mirror against a fake daemon
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-usage-storage-mirror.sh
+        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-mirror-catchup.test.ts scripts/tests/usage-mirror-prune.test.ts scripts/tests/usage-mirror-failures.test.ts scripts/tests/usage-mirror-mutants.test.ts
 
       - name: Validate the MemPalace drawer inventory against a fake daemon
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-inventory.test.ts
