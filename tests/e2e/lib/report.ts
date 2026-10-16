@@ -145,3 +145,11 @@ export function report(args: readonly string[], cwd: string, now: Date): ReportR
   }
   return { rc, stdout: out, stderr: "" };
 }
+
+// `node tests/e2e/lib/report.ts [--tap-dir D] [--output-dir D] [--dry-run]` (the shell script's contract).
+if (process.argv[1] !== undefined && path.resolve(process.argv[1]) === import.meta.filename) {
+  const result = report(process.argv.slice(2), process.cwd(), new Date());
+  process.stdout.write(result.stdout);
+  process.stderr.write(result.stderr);
+  process.exitCode = result.rc;
+}

@@ -154,3 +154,13 @@ export function tomlMerge(
   }
   return { rc: 0, stdout: `${toJson(fixed, "jq")}\n`, stderr: "" };
 }
+
+// `node tests/e2e/lib/toml_merge.ts <defaults.toml> [<local.toml>]` (the shell script's contract).
+if (process.argv[1] !== undefined && path.resolve(process.argv[1]) === import.meta.filename) {
+  const env: Record<string, string> = {};
+  for (const [k, v] of Object.entries(process.env)) if (v !== undefined) env[k] = v;
+  const result = tomlMerge(process.argv.slice(2), process.cwd(), env);
+  process.stdout.write(result.stdout);
+  process.stderr.write(result.stderr);
+  process.exitCode = result.rc;
+}
