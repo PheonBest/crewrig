@@ -2170,10 +2170,11 @@ capabilities:
           - "scripts/tests/test-mempalace-*.sh"
           - "scripts/tests/mempalace-http-client-reuse.test.ts"
           - "scripts/tests/test-system-context-store.sh"
-          - "scripts/tests/test-setup-antigravity-transcript.sh"
-          - "scripts/tests/test-setup-claude-transcript.sh"
-          - "scripts/tests/test-setup-copilot-transcript.sh"
-          - "scripts/tests/test-setup-gemini-transcript.sh"
+          - "scripts/tests/setup-transcript-antigravity-*.test.ts"
+          - "scripts/tests/mempalace-transcript-antigravity-payload.test.ts"
+          - "scripts/tests/lib/antigravity-transcript-rig.ts"
+          - "scripts/tests/setup-transcript-*.test.ts"
+          - "scripts/tests/lib/transcript-manifest-rig.ts"
           - "scripts/tests/test-antigravity-component-install.sh"
           - "scripts/tests/test-antigravity-discovery-probe.sh"
           - "hooks/worktree-git-guard.sh"
@@ -2203,10 +2204,11 @@ capabilities:
           - "scripts/tests/test-mempalace-*.sh"
           - "scripts/tests/mempalace-http-client-reuse.test.ts"
           - "scripts/tests/test-system-context-store.sh"
-          - "scripts/tests/test-setup-antigravity-transcript.sh"
-          - "scripts/tests/test-setup-claude-transcript.sh"
-          - "scripts/tests/test-setup-copilot-transcript.sh"
-          - "scripts/tests/test-setup-gemini-transcript.sh"
+          - "scripts/tests/setup-transcript-antigravity-*.test.ts"
+          - "scripts/tests/mempalace-transcript-antigravity-payload.test.ts"
+          - "scripts/tests/lib/antigravity-transcript-rig.ts"
+          - "scripts/tests/setup-transcript-*.test.ts"
+          - "scripts/tests/lib/transcript-manifest-rig.ts"
           - "scripts/tests/test-antigravity-component-install.sh"
           - "scripts/tests/test-antigravity-discovery-probe.sh"
           - "hooks/worktree-git-guard.sh"
@@ -2244,10 +2246,11 @@ capabilities:
         - "scripts/tests/test-mempalace-*.sh"
         - "scripts/tests/mempalace-http-client-reuse.test.ts"
         - "scripts/tests/test-system-context-store.sh"
-        - "scripts/tests/test-setup-antigravity-transcript.sh"
-        - "scripts/tests/test-setup-claude-transcript.sh"
-        - "scripts/tests/test-setup-copilot-transcript.sh"
-        - "scripts/tests/test-setup-gemini-transcript.sh"
+        - "scripts/tests/setup-transcript-antigravity-*.test.ts"
+        - "scripts/tests/mempalace-transcript-antigravity-payload.test.ts"
+        - "scripts/tests/lib/antigravity-transcript-rig.ts"
+        - "scripts/tests/setup-transcript-*.test.ts"
+        - "scripts/tests/lib/transcript-manifest-rig.ts"
         - "scripts/tests/test-antigravity-component-install.sh"
         - "scripts/tests/test-antigravity-discovery-probe.sh"
         - "hooks/worktree-git-guard.sh"
@@ -2277,10 +2280,7 @@ capabilities:
       # sandbox, which rebuilds the served overlay tiers and loads js-yaml.
       - npm ci --omit=dev --workspaces=false
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/mempalace-http-client-reuse.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-antigravity-transcript.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-claude-transcript.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-copilot-transcript.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-gemini-transcript.sh
+      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-transcript-claude.test.ts scripts/tests/setup-transcript-gemini.test.ts scripts/tests/setup-transcript-copilot.test.ts scripts/tests/setup-transcript-antigravity-manifest.test.ts scripts/tests/setup-transcript-antigravity-deploy.test.ts scripts/tests/setup-transcript-antigravity-grouped.test.ts scripts/tests/setup-transcript-antigravity-statusline.test.ts scripts/tests/mempalace-transcript-antigravity-payload.test.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-antigravity-component-install.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-antigravity-discovery-probe.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-mempalace-version-range.sh
@@ -3800,7 +3800,8 @@ capabilities:
           - "scripts/setup-gemini-interactive.ts"
           - "scripts/setup-copilot-interactive.sh"
           - "scripts/setup-copilot-interactive.ts"
-          - "scripts/tests/test-setup-usage-capture-optin.sh"
+          - "scripts/tests/usage-capture-optin-*.test.ts"
+          - "scripts/tests/lib/optin-*.ts"
           - "scripts/tests/fixtures/setup-usage-capture/**"
           - "hooks/usage-capture.ts"
           - "hooks/antigravity-statusline-shim.ts"
@@ -3811,7 +3812,9 @@ capabilities:
           - "scripts/setup-antigravity-interactive.sh"
           - "scripts/setup-antigravity-interactive.ts"
           - "scripts/tests/antigravity-statusline-shim.test.ts"
-          - "scripts/tests/test-setup-antigravity-transcript.sh"
+          - "scripts/tests/setup-transcript-antigravity-*.test.ts"
+          - "scripts/tests/mempalace-transcript-antigravity-payload.test.ts"
+          - "scripts/tests/lib/antigravity-transcript-rig.ts"
           - "scripts/tests/hook-*"
           - "scripts/tests/lib/hook-*"
           - "scripts/tests/usage-capture-*"
@@ -3855,7 +3858,8 @@ capabilities:
           - "scripts/setup-gemini-interactive.ts"
           - "scripts/setup-copilot-interactive.sh"
           - "scripts/setup-copilot-interactive.ts"
-          - "scripts/tests/test-setup-usage-capture-optin.sh"
+          - "scripts/tests/usage-capture-optin-*.test.ts"
+          - "scripts/tests/lib/optin-*.ts"
           - "scripts/tests/fixtures/setup-usage-capture/**"
           - "hooks/usage-capture.ts"
           - "hooks/antigravity-statusline-shim.ts"
@@ -3866,7 +3870,9 @@ capabilities:
           - "scripts/setup-antigravity-interactive.sh"
           - "scripts/setup-antigravity-interactive.ts"
           - "scripts/tests/antigravity-statusline-shim.test.ts"
-          - "scripts/tests/test-setup-antigravity-transcript.sh"
+          - "scripts/tests/setup-transcript-antigravity-*.test.ts"
+          - "scripts/tests/mempalace-transcript-antigravity-payload.test.ts"
+          - "scripts/tests/lib/antigravity-transcript-rig.ts"
           - "scripts/tests/hook-*"
           - "scripts/tests/lib/hook-*"
           - "scripts/tests/usage-capture-*"
@@ -3891,7 +3897,6 @@ capabilities:
     command:
       - npm install
       - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-headless-agy.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-usage-capture-optin.sh
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/antigravity-statusline-shim.test.ts scripts/tests/hook-*.test.ts scripts/tests/usage-capture-*.test.ts
 
   # usage-storage validates the usage-record storage contract (spec 0207):

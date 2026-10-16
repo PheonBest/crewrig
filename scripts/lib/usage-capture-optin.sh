@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # scripts/lib/usage-capture-optin.sh — forwarding FUNCTION shim of the usage-capture
 # opt-in (spec 0256 requirement 33, Decision D3). Sourced by the Bash suites that
-# exercise the opt-in in-process (test-setup-usage-capture-optin.sh,
-# test-setup-{claude,gemini,copilot}-transcript.sh and the TypeScript suites that
+# exercise the opt-in in-process (the usage-capture-optin-*.test.ts and
+# setup-transcript-*.test.ts suites of spec 0263 and the TypeScript suites that
 # run them through scripts/tests/lib/bash-libs.ts). The setup scripts themselves no
 # longer source it: they are shims of the TypeScript entries. Do NOT execute directly.
 #

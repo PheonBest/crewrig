@@ -1,6 +1,6 @@
 // setup-retarget-usage-order.test.ts — the order and prompts of the usage-capture step of the
 // three CLI setups (Claude, Gemini, Copilot) as the declaration carries them (spec 0256
-// requirement 9; spec 0211 R1, spec 0214 R16). test-setup-usage-capture-optin.sh sections 2 and 4
+// requirement 9; spec 0211 R1, spec 0214 R16). the retired Bash suite test-setup-usage-capture-optin (spec 0263) sections 2 and 4
 // read the declaration only; the shell text they once compared against is a forwarding shim now.
 
 import assert from "node:assert/strict";

@@ -1,6 +1,6 @@
 // setup-antigravity-hooks.test.ts — scripts/lib/setup/antigravity-hooks.ts over a temporary HOME and
 // checkout, with a fake spawner for the Node.js floor guard and git. The expectations are those the
-// Bash suite test-setup-antigravity-transcript.sh pins for deploy_antigravity_transcript_hooks and
+// retired Bash suite test-setup-antigravity-transcript (spec 0263) pinned for deploy_antigravity_transcript_hooks and
 // the statusline block of setup-antigravity-interactive.sh.
 
 import assert from "node:assert/strict";

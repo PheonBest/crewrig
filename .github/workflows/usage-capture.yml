@@ -27,7 +27,8 @@ on:
       - "scripts/setup-gemini-interactive.ts"
       - "scripts/setup-copilot-interactive.sh"
       - "scripts/setup-copilot-interactive.ts"
-      - "scripts/tests/test-setup-usage-capture-optin.sh"
+      - "scripts/tests/usage-capture-optin-*.test.ts"
+      - "scripts/tests/lib/optin-*.ts"
       - "scripts/tests/fixtures/setup-usage-capture/**"
       - "hooks/usage-capture.ts"
       - "hooks/antigravity-statusline-shim.ts"
@@ -38,7 +39,9 @@ on:
       - "scripts/setup-antigravity-interactive.sh"
       - "scripts/setup-antigravity-interactive.ts"
       - "scripts/tests/antigravity-statusline-shim.test.ts"
-      - "scripts/tests/test-setup-antigravity-transcript.sh"
+      - "scripts/tests/setup-transcript-antigravity-*.test.ts"
+      - "scripts/tests/mempalace-transcript-antigravity-payload.test.ts"
+      - "scripts/tests/lib/antigravity-transcript-rig.ts"
       - "scripts/tests/hook-*"
       - "scripts/tests/lib/hook-*"
       - "scripts/tests/usage-capture-*"
@@ -82,7 +85,8 @@ on:
       - "scripts/setup-gemini-interactive.ts"
       - "scripts/setup-copilot-interactive.sh"
       - "scripts/setup-copilot-interactive.ts"
-      - "scripts/tests/test-setup-usage-capture-optin.sh"
+      - "scripts/tests/usage-capture-optin-*.test.ts"
+      - "scripts/tests/lib/optin-*.ts"
       - "scripts/tests/fixtures/setup-usage-capture/**"
       - "hooks/usage-capture.ts"
       - "hooks/antigravity-statusline-shim.ts"
@@ -93,7 +97,9 @@ on:
       - "scripts/setup-antigravity-interactive.sh"
       - "scripts/setup-antigravity-interactive.ts"
       - "scripts/tests/antigravity-statusline-shim.test.ts"
-      - "scripts/tests/test-setup-antigravity-transcript.sh"
+      - "scripts/tests/setup-transcript-antigravity-*.test.ts"
+      - "scripts/tests/mempalace-transcript-antigravity-payload.test.ts"
+      - "scripts/tests/lib/antigravity-transcript-rig.ts"
       - "scripts/tests/hook-*"
       - "scripts/tests/lib/hook-*"
       - "scripts/tests/usage-capture-*"
@@ -136,9 +142,6 @@ jobs:
 
       - name: Validate usage capture adapters and fixtures
         run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-headless-agy.test.ts
-
-      - name: Validate the usage-capture opt-in of Claude Code, Gemini CLI and Copilot CLI
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-usage-capture-optin.sh
 
       - name: Validate the TypeScript hook entries, wiring and deprecation channel
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/antigravity-statusline-shim.test.ts scripts/tests/hook-*.test.ts scripts/tests/usage-capture-*.test.ts
