@@ -39,7 +39,9 @@ export function runProbe(ctx: ProbeContext): number {
   geminiArm(ctx);
   agyArm(ctx);
 
-  const work = fs.mkdtempSync(path.join(ctx.env["TMPDIR"] || (process.platform === "win32" ? os.tmpdir() : "/tmp"), "tmp."));
+  const work = fs.mkdtempSync(
+    path.join(ctx.env["TMPDIR"] || (process.platform === "win32" ? os.tmpdir() : "/tmp"), "tmp."),
+  );
   try {
     copilotArm(ctx, copilotBin, Number.isFinite(seconds) ? seconds : 120, work);
   } finally {

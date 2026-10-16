@@ -15,6 +15,8 @@ import {
   type EntryBox,
   type EntryCase,
 } from "./lib/e2e-entry-diff.ts";
+import { REPO_ROOT } from "./lib/e2e-normalise.ts";
+import { shellLegSkipReason } from "./lib/e2e-shim.ts";
 
 const skip = shellLegPrerequisites() ?? false;
 
@@ -119,7 +121,8 @@ describe("publish-probe-verdict edge verdicts: shell leg versus TypeScript twin"
       args: ["rep", "--issue", "1103", "--dry-run"],
       seed: verdict(text),
     };
-    it(c.id, { skip: wordingSkip(name) }, (t) => {
+    const shimSkip = shellLegSkipReason(path.join(REPO_ROOT, `${c.file}.sh`));
+    it(c.id, { skip: shimSkip || wordingSkip(name) }, (t) => {
       const ts = runEntry(c, "entry");
       if (ts === null) return t.todo("no TypeScript twin yet");
       const sh = runEntry(c, "shell");
