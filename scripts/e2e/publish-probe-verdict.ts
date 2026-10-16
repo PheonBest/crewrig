@@ -56,15 +56,14 @@ function jqType(v: Json): string {
   return typeof v;
 }
 
-/** jq's truncated value dump inside "Cannot iterate over" (jq 1.8: 25 bytes of the dump, then `...`). */
+/** jq 1.7's truncated value dump in "Cannot iterate over": over 14 bytes, 11 bytes then `...` (no closing quote). */
 function dump(v: Json): string {
   const d = JSON.stringify(v) ?? "null";
-  if (Buffer.byteLength(d) <= 29) return d;
-  const cut = Buffer.from(d)
-    .subarray(0, 25)
+  if (Buffer.byteLength(d) <= 14) return d;
+  return `${Buffer.from(d)
+    .subarray(0, 11)
     .toString("utf8")
-    .replace(/\uFFFD$/, "");
-  return `${cut}..."`;
+    .replace(/\uFFFD$/, "")}...`;
 }
 
 /** `.[]` : the elements of an array, the values of an object (in order), else jq's error. */
@@ -113,7 +112,7 @@ export function renderBody(text: string): string {
   const v = JSON.parse(text.replace(/^\uFEFF/, "")) as Json;
   const line = jqLine(text);
   if (v !== null && !isObj(v)) {
-    throw new JqError(`Cannot index ${jqType(v)} with string ("probe")`, line);
+    throw new JqError(`Cannot index ${jqType(v)} with string "probe"`, line);
   }
   const o: Obj = v ?? {};
   let out = `## Probe verdict — \`${sub(o["probe"])}\`\n\n`;
