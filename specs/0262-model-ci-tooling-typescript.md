@@ -1,7 +1,7 @@
 ---
 id: "0262"
 slug: model-ci-tooling-typescript
-status: draft
+status: approved
 complexity: standard
 interaction-mode: MINIMAL
 related-issue: 1339
@@ -79,8 +79,8 @@ sweep engine no longer exist.
    (optional, as today); the commands that `ci-cache-guard` and `ci-changeset-coverage`
    exist to run, through the shell they use today (`bash -c`, including the
    `ci-cache-guard` probe), the one permitted shell spawn; on Windows these two entries
-   use the `bash` resolved from the parent `PATH`, and their Windows cases are
-   POSIX-only where none exists.
+   use the `bash` resolved from the parent `PATH`, and a Windows case that needs
+   that shell and finds none is labelled POSIX-only.
 
 5. **Shared modules.** The entries SHALL reuse `scripts/lib/model-resolve.ts`,
    `scripts/lib/model-resolve/**`, `scripts/lib/component-resolve.ts` and
