@@ -2,12 +2,12 @@
 // plus a fuzz against `yq -p=toml -o=json` (mikefarah v4) on the committed .toml files.
 
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { describe, it } from "node:test";
 
-import { mergeValues, toJson } from "../../tests/e2e/lib/toml_merge.ts";
+import { mergeValues, toJson, tomlMerge } from "../../tests/e2e/lib/toml_merge.ts";
 import { parseToml, TomlError } from "../../tests/e2e/lib/toml_subset.ts";
 import type { TomlTable } from "../../tests/e2e/lib/toml_subset.ts";
 
@@ -115,28 +115,37 @@ describe("toml_subset: fuzz against yq", { skip }, () => {
       assert.deepEqual(JSON.parse(toJson(doc, "yq")), yq(path.join(REPO, f)));
     });
   }
+});
+
+function shellUsable(): string | null {
+  const probe = (cmd: string, args: string[]) => spawnSync(cmd, args, { encoding: "utf8" });
+  const bash = probe("bash", ["-c", 'echo "${BASH_VERSINFO[0]}"']);
+  if (bash.status !== 0 || Number(bash.stdout.trim()) < 4) return "bash >= 4 is required";
+  if (probe("jq", ["--version"]).status !== 0) return "jq is not installed";
+  return yqUsable();
+}
+
+// The expected side is the real shell pipeline (yq merge plus the jq fixups), not a bare yq merge.
+describe("toml_merge: against the shell pipeline", { skip: shellUsable() ?? false }, () => {
   const fixtures = path.join(REPO, "scripts", "tests", "fixtures", "e2e-oracle", "libs", "toml");
   const defaults = path.join(REPO, "tests", "e2e", "defaults.toml");
   for (const name of fs
     .readdirSync(fixtures)
     .filter((n) => n.startsWith("local-") && n.endsWith(".golden"))) {
     it(`defaults.toml merged with ${name}`, () => {
-      const d = parseToml(fs.readFileSync(defaults, "utf8"), "defaults.toml");
-      const l = parseToml(fs.readFileSync(path.join(fixtures, name), "latin1"), name);
-      const merged = JSON.parse(toJson(mergeValues(d, l), "yq")) as unknown;
-      const out = execFileSync(
-        "yq",
-        [
-          "eval-all",
-          "-p=toml",
-          "-o=json",
-          ". as $i ireduce ({}; . *+ $i)",
-          defaults,
-          path.join(fixtures, name),
-        ],
-        { encoding: "utf8" },
+      const local = path.join(fixtures, name);
+      const shell = spawnSync(
+        "bash",
+        [path.join(REPO, "tests/e2e/lib/toml_merge.sh"), defaults, local],
+        {
+          encoding: "utf8",
+          env: { ...process.env, LC_ALL: "C" },
+        },
       );
-      assert.deepEqual(merged, JSON.parse(out));
+      assert.equal(shell.status, 0, shell.stderr);
+      const twin = tomlMerge([defaults, local], REPO, {});
+      assert.equal(twin.rc, 0, twin.stderr);
+      assert.deepEqual(JSON.parse(twin.stdout), JSON.parse(shell.stdout));
     });
   }
 });
