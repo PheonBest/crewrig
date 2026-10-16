@@ -7,7 +7,7 @@
 // MCP_DAEMON_HOST_DEFAULT/MCP_DAEMON_PORT_DEFAULT (l. 757, l. 763) and
 // mcp_token_path() (l. 1695-1711) — verified byte-identical against
 // `bash -c '. scripts/lib/common.sh; mcp_token_path'` under a fixed HOME
-// (see scripts/tests/test-usage-storage-mirror.sh, step 10 entry criteria).
+// (see scripts/tests/usage-mirror-*.test.ts, step 10 entry criteria).
 // The mkdir under tokenPath()'s "does not yet exist" branch is the one
 // intentional departure common.sh's own function also makes: a side effect
 // on an otherwise pure path computation, kept for parity, and unobservable —

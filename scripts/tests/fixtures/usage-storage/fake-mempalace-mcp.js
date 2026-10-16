@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // fake-mempalace-mcp.js — a hermetic stand-in for the MemPalace MCP HTTP
-// daemon, used ONLY by scripts/tests/test-usage-storage-mirror.sh (spec 0207
+// daemon, used ONLY by scripts/tests/usage-mirror-*.test.ts (spec 0207
 // R23, PLAN v3 step 11). Never the real daemon at 127.0.0.1:41893 — the test
 // suite always binds this fixture to a caller-supplied ephemeral port.
 //

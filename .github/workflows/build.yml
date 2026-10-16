@@ -2681,6 +2681,9 @@ jobs:
       - name: Usage-record storage suites (the POSIX-only gate suite is excluded)
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-storage-journal.test.ts scripts/tests/usage-storage-query.test.ts scripts/tests/usage-storage-wing.test.ts scripts/tests/usage-storage-drain.test.ts scripts/tests/usage-storage-prune.test.ts
 
+      - name: Usage pricing static suite (the other pricing and mirror suites are POSIX-only)
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-pricing-static.test.ts
+
       - name: Usage attribution suites
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-attribution-channels.test.ts scripts/tests/usage-attribution-ledger-rollup.test.ts scripts/tests/usage-attribution-period-rollup.test.ts scripts/tests/usage-attribution-prune.test.ts scripts/tests/usage-attribution-mutations.test.ts
 
