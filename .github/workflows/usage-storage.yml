@@ -22,6 +22,17 @@ on:
       - "scripts/usage-backfill.ts"
       - "scripts/build-usage-validator.js"
       - "scripts/tests/test-usage-storage*.sh"
+      - "scripts/tests/usage-storage-journal.test.ts"
+      - "scripts/tests/usage-storage-query.test.ts"
+      - "scripts/tests/usage-storage-gate.test.ts"
+      - "scripts/tests/usage-storage-wing.test.ts"
+      - "scripts/tests/usage-storage-drain.test.ts"
+      - "scripts/tests/usage-storage-prune.test.ts"
+      - "scripts/tests/lib/usage-storage-rig.ts"
+      - "scripts/tests/lib/usage-storage-driver.ts"
+      - "scripts/tests/lib/usage-mutants.ts"
+      - "scripts/tests/lib/mutation-copy.ts"
+      - "scripts/tests/lib/capability.ts"
       - "scripts/tests/usage-inventory.test.ts"
       - "scripts/lib/usage-wrapper.ts"
       - "scripts/tests/usage-wrappers-oracle.test.ts"
@@ -55,6 +66,17 @@ on:
       - "scripts/usage-backfill.ts"
       - "scripts/build-usage-validator.js"
       - "scripts/tests/test-usage-storage*.sh"
+      - "scripts/tests/usage-storage-journal.test.ts"
+      - "scripts/tests/usage-storage-query.test.ts"
+      - "scripts/tests/usage-storage-gate.test.ts"
+      - "scripts/tests/usage-storage-wing.test.ts"
+      - "scripts/tests/usage-storage-drain.test.ts"
+      - "scripts/tests/usage-storage-prune.test.ts"
+      - "scripts/tests/lib/usage-storage-rig.ts"
+      - "scripts/tests/lib/usage-storage-driver.ts"
+      - "scripts/tests/lib/usage-mutants.ts"
+      - "scripts/tests/lib/mutation-copy.ts"
+      - "scripts/tests/lib/capability.ts"
       - "scripts/tests/usage-inventory.test.ts"
       - "scripts/lib/usage-wrapper.ts"
       - "scripts/tests/usage-wrappers-oracle.test.ts"
@@ -95,7 +117,7 @@ jobs:
         run: npm install
 
       - name: Validate the usage-record storage contract (no daemon)
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-usage-storage.sh
+        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-storage-journal.test.ts scripts/tests/usage-storage-query.test.ts scripts/tests/usage-storage-gate.test.ts scripts/tests/usage-storage-wing.test.ts scripts/tests/usage-storage-drain.test.ts scripts/tests/usage-storage-prune.test.ts
 
       - name: Validate the usage-record mirror against a fake daemon
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-usage-storage-mirror.sh
