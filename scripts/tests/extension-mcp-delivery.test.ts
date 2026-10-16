@@ -42,6 +42,16 @@ describe("mcpNative", () => {
   test("antigravity leaves the token unresolved", () => {
     assert.match(native("antigravity", M), /"command":"\$\{extensionRoot\}\/run"/);
   });
+  test("args, cwd and timeout are carried per target, copilot adds type stdio", () => {
+    const T =
+      '{"mcpServers":{"a":{"command":"${extensionRoot}/run","args":["${extensionRoot}/x"],"cwd":"${extensionRoot}","timeout":45}}}';
+    const body = (root: string, type = ""): string =>
+      `{"a":{"command":"${root}/run","args":["${root}/x"],"cwd":"${root}","timeout":45${type}}}`;
+    assert.equal(native("gemini", T), body("${extensionPath}"));
+    assert.equal(native("claude", T), body("${CLAUDE_PLUGIN_ROOT}"));
+    assert.equal(native("copilot", T), body("${COPILOT_PLUGIN_ROOT}", ',"type":"stdio"'));
+    assert.equal(native("antigravity", T), body("${extensionRoot}"));
+  });
   test("keys are untouched and replacement text is inert", () => {
     const m = parseJson(
       '{"mcpServers":{"${extensionRoot}":{"command":"${extensionRoot}"}}}',

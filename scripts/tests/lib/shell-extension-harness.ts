@@ -1,6 +1,7 @@
-// shell-extension-harness.ts — drives the extension shell libraries over manifest files, for the
-// conformance suite of their TypeScript twins (spec 0254 R22). Linux and macOS only: it spawns
-// `bash` and needs `jq`; it retires with the shell libraries (rows I1, J3, J4).
+// shell-extension-harness.ts — drives the extension HOOKS shell library over manifest files, for
+// the conformance suite of its TypeScript twin (spec 0254 R22). The manifest library
+// (extension-manifest.sh) is retired: its legs are frozen goldens (see manifestGolden below).
+// Linux and macOS only: it spawns `bash` and needs `jq`; it retires with extension-hooks.sh.
 //
 // One `bash` runs every case. The driver sources the libraries from the repository (no shell text
 // is copied here), runs each case in a subshell and writes every output to a file of the case's
@@ -49,21 +50,16 @@ export function runShell(script: string, args: readonly string[]): ShellRun {
 const sh = (s: TemplateStringsArray): string => s.raw.join("").replaceAll("%{", "${");
 
 const DRIVER = sh`
-REPO="$1"; OUT="$2"; ALLOWLIST="$3"; shift 3
-. "$REPO/scripts/lib/extension-manifest.sh"
+REPO="$1"; OUT="$2"; shift 2
 . "$REPO/scripts/lib/extension-hooks.sh"
 i=0
 for f in "$@"; do
   (
     o="$OUT/$i"; mkdir -p "$o"
-    ext_validate_manifest "$f" "$ALLOWLIST" >/dev/null 2>"$o/validate.err"
     ext_hooks_known_events >"$o/known.out"
     for t in gemini claude copilot antigravity; do
       ext_hooks_render "$t" "$f" "$(dirname "$f")" "$o/render-$t" >/dev/null 2>"$o/render-$t.err"
       ext_hooks_gaps "$t" "$f" >"$o/gaps-$t.out" 2>"$o/gaps-$t.err"
-      ext_mcp_delivery "$t" >"$o/delivery-$t.out" 2>/dev/null
-      ext_mcp_native "$t" "$f" >"$o/native-$t.out" 2>"$o/native-$t.err"
-      echo "$?" >"$o/native-$t.status"
     done
   )
   i=$((i+1))
@@ -84,13 +80,40 @@ function readTree(root: string, rel = ""): Record<string, string> {
 export type CaseOutput = Readonly<Record<string, string>>;
 
 /** One `bash` over `manifests` (absolute paths); the outputs come back in the same order. */
-export function runShellCases(manifests: readonly string[], allowlist: string): CaseOutput[] {
+export function runShellCases(manifests: readonly string[]): CaseOutput[] {
   const out = fs.mkdtempSync(path.join(os.tmpdir(), "ext-shell-"));
   try {
-    const r = runShell(DRIVER, [REPO, out, allowlist, ...manifests]);
+    const r = runShell(DRIVER, [REPO, out, ...manifests]);
     if (r.status !== 0) throw new Error(`shell driver failed (status ${r.status}): ${r.stderr}`);
     return manifests.map((_, i) => readTree(path.join(out, String(i))));
   } finally {
     fs.rmSync(out, { recursive: true, force: true });
   }
+}
+
+/** What the retired `extension-manifest.sh` produced for one fixture, recorded on Linux. */
+export interface ManifestGolden {
+  /** `VALIDATION-ERROR:` lines of `ext_validate_manifest`; the manifest path reads `<M>`. */
+  readonly validate: readonly string[];
+  /** `ext_mcp_delivery <target>` stdout, trimmed. */
+  readonly delivery: Readonly<Record<string, string>>;
+  /** `ext_mcp_native <target> <manifest>`: stdout without its final newline, and the status. */
+  readonly native: Readonly<Record<string, { readonly out: string; readonly status: number }>>;
+}
+
+const GOLDENS = path.join(REPO, "scripts", "tests", "fixtures", "extension-manifest-goldens");
+
+/** The frozen shell expectations of the manifest library, keyed by fixture label. */
+export function manifestGoldens(): Readonly<Record<string, ManifestGolden>> {
+  const read = (name: string): Record<string, unknown> =>
+    JSON.parse(fs.readFileSync(path.join(GOLDENS, `${name}.json.golden`), "utf8"));
+  const validate = read("validate");
+  const delivery = read("mcp-delivery");
+  const native = read("mcp-native");
+  return Object.fromEntries(
+    Object.keys(validate).map((label) => [
+      label,
+      { validate: validate[label], delivery: delivery[label], native: native[label] },
+    ]),
+  ) as Record<string, ManifestGolden>;
 }

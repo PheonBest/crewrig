@@ -1,5 +1,5 @@
-// extension-validate-all.test.ts — `validateManifest` against the real shell `ext_validate_manifest`
-// (spec 0254 R9, R22). Linux and macOS only: the shell side needs bash, jq and yq.
+// extension-validate-all.test.ts — `validateManifest` against the lines the retired shell
+// `ext_validate_manifest` produced, frozen as a golden recorded on Linux (spec 0254 R9, R22).
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -11,12 +11,7 @@ import { parseJson } from "../lib/extension/json-ordered.ts";
 import type { JsonValue } from "../lib/extension/types.ts";
 import { validateManifest } from "../lib/extension/validate.ts";
 import { fixtures } from "./lib/extension-fixtures.ts";
-import {
-  LIB_DIR,
-  PERCLI_KEYS_FILE,
-  runShellCases,
-  skipReason,
-} from "./lib/shell-extension-harness.ts";
+import { LIB_DIR, PERCLI_KEYS_FILE, manifestGoldens } from "./lib/shell-extension-harness.ts";
 
 const P = "m.json";
 
@@ -54,7 +49,7 @@ describe("validateManifest", () => {
     assert.ok(lines.some((l) => l.includes("inadmissible per-CLI key 'gemini.themes'")));
   });
 
-  describe("against the shell", { skip: skipReason || false }, () => {
+  describe("against the shell golden", () => {
     test("every fixture yields the shell's stderr, line for line", () => {
       const dir = fs.mkdtempSync(path.join(os.tmpdir(), "ext-validate-all-"));
       try {
@@ -72,18 +67,15 @@ describe("validateManifest", () => {
           cases.push({ label: f.label, file, manifest: value });
         }
         assert.ok(cases.length >= 8);
-        const shell = runShellCases(
-          cases.map((c) => c.file),
-          PERCLI_KEYS_FILE,
-        );
-        cases.forEach((c, i) => {
-          const lines = validateManifest(c.file, c.manifest, { libDir: LIB_DIR });
+        const goldens = manifestGoldens();
+        cases.forEach((c) => {
+          const lines = validateManifest(c.file, c.manifest, { libDir: LIB_DIR }).map((l) =>
+            l.replaceAll(c.file, "<M>").replaceAll(PERCLI_KEYS_FILE, "<K>"),
+          );
           const got = lines.length === 0 ? "" : `${lines.join("\n")}\n`;
           // Raw `jq: error` diagnostics the shell leaks on non-object entries are not part of the
           // contract (spec 0254 R28): compare the VALIDATION-ERROR lines only.
-          const shellErr = (shell[i]?.["validate.err"] ?? "")
-            .split("\n")
-            .filter((l) => l.startsWith("VALIDATION-ERROR:"));
+          const shellErr = goldens[c.label]?.validate ?? ["<no golden>"];
           assert.equal(got, shellErr.length === 0 ? "" : `${shellErr.join("\n")}\n`, c.label);
         });
       } finally {

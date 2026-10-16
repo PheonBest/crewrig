@@ -173,7 +173,6 @@ scripts/tests/test-e2e-structural-lib.sh
 scripts/tests/test-e2e-taskfile.sh
 scripts/tests/test-e2e-toml-merge.sh
 scripts/tests/test-e2e-versions-lock.sh
-scripts/tests/test-extension-mcp-manifest.sh
 scripts/tests/test-extension-render-conformance.sh
 scripts/tests/test-extract-frontmatter.sh
 scripts/tests/test-gemini-agent-frontmatter.sh

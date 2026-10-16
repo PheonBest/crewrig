@@ -1029,7 +1029,6 @@ jobs:
               - 'scripts/tests/test-check-extension-hook-map.sh'
               - 'scripts/lib/common.sh'
               - 'scripts/probe-extension-mcp-token.sh'
-              - 'scripts/tests/test-extension-mcp-manifest.sh'
               - 'scripts/install-antigravity-extension.sh'
               - 'scripts/install-extension.ts'
               - 'scripts/install-antigravity-extension.ts'
@@ -1080,9 +1079,6 @@ jobs:
       - name: Test Extension Render Conformance
         if: steps.filter.outputs.extension-render == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-extension-render-conformance.sh
-      - name: Test Extension MCP Manifest
-        if: steps.filter.outputs.extension-render == 'true'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-extension-mcp-manifest.sh
       - name: Floor guard accepts Node.js 24
         if: steps.filter.outputs.extension-render == 'true'
         run: node scripts/lib/node-floor-guard.js

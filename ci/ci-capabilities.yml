@@ -1628,7 +1628,6 @@ capabilities:
           - "scripts/tests/test-check-extension-hook-map.sh"
           - "scripts/lib/common.sh"
           - "scripts/probe-extension-mcp-token.sh"
-          - "scripts/tests/test-extension-mcp-manifest.sh"
           - "scripts/install-antigravity-extension.sh"
           - "scripts/install-extension.ts"
           - "scripts/install-antigravity-extension.ts"
@@ -1693,7 +1692,6 @@ capabilities:
           - "scripts/tests/test-check-extension-hook-map.sh"
           - "scripts/lib/common.sh"
           - "scripts/probe-extension-mcp-token.sh"
-          - "scripts/tests/test-extension-mcp-manifest.sh"
           - "scripts/install-antigravity-extension.sh"
           - "scripts/install-extension.ts"
           - "scripts/install-antigravity-extension.ts"
@@ -1730,7 +1728,6 @@ capabilities:
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-pivot.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-build-extension.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-extension-render-conformance.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-extension-mcp-manifest.sh
       - node scripts/lib/node-floor-guard.js
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-extension.ts --check
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-hook-tokens.ts
