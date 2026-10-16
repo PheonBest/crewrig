@@ -6,13 +6,14 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { chmodSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, symlinkSync, writeFileSync } from "node:fs";
 import http from "node:http";
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 import { after, test } from "node:test";
 import { fileURLToPath } from "node:url";
+import { derivedTokenPath } from "../lib/service/launcher/launcher-token.ts";
 import { installLauncherProgram, installedPaths } from "../lib/service/program-install.ts";
 import { materialiseChromaUnit } from "../lib/setup/chroma-unit.ts";
 
@@ -162,4 +163,22 @@ test("A10 service unit custom path / A11 no residue", { skip: !posix }, () => {
   const text = readFileSync(target, "utf8");
   assert.ok(text.includes(`--path ${custom}`));
   assert.ok(!text.includes("__CHROMA_PALACE_PATH__"));
+});
+
+// A13 (token path is keyed on the RESOLVED palace path, as `mcp_token_path` computed with
+// `cd -P`): a symlinked palace path and its target derive the same token path. The
+// existing service-launcher-token.test.ts compares three derivations on a plain directory
+// only, so this symlink leg is what a removed realpath would break.
+test("A13 a symlinked palace path derives the token path of its target", { skip: !posix }, () => {
+  const home = path.join(root, "a13-home");
+  const real = path.join(root, "a13-real-palace");
+  const link = path.join(root, "a13-link-palace");
+  mkdirSync(home, { recursive: true });
+  mkdirSync(real, { recursive: true });
+  symlinkSync(real, link, "dir");
+  assert.equal(derivedTokenPath(link, home), derivedTokenPath(real, home));
+  assert.match(
+    path.relative(home, derivedTokenPath(link, home)),
+    /^\.mempalace[\\/]server[\\/][0-9a-f]{24}[\\/]token$/,
+  );
 });
