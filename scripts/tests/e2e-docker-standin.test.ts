@@ -81,6 +81,36 @@ describe("fixtures", () => {
     assert.equal(fs.existsSync(path.join(outer, "deep")), false);
   });
 
+  it("expands {{ARGV_LAST}}, {{ARG_MATCH}} and {{FILE_MATCH}} in stdout, stderr and files", () => {
+    const { root, docker } = setup({
+      "s/claude": [
+        {
+          stdout: "last={{ARGV_LAST}}\n",
+          stderr: "m={{ARG_MATCH:--name (\\S+)}} none=[{{ARG_MATCH:zzz(q)}}]\n",
+          files: { "/out/echo.txt": "{{ARGV_LAST}}|{{FILE_MATCH:/in/decl.md::token: (\\w+)}}" },
+        },
+      ],
+    });
+    const inDir = path.join(root, "in");
+    fs.mkdirSync(inDir);
+    fs.writeFileSync(path.join(inDir, "decl.md"), "a\ntoken: abc123\n");
+    const out = path.join(root, "out");
+    const r = docker(
+      "run",
+      "--name",
+      "c1",
+      "-v",
+      `${out}:/out`,
+      "-v",
+      `${inDir}:/in:ro`,
+      "img",
+      "go now",
+    );
+    assert.equal(r.stdout, "last=go now\n");
+    assert.equal(r.stderr, "m=c1 none=[]\n");
+    assert.equal(fs.readFileSync(path.join(out, "echo.txt"), "utf8"), "go now|abc123");
+  });
+
   it("exits 97 when no fixture is left", () => {
     const { docker } = setup({ "s/claude": [] });
     const r = docker("run", "img");

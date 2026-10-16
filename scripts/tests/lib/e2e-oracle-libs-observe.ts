@@ -36,7 +36,16 @@ function walk(dir: string, base: string, out: Record<string, { content: string; 
   }
 }
 
-export function observeLib(c: LibCase): LibTuple {
+export interface Sandbox {
+  readonly root: string;
+  readonly work: string;
+  readonly home: string;
+  readonly bin: string;
+  readonly env: Record<string, string>;
+}
+
+/** Scratch tree and environment of one case: the shell and the TypeScript run in the same one. */
+export function makeSandbox(c: LibCase): Sandbox {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "e2e-libs-"));
   const work = path.join(root, "work");
   const home = path.join(root, "home");
@@ -58,6 +67,47 @@ export function observeLib(c: LibCase): LibTuple {
     ...(c.forbidDockerRun ? { E2E_STANDIN_FORBID_RUN: "1" } : {}),
   };
   for (const [k, v] of Object.entries(c.env ?? {})) env[k] = v.split("{WORK}").join(work);
+  return { root, work, home, bin, env };
+}
+
+export interface Outcome {
+  readonly rc: number;
+  readonly stdout: string;
+  readonly stderr: string;
+}
+
+/** Describe what the call did: the files and modes under `work/`, normalised, then drop the sandbox. */
+export function finishSandbox(c: LibCase, box: Sandbox, out: Outcome): LibTuple {
+  const files: Record<string, { content: string; mode: string }> = {};
+  walk(box.work, box.work, files);
+  const stats: Record<string, string> = {};
+  for (const rel of c.statPaths ?? []) {
+    try {
+      stats[rel] = (fs.statSync(path.join(box.work, rel)).mode & 0o777)
+        .toString(8)
+        .padStart(4, "0");
+    } catch {
+      stats[rel] = "absent";
+    }
+  }
+  const ctx = { tmp: box.root, home: box.home, e2eHome: path.join(box.home, ".crewrig-e2e") };
+  const fixed = (s: string) => normalise(s, ctx);
+  const tuple: LibTuple = {
+    id: c.id,
+    rc: out.rc,
+    stdout: fixed(out.stdout),
+    stderr: fixed(out.stderr),
+    stats,
+    files: Object.fromEntries(
+      Object.entries(files).map(([k, v]) => [k, { content: fixed(v.content), mode: v.mode }]),
+    ),
+  };
+  fs.rmSync(box.root, { recursive: true, force: true });
+  return tuple;
+}
+
+export function observeLib(c: LibCase): LibTuple {
+  const box = makeSandbox(c);
   const libPath = path.join(REPO_ROOT, c.lib);
   const argv = c.script
     ? [libPath, ...(c.args ?? [])]
@@ -71,29 +121,11 @@ export function observeLib(c: LibCase): LibTuple {
         (c.printVars ?? []).join(" "),
         ...(c.args ?? []),
       ];
-  const res = spawnSync("bash", argv, { cwd: work, env, input: c.stdin ?? "", encoding: "latin1" });
-  const files: Record<string, { content: string; mode: string }> = {};
-  walk(work, work, files);
-  const stats: Record<string, string> = {};
-  for (const rel of c.statPaths ?? []) {
-    try {
-      stats[rel] = (fs.statSync(path.join(work, rel)).mode & 0o777).toString(8).padStart(4, "0");
-    } catch {
-      stats[rel] = "absent";
-    }
-  }
-  const ctx = { tmp: root, home, e2eHome: path.join(home, ".crewrig-e2e") };
-  const fixed = (s: string) => normalise(s, ctx);
-  const tuple: LibTuple = {
-    id: c.id,
-    rc: res.status ?? -1,
-    stdout: fixed(res.stdout),
-    stderr: fixed(res.stderr),
-    stats,
-    files: Object.fromEntries(
-      Object.entries(files).map(([k, v]) => [k, { content: fixed(v.content), mode: v.mode }]),
-    ),
-  };
-  fs.rmSync(root, { recursive: true, force: true });
-  return tuple;
+  const res = spawnSync("bash", argv, {
+    cwd: box.work,
+    env: box.env,
+    input: c.stdin ?? "",
+    encoding: "latin1",
+  });
+  return finishSandbox(c, box, { rc: res.status ?? -1, stdout: res.stdout, stderr: res.stderr });
 }
