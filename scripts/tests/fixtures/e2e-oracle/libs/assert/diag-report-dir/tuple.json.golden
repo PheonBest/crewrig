@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "assert/diag-report-dir",
+  "rc": 0,
+  "stats": {},
+  "stderr": "# FAIL name argv\n#   expected: want\n#   actual:   got\n#   report:   /reports/run1/art.txt\n",
+  "stdout": ""
+}

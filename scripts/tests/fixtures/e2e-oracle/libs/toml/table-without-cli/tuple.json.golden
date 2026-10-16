@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[judge]\nbackend = \"gemini\"\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/table-without-cli",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"X\"\n    }\n  },\n  \"judge\": {\n    \"backend\": \"gemini\"\n  }\n}\n"
+}

@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\ncommand = [\"claude\"]\nmounts = [\"a:b\"]\nenv_keys = [\"A\", \"B\"]\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\ncommand = [\"sh\", \"-c\", \"x\"]\nmounts = [\"c:d:ro\"]\nenv_keys = [\"B\", \"C\"]\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/local-mount-env-keys-command",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"command\": [\n        \"sh\",\n        \"-c\",\n        \"x\"\n      ],\n      \"mounts\": [\n        \"a:b\",\n        \"c:d:ro\"\n      ],\n      \"env_keys\": [\n        \"A\",\n        \"B\",\n        \"C\"\n      ]\n    }\n  }\n}\n"
+}

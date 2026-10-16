@@ -1,0 +1,13 @@
+{
+  "files": {
+    "taps/r/run.tap": {
+      "content": "TAP version 13\nnot ok 1 - claude/s1 # SKIP x\n",
+      "mode": "0644"
+    }
+  },
+  "id": "report/not-ok-with-skip-directive",
+  "rc": 1,
+  "stats": {},
+  "stderr": "",
+  "stdout": "Scenario  claude    gemini    copilot \n--------  --------  --------  --------\ns1        â       â ï¸    â ï¸  \n"
+}

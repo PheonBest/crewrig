@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "assert/git-branch-pushed-unreachable-remote",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_git_branch_pushed missing.git main\n#   expected: remote ref refs/heads/main present on missing.git\n#   actual:   git ls-remote returned non-zero (branch absent or remote unreachable)\n",
+  "stdout": ""
+}

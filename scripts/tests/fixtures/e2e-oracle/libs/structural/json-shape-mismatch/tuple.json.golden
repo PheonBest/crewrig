@@ -1,0 +1,13 @@
+{
+  "files": {
+    "one.json": {
+      "content": "{\"a\":1}\n",
+      "mode": "0644"
+    }
+  },
+  "id": "structural/json-shape-mismatch",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_json_shape one.json .a 2\n#   expected: 2\n#   actual:   1\n",
+  "stdout": ""
+}

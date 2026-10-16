@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "structural/stdout-matches-stdin-miss",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_stdout_matches ^zzz$\n#   expected: ERE match: ^zzz$\n#   actual:   no match in input: alpha-line\n",
+  "stdout": ""
+}

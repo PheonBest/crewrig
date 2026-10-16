@@ -1,0 +1,10 @@
+{
+  "id": "ollama-cloud/api-key-missing",
+  "rc": 0,
+  "stdout": "VERDICT=UNCERTAIN confidence=0.00",
+  "stderr": "# WARN llm_judge UNCERTAIN reason=auth-missing backend=ollama-cloud\n",
+  "requests": [],
+  "files": {
+    "effective.json": "{\"judge\":{\"backend\":\"ollama-cloud\",\"model\":\"gpt-oss:120b\",\"api_key_env\":\"OLLAMA_API_KEY\",\"auth_mode\":\"api_key\",\"strict\":false,\"max_calls\":30,\"endpoint\":\"http://127.0.0.1:<PORT>/ollama-cloud/chat\",\"max_tokens\":256,\"temperature\":0}}\n"
+  }
+}

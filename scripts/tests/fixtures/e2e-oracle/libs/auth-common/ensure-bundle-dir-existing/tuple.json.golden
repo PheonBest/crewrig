@@ -1,0 +1,16 @@
+{
+  "files": {
+    "h/.crewrig-e2e/claude/.credentials.json": {
+      "content": "{}\n",
+      "mode": "0600"
+    }
+  },
+  "id": "auth-common/ensure-bundle-dir-existing",
+  "rc": 0,
+  "stats": {
+    "h/.crewrig-e2e": "0700",
+    "h/.crewrig-e2e/claude": "0700"
+  },
+  "stderr": "",
+  "stdout": ""
+}

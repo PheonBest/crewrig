@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[[servers]]\nname = \"a\"\n\n[[servers]]\nname = \"b\"\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/unsupported-array-of-tables",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"X\"\n    }\n  },\n  \"servers\": [\n    {\n      \"name\": \"a\"\n    },\n    {\n      \"name\": \"b\"\n    }\n  ]\n}\n"
+}

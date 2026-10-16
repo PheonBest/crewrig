@@ -1,0 +1,13 @@
+{
+  "files": {
+    "taps/r/run.tap": {
+      "content": "TAP version 13\nok 1 - claude/b-scn\nnot ok 2 - gemini/b-scn\nok 3 - copilot/a-scenario-with-a-long-name\n# comment\nbad line\nok 4 - nodash\nok 5 - claude\n",
+      "mode": "0644"
+    }
+  },
+  "id": "report/full-matrix",
+  "rc": 1,
+  "stats": {},
+  "stderr": "",
+  "stdout": "Scenario                     claude    gemini    copilot \n---------------------------  --------  --------  --------\na-scenario-with-a-long-name  â ï¸    â ï¸    â     \nb-scn                        â       â       â ï¸  \n"
+}

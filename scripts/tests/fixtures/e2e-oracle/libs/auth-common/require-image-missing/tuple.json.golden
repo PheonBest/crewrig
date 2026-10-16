@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "auth-common/require-image-missing",
+  "rc": 1,
+  "stats": {},
+  "stderr": "ERROR: image 'crewrig-e2e:test' is not present locally. Build it first: task e2e:build\n",
+  "stdout": ""
+}

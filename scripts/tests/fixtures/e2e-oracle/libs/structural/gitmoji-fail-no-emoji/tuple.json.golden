@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "structural/gitmoji-fail-no-emoji",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_gitmoji_title Add foo\n#   expected: leading emoji + whitespace + non-empty text (e.g. 'â¨ Add foo')\n#   actual:   Add foo\n",
+  "stdout": ""
+}

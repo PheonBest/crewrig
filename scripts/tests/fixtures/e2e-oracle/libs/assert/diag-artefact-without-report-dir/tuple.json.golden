@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "assert/diag-artefact-without-report-dir",
+  "rc": 0,
+  "stats": {},
+  "stderr": "# FAIL name argv\n#   expected: want\n#   actual:   got\n#   report:   <unset>/art.txt\n",
+  "stdout": ""
+}

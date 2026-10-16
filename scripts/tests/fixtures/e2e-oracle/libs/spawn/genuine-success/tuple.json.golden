@@ -1,0 +1,13 @@
+{
+  "files": {
+    "t.txt": {
+      "content": "â Probe-router(glm-5.3-flash:cloud) Probe nonce emission\n  â crewrig-probe-de91a90702907b2b\n\nâ Create leg.txt +1\n  â /out/leg.txt\n\nâ Read leg.txt\n  â /out/leg.txt\n  â 1 line read\n\nDone. The `probe-router` subagent replied with its nonce, and I wrote it verbatim to `/out/leg.txt`:\n\n```\ncrewrig-probe-de91a90702907b2b\n```\n\n",
+      "mode": "0644"
+    }
+  },
+  "id": "spawn/genuine-success",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "true|true|true|glm-5.3-flash:cloud\n"
+}

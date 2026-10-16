@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "structural/stdout-matches-missing-regex",
+  "rc": 127,
+  "stats": {},
+  "stderr": "<REPO>/tests/e2e/lib/structural.sh: line 56: 1: assert_stdout_matches: missing <regex>\n",
+  "stdout": ""
+}

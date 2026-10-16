@@ -1,0 +1,13 @@
+{
+  "files": {
+    "present": {
+      "content": "",
+      "mode": "0644"
+    }
+  },
+  "id": "assert/file-exists-pass",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": ""
+}

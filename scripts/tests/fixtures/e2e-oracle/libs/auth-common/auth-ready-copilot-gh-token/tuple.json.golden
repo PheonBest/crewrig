@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "auth-common/auth-ready-copilot-gh-token",
+  "rc": 0,
+  "stats": {},
+  "stderr": "[copilot] auth ready: GH_TOKEN set in host shell (fallback)\n",
+  "stdout": "E2E_AUTH_READY_CREDENTIAL_PATH=GH_TOKEN\n"
+}

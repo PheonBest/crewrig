@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "probes/c-c1-missing-args",
+  "rc": 127,
+  "stats": {},
+  "stderr": "<REPO>/tests/e2e/lib/probe_c_resolve.sh: line 18: $4: unbound variable\n",
+  "stdout": ""
+}

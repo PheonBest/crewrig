@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "assert/drawer-field-missing-arg",
+  "rc": 127,
+  "stats": {},
+  "stderr": "<REPO>/tests/e2e/lib/assert.sh: line 181: 5: assert_drawer_field: missing <expected>\n",
+  "stdout": ""
+}

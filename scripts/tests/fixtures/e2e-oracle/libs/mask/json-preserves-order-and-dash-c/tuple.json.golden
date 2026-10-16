@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "mask/json-preserves-order-and-dash-c",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "[\"bash\",\"-c\",\"OLLAMA_API_KEY=*** ollama serve --api-key=***\",\"sh\"]\n"
+}

@@ -1,0 +1,13 @@
+{
+  "files": {
+    "decl.md": {
+      "content": "---\nname: probe\n---\nbody\n",
+      "mode": "0644"
+    }
+  },
+  "id": "probes/home-stage-no-bundle",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "rc=0\nparent=<TMP>/tmp\nname=crewrig-e2e-copilot-home.<RAND:31>\n. d 700\n./agents d 700\n./agents/probe.md f 600\ndecl=<---\nname: probe\n---\nbody\n>\n"
+}

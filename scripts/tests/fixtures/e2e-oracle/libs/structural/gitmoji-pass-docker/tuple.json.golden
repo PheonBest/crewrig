@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "structural/gitmoji-pass-docker",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_gitmoji_title Ã°ÂÂÂ³ Add docker\n#   expected: leading emoji + whitespace + non-empty text (e.g. 'â¨ Add foo')\n#   actual:   Ã°ÂÂÂ³ Add docker\n",
+  "stdout": ""
+}

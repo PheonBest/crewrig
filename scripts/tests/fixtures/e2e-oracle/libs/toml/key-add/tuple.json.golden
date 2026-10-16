@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\nextra = \"new\"\n\n[cli.brand_new]\nimage = \"Z\"\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/key-add",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"X\",\n      \"extra\": \"new\"\n    },\n    \"brand_new\": {\n      \"image\": \"Z\"\n    }\n  }\n}\n"
+}

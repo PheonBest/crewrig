@@ -1,0 +1,13 @@
+{
+  "files": {
+    "tests/e2e/reports/r/run.tap": {
+      "content": "TAP version 13\nok 1 - claude/s1\n",
+      "mode": "0644"
+    }
+  },
+  "id": "report/default-dirs-dry-run",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "Scenario  claude    gemini    copilot \n--------  --------  --------  --------\ns1        â       â ï¸    â ï¸  \n"
+}

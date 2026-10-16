@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\ncommand = [\"claude\", \"-p\"]\nimage = \"X\"\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\ncommand = [\"bash\"]\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/command-replaced",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"command\": [\n        \"bash\"\n      ],\n      \"image\": \"X\"\n    }\n  }\n}\n"
+}

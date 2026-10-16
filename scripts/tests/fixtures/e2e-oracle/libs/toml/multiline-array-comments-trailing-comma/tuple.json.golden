@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[t]\na = [\n  # c1\n  \"x\", # c2\n  \"y\",\n]\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[t]\na = [\"z\"]\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/multiline-array-comments-trailing-comma",
+  "rc": 5,
+  "stats": {},
+  "stderr": "jq: error (at <TMP>/tmp/tmp.<RAND>/merged.json:9): null (null) has no keys\n",
+  "stdout": ""
+}

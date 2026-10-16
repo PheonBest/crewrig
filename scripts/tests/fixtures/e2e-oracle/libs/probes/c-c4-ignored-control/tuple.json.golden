@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "probes/c-c4-ignored-control",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "IGNORED|session-or-default-model-selected\n"
+}

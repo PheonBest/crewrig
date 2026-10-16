@@ -1,0 +1,13 @@
+{
+  "files": {
+    "taps/r/run.tap": {
+      "content": "TAP version 13\nok 1 - gemini/s1 # TODO later\nok 2 - claude/s1 # Skipped x\n",
+      "mode": "0644"
+    }
+  },
+  "id": "report/todo-directive-upper",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "Scenario  claude    gemini    copilot \n--------  --------  --------  --------\ns1        â ï¸    â ï¸    â ï¸  \n"
+}

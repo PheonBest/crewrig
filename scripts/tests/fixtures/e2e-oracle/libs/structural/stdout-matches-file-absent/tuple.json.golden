@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "structural/stdout-matches-file-absent",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_stdout_matches x nope\n#   expected: file exists\n#   actual:   no such file: nope\n",
+  "stdout": ""
+}

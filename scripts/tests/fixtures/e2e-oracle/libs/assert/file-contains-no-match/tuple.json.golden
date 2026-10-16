@@ -1,0 +1,13 @@
+{
+  "files": {
+    "hay": {
+      "content": "alpha\nbeta\n",
+      "mode": "0644"
+    }
+  },
+  "id": "assert/file-contains-no-match",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_file_contains hay ^zzz$\n#   expected: ERE match: ^zzz$\n#   actual:   no match in file (first 400 B: alpha beta)\n",
+  "stdout": ""
+}

@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "probes/c-guidance-responded-false-with-nonce",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "HONOURED|requested-model-selected\n"
+}

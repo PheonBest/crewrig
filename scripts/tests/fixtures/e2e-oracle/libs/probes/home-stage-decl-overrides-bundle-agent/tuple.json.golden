@@ -1,0 +1,25 @@
+{
+  "files": {
+    "bundle/agents/stale.md": {
+      "content": "stale\n",
+      "mode": "0644"
+    },
+    "bundle/config.json": {
+      "content": "{\"k\":1}\n",
+      "mode": "0644"
+    },
+    "bundle/sub/token": {
+      "content": "secret\n",
+      "mode": "0666"
+    },
+    "decl.md": {
+      "content": "---\nname: probe\n---\nbody\n",
+      "mode": "0644"
+    }
+  },
+  "id": "probes/home-stage-decl-overrides-bundle-agent",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "rc=0\nparent=<TMP>/tmp\nname=crewrig-e2e-copilot-home.<RAND:31>\n. d 700\n./agents d 700\n./agents/stale.md f 600\n./config.json f 600\n./sub d 700\n./sub/token f 600\ndecl=<---\nname: probe\n---\nbody\n>\n"
+}

@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\nenv_keys = [\"A\", \"B\", \"A\"]\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/env-keys-dedup-local-only-duplicates",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"X\",\n      \"env_keys\": [\n        \"A\",\n        \"B\"\n      ]\n    }\n  }\n}\n"
+}
