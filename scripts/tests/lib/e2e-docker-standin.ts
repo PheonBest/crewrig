@@ -18,6 +18,7 @@
 // `info`, `volume create|rm`, `rm`, `network *`, `cp` exit 0 unless a fixture answers them (they
 // consume an ordinal only when a fixture is present for it, see `isQuiet`); `run` and everything
 // else answer from the fixture of the next ordinal. A call with no fixture left exits 97.
+// Fixture text tokens: see `expandTokens`.
 // `files` entries are written to the host path obtained through the `-v host:container[:mode]`
 // bind mounts of the same argv, longest container prefix first.
 
@@ -92,14 +93,52 @@ function matches(entry: FixtureEntry, argv: readonly string[]): boolean {
   return (entry.match ?? []).every((word, i) => argv[i] === word);
 }
 
+/** First capture group of `pattern` over `text`, "" when it does not match or is invalid. */
+function capture(pattern: string, text: string): string {
+  try {
+    return new RegExp(pattern).exec(text)?.[1] ?? "";
+  } catch {
+    return "";
+  }
+}
+
+/** Read a container path through the bind mounts of the call; "" when it is not mounted/readable. */
+function readMounted(argv: readonly string[], containerPath: string): string {
+  const host = mapPath(argv, containerPath);
+  try {
+    return host === undefined ? "" : fs.readFileSync(host, "utf8");
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Template tokens of a fixture's stdout, stderr and files contents, so a fixture can echo what the
+ * call asked: `{{ARGV_LAST}}` (the last argument), `{{ARG_MATCH:<regex>}}` (first capture group of
+ * the regex over the space-joined argv) and `{{FILE_MATCH:<container path>::<regex>}}` (first
+ * capture group of the regex over a file reached through the call's bind mounts).
+ */
+export function expandTokens(text: string, argv: readonly string[]): string {
+  return text
+    .replaceAll("{{ARGV_LAST}}", () => argv[argv.length - 1] ?? "")
+    .replace(/\{\{ARG_MATCH:(.*?)\}\}/gs, (_all, re: string) => capture(re, argv.join(" ")))
+    .replace(/\{\{FILE_MATCH:(.*?)::(.*?)\}\}/gs, (_all, file: string, re: string) =>
+      capture(re, readMounted(argv, file)),
+    );
+}
+
 function answer(entry: FixtureEntry, argv: readonly string[]): Result {
   for (const [containerPath, content] of Object.entries(entry.files ?? {})) {
     const host = mapPath(argv, containerPath);
     if (host === undefined) continue;
     fs.mkdirSync(path.dirname(host), { recursive: true });
-    fs.writeFileSync(host, content);
+    fs.writeFileSync(host, expandTokens(content, argv));
   }
-  return { stdout: entry.stdout ?? "", stderr: entry.stderr ?? "", exit: entry.exit ?? 0 };
+  return {
+    stdout: expandTokens(entry.stdout ?? "", argv),
+    stderr: expandTokens(entry.stderr ?? "", argv),
+    exit: entry.exit ?? 0,
+  };
 }
 
 function isQuiet(argv: readonly string[]): boolean {
