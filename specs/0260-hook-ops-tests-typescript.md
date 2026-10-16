@@ -1,7 +1,7 @@
 ---
 id: "0260"
 slug: hook-ops-tests-typescript
-status: draft
+status: approved
 complexity: standard
 interaction-mode: MINIMAL
 related-issue: 1340
@@ -80,7 +80,9 @@ suite red too.
    Bash library retired by J3. The one group of `test-usage-capture.sh` that sources it
    (group G15) SHALL be ported by this row to a TypeScript test that spawns `bash` to
    source the library, in its own file, and J3 SHALL delete that file in the same pull
-   request that retires the library. Parent requirement 13's sourced-library exception
+   request that retires the library. This row ports it (file `scripts/tests/usage-headless-agy.test.ts`,
+   pull request A); the row J3 (#1342, spec 0261) deletes it together with
+   `scripts/lib/usage-headless.sh`, and that obligation is recorded on #1342 and on spec 0261. Parent requirement 13's sourced-library exception
    names `common.sh`-style libraries whose consumers have a black-box test; the consumers
    of `usage-headless.sh` have none that this row leaves unchanged, so a retirement
    without a port is not available for it.
