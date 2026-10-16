@@ -4,7 +4,7 @@
 // A fixture is a self-contained repository under the OS temp directory with a
 // seed commit, a `.gitignore` holding `.worktrees/`, a tracked `sub/`
 // directory and a linked worktree at `<main>/.worktrees/<ticket>` (the layout
-// of the Bash oracle, scripts/tests/test-worktree-claim.sh). Nothing here
+// of the former Bash oracle, ported to scripts/tests/worktree-claim-*.test.ts). Nothing here
 // reads or writes the repository the suite ships in. Every path is physical
 // (symlinks resolved): on macOS `os.tmpdir()` sits under a symlink, and the
 // tool prints physical paths (spec 0248 R16, R23).
