@@ -13,7 +13,7 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { defaultIsFile } from "../lib/worktree-claim/launch-windows.ts";
+import { defaultIsFile, resolveOnPath } from "../lib/worktree-claim/launch-windows.ts";
 import {
   expectStatus,
   resolveInterpreters,
@@ -28,6 +28,20 @@ const entryPath = (name: string): string => path.join(repo, "scripts", `${name}.
 const lf = (text: string): string => text.replaceAll("\r\n", "\n");
 // A home-directory path literal, assembled at runtime so this file stays clean for the guard.
 const homePath = ["", "home", "alice", "notes.txt"].join("/");
+
+/**
+ * `git` must stay reachable once spawnEntry narrows the child PATH to node, System32 and the stubs:
+ * on Windows its directory (found on the PARENT PATH) is prepended to the stub directory.
+ */
+function withGitDir(bin: string): string {
+  if (!WIN) return bin;
+  const git = resolveOnPath("git", {
+    platform: process.platform,
+    env: process.env,
+    isFile: defaultIsFile,
+  });
+  return git === undefined ? bin : [path.win32.dirname(git), bin].join(path.delimiter);
+}
 
 function withBox<T>(body: (root: string, bin: string) => T): T {
   const root = fs.realpathSync.native(
@@ -68,7 +82,7 @@ function run(
       ...extra,
     },
     home: root,
-    bin,
+    bin: withGitDir(bin),
     interpreters,
   });
 }
