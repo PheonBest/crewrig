@@ -16,7 +16,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-/** The checkout root: a path in a golden must not depend on where the oracle ran (/work, /home/runner/...). */
+/** The checkout root: a path in a golden must not depend on where the oracle ran (a container mount, a CI workspace). */
 export const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
 
 export interface NormaliseContext {
