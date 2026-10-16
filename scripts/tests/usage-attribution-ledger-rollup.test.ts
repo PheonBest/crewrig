@@ -99,36 +99,45 @@ describe("usage attribution ledger and rollups (R26-R29)", () => {
       }
     });
 
-    test("R27-16 capture failure record is attributed and counted", () => {
-      const journalDir = path.join(c.root, "journal", "claude-code");
-      const entries = (): string[] =>
-        walkFiles(journalDir).filter((f) => !/\.(wing|attr)\.json$/.test(f));
-      const beforeList = entries();
-      const task = "attr-r27-failure-task";
-      const asTranscript = realTmp("usage-attr-transcript-");
-      const out = driver(
-        c,
-        ["capture-throw", "claude-code", asTranscript, realTmp("usage-attr-cwd-")],
-        { ATTR_CTX_ENV_CREWRIG_TASK: task, CREWRIG_TASK: task },
-      );
-      assert.equal(out.status, 0, out.stderr);
-      const added = entries().filter((f) => !beforeList.includes(f));
-      assert.equal(added.length, 1, `new entries: ${added.join(",")}`);
-      const file = path.join(journalDir, added[0]);
-      const text = fs.readFileSync(file, "utf8");
-      assert.ok(text.includes("capture threw"), "entry names the throw");
-      assert.ok(text.includes('"kind":"uncaptured"'), "entry is uncaptured");
-      assert.ok(text.includes(`"attribution":{"taskHandoffKey":"${task}"}`), text);
-      const doc = JSON.parse(text) as { timing: { requestInstant: string } };
-      const side = path.join(path.dirname(file), `${path.basename(file, ".json")}.attr.json`);
-      assert.ok(fs.existsSync(side), `sidecar missing: ${side}`);
-      assert.ok(doc.timing.requestInstant.length >= 7);
-      assert.ok(fs.readFileSync(side, "utf8").includes('"channel":"env"'));
-      const failure = JSON.parse(query(c, "--task-key", task, "--rollup")) as {
-        uncapturedCount: number;
-      };
-      assert.equal(failure.uncapturedCount, 1);
-    });
+    // A directory handed over as the transcript makes the capture throw on POSIX (EISDIR); Windows
+    // reports a different error that the capture treats as an unreadable transcript, so the leg is POSIX-only.
+    test(
+      "R27-16 capture failure record is attributed and counted",
+      {
+        skip:
+          process.platform === "win32" && "SKIP: POSIX-only leg (a directory read throws EISDIR)",
+      },
+      () => {
+        const journalDir = path.join(c.root, "journal", "claude-code");
+        const entries = (): string[] =>
+          walkFiles(journalDir).filter((f) => !/\.(wing|attr)\.json$/.test(f));
+        const beforeList = entries();
+        const task = "attr-r27-failure-task";
+        const asTranscript = realTmp("usage-attr-transcript-");
+        const out = driver(
+          c,
+          ["capture-throw", "claude-code", asTranscript, realTmp("usage-attr-cwd-")],
+          { ATTR_CTX_ENV_CREWRIG_TASK: task, CREWRIG_TASK: task },
+        );
+        assert.equal(out.status, 0, out.stderr);
+        const added = entries().filter((f) => !beforeList.includes(f));
+        assert.equal(added.length, 1, `new entries: ${added.join(",")}`);
+        const file = path.join(journalDir, added[0]);
+        const text = fs.readFileSync(file, "utf8");
+        assert.ok(text.includes("capture threw"), "entry names the throw");
+        assert.ok(text.includes('"kind":"uncaptured"'), "entry is uncaptured");
+        assert.ok(text.includes(`"attribution":{"taskHandoffKey":"${task}"}`), text);
+        const doc = JSON.parse(text) as { timing: { requestInstant: string } };
+        const side = path.join(path.dirname(file), `${path.basename(file, ".json")}.attr.json`);
+        assert.ok(fs.existsSync(side), `sidecar missing: ${side}`);
+        assert.ok(doc.timing.requestInstant.length >= 7);
+        assert.ok(fs.readFileSync(side, "utf8").includes('"channel":"env"'));
+        const failure = JSON.parse(query(c, "--task-key", task, "--rollup")) as {
+          uncapturedCount: number;
+        };
+        assert.equal(failure.uncapturedCount, 1);
+      },
+    );
   });
 
   test("R28-17 root override: nothing under HOME, files under the relocated root", () => {
