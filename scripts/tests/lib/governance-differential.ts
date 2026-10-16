@@ -70,7 +70,11 @@ export function runRealRepo(c: GovernanceCase): Transcript {
   try {
     git(sandbox, ["add", "-A"]);
     if (c.needsCommit === true) git(sandbox, ["commit", "-q", "-m", "sandbox"]);
-    installTee(sandbox, c.name, { mutating: c.mutating, statusOnly: c.statusOnly });
+    installTee(sandbox, c.name, {
+      mutating: c.mutating,
+      statusOnly: c.statusOnly,
+      stderrNoise: c.stderrNoise,
+    });
     const t = transcript(runScript(sandbox, c.name, { args: c.realRepoArgv }));
     missingTwin(c, t);
     refuseDivergence(c, t);
@@ -86,7 +90,11 @@ export function runSuiteThroughTee(c: GovernanceCase): Transcript {
   const sandbox = makeSandbox();
   try {
     git(sandbox, ["add", "-A"]);
-    installTee(sandbox, c.name, { mutating: c.mutating, statusOnly: c.statusOnly });
+    installTee(sandbox, c.name, {
+      mutating: c.mutating,
+      statusOnly: c.statusOnly,
+      stderrNoise: c.stderrNoise,
+    });
     const r = spawnSync("bash", [path.join("scripts", "tests", c.suite)], {
       cwd: sandbox.root,
       env: sandbox.env,

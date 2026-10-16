@@ -28,6 +28,11 @@ export interface TeeCase {
   readonly mutating?: boolean;
   /** Only the exit status is compared (shell fails through its own runtime, deviation (d)). */
   readonly statusOnly?: boolean;
+  /**
+   * Regex source of stderr lines that cannot be reproduced (a Python traceback). Lines that match
+   * it in full are removed from the stderr of both legs before comparison.
+   */
+  readonly stderrNoise?: string;
 }
 
 export interface Sandbox {
@@ -106,10 +111,14 @@ export function makeSandbox(options: SandboxOptions = {}): Sandbox {
   };
 }
 
+function shQuote(value: string): string {
+  return `'${value.replace(/'/g, `'\\''`)}'`;
+}
+
 /**
  * Put the comparison tee in front of `scripts/<name>.sh`. The shell original moves, byte for
  * byte, to `scripts/<name>.sh.shell`; the stub created in its place is runtime-only.
- * The case flags travel to the tee in GOVERNANCE_TEE_MUTATING / GOVERNANCE_TEE_STATUS_ONLY.
+ * The case flags travel to the tee in GOVERNANCE_TEE_MUTATING / GOVERNANCE_TEE_STATUS_ONLY / GOVERNANCE_TEE_STDERR_NOISE.
  */
 export function installTee(
   sandbox: Sandbox,
@@ -120,11 +129,18 @@ export function installTee(
   const original = fs.readFileSync(sh);
   const mode = fs.statSync(sh).mode & 0o777;
   fs.writeFileSync(`${sh}.shell`, original, { mode });
-  const tee = path.join(sandbox.root, TEE_PATH);
   const lines = ["#!/usr/bin/env bash"];
   if (flags.mutating === true) lines.push("export GOVERNANCE_TEE_MUTATING=1");
   if (flags.statusOnly === true) lines.push("export GOVERNANCE_TEE_STATUS_ONLY=1");
-  lines.push(`exec node ${NODE_FLAG} '${tee}' '${scriptName}' "$@"`, "");
+  if (flags.stderrNoise !== undefined) {
+    lines.push(`export GOVERNANCE_TEE_STDERR_NOISE=${shQuote(flags.stderrNoise)}`);
+  }
+  // The tee is located relative to the stub, so a copy of scripts/ runs its own copy of the tee.
+  lines.push(
+    'here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"',
+    `exec node ${NODE_FLAG} "$here/${TEE_PATH.replace(/^scripts\//, "")}" '${scriptName}' "$@"`,
+    "",
+  );
   fs.writeFileSync(sh, lines.join("\n"), { mode: 0o755 });
 }
 
