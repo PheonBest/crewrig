@@ -167,7 +167,7 @@ first).
 13. **Decoupling first.** Before any suite pull request that touches the setup goldens, their
     sandbox SHALL stop copying the repository's real `package-lock.json`: it copies a fixed
     fixture lockfile (`scripts/tests/fixtures/setup-golden/package-lock.json.golden`), and the
-    stamp hash recorded in the 127 `tree.json.golden` and the 12-hex prefix in the 4
+    stamp hash recorded in the 127 `tree.json.golden` files that record the dependency stamp (of 144) and the 12-hex prefix in the 4
     `deps-step-hit/stdout.golden` files take the fixture's value once. #1614 is delivered as its
     own small ticket flow (one pull request, #1649, base `release/1231-ts-migration`, branch
     `test/1614-decouple-setup-goldens-from-lock`, no spec) and SHALL be merged before the first pull
@@ -1575,5 +1575,5 @@ naming the report, and the script is unchanged.
   with a stated reason.
 - **Pin literals** of `test-mempalace-version-range.sh`: the PLAN decides whether the replacement derives
   `NEW_MIN` and `NEW_MAX` from `common.sh` instead of hard-coding `3.6.0` and `3.7`.
-- **Per-suite VERIFY items** carried in the *Suite sections* are resolved in the PLAN before the first pull
-  request opens.
+- **Per-suite VERIFY items** carried in the *Suite sections* are resolved in the PLAN before any pull
+  request opens (requirement 21 gates every pull request on them, not only pull request A).
