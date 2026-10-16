@@ -2,7 +2,7 @@
   "id": "quorum/fail-fail",
   "rc": 1,
   "stdout": "VERDICT=FAIL confidence=0.70",
-  "stderr": "# FAIL llm_judge <TMP>/work/prompt <TMP>/work/answer is it polite?\n#   expected: VERDICT=PASS\n#   actual:   VERDICT=FAIL confidence=0.70\n#   report:   <TMP>/report\n",
+  "stderr": "# FAIL llm_judge <TMP><REPO>/prompt <TMP><REPO>/answer is it polite?\n#   expected: VERDICT=PASS\n#   actual:   VERDICT=FAIL confidence=0.70\n#   report:   <TMP>/report\n",
   "requests": [
     {
       "endpoint": "anthropic",
