@@ -11,13 +11,14 @@
 # then have no `.claude.json` to mount and Claude re-prompts for login.
 #
 # This test locks BOTH ends of the contract:
-#   1. scripts/e2e/auth-claude.sh must include a docker `-v` flag binding
+#   1. scripts/e2e/auth-claude.sh must run docker with a `-v` flag binding
 #      `<host>/.claude.json` to `/home/agent/.claude.json`.
 #   2. tests/e2e/defaults.toml must include a `mounts` entry mapping the
 #      same `.claude.json` for the `[cli.claude]` runtime, so non-interactive
 #      scenario runs surface the persisted file inside the container.
 #
-# Static-only: parses the script and the TOML; does not execute docker.
+# Test 1 runs the script against the Docker stand-in (never real docker);
+# Test 2 parses the TOML.
 
 set -uo pipefail
 
@@ -39,17 +40,36 @@ if [[ ! -f "$AUTH_SCRIPT" ]]; then
   exit 1
 fi
 
-# The script must contain a -v flag that binds a host path ending in
-# `.claude.json` to `/home/agent/.claude.json`. We grep with a tolerant
-# regex so either an inline literal or a `${VAR}/.claude.json` form passes.
-# Strip comment lines first so a `#  -v ...` example in a docstring cannot
-# satisfy the contract.
-if grep -v '^[[:space:]]*#' "$AUTH_SCRIPT" \
-   | grep -Eq -- '-v[[:space:]]+"?[^"[:space:]]*\.claude\.json:/home/agent/\.claude\.json'; then
+# Black-box (spec 0261 R12): run the script against the Docker stand-in with a
+# scratch HOME and read the `-v` binds of the recorded `docker run` argv. Holds
+# for the shell script today and for the TypeScript behind the shim later.
+STANDIN="${REPO_DIR}/scripts/tests/lib/e2e-docker-standin.ts"
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+mkdir -p "$TMP/bin" "$TMP/fakehome/.claude/rules" "$TMP/state"
+echo "rule" > "$TMP/fakehome/.claude/rules/00-test.md"
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$STANDIN" --write-launcher "$TMP/bin"
+printf '%s' '{"auth/claude":[{"files":{"/home/agent/.claude/.credentials.json":"{}","/home/agent/.claude.json":"{}"}}]}' \
+  > "$TMP/fixtures.json"
+: > "$TMP/docker.log"
+
+out="$(env HOME="$TMP/fakehome" CREWRIG_E2E_HOME="$TMP/e2e" PATH="$TMP/bin:$PATH" \
+  E2E_STANDIN_FIXTURES="$TMP/fixtures.json" E2E_STANDIN_CASE="auth/claude" \
+  E2E_STANDIN_STATE="$TMP/state" E2E_STANDIN_LOG="$TMP/docker.log" \
+  bash "$AUTH_SCRIPT" </dev/null 2>&1)"
+rc=$?
+
+binds="$(jq -r 'select(.argv[0] == "run")
+                | .argv as $a
+                | range(0; ($a | length) - 1)
+                | select($a[.] == "-v") | $a[. + 1]' "$TMP/docker.log" 2>/dev/null)"
+want="${TMP}/e2e/.crewrig-e2e/claude/.claude.json:/home/agent/.claude.json"
+
+if [[ "$rc" -eq 0 ]] && grep -Fxq -- "$want" <<< "$binds"; then
   note_pass "auth-claude.sh — docker run binds .claude.json into /home/agent/.claude.json"
 else
   note_fail "auth-claude.sh — docker run binds .claude.json into /home/agent/.claude.json" \
-    "no '-v <host>/.claude.json:/home/agent/.claude.json' flag found in $AUTH_SCRIPT (issue #112)"
+    "rc=$rc, expected -v '$want' in docker run argv (issue #112); binds=$(printf '%s' "$binds" | tr '\n' ' ') out=$(printf '%s' "$out" | tr '\n' ' ' | head -c 200)"
 fi
 
 # ---------------------------------------------------------------------------

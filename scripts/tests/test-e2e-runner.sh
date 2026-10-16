@@ -62,6 +62,75 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# --- Black-box probe harness (spec 0261 R12-R15) ------------------------------
+# The runner's behaviour is observed, never its text: a scratch copy of
+# tests/e2e/ (with a throwaway recorder as the 01-layered-context scenario
+# script) is run with the Docker stand-in first on PATH, a scratch HOME and a
+# scratch E2E_REPORTS_ROOT. This holds whether run.sh is today's shell or the
+# forwarding shim to run.ts.
+SCRATCH="$(mktemp -d)"
+STANDIN_BIN="${SCRATCH}/standin-bin"
+SCRATCH_TREE="${SCRATCH}/tree"
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON \
+  "${REPO_DIR}/scripts/tests/lib/e2e-docker-standin.ts" --write-launcher "$STANDIN_BIN" >/dev/null 2>&1
+
+build_scratch_tree() {
+  mkdir -p "${SCRATCH_TREE}/tests" "${SCRATCH}/home" "${SCRATCH}/e2ehome" "${SCRATCH}/standin-state"
+  cp -R "${REPO_DIR}/tests/e2e" "${SCRATCH_TREE}/tests/e2e"
+  rm -rf -- "${SCRATCH_TREE}/tests/e2e/reports"
+  ln -s "${REPO_DIR}/scripts" "${SCRATCH_TREE}/scripts"
+  [[ -e "${REPO_DIR}/node_modules" ]] && ln -s "${REPO_DIR}/node_modules" "${SCRATCH_TREE}/node_modules"
+  local rec="${SCRATCH_TREE}/tests/e2e/scenarios/01-layered-context/run.sh"
+  cat > "$rec" <<'REC'
+#!/usr/bin/env bash
+{ for v in E2E_LIB_DIR E2E_REPORT_DIR E2E_CLI E2E_IMAGE E2E_EFFECTIVE_JSON \
+           E2E_SCENARIO_DIR E2E_CREDENTIAL_PATH E2E_CREWRIG_E2E_HOME; do
+    printf '%s=%s\n' "$v" "${!v-}"
+  done; } > "${E2E_REPORT_DIR}/child-env.txt"
+exit 0
+REC
+  # TypeScript runner (spec 0261 R15/R16): it spawns `node <scenarioDir>/run.ts`, so mirror the recorder there.
+  cat > "${rec%.sh}.ts" <<'RECTS'
+import { writeFileSync } from "node:fs";
+import { join } from "node:path";
+const vars = ["E2E_LIB_DIR", "E2E_REPORT_DIR", "E2E_CLI", "E2E_IMAGE", "E2E_EFFECTIVE_JSON",
+  "E2E_SCENARIO_DIR", "E2E_CREDENTIAL_PATH", "E2E_CREWRIG_E2E_HOME"];
+const out = vars.map((v) => `${v}=${process.env[v] ?? ""}\n`).join("");
+writeFileSync(join(process.env.E2E_REPORT_DIR ?? ".", "child-env.txt"), out);
+process.exit(0);
+RECTS
+  chmod +x "$rec"
+}
+
+# probe_run <report-dir> [api-key]: run the scratch runner for claude/01-layered-context.
+probe_run() {
+  local rd="$1" key="${2:-}"
+  rm -rf -- "$rd"
+  env -u ANTHROPIC_API_KEY -u GEMINI_API_KEY -u COPILOT_GITHUB_TOKEN -u GH_TOKEN \
+    ${key:+ANTHROPIC_API_KEY="$key"} \
+    HOME="${SCRATCH}/home" CREWRIG_E2E_HOME="${SCRATCH}/e2ehome" \
+    E2E_REPORTS_ROOT="${SCRATCH}/reports" \
+    PATH="${STANDIN_BIN}:${PATH}" E2E_STANDIN_FORBID_RUN=1 \
+    E2E_STANDIN_STATE="${SCRATCH}/standin-state" E2E_STANDIN_LOG="${SCRATCH}/standin.log" \
+    bash "${SCRATCH_TREE}/tests/e2e/run.sh" --scenario 01-layered-context --cli claude \
+      --report-dir "$rd" 2>&1
+}
+
+# child_var <name>: value the scenario child saw in its environment.
+child_var() { sed -n "s/^$1=//p" "${CHILD_ENV}" | head -n 1; }
+phys() { (cd -P "$1" 2>/dev/null && pwd -P); }
+
+# is_real_shell_script <file>: false for a forwarding shim (at most 25 lines AND a line starting with `exec node`;
+# the real shim has a floor-guard line first — spec 0261 R14).
+is_real_shell_script() {
+  local f="$1" n
+  n="$(wc -l < "$f" | tr -d ' ')"
+  if [ "$n" -le 25 ] && grep -q '^exec node' "$f"; then return 1; fi
+  [ "$n" -gt 5 ]
+}
+
+trap 'cleanup; rm -rf -- "$SCRATCH"' EXIT
+
 if [[ ! -x "$RUN_SH" && ! -f "$RUN_SH" ]]; then
   note_fail "run.sh exists" "missing at $RUN_SH"
   echo "# 0 passed / 1 failed / 0 skipped"
@@ -208,11 +277,25 @@ else
 fi
 rm -f "$err7_file"
 
-# --- Case 8: runner sources auth-common.sh -------------------------------
-if grep -q 'scripts/e2e/lib/auth-common.sh' "$RUN_SH"; then
-  note_pass "runner sources scripts/e2e/lib/auth-common.sh"
+# --- Case 8: runner honours scripts/e2e/lib/auth-common.sh --------------
+# Behavioural replacement of the former grep of run.sh (spec 0261 R12): the
+# auth gate and the credential label are auth-common.sh's own, so a runner that
+# did not use it could neither SKIP "unconfigured" nor report the credential
+# path of the key it was given.
+build_scratch_tree
+CHILD_ENV="${SCRATCH}/rd8/claude/01-layered-context/child-env.txt"
+out8a="$(probe_run "${SCRATCH}/rd8" "")"
+if grep -q '^ok 1 - claude/01-layered-context # SKIP unconfigured' <<< "$out8a" && [[ ! -e "$CHILD_ENV" ]]; then
+  note_pass "runner auth gate (auth-common.sh) — no credential → SKIP unconfigured, scenario not run"
 else
-  note_fail "runner sources auth-common.sh" "no reference found in run.sh"
+  note_fail "runner auth gate — SKIP unconfigured" "out=$(echo "$out8a" | tr '\n' '|' | head -c 300)"
+fi
+out8b="$(probe_run "${SCRATCH}/rd8" "dummy-not-a-real-key")"
+if grep -q '^ok 1 - claude/01-layered-context$' <<< "$out8b" \
+   && [[ "$(child_var E2E_CREDENTIAL_PATH)" == "ANTHROPIC_API_KEY" ]]; then
+  note_pass "runner auth gate (auth-common.sh) — API key → ready, credential path reported to the scenario"
+else
+  note_fail "runner auth gate — ready path" "cred=$(child_var E2E_CREDENTIAL_PATH) out=$(echo "$out8b" | tr '\n' '|' | head -c 300)"
 fi
 
 # --- Case 9: default scenario set (all) enumerates every (scenario,cli) pair ---

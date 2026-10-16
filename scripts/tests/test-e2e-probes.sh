@@ -75,6 +75,92 @@ PUBLISH_SH="${REPO_DIR}/scripts/e2e/publish-probe-verdict.sh"
 command -v jq >/dev/null 2>&1 || { echo "# FAIL jq required — jq not on PATH"; echo "# 0 passed / 1 failed / 0 skipped"; exit 1; }
 command -v yq >/dev/null 2>&1 || { echo "# FAIL yq required — yq not on PATH"; echo "# 0 passed / 1 failed / 0 skipped"; exit 1; }
 
+# --- Behavioural driver (spec 0261 requirements 12-15) -----------------------
+# Static reads of the scenario/runner TEXT are replaced by runs of tests/e2e/run.sh
+# against the Docker stand-in (scripts/tests/lib/e2e-docker-standin.ts); the docker
+# argv it logs is what is asserted. drive_case <scenario> <cli> [stdout] [seed-modes]
+# sets DRV_RC DRV_DIR DRV_LOG (one JSON argv per line) DRV_REPORT DRV_BUNDLE.
+DRV_BASE="$(mktemp -d "${TMPDIR:-/tmp}/crewrig-e2e-drv.XXXXXX")"
+trap 'rm -rf "$DRV_BASE"' EXIT
+DRV_N=0
+DRV_OK=false
+if [ "$(bash -c 'echo ${BASH_VERSINFO[0]}')" -ge 4 ] && command -v node >/dev/null 2>&1; then DRV_OK=true; fi
+drive_case() {
+  local scenario="$1" cli="$2" out="${3:-x}" seed="${4:-}"
+  DRV_N=$((DRV_N + 1))
+  DRV_DIR="${DRV_BASE}/c${DRV_N}"
+  DRV_BUNDLE="${DRV_DIR}/e2e-root/.crewrig-e2e/${cli}"
+  mkdir -p "${DRV_DIR}/home" "${DRV_DIR}/bin" "${DRV_DIR}/state" "${DRV_DIR}/tmp"
+  node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "${REPO_DIR}/scripts/tests/lib/e2e-docker-standin.ts" --write-launcher "${DRV_DIR}/bin"
+  if [[ "$seed" != "absent-bundle" ]]; then
+    mkdir -p "${DRV_BUNDLE}"
+    echo '# Location: Nantes' > "${DRV_BUNDLE}/00-rules.md"
+    echo '{"dummy":true}' > "${DRV_BUNDLE}/.credentials.json"
+  fi
+  if [[ "$seed" == "loose-modes" ]]; then
+    mkdir -p "${DRV_BUNDLE}/sub"; chmod 755 "${DRV_BUNDLE}/sub"; chmod 644 "${DRV_BUNDLE}/.credentials.json"
+  fi
+  jq -n --arg k "${scenario}/${cli}" --arg o "$out" '{($k):[range(0;5)|{match:["run"],stdout:$o}]}' > "${DRV_DIR}/state/f.json"
+  DRV_REPORT="${DRV_DIR}/reports/20000101T000000Z-0000/${cli}/${scenario}"
+  # Scratch copy of tests/e2e (no reports/), scripts/ and node_modules symlinked: the repository tree
+  # is never written. Seed "local" writes a tests/e2e/local.toml in the SCRATCH copy only.
+  DRV_TREE="${DRV_DIR}/tree"
+  mkdir -p "${DRV_TREE}/tests"
+  cp -R "${REPO_DIR}/tests/e2e" "${DRV_TREE}/tests/e2e"
+  rm -rf -- "${DRV_TREE}/tests/e2e/reports" "${DRV_TREE}/tests/e2e/local.toml"
+  ln -s "${REPO_DIR}/scripts" "${DRV_TREE}/scripts"
+  [[ -e "${REPO_DIR}/node_modules" ]] && ln -s "${REPO_DIR}/node_modules" "${DRV_TREE}/node_modules"
+  if [[ "$seed" == local* ]]; then
+    local lcmd='["copilot", "--byok-stand-in"]'
+    [[ "$seed" == "local-secret" ]] && lcmd='["copilot", "--token=sk-xyz-secret"]'
+    cat > "${DRV_TREE}/tests/e2e/local.toml" <<LOCALTOML
+[cli.copilot]
+command       = ${lcmd}
+env_keys      = ["COPILOT_GITHUB_TOKEN"]
+byok_provider = "ollama-cloud"
+byok_model    = "glm-5.3-flash:cloud"
+LOCALTOML
+  fi
+  (cd "$DRV_TREE" && env -i PATH="${DRV_DIR}/bin:${PATH}" HOME="${DRV_DIR}/home" \
+    CREWRIG_E2E_HOME="${DRV_DIR}/e2e-root" E2E_REPORTS_ROOT="${DRV_DIR}/reports" TMPDIR="${DRV_DIR}/tmp" LC_ALL=C \
+    ANTHROPIC_API_KEY=d GEMINI_API_KEY=d COPILOT_GITHUB_TOKEN=d E2E_JUDGE_MOCK=1 \
+    E2E_JUDGE_MOCK_RESPONSE="VERDICT=PASS CONF=0.95" E2E_STANDIN_FIXTURES="${DRV_DIR}/state/f.json" \
+    E2E_STANDIN_CASE="${scenario}/${cli}" E2E_STANDIN_STATE="${DRV_DIR}/state/c" E2E_STANDIN_LOG="${DRV_DIR}/state/log.jsonl" \
+    bash tests/e2e/run.sh --scenario "$scenario" --cli "$cli" --report-dir "${DRV_DIR}/reports/20000101T000000Z-0000" \
+    >"${DRV_DIR}/out" 2>&1)
+  DRV_RC=$?
+  DRV_LOG="${DRV_DIR}/state/log.jsonl"
+  [[ -f "$DRV_LOG" ]] || : > "$DRV_LOG"
+}
+# check_ephemeral_mount <label> <name-substring>: in the recorded run whose --name contains the
+# substring, /home/agent/.copilot must be mounted from a directory under the scratch TMPDIR that
+# is neither the persisted bundle nor inside the report tree (v2-F4: never mount the real bundle rw).
+check_ephemeral_mount() {
+  local label="$1" sub="$2" host bundle drvdir
+  # Collapse duplicate slashes so a TMPDIR ending in "/" (macOS) does not change the comparison.
+  bundle="$(printf '%s' "$DRV_BUNDLE" | sed 's#//*#/#g')"; drvdir="$(printf '%s' "$DRV_DIR" | sed 's#//*#/#g')"
+  host="$(jq -r --arg s "$sub" 'select(.argv | any(.[]; contains($s))) | .argv | . as $a | [range(0;length-1) | select($a[.]=="-v") | $a[.+1] | select(split(":")[1]=="/home/agent/.copilot") | split(":")[0]] | .[]' "$DRV_LOG" | sed 's#//*#/#g')"
+  if [[ -z "$host" ]]; then
+    note_fail "$label — ephemeral home mounted at /home/agent/.copilot" "no such mount in the run named *${sub}*"
+  elif [[ "$host" == "$bundle" || "$host" == "${bundle}/"* ]]; then
+    note_fail "$label — never mounts the real bundle directly (v2-F4)" "mounted $host"
+  elif [[ "$host" == "${drvdir}/reports/"* ]]; then
+    note_fail "$label — ephemeral home outside the report tree" "mounted $host"
+  elif [[ "$host" == "${drvdir}/tmp/"* ]]; then
+    note_pass "$label — mounts a scratch-TMPDIR ephemeral home, not the persisted bundle nor the report dir (v2-F4)"
+  else
+    note_fail "$label — ephemeral home under TMPDIR" "mounted $host (expected under ${DRV_DIR}/tmp/)"
+  fi
+}
+# is_real_shell <file> — false for a forwarding shim: at most 25 lines AND a line starting with `exec node`
+# (the real shim has a floor-guard line before the exec); spec 0261 requirements 14 and 16.
+is_real_shell() {
+  local f="$1" n
+  n="$(wc -l < "$f" | tr -d ' ')"
+  if [ "$n" -le 25 ] && grep -q '^exec node' "$f"; then return 1; fi
+  [ "$n" -gt 5 ]
+}
+
 # --- 1. Probe directory structure -------------------------------------------
 PROBES=(05-copilot-model-routing 06-agent-surface-consumption 07-guidance-surface)
 for p in ${PROBES[@]+"${PROBES[@]}"}; do
@@ -84,6 +170,11 @@ for p in ${PROBES[@]+"${PROBES[@]}"}; do
     note_pass "probe '$p' — run.sh exists and is executable"
   else
     note_fail "probe '$p' — run.sh executable" "not -x: $r"
+    continue
+  fi
+  # Shell-only properties (bash -n, sourcing) apply only while run.sh is a real script (spec 0261 requirement 14).
+  if ! is_real_shell "$r"; then
+    note_pass "probe '$p' — bash -n / sourcing not applicable (forwarding shim, spec 0261 requirement 14)"
     continue
   fi
   err="$(bash -n "$r" 2>&1)"
@@ -101,7 +192,38 @@ done
 
 # --- 2. Probe A argv assembly reads the effective per-CLI config -----------
 RUN_A="${SCEN_DIR}/05-copilot-model-routing/run.sh"
+# Behavioural (spec 0261 requirement 12): probe B shares probe A's effective-config assembly and is
+# drivable (probe A needs the gitignored tests/e2e/local.toml); assert the recorded argv of 06/copilot.
+if [[ "$DRV_OK" == "true" ]]; then
+  drive_case 06-agent-surface-consumption copilot
+  eff="${DRV_REPORT%/*/*}/effective.json"
+  cmd0="$(jq -r '.cli.copilot.command[0]' "$eff")"
+  if jq -e --arg c "$cmd0" '.argv | select(.[1]=="--rm") | index($c) != null' "$DRV_LOG" >/dev/null 2>&1 \
+     && [[ "$(jq -c '.argv | select(.[1]=="--rm") | select(index("-p"))' "$DRV_LOG" | wc -l | tr -d ' ')" -ge 1 ]]; then
+    note_pass "probe B (shared assembly) — recorded argv carries .cli.copilot.command ('$cmd0') from the effective config"
+  else
+    note_fail "probe B — argv carries .cli.copilot.command" "no recorded run with '$cmd0'"
+  fi
+  for k in $(jq -r '.cli.copilot.env_keys[]' "$eff"); do
+    if jq -e --arg k "$k" 'select(.argv[1]=="--rm") | .argv | . as $a | any(range(0;length-1); $a[.]=="-e" and $a[.+1]==$k)' "$DRV_LOG" | grep -q true; then
+      note_pass "probe B — recorded argv passes env key '$k' from .cli.copilot.env_keys"
+    else
+      note_fail "probe B — env key '$k'" "no '-e $k' in the recorded docker argv"
+    fi
+  done
+  for target in $(jq -r '.cli.copilot.mounts[] | split(":")[1]' "$eff"); do
+    if jq -e --arg t "$target" 'select(.argv[1]=="--rm") | .argv | any(.[]; endswith(":"+$t+":rw") or endswith(":"+$t+":ro") or endswith(":"+$t))' "$DRV_LOG" | grep -q true; then
+      note_pass "probe B — recorded argv mounts the declared .cli.copilot.mounts target '$target'"
+    else
+      note_fail "probe B — declared mount target '$target'" "not found in any recorded docker run"
+    fi
+  done
+else
+  note_skip "probe B behavioural argv checks" "bash>=4 or node unavailable"
+fi
+# Static form: probe A's run.sh text, kept only while it is a real shell script (requirement 14).
 for key in '.cli.copilot.command' '.cli.copilot.mounts' '.cli.copilot.env_keys'; do
+  is_real_shell "$RUN_A" || { note_pass "probe A — static '${key}' read not applicable (forwarding shim, spec 0261 requirement 14)"; continue; }
   if grep -Fq "$key" "$RUN_A"; then
     note_pass "probe A — argv assembly reads '${key}' from the effective JSON"
   else
@@ -116,8 +238,22 @@ done
 # the `if [[ "$CONTROL_OBSERVED" != "true" ]]; then ... fi` block (the row-1
 # failure path) by its unindented `fi`, which the nested ifs inside it do
 # not match (they're indented).
+# Behavioural (spec 0261 requirement 12): drive probe A through a scratch tree with a seeded local.toml.
+if [[ "$DRV_OK" == "true" ]]; then
+  drive_case 05-copilot-model-routing copilot x local
+  check_ephemeral_mount "probe A row-1 fallback" "05-fallback"
+  PROBE_A_DIR="$DRV_DIR"; PROBE_A_REPORT="$DRV_REPORT"
+  drive_case 06-agent-surface-consumption copilot
+  check_ephemeral_mount "probe B cell 3" "cross_cell_control"
+  PROBE_B_DIR="$DRV_DIR"
+else
+  note_skip "probe A/B ephemeral-home mounts" "bash>=4 or node unavailable"
+fi
+# Static forms below apply only while the scenario is a real shell script (requirement 14).
 FALLBACK_BLOCK="$(sed -n '/^if \[\[ "\$CONTROL_OBSERVED" != "true" \]\]; then$/,/^fi$/p' "$RUN_A")"
-if [[ -z "$FALLBACK_BLOCK" ]]; then
+if ! is_real_shell "$RUN_A"; then
+  note_pass "probe A — static fallback-block read not applicable (forwarding shim, spec 0261 requirement 14)"
+elif [[ -z "$FALLBACK_BLOCK" ]]; then
   note_fail "probe A — row-1 fallback block located" \
             "could not find the CONTROL_OBSERVED-guarded block in $RUN_A"
 else
@@ -142,7 +278,9 @@ fi
 # independently-authored call site (PLAN v2 step 26).
 RUN_B="${SCEN_DIR}/06-agent-surface-consumption/run.sh"
 EPHEMERAL_BLOCK="$(sed -n '/^  elif \[\[ "\$mount_mode" == "ephemeral-home" \]\]; then$/,/^  fi$/p' "$RUN_B")"
-if [[ -z "$EPHEMERAL_BLOCK" ]]; then
+if ! is_real_shell "$RUN_B"; then
+  note_pass "probe B — static ephemeral-block read not applicable (forwarding shim, spec 0261 requirement 14)"
+elif [[ -z "$EPHEMERAL_BLOCK" ]]; then
   note_fail "probe B — ephemeral-home cell block located" \
             "could not find the mount_mode==ephemeral-home block in $RUN_B"
 else
@@ -170,11 +308,33 @@ fi
 # not just once, which would silently leave one branch (and one of R10's two
 # "requirements 1-7 unrealised" paths, per PLAN v2 step 15) unbracketed.
 RUNNER_SH="${REPO_DIR}/tests/e2e/run.sh"
+# Behavioural: the runner creates an absent bundle at 700 before the scenario and restores 700/600
+# after it (delegation branch; the legacy direct-docker branch is unreachable, every scenario has a
+# run.sh). The static count of the two call pairs applies only while run.sh is a real shell script.
+mode_of() { stat -c '%a' "$1" 2>/dev/null || stat -f '%Lp' "$1"; }
+if [[ "$DRV_OK" == "true" ]]; then
+  drive_case 06-agent-surface-consumption copilot x absent-bundle
+  if [[ -d "$DRV_BUNDLE" && "$(mode_of "$DRV_BUNDLE")" == "700" && "$(mode_of "${DRV_DIR}/e2e-root/.crewrig-e2e")" == "700" ]]; then
+    note_pass "tests/e2e/run.sh — creates an absent bundle dir and root at 700 (ensure-before, R5)"
+  else
+    note_fail "tests/e2e/run.sh — ensure-before (R5)" "bundle dir missing or not 700 after the run"
+  fi
+  drive_case 06-agent-surface-consumption copilot x loose-modes
+  if [[ "$(mode_of "${DRV_BUNDLE}/sub")" == "700" && "$(mode_of "${DRV_BUNDLE}/.credentials.json")" == "600" ]]; then
+    note_pass "tests/e2e/run.sh — restores 700/600 after the scenario (assert-after, R5)"
+  else
+    note_fail "tests/e2e/run.sh — assert-after (R5)" "sub=$(mode_of "${DRV_BUNDLE}/sub") creds=$(mode_of "${DRV_BUNDLE}/.credentials.json")"
+  fi
+else
+  note_skip "tests/e2e/run.sh — ensure/assert bundle modes" "bash>=4 or node unavailable"
+fi
 _bracket_calls=()
 while IFS= read -r line || [ -n "$line" ]; do
   _bracket_calls+=("$line")
 done < <(grep -n 'e2e_ensure_bundle_dir "\$cli"\|e2e_assert_bundle_modes "\$cli"' "$RUNNER_SH" | sed -E 's/^[0-9]+:[[:space:]]*//')
-if [[ "${#_bracket_calls[@]}" -eq 4 \
+if ! is_real_shell "$RUNNER_SH"; then
+  note_pass "tests/e2e/run.sh — static bracket count not applicable (forwarding shim, spec 0261 requirement 14)"
+elif [[ "${#_bracket_calls[@]}" -eq 4 \
       && "${_bracket_calls[0]}" == 'e2e_ensure_bundle_dir "$cli"' \
       && "${_bracket_calls[1]}" == 'e2e_assert_bundle_modes "$cli"' \
       && "${_bracket_calls[2]}" == 'e2e_ensure_bundle_dir "$cli"' \
@@ -287,7 +447,9 @@ for field in 'hint_efficacy' 'surface' 'effective_command' 'BUG-PRESENT'; do
 done
 
 # --- 5. Verdict vocabulary is exactly BUG-PRESENT|BUG-ABSENT|INDETERMINATE --
-if grep -Eq 'BUG-PRESENT.*BUG-ABSENT.*INDETERMINATE' "$RUN_A"; then
+if ! is_real_shell "$RUN_A"; then
+  note_pass "probe A — static verdict-vocabulary read not applicable (forwarding shim, spec 0261 requirement 14)"
+elif grep -Eq 'BUG-PRESENT.*BUG-ABSENT.*INDETERMINATE' "$RUN_A"; then
   note_pass "probe A — verdict vocabulary documented as BUG-PRESENT|BUG-ABSENT|INDETERMINATE"
 else
   note_fail "probe A — verdict vocabulary" "expected all three literals, in that order, in a single line of $RUN_A"
@@ -421,12 +583,18 @@ got="$(resolve_b false false)"
   || note_fail "probe B resolver — indeterminate row" "got: $got"
 
 # --- 9. Probe B ephemeral-home staging is outside the repository tree (R4) --
-if grep -Eq 'mktemp[[:space:]]+-d[[:space:]]+"\$\{TMPDIR:-/tmp\}' "${E2E_LIB_DIR}/copilot_ephemeral_home.sh"; then
+# Behavioural staging-root check lives in 2b/2c (check_ephemeral_mount); the text greps below apply
+# only while the library exists as a shell file (it is deleted when ported, spec 0261 requirement 14).
+if [[ ! -f "${E2E_LIB_DIR}/copilot_ephemeral_home.sh" ]] || ! is_real_shell "${E2E_LIB_DIR}/copilot_ephemeral_home.sh"; then
+  note_pass "copilot_ephemeral_home.sh — static staging-root reads not applicable (library ported; see 2b/2c)"
+elif grep -Eq 'mktemp[[:space:]]+-d[[:space:]]+"\$\{TMPDIR:-/tmp\}' "${E2E_LIB_DIR}/copilot_ephemeral_home.sh"; then
   note_pass "copilot_ephemeral_home.sh — stages under \$TMPDIR (outside the repository working tree)"
 else
   note_fail "copilot_ephemeral_home.sh — staging root" "no mktemp -d under \${TMPDIR:-/tmp} found"
 fi
-if grep -q 'E2E_REPORT_DIR' "${E2E_LIB_DIR}/copilot_ephemeral_home.sh"; then
+if [[ ! -f "${E2E_LIB_DIR}/copilot_ephemeral_home.sh" ]] || ! is_real_shell "${E2E_LIB_DIR}/copilot_ephemeral_home.sh"; then
+  :
+elif grep -q 'E2E_REPORT_DIR' "${E2E_LIB_DIR}/copilot_ephemeral_home.sh"; then
   note_fail "copilot_ephemeral_home.sh — must not stage under \$E2E_REPORT_DIR" \
     "found a reference to E2E_REPORT_DIR in the staging helper"
 else
@@ -531,7 +699,20 @@ fi
 
 # --- 12. Probe A's run.sh calls the shared masking function, not a private
 # re-implementation of it (so a future fix here reaches every call site).
-if grep -Fq 'e2e_mask_command_json' "$RUN_A" && grep -Fq "source \"\${E2E_LIB_DIR}/mask_command.sh\"" "$RUN_A"; then
+if [[ "$DRV_OK" == "true" ]]; then
+  drive_case 05-copilot-model-routing copilot x local-secret
+  eff_cmd="$(jq -c '.cells // empty | .[]? | .effective_command' "${DRV_REPORT}/verdict.json" 2>/dev/null; jq -c '.effective_command // empty' "${DRV_REPORT}/verdict.json" 2>/dev/null)"
+  if grep -q 'token=\*\*\*' <<<"$eff_cmd" && ! grep -q 'sk-xyz-secret' <<<"$eff_cmd"; then
+    note_pass "probe A — verdict effective_command is masked (--token=***), no secret leaks (finding v2-F3)"
+  else
+    note_fail "probe A — verdict effective_command masking" "got: $eff_cmd"
+  fi
+else
+  note_skip "probe A masking via verdict" "bash>=4 or node unavailable"
+fi
+if ! is_real_shell "$RUN_A"; then
+  note_pass "probe A — static mask_command.sh source read not applicable (forwarding shim, spec 0261 requirement 14)"
+elif grep -Fq 'e2e_mask_command_json' "$RUN_A" && grep -Fq "source \"\${E2E_LIB_DIR}/mask_command.sh\"" "$RUN_A"; then
   note_pass "probe A — uses the shared e2e_mask_command_json (finding v2-F3)"
 else
   note_fail "probe A — uses the shared masking function" \
@@ -692,7 +873,30 @@ rm -f "$CLAUDE_JSON_ERRORED"
 # (issue #1107 fix 2).
 RUN_B="${SCEN_DIR}/06-agent-surface-consumption/run.sh"
 RUN_C="${SCEN_DIR}/07-guidance-surface/run.sh"
+CLAUDE_STATS_JSON='{"result":"done","subagent_stats":{"by_type":{"probe-consumer":{"spawned":1,"completed":1,"errored":0}}},"modelUsage":{"claude-sonnet-4-6":{}}}'
+if [[ "$DRV_OK" == "true" ]]; then
+  drive_case 06-agent-surface-consumption claude "$CLAUDE_STATS_JSON"
+  if [[ "$(jq -r '[.cells[].observable.spawn_observed] | all' "${DRV_REPORT}/verdict.json" 2>/dev/null)" == "true" ]]; then
+    note_pass "06-agent-surface-consumption — credits the CLI spawn marker (spawn_observed) from the Claude subagent_stats JSON"
+  else
+    note_fail "06-agent-surface-consumption — spawn_observed from subagent_stats" "verdict: $(jq -c '[.cells[].observable]' "${DRV_REPORT}/verdict.json" 2>/dev/null)"
+  fi
+  if [[ "$(jq -r '[.cells[].observable.nonce_observed] | any' "${DRV_REPORT}/verdict.json" 2>/dev/null)" == "false" ]]; then
+    note_pass "06-agent-surface-consumption — a spawn marker alone never credits the nonce (issue #1107 fix 1)"
+  else
+    note_fail "06-agent-surface-consumption — nonce not credited from a spawn marker" "nonce_observed true"
+  fi
+  drive_case 05-copilot-model-routing copilot x local
+  if [[ "$(jq -r '.credential_path' "${DRV_REPORT}/verdict.json" 2>/dev/null)" == "COPILOT_GITHUB_TOKEN" ]]; then
+    note_pass "probe A — verdict credential_path carries the runner's recorded credential path (fix 2)"
+  else
+    note_fail "probe A — credential_path" "got: $(jq -r '.credential_path' "${DRV_REPORT}/verdict.json" 2>/dev/null)"
+  fi
+else
+  note_skip "spawn marker / credential_path verdict checks" "bash>=4 or node unavailable"
+fi
 for f in "$RUN_A" "$RUN_B" "$RUN_C"; do
+  is_real_shell "$f" || { note_pass "$(basename "$(dirname "$f")") — static spawn-marker source read not applicable (forwarding shim, spec 0261 requirement 14)"; continue; }
   if grep -Fq 'source "${E2E_LIB_DIR}/probe_spawn_markers.sh"' "$f"; then
     note_pass "$(basename "$(dirname "$f")") — sources probe_spawn_markers.sh"
   else
@@ -700,13 +904,17 @@ for f in "$RUN_A" "$RUN_B" "$RUN_C"; do
   fi
 done
 
-if grep -Fq 'source "${E2E_LIB_DIR}/probe_c_resolve.sh"' "$RUN_C"; then
+if ! is_real_shell "$RUN_C"; then
+  note_pass "07-guidance-surface — static probe_c_resolve.sh source read not applicable (forwarding shim, spec 0261 requirement 14)"
+elif grep -Fq 'source "${E2E_LIB_DIR}/probe_c_resolve.sh"' "$RUN_C"; then
   note_pass "07-guidance-surface — sources probe_c_resolve.sh"
 else
   note_fail "07-guidance-surface — sources probe_c_resolve.sh" "no matching source line in $RUN_C"
 fi
 
-if grep -Fq -- '--arg credential_path "$E2E_CREDENTIAL_PATH"' "$RUN_A" \
+if ! is_real_shell "$RUN_A"; then
+  note_pass "probe A — static credential_path read not applicable (forwarding shim, spec 0261 requirement 14)"
+elif grep -Fq -- '--arg credential_path "$E2E_CREDENTIAL_PATH"' "$RUN_A" \
    && ! grep -Fq -- '--arg credential_path "COPILOT_GITHUB_TOKEN"' "$RUN_A"; then
   note_pass "probe A — credential_path reads \$E2E_CREDENTIAL_PATH, not a hardcoded literal (fix 2)"
 else

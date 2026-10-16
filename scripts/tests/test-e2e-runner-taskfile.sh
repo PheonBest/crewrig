@@ -45,10 +45,11 @@ else
   note_fail "CLI_ARGS reference" "no {{.CLI_ARGS}} in Taskfile.yml"
 fi
 
-# --- Case 4: base e2e:test runs bash tests/e2e/run.sh --------------------
+# --- Case 4: base e2e:test runs the e2e runner ----------------------------
+# Accepts the shell runner and its TypeScript port (spec 0261 R12).
 if grep -A 3 -E '^[[:space:]]+e2e:test:[[:space:]]*$' "$TASKFILE" \
-   | grep -q 'bash .*tests/e2e/run.sh'; then
-  note_pass "e2e:test invokes bash tests/e2e/run.sh"
+   | grep -qE '(bash .*tests/e2e/run\.sh|node .*tests/e2e/run\.ts)'; then
+  note_pass "e2e:test invokes tests/e2e/run.sh or run.ts"
 else
   note_fail "e2e:test invokes run.sh" "no matching cmd line under e2e:test"
 fi
