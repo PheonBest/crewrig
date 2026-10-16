@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "probes/home-mount-empty-mode",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "/tmp/x/home:/home/agent/.copilot:rw\n"
+}

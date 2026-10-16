@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "report/help-short",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "report.sh â aggregate per-run TAP files into a parity matrix.\n\nReads TAP 13 files produced by tests/e2e/run.sh and emits:\n  1. A console table to stdout (â pass / â fail / â ï¸  skip)\n  2. A markdown report at <output-dir>/parity-YYYYMMDD-HHMMSS.md\n\nExit code: 1 if any cell is â, 2 on empty TAP dir, 0 otherwise.\n\nUsage:\n  tests/e2e/lib/report.sh [--tap-dir <dir>] [--output-dir <dir>] [--dry-run]\n\nDefaults: --tap-dir tests/e2e/reports/  --output-dir tests/e2e/reports/\n"
+}

@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage    = \"X\"\ncommand  = [\"claude\"]\nenv_keys = [\"ANTHROPIC_API_KEY\"]\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\nimage = \"Y\"\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/scalar-override",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"Y\",\n      \"command\": [\n        \"claude\"\n      ],\n      \"env_keys\": [\n        \"ANTHROPIC_API_KEY\"\n      ]\n    }\n  }\n}\n"
+}

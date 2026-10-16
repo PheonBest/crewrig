@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "mask/json-plain-elements",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "[\"a\",\"b c\",\"--flag\"]\n"
+}

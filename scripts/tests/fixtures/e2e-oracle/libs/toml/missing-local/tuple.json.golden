@@ -1,0 +1,13 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/missing-local",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"X\"\n    }\n  }\n}\n"
+}

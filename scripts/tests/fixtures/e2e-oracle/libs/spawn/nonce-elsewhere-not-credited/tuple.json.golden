@@ -1,0 +1,13 @@
+{
+  "files": {
+    "t.txt": {
+      "content": "â Probe-router(sonnet) Nonce emission probe leg\n  â Agent completed but produced no response.\n\nThe agent returned no output. I found its declared nonce in the AGENT.md\nfile and I'll write it directly: crewrig-probe-SYNTHETIC-ELSEWHERE\n\nâ Write leg.txt (shell)\n  â printf 'crewrig-probe-SYNTHETIC-ELSEWHERE' > /out/leg.txt\n  â 1 line written\n",
+      "mode": "0644"
+    }
+  },
+  "id": "spawn/nonce-elsewhere-not-credited",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "true|false|false|sonnet\n"
+}

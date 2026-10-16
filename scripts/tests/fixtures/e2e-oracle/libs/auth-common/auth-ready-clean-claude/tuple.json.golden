@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "auth-common/auth-ready-clean-claude",
+  "rc": 78,
+  "stats": {},
+  "stderr": "[claude] auth NOT ready: no marker file, no ANTHROPIC_API_KEY\n",
+  "stdout": "E2E_AUTH_READY_CREDENTIAL_PATH=\n"
+}

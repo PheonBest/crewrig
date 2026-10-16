@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "report/default-tap-dir-absent",
+  "rc": 2,
+  "stats": {},
+  "stderr": "report.sh: tap dir not found: tests/e2e/reports\n",
+  "stdout": ""
+}

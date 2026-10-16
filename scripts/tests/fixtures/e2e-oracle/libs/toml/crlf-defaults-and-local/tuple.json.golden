@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\r\nimage = \"X\"\r\nmounts = [\"a\"]\r\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\r\nmounts = [\r\n  \"b\",\r\n]\r\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/crlf-defaults-and-local",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"X\",\n      \"mounts\": [\n        \"a\",\n        \"b\"\n      ]\n    }\n  }\n}\n"
+}

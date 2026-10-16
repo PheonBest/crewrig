@@ -1,0 +1,13 @@
+{
+  "files": {
+    "bad.json": {
+      "content": "not json\n",
+      "mode": "0644"
+    }
+  },
+  "id": "structural/json-shape-jq-error",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_json_shape bad.json .a 1\n#   expected: jq -r '.a' returns successfully\n#   actual:   jq error: jq: parse error: Invalid numeric literal at line 1, column 4\n",
+  "stdout": ""
+}

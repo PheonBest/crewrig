@@ -1,0 +1,13 @@
+{
+  "files": {
+    "fx": {
+      "content": "gamma\n",
+      "mode": "0644"
+    }
+  },
+  "id": "structural/stdout-matches-file-miss",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_stdout_matches ^delta$ fx\n#   expected: ERE match: ^delta$\n#   actual:   no match in input: gamma\n",
+  "stdout": ""
+}

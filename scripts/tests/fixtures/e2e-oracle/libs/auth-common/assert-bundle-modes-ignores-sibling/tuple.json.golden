@@ -1,0 +1,20 @@
+{
+  "files": {
+    "h/.crewrig-e2e/claude/a": {
+      "content": "a\n",
+      "mode": "0600"
+    },
+    "h/.crewrig-e2e/gemini/b": {
+      "content": "b\n",
+      "mode": "0644"
+    }
+  },
+  "id": "auth-common/assert-bundle-modes-ignores-sibling",
+  "rc": 0,
+  "stats": {
+    "h/.crewrig-e2e": "0755",
+    "h/.crewrig-e2e/claude": "0700"
+  },
+  "stderr": "",
+  "stdout": ""
+}

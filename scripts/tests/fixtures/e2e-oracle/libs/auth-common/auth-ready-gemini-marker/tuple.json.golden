@@ -1,0 +1,13 @@
+{
+  "files": {
+    "h/.crewrig-e2e/gemini/oauth_creds.json": {
+      "content": "{\"placeholder\":\"x\"}\n",
+      "mode": "0644"
+    }
+  },
+  "id": "auth-common/auth-ready-gemini-marker",
+  "rc": 0,
+  "stats": {},
+  "stderr": "[gemini] auth ready: on-disk marker <TMP><REPO>/h/.crewrig-e2e/gemini/oauth_creds.json\n",
+  "stdout": "E2E_AUTH_READY_CREDENTIAL_PATH=on-disk-credential\n"
+}

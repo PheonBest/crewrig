@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "probes/c-c4-baseline-absent",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "INDETERMINATE|session-broken-or-unresponsive\n"
+}

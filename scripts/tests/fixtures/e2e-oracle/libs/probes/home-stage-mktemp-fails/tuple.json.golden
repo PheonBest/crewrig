@@ -1,0 +1,25 @@
+{
+  "files": {
+    "bundle/agents/stale.md": {
+      "content": "stale\n",
+      "mode": "0644"
+    },
+    "bundle/config.json": {
+      "content": "{\"k\":1}\n",
+      "mode": "0644"
+    },
+    "bundle/sub/token": {
+      "content": "secret\n",
+      "mode": "0666"
+    },
+    "decl.md": {
+      "content": "---\nname: probe\n---\nbody\n",
+      "mode": "0644"
+    }
+  },
+  "id": "probes/home-stage-mktemp-fails",
+  "rc": 1,
+  "stats": {},
+  "stderr": "mktemp: failed to create directory via template '<TMP><REPO>/no-such-tmp/crewrig-e2e-copilot-home.<RAND>': No such file or directory\ne2e_stage_copilot_ephemeral_home: mktemp -d failed\n",
+  "stdout": "rc=1\n"
+}

@@ -1,0 +1,11 @@
+{
+  "files": {},
+  "id": "auth-common/assert-bundle-modes-no-dir",
+  "rc": 0,
+  "stats": {
+    "h/.crewrig-e2e": "absent",
+    "h/.crewrig-e2e/copilot": "absent"
+  },
+  "stderr": "",
+  "stdout": ""
+}

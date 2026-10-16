@@ -1,0 +1,13 @@
+{
+  "files": {
+    "t.txt": {
+      "content": "done.â Probe-router(m1) t\n  â Agent completed but produced no response.\n",
+      "mode": "0644"
+    }
+  },
+  "id": "spawn/glued-marker",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "true|false|true|m1\n"
+}

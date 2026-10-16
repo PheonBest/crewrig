@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "probes/b-missing-args",
+  "rc": 127,
+  "stats": {},
+  "stderr": "<REPO>/tests/e2e/lib/probe_b_resolve.sh: line 22: $2: unbound variable\n",
+  "stdout": ""
+}

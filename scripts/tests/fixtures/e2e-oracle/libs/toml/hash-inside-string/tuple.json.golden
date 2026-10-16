@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"a#b\" # trailing\nnote = 'x # y'\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\nextra = \"#not-a-comment\" # real comment\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/hash-inside-string",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"a#b\",\n      \"note\": \"x # y\",\n      \"extra\": \"#not-a-comment\"\n    }\n  }\n}\n"
+}

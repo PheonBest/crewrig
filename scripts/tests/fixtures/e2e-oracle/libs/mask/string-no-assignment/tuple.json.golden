@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "mask/string-no-assignment",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "ollama launch copilot --model foo"
+}

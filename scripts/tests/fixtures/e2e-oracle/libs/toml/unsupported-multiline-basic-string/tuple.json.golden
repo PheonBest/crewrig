@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\ns = \"\"\"\na\nb\"\"\"\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/unsupported-multiline-basic-string",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"X\",\n      \"s\": \"a\\nb\"\n    }\n  }\n}\n"
+}

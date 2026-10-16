@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "mask/string-not-after-boundary",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "foo-KEY=*** a/b=c"
+}

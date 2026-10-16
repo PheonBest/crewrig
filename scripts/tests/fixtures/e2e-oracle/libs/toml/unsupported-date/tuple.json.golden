@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\nd = 1979-05-27\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/unsupported-date",
+  "rc": 1,
+  "stats": {},
+  "stderr": "Error: bad file 'local.toml': unsupported type LocalDate\n",
+  "stdout": ""
+}

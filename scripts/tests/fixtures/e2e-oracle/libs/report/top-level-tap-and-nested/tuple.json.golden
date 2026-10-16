@@ -1,0 +1,21 @@
+{
+  "files": {
+    "taps/d/y.tap": {
+      "content": "TAP version 13\nok 1 - copilot/s2\n",
+      "mode": "0644"
+    },
+    "taps/ignored.txt": {
+      "content": "ok 1 - claude/s9\n",
+      "mode": "0644"
+    },
+    "taps/x.tap": {
+      "content": "TAP version 13\nok 1 - claude/s1\n",
+      "mode": "0644"
+    }
+  },
+  "id": "report/top-level-tap-and-nested",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "Scenario  claude    gemini    copilot \n--------  --------  --------  --------\ns1        â       â ï¸    â ï¸  \ns2        â ï¸    â ï¸    â     \n"
+}

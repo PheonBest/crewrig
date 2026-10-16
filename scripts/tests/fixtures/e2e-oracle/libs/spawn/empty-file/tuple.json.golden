@@ -1,0 +1,13 @@
+{
+  "files": {
+    "t.txt": {
+      "content": "",
+      "mode": "0644"
+    }
+  },
+  "id": "spawn/empty-file",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "false|false|false|\n"
+}

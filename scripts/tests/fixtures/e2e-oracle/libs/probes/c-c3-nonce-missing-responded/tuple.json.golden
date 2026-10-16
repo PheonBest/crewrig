@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "probes/c-c3-nonce-missing-responded",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "INDETERMINATE|target-nonce-missing\n"
+}

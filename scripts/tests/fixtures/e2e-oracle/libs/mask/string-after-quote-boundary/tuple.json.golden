@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "mask/string-after-quote-boundary",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "bash -c \"OLLAMA_MODELS=*** ollama launch copilot\""
+}

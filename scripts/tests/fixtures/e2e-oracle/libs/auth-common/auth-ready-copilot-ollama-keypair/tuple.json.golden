@@ -1,0 +1,13 @@
+{
+  "files": {
+    "h/.crewrig-e2e/ollama/id_ed25519": {
+      "content": "fake-key\n",
+      "mode": "0644"
+    }
+  },
+  "id": "auth-common/auth-ready-copilot-ollama-keypair",
+  "rc": 0,
+  "stats": {},
+  "stderr": "[copilot] auth ready: Ollama Cloud keypair present (<TMP><REPO>/h/.crewrig-e2e/ollama/id_ed25519)\n",
+  "stdout": "E2E_AUTH_READY_CREDENTIAL_PATH=ollama-cloud-keypair\n"
+}

@@ -1,0 +1,60 @@
+{
+  "id": "anthropic/api-key-parity",
+  "rc": 0,
+  "stdout": "VERDICT=PASS confidence=0.90",
+  "stderr": "",
+  "requests": [
+    {
+      "endpoint": "anthropic",
+      "method": "POST",
+      "path": "/anthropic/v1/messages",
+      "query": {},
+      "headers": {
+        "content-type": "application/json",
+        "anthropic-version": "2023-06-01",
+        "x-api-key": "<REDACTED>"
+      },
+      "authKind": "x-api-key",
+      "body": {
+        "model": "claude-sonnet-4-6",
+        "max_tokens": 256,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "user",
+            "content": "You are an LLM judge for an end-to-end test framework. Read the PROMPT, SUBJECT, and CRITERION below, then respond with EXACTLY one line in the form:\n\n  VERDICT=<PASS|FAIL|UNCERTAIN> CONF=<0.00-1.00>\n\nNo prose, no markdown, no trailing text.\n\nPROMPT:\njudge politely\n\nSUBJECT:\nthe response text\n\nCRITERION:\nis it polite?"
+          }
+        ]
+      },
+      "unqueued": false
+    },
+    {
+      "endpoint": "anthropic",
+      "method": "POST",
+      "path": "/anthropic/v1/messages",
+      "query": {},
+      "headers": {
+        "content-type": "application/json",
+        "anthropic-version": "2023-06-01",
+        "x-api-key": "<REDACTED>"
+      },
+      "authKind": "x-api-key",
+      "body": {
+        "model": "claude-sonnet-4-6",
+        "max_tokens": 256,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "user",
+            "content": "You are an LLM judge for an end-to-end test framework. Read the PROMPT, SUBJECT, and CRITERION below, then respond with EXACTLY one line in the form:\n\n  VERDICT=<PASS|FAIL|UNCERTAIN> CONF=<0.00-1.00>\n\nNo prose, no markdown, no trailing text.\n\nPROMPT:\njudge politely\n\nSUBJECT:\nthe response text\n\nCRITERION:\nis it polite?"
+          }
+        ]
+      },
+      "unqueued": false
+    }
+  ],
+  "files": {
+    "effective.json": "{\"judge\":{\"backend\":\"anthropic\",\"model\":\"claude-sonnet-4-6\",\"api_key_env\":\"ANTHROPIC_JUDGE_API_KEY\",\"auth_mode\":\"api_key\",\"strict\":false,\"max_calls\":30,\"endpoint\":\"http://127.0.0.1:<PORT>/anthropic/v1/messages\",\"max_tokens\":256,\"temperature\":0}}\n",
+    "judge.count": "2\n"
+  }
+}

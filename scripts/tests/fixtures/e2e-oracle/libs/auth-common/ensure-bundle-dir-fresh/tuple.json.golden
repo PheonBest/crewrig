@@ -1,0 +1,11 @@
+{
+  "files": {},
+  "id": "auth-common/ensure-bundle-dir-fresh",
+  "rc": 0,
+  "stats": {
+    "h/.crewrig-e2e": "0700",
+    "h/.crewrig-e2e/copilot": "0700"
+  },
+  "stderr": "",
+  "stdout": ""
+}

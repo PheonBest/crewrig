@@ -1,0 +1,13 @@
+{
+  "files": {
+    "t.txt": {
+      "content": "â Probe-router(m2) t\n  â idle\nâ Probe-router(m3) t\n  â Agent started in background with agent_id: x\n",
+      "mode": "0644"
+    }
+  },
+  "id": "spawn/idle-and-background-ack",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "true|false|true|m3\n"
+}

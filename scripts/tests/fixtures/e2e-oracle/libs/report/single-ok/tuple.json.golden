@@ -1,0 +1,13 @@
+{
+  "files": {
+    "taps/run-001/run.tap": {
+      "content": "TAP version 13\n1..1\nok 1 - claude/01-layered-context\n",
+      "mode": "0644"
+    }
+  },
+  "id": "report/single-ok",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "Scenario            claude    gemini    copilot \n------------------  --------  --------  --------\n01-layered-context  â       â ï¸    â ï¸  \n"
+}

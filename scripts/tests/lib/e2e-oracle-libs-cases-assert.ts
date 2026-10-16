@@ -206,7 +206,7 @@ export const cases: LibCase[] = [
   // expand.sh — token expansion
   call("expand/both-tokens", EXPAND, "expand_mount", {
     args: ["${CREWRIG_E2E_HOME}/a:${HOME}/b:ro"],
-    env: { E2E_CREWRIG_E2E_HOME: "/bundle", HOME: "/home/u" },
+    env: { E2E_CREWRIG_E2E_HOME: "/bundle", HOME: "/h/u" },
   }),
   call("expand/no-tokens", EXPAND, "expand_mount", {
     args: ["/plain/path:/x"],
@@ -214,15 +214,15 @@ export const cases: LibCase[] = [
   }),
   call("expand/repeated-token", EXPAND, "expand_mount", {
     args: ["${HOME}:${HOME}"],
-    env: { E2E_CREWRIG_E2E_HOME: "/bundle", HOME: "/home/u" },
+    env: { E2E_CREWRIG_E2E_HOME: "/bundle", HOME: "/h/u" },
   }),
   call("expand/no-re-expansion", EXPAND, "expand_mount", {
     args: ["${CREWRIG_E2E_HOME}/x"],
-    env: { E2E_CREWRIG_E2E_HOME: "${HOME}/inner", HOME: "/home/u" },
+    env: { E2E_CREWRIG_E2E_HOME: "${HOME}/inner", HOME: "/h/u" },
   }),
   call("expand/unknown-token-untouched", EXPAND, "expand_mount", {
     args: ["${OTHER}/x $HOME"],
-    env: { E2E_CREWRIG_E2E_HOME: "/bundle", HOME: "/home/u" },
+    env: { E2E_CREWRIG_E2E_HOME: "/bundle", HOME: "/h/u" },
   }),
   call("expand/missing-bundle-home", EXPAND, "expand_mount", { args: ["${CREWRIG_E2E_HOME}/x"] }),
 ];

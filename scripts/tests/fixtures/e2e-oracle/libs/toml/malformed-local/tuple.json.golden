@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude\nimage = \"Y\"\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/malformed-local",
+  "rc": 1,
+  "stats": {},
+  "stderr": "Error: bad file 'local.toml': expected character ]\n",
+  "stdout": ""
+}

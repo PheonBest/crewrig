@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.other]\ncommand = [\"x\", \"y\"]\nenv_keys = [\"K\", \"K\"]\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/command-new-cli",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"X\"\n    },\n    \"other\": {\n      \"command\": [\n        \"x\",\n        \"y\"\n      ],\n      \"env_keys\": [\n        \"K\"\n      ]\n    }\n  }\n}\n"
+}
