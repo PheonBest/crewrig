@@ -68,14 +68,19 @@ test("applyMutation fails, naming file and text, when the needle is absent", () 
 test("requireOrSkip: a present capability continues; an absent one fails under CI and skips otherwise", (t) => {
   assert.equal(requireOrSkip(t, true, "present"), true);
   const calls: string[] = [];
-  const fake = { skip: (m: string) => calls.push(m) } as unknown as Parameters<typeof requireOrSkip>[0];
+  const fake = { skip: (m: string) => calls.push(m) } as unknown as Parameters<
+    typeof requireOrSkip
+  >[0];
   const saved = process.env.CI;
   try {
     delete process.env.CI;
     assert.equal(requireOrSkip(fake, false, "no sqlite"), false);
     assert.deepEqual(calls, ["SKIP: no sqlite"]);
     process.env.CI = "true";
-    assert.throws(() => requireOrSkip(fake, false, "no sqlite"), /required capability missing in CI: no sqlite/);
+    assert.throws(
+      () => requireOrSkip(fake, false, "no sqlite"),
+      /required capability missing in CI: no sqlite/,
+    );
   } finally {
     if (saved === undefined) delete process.env.CI;
     else process.env.CI = saved;
@@ -84,7 +89,9 @@ test("requireOrSkip: a present capability continues; an absent one fails under C
 
 test("requireOrSkip: a POSIX-only leg skips on win32 even when CI is set", () => {
   const calls: string[] = [];
-  const fake = { skip: (m: string) => calls.push(m) } as unknown as Parameters<typeof requireOrSkip>[0];
+  const fake = { skip: (m: string) => calls.push(m) } as unknown as Parameters<
+    typeof requireOrSkip
+  >[0];
   const saved = process.env.CI;
   const platform = Object.getOwnPropertyDescriptor(process, "platform");
   try {

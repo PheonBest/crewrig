@@ -88,7 +88,9 @@ export function applyMutation(
     throw new Error(`mutation needle absent in ${rel}: ${String(needle)}`);
   }
   const after =
-    typeof needle === "string" ? before.replace(needle, () => replacement) : before.replace(needle, replacement);
+    typeof needle === "string"
+      ? before.replace(needle, () => replacement)
+      : before.replace(needle, replacement);
   if (after === before) {
     throw new Error(`mutation changed nothing in ${rel}: ${String(needle)}`);
   }
