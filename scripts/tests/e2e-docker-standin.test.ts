@@ -114,7 +114,7 @@ describe("fixtures", () => {
 });
 
 describe("normalise", () => {
-  const ctx = { tmp: "/scratch/t", home: "/scratch/t/home", e2eHome: "/scratch/t/home/e2e" };
+  const ctx = { tmp: "/scratch/t", home: "/scratch/t/home", e2eHome: "/scratch/t/bundle" };
   it("rewrites each rule", () => {
     const text = [
       process.execPath,
@@ -122,7 +122,7 @@ describe("normalise", () => {
       "at 2026-01-02T03:04:05Z",
       "dir /scratch/t/x",
       "home /scratch/t/home/y",
-      "e2e /scratch/t/home/e2e/z",
+      "e2e /scratch/t/bundle/z",
       "url http://localhost:41234/p",
       "name crewrig-e2e-claude-20260102T030405Z-ab12",
       "tmp /scratch/t/tmp/crewrig-e2e-probe-b.tnKtFY:/x",

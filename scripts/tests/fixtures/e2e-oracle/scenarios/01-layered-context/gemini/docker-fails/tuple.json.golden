@@ -1,0 +1,44 @@
+{
+  "id": "01-layered-context/gemini/docker-fails",
+  "exit": 1,
+  "scenarioTap": "not ok 1 - docker run probe exited non-zero (exit 0)\nok 2 - side-effect: answer file present\nnot ok 3 - structural: answer does not match /[Nn]antes/\nnot ok 4 - llm-judge: profile-awareness criterion not met\n1..4\n",
+  "dockerCommands": [
+    [
+      "run",
+      "--rm",
+      "--name",
+      "<CONTAINER>",
+      "-v",
+      "<TMP>/reports/<RUN_ID>/gemini/01-layered-context/out:/out",
+      "-v",
+      "<E2E_HOME>/gemini:/run/gemini-creds:ro",
+      "-v",
+      "<HOME>/.gemini:/run/gemini-rules:ro",
+      "-e",
+      "GEMINI_API_KEY",
+      "-e",
+      "E2E_PROBE_PROMPT=What is the user's location according to the profile rule files loaded\ninto your context? Answer in exactly one word — the city name — and\nwrite your answer (and nothing else) to /out/answer.txt before exiting.",
+      "crewrig/e2e-gemini:latest",
+      "bash",
+      "-c",
+      "set -e; D=/home/agent/.gemini; mkdir -p $D && cp -a /run/gemini-creds/. $D/ && { cp -a /run/gemini-rules/[0-6]0_*.md $D/ 2>/dev/null || echo '[bootstrap] no layered-context rules found at /run/gemini-rules/ — gemini/01 will likely fail' >&2; } && M=$(ls $D/[0-6]0_*.md 2>/dev/null | xargs -r -n1 basename | jq -R . | jq -s .) && [ \"$M\" != \"[]\" ] && jq --argjson m \"$M\" '.context.fileName = $m' $D/settings.json > $D/settings.json.tmp && mv $D/settings.json.tmp $D/settings.json; chown -R agent:agent $D 2>/dev/null || true; exec gemini \"$@\"",
+      "sh",
+      "-p",
+      "What is the user's location according to the profile rule files loaded\ninto your context? Answer in exactly one word — the city name — and\nwrite your answer (and nothing else) to /out/answer.txt before exiting."
+    ]
+  ],
+  "files": {
+    "gemini/01-layered-context/exit": "1\n",
+    "gemini/01-layered-context/invocation.txt": "image: crewrig/e2e-gemini:latest\nargv: docker run --rm --name <CONTAINER> -v <TMP>/reports/<RUN_ID>/gemini/01-layered-context/out:/out -v <E2E_HOME>/gemini:/run/gemini-creds:ro -v <HOME>/.gemini:/run/gemini-rules:ro -e GEMINI_API_KEY -e $'E2E_PROBE_PROMPT=What is the user\\'s location according to the profile rule files loaded\\ninto your context? Answer in exactly one word \\342\\200\\224 the city name \\342\\200\\224 and\\nwrite your answer (and nothing else) to /out/answer.txt before exiting.' crewrig/e2e-gemini:latest bash -c $'set -e; D=/home/agent/.gemini; mkdir -p $D && cp -a /run/gemini-creds/. $D/ && { cp -a /run/gemini-rules/[0-6]0_*.md $D/ 2>/dev/null || echo \\'[bootstrap] no layered-context rules found at /run/gemini-rules/ \\342\\200\\224 gemini/01 will likely fail\\' >&2; } && M=$(ls $D/[0-6]0_*.md 2>/dev/null | xargs -r -n1 basename | jq -R . | jq -s .) && [ \"$M\" != \"[]\" ] && jq --argjson m \"$M\" \\'.context.fileName = $m\\' $D/settings.json > $D/settings.json.tmp && mv $D/settings.json.tmp $D/settings.json; chown -R agent:agent $D 2>/dev/null || true; exec gemini \"$@\"' sh -p $'What is the user\\'s location according to the profile rule files loaded\\ninto your context? Answer in exactly one word \\342\\200\\224 the city name \\342\\200\\224 and\\nwrite your answer (and nothing else) to /out/answer.txt before exiting.'\n",
+    "gemini/01-layered-context/judge.log": "VERDICT=FAIL confidence=0.90\n# FAIL llm_judge /work/tests/e2e/scenarios/01-layered-context/probe.prompt <TMP>/reports/<RUN_ID>/gemini/01-layered-context/out/answer.txt The answer demonstrates that the model read a profile configuration\nfile describing the user, recognised a \"location\" field in it, and\nreturned the value of that field. A correct answer is a single city\nname; a generic refusal, a guess, or a meta-comment about not having\ncontext fails the criterion.\n#   expected: VERDICT=PASS\n#   actual:   VERDICT=FAIL confidence=0.90\n#   report:   <TMP>/reports/<RUN_ID>/gemini/01-layered-context\n",
+    "gemini/01-layered-context/out/answer.txt": "",
+    "gemini/01-layered-context/probe.stderr": "boom\n",
+    "gemini/01-layered-context/probe.stdout": "",
+    "gemini/01-layered-context/scenario.tap": "not ok 1 - docker run probe exited non-zero (exit 0)\nok 2 - side-effect: answer file present\nnot ok 3 - structural: answer does not match /[Nn]antes/\nnot ok 4 - llm-judge: profile-awareness criterion not met\n1..4\n",
+    "gemini/01-layered-context/stderr": "# FAIL assert_stdout_matches [Nn]antes <TMP>/reports/<RUN_ID>/gemini/01-layered-context/out/answer.txt\n#   expected: ERE match: [Nn]antes\n#   actual:   no match in input: \n#   report:   <TMP>/reports/<RUN_ID>/gemini/01-layered-context\n",
+    "gemini/01-layered-context/stdout": "3/4 FAIL — gemini/01-layered-context\n",
+    "run.tap": "TAP version 13\nnot ok 1 - gemini/01-layered-context\n1..1\n# pass: 0  fail: 1  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nnot ok 1 - gemini/01-layered-context\n1..1\n# pass: 0  fail: 1  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[gemini] auth ready: GEMINI_API_KEY set in host shell\n[runner] gemini/01-layered-context failed: exit 1\n[runner]   stdout: <TMP>/reports/<RUN_ID>/gemini/01-layered-context/stdout\n[runner]   stderr: <TMP>/reports/<RUN_ID>/gemini/01-layered-context/stderr\n"
+}

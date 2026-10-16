@@ -1,0 +1,15 @@
+{
+  "id": "05-copilot-model-routing/copilot/byok-undeclared-skip",
+  "exit": 0,
+  "scenarioTap": "1..0 # SKIP byok_provider/byok_model not declared — copy tests/e2e/local.toml.example's [cli.copilot] block to tests/e2e/local.toml, then run `task e2e:auth:ollama`\n",
+  "dockerCommands": [],
+  "files": {
+    "copilot/05-copilot-model-routing/exit": "78\n",
+    "copilot/05-copilot-model-routing/scenario.tap": "1..0 # SKIP byok_provider/byok_model not declared — copy tests/e2e/local.toml.example's [cli.copilot] block to tests/e2e/local.toml, then run `task e2e:auth:ollama`\n",
+    "copilot/05-copilot-model-routing/stderr": "",
+    "copilot/05-copilot-model-routing/stdout": "SKIP - copilot/05-copilot-model-routing: byok_provider/byok_model not declared — copy tests/e2e/local.toml.example's [cli.copilot] block to tests/e2e/local.toml, then run `task e2e:auth:ollama`\n",
+    "run.tap": "TAP version 13\nok 1 - copilot/05-copilot-model-routing # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - copilot/05-copilot-model-routing # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[copilot] auth ready: COPILOT_GITHUB_TOKEN set in host shell\n"
+}

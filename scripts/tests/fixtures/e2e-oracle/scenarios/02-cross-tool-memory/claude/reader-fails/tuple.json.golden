@@ -1,0 +1,77 @@
+{
+  "id": "02-cross-tool-memory/claude/reader-fails",
+  "exit": 1,
+  "scenarioTap": "ok 1 - writer: drawer added to wing=e2e-cross-tool\nnot ok 2 - reader: mempalace search exited non-zero\nok 3 - side-effect: reader stdout captured\nnot ok 4 - structural: [TASK:ongoing] marker absent\nnot ok 5 - structural: writer_agent field absent in read-back\n1..5\n",
+  "dockerCommands": [
+    [
+      "volume",
+      "create",
+      "<CONTAINER>"
+    ],
+    [
+      "run",
+      "-d",
+      "--rm",
+      "--name",
+      "<CONTAINER>",
+      "-v",
+      "<CONTAINER>:/home/agent/.mempalace",
+      "crewrig/e2e-mempalace:latest",
+      "sleep",
+      "600"
+    ],
+    [
+      "run",
+      "--rm",
+      "-i",
+      "-e",
+      "WRITER_AGENT_ID=claude-writer",
+      "-v",
+      "<CONTAINER>:/home/agent/.mempalace",
+      "crewrig/e2e-mempalace:latest",
+      "/home/agent/.local/pipx/venvs/mempalace/bin/python",
+      "-c",
+      "\nimport os, sys\n# mempalace.mcp_server swaps sys.stdout at import time to protect its\n# JSON-RPC channel; dup fd 1 BEFORE importing so we can still write\n# RESULT: to the real stdout (see ~/.claude/rules/60-tools.md → \"Stdout hazard\").\n_REAL_STDOUT = os.fdopen(os.dup(1), \"w\", encoding=\"utf-8\", closefd=False)\nos.environ[\"MEMPALACE_PALACE_DIR\"] = \"/home/agent/.mempalace/palace\"\nfrom mempalace.mcp_server import tool_add_drawer\ncontent = sys.stdin.read()\nresult = tool_add_drawer(\n    wing=\"e2e-cross-tool\",\n    room=\"task-handoff\",\n    content=content,\n    added_by=os.environ.get(\"WRITER_AGENT_ID\", \"e2e-test\"),\n)\nprint(\"RESULT:\", result, file=_REAL_STDOUT, flush=True)\nsys.exit(0 if result.get(\"success\") else 1)\n"
+    ],
+    [
+      "run",
+      "--rm",
+      "-v",
+      "<CONTAINER>:/home/agent/.mempalace",
+      "crewrig/e2e-mempalace:latest",
+      "mempalace",
+      "search",
+      "[TASK:ongoing]",
+      "--wing",
+      "e2e-cross-tool",
+      "--room",
+      "task-handoff",
+      "--results",
+      "5"
+    ],
+    [
+      "rm",
+      "-f",
+      "<CONTAINER>"
+    ],
+    [
+      "volume",
+      "rm",
+      "-f",
+      "<CONTAINER>"
+    ]
+  ],
+  "files": {
+    "claude/02-cross-tool-memory/exit": "1\n",
+    "claude/02-cross-tool-memory/read.stderr": "",
+    "claude/02-cross-tool-memory/read.stdout": "",
+    "claude/02-cross-tool-memory/scenario.tap": "ok 1 - writer: drawer added to wing=e2e-cross-tool\nnot ok 2 - reader: mempalace search exited non-zero\nok 3 - side-effect: reader stdout captured\nnot ok 4 - structural: [TASK:ongoing] marker absent\nnot ok 5 - structural: writer_agent field absent in read-back\n1..5\n",
+    "claude/02-cross-tool-memory/stderr": "# FAIL assert_stdout_matches \\[TASK:ongoing\\] <TMP>/reports/<RUN_ID>/claude/02-cross-tool-memory/read.stdout\n#   expected: ERE match: \\[TASK:ongoing\\]\n#   actual:   no match in input: \n#   report:   <TMP>/reports/<RUN_ID>/claude/02-cross-tool-memory\n# FAIL assert_stdout_matches writer_agent <TMP>/reports/<RUN_ID>/claude/02-cross-tool-memory/read.stdout\n#   expected: ERE match: writer_agent\n#   actual:   no match in input: \n#   report:   <TMP>/reports/<RUN_ID>/claude/02-cross-tool-memory\n",
+    "claude/02-cross-tool-memory/stdout": "3/5 FAIL — claude/02-cross-tool-memory\n",
+    "claude/02-cross-tool-memory/write.stderr": "",
+    "claude/02-cross-tool-memory/write.stdout": "RESULT: {'success': True}\n",
+    "run.tap": "TAP version 13\nnot ok 1 - claude/02-cross-tool-memory\n1..1\n# pass: 0  fail: 1  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nnot ok 1 - claude/02-cross-tool-memory\n1..1\n# pass: 0  fail: 1  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[claude] auth ready: on-disk marker <E2E_HOME>/claude/.credentials.json\n[runner] claude/02-cross-tool-memory failed: exit 1\n[runner]   stdout: <TMP>/reports/<RUN_ID>/claude/02-cross-tool-memory/stdout\n[runner]   stderr: <TMP>/reports/<RUN_ID>/claude/02-cross-tool-memory/stderr\n"
+}

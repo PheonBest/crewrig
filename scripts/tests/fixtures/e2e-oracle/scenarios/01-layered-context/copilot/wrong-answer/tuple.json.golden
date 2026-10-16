@@ -1,0 +1,39 @@
+{
+  "id": "01-layered-context/copilot/wrong-answer",
+  "exit": 1,
+  "scenarioTap": "ok 1 - side-effect: answer file present\nnot ok 2 - structural: answer does not match /[Nn]antes/\nnot ok 3 - llm-judge: profile-awareness criterion not met\n1..3\n",
+  "dockerCommands": [
+    [
+      "run",
+      "--rm",
+      "--name",
+      "<CONTAINER>",
+      "-v",
+      "<TMP>/reports/<RUN_ID>/copilot/01-layered-context/out:/out",
+      "-v",
+      "<E2E_HOME>/copilot:/home/agent/.copilot:rw",
+      "-e",
+      "COPILOT_GITHUB_TOKEN",
+      "-e",
+      "E2E_PROBE_PROMPT=What is the user's location according to the profile rule files loaded\ninto your context? Answer in exactly one word — the city name — and\nwrite your answer (and nothing else) to /out/answer.txt before exiting.",
+      "crewrig/e2e-copilot:latest",
+      "copilot",
+      "-p",
+      "What is the user's location according to the profile rule files loaded\ninto your context? Answer in exactly one word — the city name — and\nwrite your answer (and nothing else) to /out/answer.txt before exiting."
+    ]
+  ],
+  "files": {
+    "copilot/01-layered-context/exit": "1\n",
+    "copilot/01-layered-context/invocation.txt": "image: crewrig/e2e-copilot:latest\nargv: docker run --rm --name <CONTAINER> -v <TMP>/reports/<RUN_ID>/copilot/01-layered-context/out:/out -v <E2E_HOME>/copilot:/home/agent/.copilot:rw -e COPILOT_GITHUB_TOKEN -e $'E2E_PROBE_PROMPT=What is the user\\'s location according to the profile rule files loaded\\ninto your context? Answer in exactly one word \\342\\200\\224 the city name \\342\\200\\224 and\\nwrite your answer (and nothing else) to /out/answer.txt before exiting.' crewrig/e2e-copilot:latest copilot -p $'What is the user\\'s location according to the profile rule files loaded\\ninto your context? Answer in exactly one word \\342\\200\\224 the city name \\342\\200\\224 and\\nwrite your answer (and nothing else) to /out/answer.txt before exiting.'\n",
+    "copilot/01-layered-context/judge.log": "VERDICT=FAIL confidence=0.90\n# FAIL llm_judge /work/tests/e2e/scenarios/01-layered-context/probe.prompt <TMP>/reports/<RUN_ID>/copilot/01-layered-context/out/answer.txt The answer demonstrates that the model read a profile configuration\nfile describing the user, recognised a \"location\" field in it, and\nreturned the value of that field. A correct answer is a single city\nname; a generic refusal, a guess, or a meta-comment about not having\ncontext fails the criterion.\n#   expected: VERDICT=PASS\n#   actual:   VERDICT=FAIL confidence=0.90\n#   report:   <TMP>/reports/<RUN_ID>/copilot/01-layered-context\n",
+    "copilot/01-layered-context/out/answer.txt": "Paris\n",
+    "copilot/01-layered-context/probe.stderr": "",
+    "copilot/01-layered-context/probe.stdout": "",
+    "copilot/01-layered-context/scenario.tap": "ok 1 - side-effect: answer file present\nnot ok 2 - structural: answer does not match /[Nn]antes/\nnot ok 3 - llm-judge: profile-awareness criterion not met\n1..3\n",
+    "copilot/01-layered-context/stderr": "# FAIL assert_stdout_matches [Nn]antes <TMP>/reports/<RUN_ID>/copilot/01-layered-context/out/answer.txt\n#   expected: ERE match: [Nn]antes\n#   actual:   no match in input: Paris\n#   report:   <TMP>/reports/<RUN_ID>/copilot/01-layered-context\n",
+    "copilot/01-layered-context/stdout": "2/3 FAIL — copilot/01-layered-context\n",
+    "run.tap": "TAP version 13\nnot ok 1 - copilot/01-layered-context\n1..1\n# pass: 0  fail: 1  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nnot ok 1 - copilot/01-layered-context\n1..1\n# pass: 0  fail: 1  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[copilot] auth ready: COPILOT_GITHUB_TOKEN set in host shell\n[runner] copilot/01-layered-context failed: exit 1\n[runner]   stdout: <TMP>/reports/<RUN_ID>/copilot/01-layered-context/stdout\n[runner]   stderr: <TMP>/reports/<RUN_ID>/copilot/01-layered-context/stderr\n"
+}

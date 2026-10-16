@@ -1,0 +1,36 @@
+{
+  "id": "03-skill-build/claude/pass",
+  "exit": 0,
+  "scenarioTap": "ok 1 - build: scripts/build-components.sh exited 0\nok 2 - side-effect: build manifest written to /out\nok 3 - side-effect: .claude/ populated by build\nok 4 - side-effect: skills or agents emitted\nok 5 - structural: first SKILL.md carries metadata: frontmatter\n1..5\n",
+  "dockerCommands": [
+    [
+      "run",
+      "--rm",
+      "--name",
+      "<CONTAINER>",
+      "-v",
+      "<TMP>/reports/<RUN_ID>/claude/03-skill-build/build-work:/repo",
+      "-v",
+      "<TMP>/reports/<RUN_ID>/claude/03-skill-build/out:/out",
+      "--entrypoint",
+      "bash",
+      "crewrig/e2e-claude:latest",
+      "-lc",
+      "set -euo pipefail\ncd /repo\nbash scripts/build-components.sh --target claude\nmanifest=/tmp/e2e-build-manifest.txt\nif [ -d \".claude\" ]; then\n  find \".claude\" -type f | sort > \"$manifest\"\nelse\n  printf 'MISSING: %s\\n' \".claude\" > \"$manifest\"\nfi\ncp \"$manifest\" /out/manifest.txt\n\n# Locate the first SKILL.md for the structural assertion.\nfirst_skill=$(find \".claude/skills\" -name 'SKILL.md' -type f 2>/dev/null | sort | head -n1 || true)\nif [ -n \"$first_skill\" ]; then\n  cp \"$first_skill\" /out/first-skill.md\nfi"
+    ]
+  ],
+  "files": {
+    "claude/03-skill-build/build.stderr": "",
+    "claude/03-skill-build/build.stdout": "",
+    "claude/03-skill-build/exit": "0\n",
+    "claude/03-skill-build/invocation.txt": "image: crewrig/e2e-claude:latest\nargv: docker run --rm --name <CONTAINER> -v <TMP>/reports/<RUN_ID>/claude/03-skill-build/build-work:/repo -v <TMP>/reports/<RUN_ID>/claude/03-skill-build/out:/out --entrypoint bash crewrig/e2e-claude:latest -lc $'set -euo pipefail\\ncd /repo\\nbash scripts/build-components.sh --target claude\\nmanifest=/tmp/e2e-build-manifest.txt\\nif [ -d \".claude\" ]; then\\n  find \".claude\" -type f | sort > \"$manifest\"\\nelse\\n  printf \\'MISSING: %s\\\\n\\' \".claude\" > \"$manifest\"\\nfi\\ncp \"$manifest\" /out/manifest.txt\\n\\n# Locate the first SKILL.md for the structural assertion.\\nfirst_skill=$(find \".claude/skills\" -name \\'SKILL.md\\' -type f 2>/dev/null | sort | head -n1 || true)\\nif [ -n \"$first_skill\" ]; then\\n  cp \"$first_skill\" /out/first-skill.md\\nfi'\n",
+    "claude/03-skill-build/out/first-skill.md": "---\nname: demo\nmetadata:\n  provenance:\n    version: 1.0.0\n---\nBody\n",
+    "claude/03-skill-build/out/manifest.txt": ".claude/skills/demo/SKILL.md\n",
+    "claude/03-skill-build/scenario.tap": "ok 1 - build: scripts/build-components.sh exited 0\nok 2 - side-effect: build manifest written to /out\nok 3 - side-effect: .claude/ populated by build\nok 4 - side-effect: skills or agents emitted\nok 5 - structural: first SKILL.md carries metadata: frontmatter\n1..5\n",
+    "claude/03-skill-build/stderr": "",
+    "claude/03-skill-build/stdout": "OK — claude/03-skill-build (5 assertions)\n",
+    "run.tap": "TAP version 13\nok 1 - claude/03-skill-build\n1..1\n# pass: 1  fail: 0  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - claude/03-skill-build\n1..1\n# pass: 1  fail: 0  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[claude] auth ready: ANTHROPIC_API_KEY set in host shell\n"
+}

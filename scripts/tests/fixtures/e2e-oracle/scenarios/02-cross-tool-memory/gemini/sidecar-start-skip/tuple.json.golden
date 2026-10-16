@@ -1,0 +1,44 @@
+{
+  "id": "02-cross-tool-memory/gemini/sidecar-start-skip",
+  "exit": 0,
+  "scenarioTap": "1..0 # SKIP could not start sidecar <CONTAINER> (image crewrig/e2e-mempalace:latest missing?)\n",
+  "dockerCommands": [
+    [
+      "volume",
+      "create",
+      "<CONTAINER>"
+    ],
+    [
+      "run",
+      "-d",
+      "--rm",
+      "--name",
+      "<CONTAINER>",
+      "-v",
+      "<CONTAINER>:/home/agent/.mempalace",
+      "crewrig/e2e-mempalace:latest",
+      "sleep",
+      "600"
+    ],
+    [
+      "rm",
+      "-f",
+      "<CONTAINER>"
+    ],
+    [
+      "volume",
+      "rm",
+      "-f",
+      "<CONTAINER>"
+    ]
+  ],
+  "files": {
+    "gemini/02-cross-tool-memory/exit": "78\n",
+    "gemini/02-cross-tool-memory/scenario.tap": "1..0 # SKIP could not start sidecar <CONTAINER> (image crewrig/e2e-mempalace:latest missing?)\n",
+    "gemini/02-cross-tool-memory/stderr": "",
+    "gemini/02-cross-tool-memory/stdout": "SKIP - gemini/02-cross-tool-memory: could not start sidecar <CONTAINER> (image crewrig/e2e-mempalace:latest missing?)\n",
+    "run.tap": "TAP version 13\nok 1 - gemini/02-cross-tool-memory # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - gemini/02-cross-tool-memory # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[gemini] auth ready: GEMINI_API_KEY set in host shell\n"
+}
