@@ -1,7 +1,9 @@
 # Assertion libraries
 
-Three sourceable bash libraries that scenarios reach for to make claims about a CLI's behavior.
+Three assertion libraries that scenarios reach for to make claims about a CLI's behavior.
 Governed by [ADR 0004](../../../docs/adr/0004-e2e-assertion-libs.md).
+
+The TypeScript twins (`assert.ts`, `structural.ts`, `llm_judge.ts`, ...) are the maintained implementation; the `.sh` libraries described below are retained until the suites that source them migrate.
 
 | Lib | When to use |
 |---|---|
@@ -25,7 +27,7 @@ source "${E2E_LIB_DIR}/structural.sh"
 source "${E2E_LIB_DIR}/llm_judge.sh"
 ```
 
-`E2E_LIB_DIR` and `E2E_REPORT_DIR` are exported by `tests/e2e/run.sh`
+`E2E_LIB_DIR` and `E2E_REPORT_DIR` are exported by the runner (`node tests/e2e/run.ts`)
 once issue #80 wires the runner-to-scenario plumbing.
 
 ## Reference

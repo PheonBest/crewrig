@@ -11,10 +11,8 @@ multi-CLI parity — hold under real CLI execution. Output is TAP, one subtest p
 
 - **Docker** with BuildKit (Docker Desktop on macOS, Engine 20.10+ on Linux); builds five images.
 - **[Task](https://taskfile.dev/)** v3+ for the `task e2e:*` entry points.
-- **`jq`** for JSON probing in assertions and `effective.json` resolution.
-- **`yq`** (mikefarah's Go version) for TOML merging in `lib/toml_merge.sh`.
+- **Node.js 24** runs the TypeScript runner (`tests/e2e/run.ts`), libraries and probes; no `jq`, `yq` or Bash 4+ is needed on the host for them.
 - **`gh`** (GitHub CLI) for harness-loop scenarios and PAT minting.
-- **Bash 4+**. macOS ships 3.2 — `brew install bash` or use the container path.
 
 **Host OS caveat — Gitmoji checks.** `assert_gitmoji_title` in `structural.sh` uses `grep -P`
 (PCRE), present in the Debian-based e2e images (GNU grep 3.8) but **not** in BSD grep on macOS.
@@ -53,7 +51,7 @@ strategy* below for the residual risk that carries.
 ```
 
 > ⚠️ **Treat `~/.crewrig-e2e/gemini/` like `~/.ssh/`.** Not encrypted at rest: `oauth_creds.json`
-> carries a long-lived Google refresh token. `auth-gemini.sh` sets `chmod 0700`, but it lives in
+> carries a long-lived Google refresh token. `auth-gemini.ts` sets `chmod 0700`, but it lives in
 > plaintext — never sync it to cloud storage, ship it in an image, or copy it to a shared
 > filesystem. It is a developer-machine artifact; for CI, use a fresh dedicated-account login per
 > runner.
@@ -78,7 +76,7 @@ CLI's atomic writes (`projects.json`, etc.) never mutate the host bundle (issue 
   the post-run mode re-assert is confirmed only on macOS Docker Desktop's uid remapping — a
   differently-uid'd Linux host may see it fail loudly rather than silently.
 
-See [ADR 0002](../../docs/adr/0002-e2e-auth-flow.md) and `scripts/e2e/auth-{claude,gemini,copilot}.sh`.
+See [ADR 0002](../../docs/adr/0002-e2e-auth-flow.md) and `scripts/e2e/auth-{claude,gemini,copilot}.ts`.
 
 ## Running tests
 
@@ -88,7 +86,7 @@ task e2e:test:scenario -- 01-layered-context  # one scenario, all CLIs
 task e2e:test:cli -- claude                   # all scenarios, one CLI
 ```
 
-Useful flags passed through `--` to the runner (`tests/e2e/run.sh`):
+Useful flags passed through `--` to the runner (`node tests/e2e/run.ts`; `tests/e2e/run.sh` is a forwarding shim until the final removal):
 
 | Flag | Meaning |
 |---|---|

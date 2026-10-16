@@ -3216,6 +3216,35 @@ jobs:
         if: failure()
         uses: ./.github/actions/cancel-on-failure
 
+  # Spec 0261 R17, R20, R21 (ticket #1342): the end-to-end harness entries from pwsh and cmd.exe on
+  # Windows. No path filter, like the Windows jobs above. Docker-driving scenarios are POSIX only.
+  windows-e2e-harness:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install production dependencies
+        run: npm ci --omit=dev --workspaces=false
+
+      - name: Floor guard accepts Node.js 24
+        run: node scripts/lib/node-floor-guard.js
+
+      # Runs the runner dry run, toml_merge, report, the verdict publisher dry run, the docker
+      # diagnostics and the three probes (no vendor CLI) through pwsh and cmd.exe.
+      - name: End-to-end harness proof
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/windows-e2e-harness.test.ts
+
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
+
   # Spec 0259 R26-R28: the governance checks from PowerShell on Windows. Every
   # scripts/tests/windows-governance-*.test.ts file runs (glob discovery). No path filter, like the
   # Windows jobs above.

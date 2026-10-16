@@ -1,110 +1,17 @@
-#!/usr/bin/env bash
-# Interactive auth flow for Claude Code in the e2e harness (issue #77).
-#
-# Populates ~/.crewrig-e2e/claude/{.credentials.json,.claude.json} by running
-# `claude /login` inside a TTY-attached container with the host dir bind-mounted
-# read-write. The dedicated test account is used; the developer completes the
-# OAuth browser flow on the host. Subsequent scenario runs mount the same dir
-# read-only.
-#
-# Rules directory: regardless of the auth backend, this script populates
-# ~/.crewrig-e2e/claude/rules/ by copying ~/.claude/rules/*.md from the host.
-# The 01-layered-context scenario mounts that directory as /home/agent/.claude
-# inside the container. Running `task setup:claude` (or the interactive
-# equivalent) first is a prerequisite.
-#
-# Idempotent: safe to re-run on an already-authenticated dir. Existing
-# credential files are preserved by claude itself (it skips the login prompt if
-# the session is still valid). Rules files are always refreshed from the host.
-#
-# See docs/adr/0002-e2e-auth-flow.md (Decision 2) for the full rationale.
-set -euo pipefail
+#!/bin/bash
+# auth-claude.sh — forwarding shim (spec 0261 requirements 14, 16, 18). The implementation is
+# auth-claude.ts next to this file; this file remains so every caller that still runs
+# `bash scripts/e2e/auth-claude.sh` reaches it. It runs the Node.js floor guard, then the TypeScript entry with every
+# argument and its standard input, and returns its exit status, streams unchanged. It fails
+# closed: with `node` absent it writes one `Error:` line and exits 1.
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=lib/auth-common.sh
-source "${SCRIPT_DIR}/lib/auth-common.sh"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-CLI="claude"
-IMAGE="crewrig/e2e-${CLI}:latest"
-DIR="$(e2e_cli_dir "$CLI")"
-
-e2e_require_docker
-e2e_require_image "$IMAGE" "task e2e:build:claude"
-
-e2e_info "[$CLI] Preparing ${DIR}…"
-mkdir -p "$DIR"
-touch "${DIR}/.claude.json"
-
-# -----------------------------------------------------------------------
-# Rules directory — populate from host (mirrors auth-copilot.sh issue #120).
-# -----------------------------------------------------------------------
-HOST_RULES="${HOME}/.claude/rules"
-RULES_DIR="${DIR}/rules"
-
-if [[ ! -d "$HOST_RULES" ]]; then
-  e2e_die "[$CLI] ~/.claude/rules/ not found. Run \`task setup:claude\` (or the interactive equivalent) first to deploy layered-context files."
-fi
-
-e2e_info "[$CLI] Populating ${RULES_DIR} from ${HOST_RULES}…"
-mkdir -p "$RULES_DIR"
-
-shopt -s nullglob
-src_files=("${HOST_RULES}"/*.md)
-shopt -u nullglob
-
-if [[ ${#src_files[@]} -eq 0 ]]; then
-  e2e_die "[$CLI] No *.md files found in ${HOST_RULES}. Run \`task setup:claude\` to deploy them."
-fi
-
-for f in ${src_files[@]+"${src_files[@]}"}; do
-  cp "$f" "${RULES_DIR}/$(basename "$f")"
-done
-e2e_info "[$CLI] Copied ${#src_files[@]} rule file(s) → ${RULES_DIR}."
-
-# Decision 6: chown bootstrap is mandatory (macOS) and harmless (Linux).
-e2e_chown_bootstrap "$CLI" "$IMAGE"
-
-e2e_info "[$CLI] Launching interactive login. Complete the browser OAuth flow on the host."
-e2e_info "[$CLI] (Press Ctrl-D inside the prompt when Claude reports a successful login.)"
-
-# Interactive RW mount. The container's entry-point launches the `claude` REPL;
-# `/login` is the slash command the user issues at the prompt. We attach a TTY
-# so the OAuth URL is rendered properly and the user can paste the redirect.
-docker run --rm -it \
-  -v "${DIR}:/home/agent/.${CLI}" \
-  -v "${DIR}/.claude.json:/home/agent/.claude.json" \
-  "$IMAGE" \
-  claude /login \
-  || e2e_die "[$CLI] interactive container exited non-zero. Re-run after resolving the error above."
-
-# Close the world-writable window opened by e2e_chown_bootstrap (Med-1 from
-# the #148 security review, applied to claude per issue #161) and normalize
-# file modes (Med-2 from #148: the 0600 invariant on .credentials.json /
-# .claude.json was previously implicit on whatever the Claude CLI happened
-# to write). e2e_assert_bundle_modes (spec 0194 R5) is the shared, idempotent
-# implementation of this triple — tightening immediately after the
-# container exits, BEFORE the post-flight checks and the API-key grep,
-# minimizes shared-dev-box exposure.
-e2e_assert_bundle_modes "$CLI"
-
-# Post-flight: both .credentials.json AND .claude.json must land on disk for
-# subsequent non-interactive runs to skip the login prompt (upstream:
-# tfvchow/field-notes-public#10).
-missing=()
-[ -f "${DIR}/.credentials.json" ] || missing+=(".credentials.json")
-[ -f "${DIR}/.claude.json" ]      || missing+=(".claude.json")
-
-if [ "${#missing[@]}" -gt 0 ]; then
-  e2e_info "[$CLI] WARNING: expected credential file(s) not found in $DIR:"
-  for f in ${missing[@]+"${missing[@]}"}; do e2e_info "  - $f"; done
-  e2e_info "[$CLI] The login flow may not have completed. Re-run \`task e2e:auth:claude\` after authenticating in the browser."
+if ! command -v node >/dev/null 2>&1; then
+  echo "Error: node was not found on PATH; auth-claude needs Node.js 24 or later (https://nodejs.org/en/download)." >&2
   exit 1
 fi
 
-# Defensive: refuse to leave API-key material on disk (Decision 7 of ADR 0002).
-if grep -q 'ANTHROPIC_API_KEY' "${DIR}/.credentials.json" 2>/dev/null; then
-  e2e_die "[$CLI] '$DIR/.credentials.json' contains ANTHROPIC_API_KEY material — API keys MUST be passed via the host shell env at scenario run time, never persisted. Delete the file and re-run."
-fi
+node "$DIR/../lib/node-floor-guard.js" || exit $?
 
-e2e_info "[$CLI] Authenticated. Credentials persisted under $DIR."
-e2e_info "[$CLI] Next: run scenarios with the dir mounted read-only (issue #78)."
+exec node "$DIR/auth-claude.ts" "$@"

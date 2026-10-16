@@ -819,7 +819,7 @@ tasks:
     preconditions:
       - sh: command -v docker >/dev/null 2>&1
         msg: "docker is required."
-    cmd: bash {{.REPO_DIR}}/scripts/e2e-capture-versions.sh "{{.E2E_IMG_PREFIX}}" "{{.E2E_VERSIONS_LOCK}}"
+    cmd: node {{.REPO_DIR}}/scripts/e2e-capture-versions.ts "{{.E2E_IMG_PREFIX}}" "{{.E2E_VERSIONS_LOCK}}"
 
   # --- e2e dedicated-account auth flow (issue #77) ---
 
@@ -830,7 +830,7 @@ tasks:
         msg: "docker is required."
       - sh: docker image inspect {{.E2E_IMG_PREFIX}}-claude:latest >/dev/null 2>&1
         msg: "image {{.E2E_IMG_PREFIX}}-claude:latest is missing. Run `task e2e:build:claude` first."
-    cmd: bash {{.REPO_DIR}}/scripts/e2e/auth-claude.sh
+    cmd: node {{.REPO_DIR}}/scripts/e2e/auth-claude.ts
 
   e2e:auth:gemini:
     desc: "Interactive Gemini CLI login → ~/.crewrig-e2e/gemini/ (RW one-shot, RO at scenario time)."
@@ -839,11 +839,11 @@ tasks:
         msg: "docker is required."
       - sh: docker image inspect {{.E2E_IMG_PREFIX}}-gemini:latest >/dev/null 2>&1
         msg: "image {{.E2E_IMG_PREFIX}}-gemini:latest is missing. Run `task e2e:build:gemini` first."
-    cmd: bash {{.REPO_DIR}}/scripts/e2e/auth-gemini.sh
+    cmd: node {{.REPO_DIR}}/scripts/e2e/auth-gemini.ts
 
   e2e:auth:copilot:
     desc: "Guidance for Copilot CLI auth via PAT (env-var COPILOT_GITHUB_TOKEN). Runs a sanity check if the token is already set."
-    cmd: bash {{.REPO_DIR}}/scripts/e2e/auth-copilot.sh
+    cmd: node {{.REPO_DIR}}/scripts/e2e/auth-copilot.ts
 
   e2e:auth:ollama:
     desc: "Interactive Ollama Cloud signin → ~/.crewrig-e2e/ollama/ (RW one-shot, RO at scenario time). Required only when local.toml routes Copilot through Ollama Cloud."
@@ -852,22 +852,22 @@ tasks:
         msg: "docker is required."
       - sh: docker image inspect {{.E2E_IMG_PREFIX}}-copilot:latest >/dev/null 2>&1
         msg: "image {{.E2E_IMG_PREFIX}}-copilot:latest is missing. Run `task e2e:build:copilot` first."
-    cmd: bash {{.REPO_DIR}}/scripts/e2e/auth-ollama.sh
+    cmd: node {{.REPO_DIR}}/scripts/e2e/auth-ollama.ts
 
   # --- e2e runner + TOML config (issue #78) ---
 
   e2e:test:
     desc: "Run all e2e scenarios across all configured CLIs (TAP report)."
-    cmd: bash {{.REPO_DIR}}/tests/e2e/run.sh {{.CLI_ARGS}}
+    cmd: node {{.REPO_DIR}}/tests/e2e/run.ts {{.CLI_ARGS}}
 
   e2e:test:scenario:
     desc: "Run one scenario across all configured CLIs. Usage: task e2e:test:scenario -- <scenario-name>"
-    cmd: bash {{.REPO_DIR}}/tests/e2e/run.sh --scenario {{.CLI_ARGS}}
+    cmd: node {{.REPO_DIR}}/tests/e2e/run.ts --scenario {{.CLI_ARGS}}
 
   e2e:test:cli:
     desc: "Run all scenarios against one CLI. Usage: task e2e:test:cli -- <claude|gemini|copilot>"
-    cmd: bash {{.REPO_DIR}}/tests/e2e/run.sh --cli {{.CLI_ARGS}}
+    cmd: node {{.REPO_DIR}}/tests/e2e/run.ts --cli {{.CLI_ARGS}}
 
   e2e:report:
     desc: "Aggregate TAP results into a parity matrix (console + markdown)"
-    cmd: bash {{.REPO_DIR}}/tests/e2e/lib/report.sh
+    cmd: node {{.REPO_DIR}}/tests/e2e/lib/report.ts

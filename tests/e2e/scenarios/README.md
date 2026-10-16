@@ -20,7 +20,7 @@ metadata lives in `tests/e2e/defaults.toml`.
 ## Scenario contract
 
 Each `scenarios/<name>/run.sh` runs **on the host** and drives Docker
-itself. The runner (`tests/e2e/run.sh`) exports the following before
+itself. The runner (`node tests/e2e/run.ts`; `tests/e2e/run.sh` is a forwarding shim) exports the following before
 delegating:
 
 | Env var | Meaning |
@@ -37,7 +37,7 @@ delegating:
 Exit codes follow the runner's convention: `0` → ok, `78` → skip
 (diagnostic line on stdout), anything else → not ok.
 
-> **Run-ID format invariant.** The parity matrix report (`tests/e2e/lib/report.sh`)
+> **Run-ID format invariant.** The parity matrix report (`tests/e2e/lib/report.ts`, run as `node tests/e2e/lib/report.ts`)
 > uses lexicographic ordering of TAP file paths to decide which run wins when
 > the same `<cli>/<scenario>` cell appears in multiple files — the last file
 > wins. This relies on `E2E_RUN_ID` carrying a `<timestamp>-<rand>` prefix so
