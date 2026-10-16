@@ -17,11 +17,15 @@ import {
 for (const c of casesOf("foundations")) {
   const twin = fs.existsSync(path.join(REPO, "scripts", `${c.name}.ts`));
   const missing = checkNeeds(c);
+  // BSD `wc -c` (macOS) left-pads the byte count that check-agents-size prints, so the
+  // byte-for-byte comparison is a GNU-userland (Linux) comparison.
   const skip = !twin
     ? "TypeScript twin not present"
     : missing.length > 0
       ? `host lacks ${missing.join(", ")}`
-      : false;
+      : process.platform === "darwin"
+        ? "BSD wc -c pads its count: compared on Linux"
+        : false;
 
   test(`${c.name}: real repository through the tee`, { skip }, () => {
     const t = runRealRepo(c);
