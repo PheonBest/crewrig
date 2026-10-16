@@ -63,11 +63,12 @@ run_auth() {
 
 # True while the file is a real shell script, false once it is a forwarding
 # shim (<= 5 lines, or first non-comment line is `exec node`).
+# R14/R16: a shim is at most 25 lines AND has a line starting with `exec node` (floor-guard line comes first).
 is_real_shell() {
-  local f="$1" first
-  [[ "$(wc -l < "$f")" -gt 5 ]] || return 1
-  first="$(grep -v '^[[:space:]]*\(#\|$\)' "$f" | head -n 1)"
-  [[ "$first" != exec\ node* ]]
+  local f="$1" n
+  n="$(wc -l < "$f" | tr -d ' ')"
+  if [ "$n" -le 25 ] && grep -q '^exec node' "$f"; then return 1; fi
+  [ "$n" -gt 5 ]
 }
 
 # ---------------------------------------------------------------------------

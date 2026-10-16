@@ -78,6 +78,16 @@ build_scratch_tree() {
   done; } > "${E2E_REPORT_DIR}/child-env.txt"
 exit 0
 REC
+  # TypeScript runner (spec 0261 R15/R16): it spawns `node <scenarioDir>/run.ts`, so mirror the recorder there.
+  cat > "${rec%.sh}.ts" <<'RECTS'
+import { writeFileSync } from "node:fs";
+import { join } from "node:path";
+const vars = ["E2E_LIB_DIR", "E2E_REPORT_DIR", "E2E_CLI", "E2E_IMAGE", "E2E_EFFECTIVE_JSON",
+  "E2E_SCENARIO_DIR", "E2E_CREDENTIAL_PATH", "E2E_CREWRIG_E2E_HOME"];
+const out = vars.map((v) => `${v}=${process.env[v] ?? ""}\n`).join("");
+writeFileSync(join(process.env.E2E_REPORT_DIR ?? ".", "child-env.txt"), out);
+process.exit(0);
+RECTS
   chmod +x "$rec"
 }
 
@@ -99,12 +109,13 @@ probe_run() {
 child_var() { sed -n "s/^$1=//p" "${CHILD_ENV}" | head -n 1; }
 phys() { (cd -P "$1" 2>/dev/null && pwd -P); }
 
-# is_real_shell_script <file>: true only while the file is a real shell script, not a forwarding shim.
+# is_real_shell_script <file>: false for a forwarding shim (at most 25 lines AND a line starting with `exec node`;
+# the real shim has a floor-guard line first — spec 0261 R14).
 is_real_shell_script() {
-  local f="$1" first
-  [[ "$(wc -l < "$f")" -gt 5 ]] || return 1
-  first="$(grep -vE '^[[:space:]]*(#|$)' "$f" | head -n 1)"
-  [[ "$first" != exec\ node* ]]
+  local f="$1" n
+  n="$(wc -l < "$f" | tr -d ' ')"
+  if [ "$n" -le 25 ] && grep -q '^exec node' "$f"; then return 1; fi
+  [ "$n" -gt 5 ]
 }
 
 trap 'cleanup; rm -rf -- "$SCRATCH"' EXIT

@@ -70,12 +70,13 @@ drive_case() {
   DRV_LOG="${DRV_DIR}/state/log.jsonl"
   [[ -f "$DRV_LOG" ]] || : > "$DRV_LOG"
 }
-# is_real_shell <file> — false for a three-line forwarding shim (`exec node ...`); spec 0261 requirement 14.
+# is_real_shell <file> — false for a forwarding shim: at most 25 lines AND a line starting with `exec node`
+# (the real shim has a floor-guard line before the exec); spec 0261 requirements 14 and 16.
 is_real_shell() {
-  local f="$1" first
-  first="$(grep -v '^[[:space:]]*#' "$f" | grep -v '^[[:space:]]*$' | head -n 1)"
-  case "$first" in exec\ node*) return 1 ;; esac
-  [ "$(wc -l < "$f" | tr -d ' ')" -gt 5 ]
+  local f="$1" n
+  n="$(wc -l < "$f" | tr -d ' ')"
+  if [ "$n" -le 25 ] && grep -q '^exec node' "$f"; then return 1; fi
+  [ "$n" -gt 5 ]
 }
 
 # --- 1. Each scenario dir + run.sh present and executable --------------------
@@ -162,7 +163,7 @@ if [[ "$DRV_OK" == "true" ]] && command -v yq >/dev/null 2>&1 && command -v jq >
       note_fail "scenario '$s' [$cli] — recorded docker run for the duplicate-mount check" "no docker run recorded (rc=$DRV_RC)"
       continue
     fi
-    dups="$(jq -c '.argv | . as $a | [range(0;length-1) | select($a[.]=="-v") | $a[.+1]] | group_by(split(":")[1]) | map(select((unique|length)>1)) | select(length>0)' "$DRV_LOG")" \
+    dups="$(jq -c '.argv | . as $a | [range(0;length-1) | select($a[.]=="-v") | $a[.+1] | gsub("/+";"/")] | group_by(split(":")[1]) | map(select((unique|length)>1)) | select(length>0)' "$DRV_LOG")" \
       || { note_fail "scenario '$s' [$cli] — duplicate-mount analysis" "jq could not read the recorded argv"; continue; }
     if [[ -z "$dups" ]]; then
       note_pass "scenario '$s' [$cli] — no conflicting duplicate -v container path in the recorded docker argv"

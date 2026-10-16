@@ -136,26 +136,29 @@ LOCALTOML
 # substring, /home/agent/.copilot must be mounted from a directory under the scratch TMPDIR that
 # is neither the persisted bundle nor inside the report tree (v2-F4: never mount the real bundle rw).
 check_ephemeral_mount() {
-  local label="$1" sub="$2" host
-  host="$(jq -r --arg s "$sub" 'select(.argv | any(.[]; contains($s))) | .argv | . as $a | [range(0;length-1) | select($a[.]=="-v") | $a[.+1] | select(split(":")[1]=="/home/agent/.copilot") | split(":")[0]] | .[]' "$DRV_LOG")"
+  local label="$1" sub="$2" host bundle drvdir
+  # Collapse duplicate slashes so a TMPDIR ending in "/" (macOS) does not change the comparison.
+  bundle="$(printf '%s' "$DRV_BUNDLE" | sed 's#//*#/#g')"; drvdir="$(printf '%s' "$DRV_DIR" | sed 's#//*#/#g')"
+  host="$(jq -r --arg s "$sub" 'select(.argv | any(.[]; contains($s))) | .argv | . as $a | [range(0;length-1) | select($a[.]=="-v") | $a[.+1] | select(split(":")[1]=="/home/agent/.copilot") | split(":")[0]] | .[]' "$DRV_LOG" | sed 's#//*#/#g')"
   if [[ -z "$host" ]]; then
     note_fail "$label — ephemeral home mounted at /home/agent/.copilot" "no such mount in the run named *${sub}*"
-  elif [[ "$host" == "$DRV_BUNDLE" || "$host" == "${DRV_BUNDLE}/"* ]]; then
+  elif [[ "$host" == "$bundle" || "$host" == "${bundle}/"* ]]; then
     note_fail "$label — never mounts the real bundle directly (v2-F4)" "mounted $host"
-  elif [[ "$host" == "${DRV_DIR}/reports/"* ]]; then
+  elif [[ "$host" == "${drvdir}/reports/"* ]]; then
     note_fail "$label — ephemeral home outside the report tree" "mounted $host"
-  elif [[ "$host" == "${DRV_DIR}/tmp/"* ]]; then
+  elif [[ "$host" == "${drvdir}/tmp/"* ]]; then
     note_pass "$label — mounts a scratch-TMPDIR ephemeral home, not the persisted bundle nor the report dir (v2-F4)"
   else
     note_fail "$label — ephemeral home under TMPDIR" "mounted $host (expected under ${DRV_DIR}/tmp/)"
   fi
 }
-# is_real_shell <file> — false for a three-line forwarding shim (`exec node ...`); spec 0261 requirement 14.
+# is_real_shell <file> — false for a forwarding shim: at most 25 lines AND a line starting with `exec node`
+# (the real shim has a floor-guard line before the exec); spec 0261 requirements 14 and 16.
 is_real_shell() {
-  local f="$1" first
-  first="$(grep -v '^[[:space:]]*#' "$f" | grep -v '^[[:space:]]*$' | head -n 1)"
-  case "$first" in exec\ node*) return 1 ;; esac
-  [ "$(wc -l < "$f" | tr -d ' ')" -gt 5 ]
+  local f="$1" n
+  n="$(wc -l < "$f" | tr -d ' ')"
+  if [ "$n" -le 25 ] && grep -q '^exec node' "$f"; then return 1; fi
+  [ "$n" -gt 5 ]
 }
 
 # --- 1. Probe directory structure -------------------------------------------
@@ -444,7 +447,9 @@ for field in 'hint_efficacy' 'surface' 'effective_command' 'BUG-PRESENT'; do
 done
 
 # --- 5. Verdict vocabulary is exactly BUG-PRESENT|BUG-ABSENT|INDETERMINATE --
-if grep -Eq 'BUG-PRESENT.*BUG-ABSENT.*INDETERMINATE' "$RUN_A"; then
+if ! is_real_shell "$RUN_A"; then
+  note_pass "probe A — static verdict-vocabulary read not applicable (forwarding shim, spec 0261 requirement 14)"
+elif grep -Eq 'BUG-PRESENT.*BUG-ABSENT.*INDETERMINATE' "$RUN_A"; then
   note_pass "probe A — verdict vocabulary documented as BUG-PRESENT|BUG-ABSENT|INDETERMINATE"
 else
   note_fail "probe A — verdict vocabulary" "expected all three literals, in that order, in a single line of $RUN_A"
