@@ -5,6 +5,7 @@
 
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -16,6 +17,24 @@ import {
 } from "./lib/e2e-entry-diff.ts";
 
 const skip = shellLegPrerequisites() ?? false;
+
+// jq words some errors differently across versions (1.7 prints `Cannot index array with string "probe"`,
+// 1.8 adds parentheses and truncates differently): the twin follows jq 1.7, the version of the
+// recordings and of the runner image, so those cases only run against that version.
+const jqVersion = spawnSync("jq", ["--version"], { encoding: "utf8" }).stdout.trim();
+const WORDING_SENSITIVE = new Set([
+  "array-doc",
+  "array-doc-multiline",
+  "string-doc",
+  "number-doc",
+  "boolean-doc",
+  "cells-long-string",
+  "cells-multibyte-string",
+]);
+const wordingSkip = (name: string) =>
+  WORDING_SENSITIVE.has(name) && !jqVersion.startsWith("jq-1.7")
+    ? `jq error wording differs from jq 1.7 (found ${jqVersion || "none"})`
+    : false;
 const FILE = "scripts/e2e/publish-probe-verdict";
 
 const verdict = (text: string) => (box: EntryBox) => {
@@ -100,7 +119,7 @@ describe("publish-probe-verdict edge verdicts: shell leg versus TypeScript twin"
       args: ["rep", "--issue", "1103", "--dry-run"],
       seed: verdict(text),
     };
-    it(c.id, (t) => {
+    it(c.id, { skip: wordingSkip(name) }, (t) => {
       const ts = runEntry(c, "entry");
       if (ts === null) return t.todo("no TypeScript twin yet");
       const sh = runEntry(c, "shell");
