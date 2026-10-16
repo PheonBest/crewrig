@@ -32,6 +32,52 @@ README="${SCEN_DIR}/README.md"
 
 SCENARIOS=(01-layered-context 02-cross-tool-memory 03-skill-build 04-harness-loop 05-copilot-model-routing 06-agent-surface-consumption 07-guidance-surface)
 
+# --- Behavioural driver (spec 0261 requirements 12-15) -----------------------
+# Static reads of the scenario/runner TEXT are replaced by runs of tests/e2e/run.sh
+# against the Docker stand-in (scripts/tests/lib/e2e-docker-standin.ts); the docker
+# argv it logs is what is asserted. drive_case <scenario> <cli> [stdout] [seed-modes]
+# sets DRV_RC DRV_DIR DRV_LOG (one JSON argv per line) DRV_REPORT DRV_BUNDLE.
+DRV_BASE="$(mktemp -d "${TMPDIR:-/tmp}/crewrig-e2e-drv.XXXXXX")"
+trap 'rm -rf "$DRV_BASE"' EXIT
+DRV_N=0
+DRV_OK=false
+if [ "$(bash -c 'echo ${BASH_VERSINFO[0]}')" -ge 4 ] && command -v node >/dev/null 2>&1; then DRV_OK=true; fi
+drive_case() {
+  local scenario="$1" cli="$2" out="${3:-x}" seed="${4:-}"
+  DRV_N=$((DRV_N + 1))
+  DRV_DIR="${DRV_BASE}/c${DRV_N}"
+  DRV_BUNDLE="${DRV_DIR}/e2e-root/.crewrig-e2e/${cli}"
+  mkdir -p "${DRV_DIR}/home" "${DRV_DIR}/bin" "${DRV_DIR}/state" "${DRV_DIR}/tmp"
+  node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "${REPO_DIR}/scripts/tests/lib/e2e-docker-standin.ts" --write-launcher "${DRV_DIR}/bin"
+  if [[ "$seed" != "absent-bundle" ]]; then
+    mkdir -p "${DRV_BUNDLE}"
+    echo '# Location: Nantes' > "${DRV_BUNDLE}/00-rules.md"
+    echo '{"dummy":true}' > "${DRV_BUNDLE}/.credentials.json"
+  fi
+  if [[ "$seed" == "loose-modes" ]]; then
+    mkdir -p "${DRV_BUNDLE}/sub"; chmod 755 "${DRV_BUNDLE}/sub"; chmod 644 "${DRV_BUNDLE}/.credentials.json"
+  fi
+  jq -n --arg k "${scenario}/${cli}" --arg o "$out" '{($k):[range(0;5)|{match:["run"],stdout:$o}]}' > "${DRV_DIR}/state/f.json"
+  DRV_REPORT="${DRV_DIR}/reports/20000101T000000Z-0000/${cli}/${scenario}"
+  (cd "$REPO_DIR" && env -i PATH="${DRV_DIR}/bin:${PATH}" HOME="${DRV_DIR}/home" \
+    CREWRIG_E2E_HOME="${DRV_DIR}/e2e-root" E2E_REPORTS_ROOT="${DRV_DIR}/reports" TMPDIR="${DRV_DIR}/tmp" LC_ALL=C \
+    ANTHROPIC_API_KEY=d GEMINI_API_KEY=d COPILOT_GITHUB_TOKEN=d E2E_JUDGE_MOCK=1 \
+    E2E_JUDGE_MOCK_RESPONSE="VERDICT=PASS CONF=0.95" E2E_STANDIN_FIXTURES="${DRV_DIR}/state/f.json" \
+    E2E_STANDIN_CASE="${scenario}/${cli}" E2E_STANDIN_STATE="${DRV_DIR}/state/c" E2E_STANDIN_LOG="${DRV_DIR}/state/log.jsonl" \
+    bash tests/e2e/run.sh --scenario "$scenario" --cli "$cli" --report-dir "${DRV_DIR}/reports/20000101T000000Z-0000" \
+    >"${DRV_DIR}/out" 2>&1)
+  DRV_RC=$?
+  DRV_LOG="${DRV_DIR}/state/log.jsonl"
+  [[ -f "$DRV_LOG" ]] || : > "$DRV_LOG"
+}
+# is_real_shell <file> — false for a three-line forwarding shim (`exec node ...`); spec 0261 requirement 14.
+is_real_shell() {
+  local f="$1" first
+  first="$(grep -v '^[[:space:]]*#' "$f" | grep -v '^[[:space:]]*$' | head -n 1)"
+  case "$first" in exec\ node*) return 1 ;; esac
+  [ "$(wc -l < "$f" | tr -d ' ')" -gt 5 ]
+}
+
 # --- 1. Each scenario dir + run.sh present and executable --------------------
 for s in ${SCENARIOS[@]+"${SCENARIOS[@]}"}; do
   d="${SCEN_DIR}/${s}"
@@ -51,6 +97,8 @@ done
 for s in ${SCENARIOS[@]+"${SCENARIOS[@]}"}; do
   r="${SCEN_DIR}/${s}/run.sh"
   [[ -f "$r" ]] || continue
+  # Shell-only property: a forwarding shim is not parsed by bash -n (spec 0261 requirement 14).
+  is_real_shell "$r" || { note_pass "scenario '$s' — bash -n not applicable (forwarding shim, spec 0261 requirement 14)"; continue; }
   err="$(bash -n "$r" 2>&1)"
   if [[ -z "$err" ]]; then
     note_pass "scenario '$s' — bash -n syntax check"
@@ -64,6 +112,9 @@ done
 for s in ${SCENARIOS[@]+"${SCENARIOS[@]}"}; do
   r="${SCEN_DIR}/${s}/run.sh"
   [[ -f "$r" ]] || continue
+  # Shell-only property: a forwarding shim sources nothing (spec 0261 requirement 14); the library
+  # directory contract is exercised behaviourally by every drive_case run below.
+  is_real_shell "$r" || { note_pass "scenario '$s' — \$E2E_LIB_DIR sourcing not applicable (forwarding shim, spec 0261 requirement 14)"; continue; }
   if grep -Eq 'source[[:space:]]+"\$\{?E2E_LIB_DIR\}?/' "$r" \
      || grep -Eq '\.[[:space:]]+"\$\{?E2E_LIB_DIR\}?/' "$r"; then
     note_pass "scenario '$s' — sources \$E2E_LIB_DIR helper"
@@ -94,67 +145,34 @@ else
   done
 fi
 
-# --- 6. Duplicate-mount guard (PLAN v2 step 19) -----------------------------
-# A scenario that consumes a CLI's effective `.mounts` array (the
-# expand_mount loop) must not ALSO hardcode a `-v` targeting the same
-# container path unless the resolved mount string is byte-identical to the
-# declared one — a mismatch is fatal (measured in PLAN v2 step 17: same
-# target, different source or mode -> docker exit 125 "Duplicate mount
-# point"). This is the mutation-resistant form of that measurement: it
-# would have caught 01-layered-context's now-removed copilot arm colliding
-# with defaults.toml's [cli.copilot].mounts (spec 0194 step 16).
-#
-# One documented exception: 01-layered-context/claude's hardcoded
-# `${rules_dir}:${rules_mount_target}:ro` composition IS byte-identical to
-# defaults.toml's own [cli.claude].mounts[0] (both expand
-# `${CREWRIG_E2E_HOME}/claude` the same way) — tolerated, not hidden.
-#
-# A scenario that sources tests/e2e/lib/copilot_ephemeral_home.sh
-# implements its own reviewed substitution mechanism for the copilot target
-# (v2-F4: never mount the real bundle rw for a probe fixture) rather than a
-# hardcoded duplicate, so it is exempted from the copilot check here.
-if [[ -f "$DEFAULTS_TOML" ]] && command -v yq >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
-  DEFAULTS_JSON="$(yq -p=toml -o=json '.' "$DEFAULTS_TOML" 2>/dev/null)"
-  KNOWN_BYTE_IDENTICAL_DUPLICATES=("01-layered-context:claude:/home/agent/.claude")
-
-  for s in ${SCENARIOS[@]+"${SCENARIOS[@]}"}; do
-    r="${SCEN_DIR}/${s}/run.sh"
-    [[ -f "$r" ]] || continue
-    grep -Fq 'expand_mount' "$r" || continue
-
-    uses_ephemeral_home=false
-    grep -Fq 'copilot_ephemeral_home.sh' "$r" && uses_ephemeral_home=true
-
-    for cli in claude gemini copilot; do
-      if [[ "$cli" == "copilot" && "$uses_ephemeral_home" == "true" ]]; then
-        note_pass "scenario '$s' — [cli.copilot] target handled by the reviewed ephemeral-home substitution (v2-F4), not a hardcoded duplicate"
-        continue
-      fi
-      declared_targets=()
-      while IFS= read -r line || [ -n "$line" ]; do
-        declared_targets+=("$line")
-      done < <(jq -r --arg c "$cli" '.cli[$c].mounts // [] | .[] | split(":")[1] // empty' <<<"$DEFAULTS_JSON")
-      for target in ${declared_targets[@]+"${declared_targets[@]}"}; do
-        [[ -z "$target" ]] && continue
-        hits="$(grep -Fv 'expand_mount' "$r" | grep -v '^[[:space:]]*#' | grep -Fc -- "$target" || true)"
-        if [[ "$hits" -gt 0 ]]; then
-          exception_key="${s}:${cli}:${target}"
-          allowed=false
-          for k in ${KNOWN_BYTE_IDENTICAL_DUPLICATES[@]+"${KNOWN_BYTE_IDENTICAL_DUPLICATES[@]}"}; do
-            [[ "$k" == "$exception_key" ]] && allowed=true && break
-          done
-          if [[ "$allowed" == "true" ]]; then
-            note_pass "scenario '$s' — hardcoded '$target' for [cli.$cli] is the documented byte-identical duplicate"
-          else
-            note_fail "scenario '$s' — no undocumented duplicate mount to [cli.$cli] target '$target'" \
-              "target also declared in defaults.toml [cli.$cli].mounts and is not a documented byte-identical exception — verify the resolved mount string matches exactly, or remove the hardcoded arm (regression class: PLAN v2 step 17)"
-          fi
-        fi
-      done
-    done
+# --- 6. Duplicate-mount guard (PLAN v2 step 19; spec 0261 requirement 12) ----
+# Behavioural: a scenario must not pass two `-v` mounts for one container path with different
+# host/mode strings (measured in PLAN v2 step 17: docker exit 125 "Duplicate mount point"). Asserted
+# on the docker argv recorded by the stand-in for each passing case, not on the scenario text. A
+# byte-identical repeat (01-layered-context/claude's rules mount versus [cli.claude].mounts[0]) is the
+# documented tolerated case; the copilot ephemeral-home substitution (v2-F4) shows up as a single
+# mount of /home/agent/.copilot. Probe A (05) needs tests/e2e/local.toml and cannot be driven.
+if [[ "$DRV_OK" == "true" ]] && command -v yq >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+  for pair in 01-layered-context:claude 01-layered-context:gemini 01-layered-context:copilot \
+              06-agent-surface-consumption:copilot 06-agent-surface-consumption:claude 07-guidance-surface:claude; do
+    s="${pair%%:*}"; cli="${pair##*:}"
+    drive_case "$s" "$cli" "Nantes"
+    ncalls="$(grep -c '"run"' "$DRV_LOG" || true)"
+    if [[ "$ncalls" -lt 1 ]]; then
+      note_fail "scenario '$s' [$cli] — recorded docker run for the duplicate-mount check" "no docker run recorded (rc=$DRV_RC)"
+      continue
+    fi
+    dups="$(jq -c '.argv | . as $a | [range(0;length-1) | select($a[.]=="-v") | $a[.+1]] | group_by(split(":")[1]) | map(select((unique|length)>1)) | select(length>0)' "$DRV_LOG")" \
+      || { note_fail "scenario '$s' [$cli] — duplicate-mount analysis" "jq could not read the recorded argv"; continue; }
+    if [[ -z "$dups" ]]; then
+      note_pass "scenario '$s' [$cli] — no conflicting duplicate -v container path in the recorded docker argv"
+    else
+      note_fail "scenario '$s' [$cli] — no conflicting duplicate -v container path" \
+        "same container path mounted with different host/mode: $dups (regression class: PLAN v2 step 17)"
+    fi
   done
 else
-  note_skip "duplicate-mount guard" "yq/jq/defaults.toml unavailable"
+  note_skip "duplicate-mount guard" "bash>=4/node/yq/jq unavailable"
 fi
 
 echo ""

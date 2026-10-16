@@ -12,9 +12,8 @@
 #      re-prompting.
 #
 # This test locks both ends of the contract:
-#   1. scripts/e2e/auth-ollama.sh must contain a docker `-v` flag binding
-#      a host path to /home/agent/.ollama (literal or `.${CLI}` form
-#      with CLI=ollama) inside the container.
+#   1. scripts/e2e/auth-ollama.sh must run docker with a `-v` flag binding
+#      the host ollama dir to /home/agent/.ollama inside the container.
 #   2. tests/e2e/local.toml.example must get the keypair to a writable
 #      ~/.ollama in the copilot scenario container, by EITHER of two
 #      admissible shapes: a direct `[cli.copilot].mounts` entry whose
@@ -25,7 +24,8 @@
 #      recent ollama clients, which write temp state there and fail with
 #      EROFS).
 #
-# Static-only: parses the script and the TOML; does not execute docker.
+# Test 1 runs the script against the Docker stand-in (never real docker);
+# Test 2 parses the TOML.
 
 set -uo pipefail
 
@@ -47,28 +47,36 @@ if [[ ! -f "$AUTH_SCRIPT" ]]; then
   exit 1
 fi
 
-# The script must contain a -v flag whose container side resolves to
-# /home/agent/.ollama. Two acceptable forms in the source:
-#   - literal:  -v "<host>:/home/agent/.ollama"
-#   - variable: -v "<host>:/home/agent/.${CLI}"  (with CLI=ollama set elsewhere)
-# Strip comment lines first so a `#  -v ...` docstring example cannot
-# satisfy the contract.
-STRIPPED="$(grep -v '^[[:space:]]*#' "$AUTH_SCRIPT")"
+# Black-box (spec 0261 R12): run the script against the Docker stand-in with a
+# scratch HOME and read the `-v` binds of the recorded `docker run` argv. The
+# resolved bind is checked, so the literal and the `.${CLI}` source forms are
+# both covered by one behavioural assertion.
+STANDIN="${REPO_DIR}/scripts/tests/lib/e2e-docker-standin.ts"
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+mkdir -p "$TMP/bin" "$TMP/home" "$TMP/state"
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$STANDIN" --write-launcher "$TMP/bin"
+printf '%s' '{"auth/ollama":[{"files":{"/home/agent/.ollama/id_ed25519":"key","/home/agent/.ollama/id_ed25519.pub":"pub"}}]}' \
+  > "$TMP/fixtures.json"
+: > "$TMP/docker.log"
 
-if grep -Eq -- '-v[[:space:]]+"?[^"[:space:]]*:/home/agent/\.(ollama([[:space:]"]|$)|\$\{?CLI\}?)' <<< "$STRIPPED"; then
-  # If the variable form is used, additionally require CLI=ollama assignment
-  # so the mount actually resolves to /home/agent/.ollama at run time.
-  if grep -Eq -- '-v[[:space:]]+"?[^"[:space:]]*:/home/agent/\.ollama([[:space:]"]|$)' <<< "$STRIPPED"; then
-    note_pass "auth-ollama.sh — docker run binds host path into /home/agent/.ollama"
-  elif grep -Eq '^[[:space:]]*CLI=("ollama"|ollama|'\''ollama'\'')[[:space:]]*$' <<< "$STRIPPED"; then
-    note_pass "auth-ollama.sh — docker run binds host path into /home/agent/.\${CLI} with CLI=ollama"
-  else
-    note_fail "auth-ollama.sh — docker run binds host path into /home/agent/.ollama" \
-      "found -v ...:/home/agent/.\${CLI} but no CLI=ollama assignment (issue #114)"
-  fi
+out="$(env HOME="$TMP/home" CREWRIG_E2E_HOME="$TMP/e2e" PATH="$TMP/bin:$PATH" \
+  E2E_STANDIN_FIXTURES="$TMP/fixtures.json" E2E_STANDIN_CASE="auth/ollama" \
+  E2E_STANDIN_STATE="$TMP/state" E2E_STANDIN_LOG="$TMP/docker.log" \
+  bash "$AUTH_SCRIPT" </dev/null 2>&1)"
+rc=$?
+
+binds="$(jq -r 'select(.argv[0] == "run")
+                | .argv as $a
+                | range(0; ($a | length) - 1)
+                | select($a[.] == "-v") | $a[. + 1]' "$TMP/docker.log" 2>/dev/null)"
+want="${TMP}/e2e/.crewrig-e2e/ollama:/home/agent/.ollama"
+
+if [[ "$rc" -eq 0 ]] && grep -Fxq -- "$want" <<< "$binds"; then
+  note_pass "auth-ollama.sh — docker run binds host path into /home/agent/.ollama"
 else
   note_fail "auth-ollama.sh — docker run binds host path into /home/agent/.ollama" \
-    "no '-v <host>:/home/agent/.ollama' flag found in $AUTH_SCRIPT (issue #114)"
+    "rc=$rc, expected -v '$want' in docker run argv (issue #114); binds=$(printf '%s' "$binds" | tr '\n' ' ') out=$(printf '%s' "$out" | tr '\n' ' ' | head -c 200)"
 fi
 
 # ---------------------------------------------------------------------------

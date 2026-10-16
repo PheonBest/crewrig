@@ -21,7 +21,7 @@ after(() => {
 });
 
 /** Where each suite writes its literal, and how to read the package list out of its text. */
-const LITERALS: readonly { file: string; pattern: RegExp }[] = [
+const LITERALS: readonly { file: string; pattern: RegExp; tsFile?: string }[] = [
   {
     file: "scripts/tests/test-component-tier-resolution.sh",
     pattern: /^STAGED_NODE_PACKAGES="([^"]*)"$/m,
@@ -61,6 +61,8 @@ const LITERALS: readonly { file: string; pattern: RegExp }[] = [
   {
     file: "tests/e2e/scenarios/03-skill-build/run.sh",
     pattern: /^for staged_pkg in ([^;]+); do$/m,
+    // Spec 0261 R15: once run.ts exists, run.sh is a forwarding shim and the loop moves there.
+    tsFile: "tests/e2e/scenarios/03-skill-build/run.ts",
   },
 ];
 const sortedWords = (text: string): string[] => text.split(/\s+/).filter(Boolean).sort();
@@ -72,8 +74,21 @@ describe("the staged package list of the Bash suites equals the computed closure
     assert.ok(closure.includes("js-yaml"), `closure: ${closure.join(" ")}`);
   });
 
-  for (const { file, pattern } of LITERALS) {
+  for (const { file, pattern, tsFile } of LITERALS) {
     test(`${file}`, () => {
+      if (tsFile !== undefined && fs.existsSync(path.join(REPO, tsFile))) {
+        // Placeholder form until the final TypeScript text is known: one line naming every
+        // package of the closure. It fails loudly when no such line exists.
+        const lines = fs.readFileSync(path.join(REPO, tsFile), "utf8").split("\n");
+        const named = lines.some((line) =>
+          closure.every((pkg) => new RegExp(`(?<![\\w@/.-])${pkg}(?![\\w/.-])`).test(line)),
+        );
+        assert.ok(
+          named,
+          `no line of ${tsFile} names every package of the closure: ${closure.join(" ")}`,
+        );
+        return;
+      }
       const text = fs.readFileSync(path.join(REPO, file), "utf8");
       const found = pattern.exec(text);
       assert.ok(found !== null, `no package list found in ${file}`);
