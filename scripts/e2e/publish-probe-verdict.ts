@@ -22,14 +22,23 @@ rendered Markdown comment body for issue #<N>.
 type Json = unknown;
 type Obj = Record<string, Json>;
 
-/** `jq -r` on one value: a string verbatim, anything else as compact JSON (null -> `null`). */
+/** A failure jq itself would report (exit status 5): the shell prints it and stops. */
+export class JqError extends Error {
+  readonly line: number;
+  constructor(message: string, line: number) {
+    super(message);
+    this.line = line;
+  }
+}
+
+/** `jq -r` on one value: a string verbatim, anything else as compact JSON (null and absent -> `null`). */
 function jqRaw(v: Json): string {
-  return typeof v === "string" ? v : JSON.stringify(v);
+  return typeof v === "string" ? v : (JSON.stringify(v ?? null) ?? "null");
 }
 
 /** `$(jq -r .x file)`: a string verbatim, anything else pretty-printed, trailing newlines stripped. */
 function sub(v: Json): string {
-  const raw = typeof v === "string" ? v : JSON.stringify(v, null, 2);
+  const raw = typeof v === "string" ? v : JSON.stringify(v ?? null, null, 2);
   return raw.replace(/\n+$/, "");
 }
 
@@ -41,19 +50,72 @@ function has(o: Obj, key: string): boolean {
   return Object.hasOwn(o, key);
 }
 
-function cellLine(c: Json): string {
-  if (!isObj(c)) return `- ${jqRaw(c)}`;
-  const reason = c["reason"] === null || c["reason"] === false ? "" : jqRaw(c["reason"] ?? "");
-  if (has(c, "cell")) {
-    return `- ${jqRaw(c["cell"])} (${jqRaw(c["cli"])}): **${jqRaw(c["outcome"])}** — ${reason}`;
-  }
-  return `- ${jqRaw(c["cli"])} / ${jqRaw(c["layout"])}: **${jqRaw(c["outcome"])}**`;
+function jqType(v: Json): string {
+  if (v === null) return "null";
+  if (Array.isArray(v)) return "array";
+  return typeof v;
 }
 
-/** The Markdown body the shell builds into its temp file. */
+/** jq's truncated value dump inside "Cannot iterate over" (jq 1.8: 25 bytes of the dump, then `...`). */
+function dump(v: Json): string {
+  const d = JSON.stringify(v) ?? "null";
+  if (Buffer.byteLength(d) <= 29) return d;
+  const cut = Buffer.from(d)
+    .subarray(0, 25)
+    .toString("utf8")
+    .replace(/\uFFFD$/, "");
+  return `${cut}..."`;
+}
+
+/** `.[]` : the elements of an array, the values of an object (in order), else jq's error. */
+function iterate(v: Json, line: number): Json[] {
+  if (Array.isArray(v)) return v;
+  if (isObj(v)) return Object.values(v);
+  throw new JqError(`Cannot iterate over ${jqType(v)} (${dump(v)})`, line);
+}
+
+function cellLine(c: Json, line: number): string {
+  if (c !== null && !isObj(c)) {
+    throw new JqError(`Cannot check whether ${jqType(c)} has a string key`, line);
+  }
+  const o: Obj = c ?? {};
+  if (has(o, "cell")) {
+    const r = o["reason"];
+    const reason = r === null || r === undefined || r === false ? "" : jqRaw(r);
+    return `- ${jqRaw(o["cell"])} (${jqRaw(o["cli"])}): **${jqRaw(o["outcome"])}** — ${reason}`;
+  }
+  return `- ${jqRaw(o["cli"])} / ${jqRaw(o["layout"])}: **${jqRaw(o["outcome"])}**`;
+}
+
+/** The line number jq reports: it has read the whole (one-chunk) file, so every newline counts. */
+function jqLine(text: string): number {
+  return text.split("\n").length - 1;
+}
+
+/** `(.contradicts // []) | length`, then `.contradicts[]` when positive. */
+function contradictions(o: Obj, line: number): Json[] {
+  const c = o["contradicts"];
+  if (c === null || c === undefined || c === false) return [];
+  if (c === true) throw new JqError("boolean (true) has no length", line);
+  const n =
+    typeof c === "number"
+      ? Math.abs(c)
+      : typeof c === "string"
+        ? [...c].length
+        : Array.isArray(c)
+          ? c.length
+          : Object.keys(c as Obj).length;
+  return Number.isInteger(n) && n > 0 ? iterate(c, line) : [];
+}
+
+/** The Markdown body the shell builds into its temp file. Throws JqError where jq would fail. */
 export function renderBody(text: string): string {
-  const v = JSON.parse(text.replace(/^﻿/, "")) as Json;
-  const o: Obj = isObj(v) ? v : {};
+  const v = JSON.parse(text.replace(/^\uFEFF/, "")) as Json;
+  const line = jqLine(text);
+  if (v !== null && !isObj(v)) {
+    throw new JqError(`Cannot index ${jqType(v)} with string ("probe")`, line);
+  }
+  const o: Obj = v ?? {};
   let out = `## Probe verdict — \`${sub(o["probe"])}\`\n\n`;
   if (has(o, "verdict")) {
     out += `**Verdict:** \`${sub(o["verdict"])}\`  \n`;
@@ -61,12 +123,9 @@ export function renderBody(text: string): string {
   }
   if (has(o, "cells")) {
     out += "**Cells:**\n\n";
-    const cells = o["cells"];
-    const list = Array.isArray(cells) ? cells : isObj(cells) ? Object.values(cells) : [];
-    for (const c of list) out += `${cellLine(c)}\n`;
+    for (const c of iterate(o["cells"], line)) out += `${cellLine(c, line)}\n`;
     out += "\n";
-    const contra = o["contradicts"];
-    const items = Array.isArray(contra) ? contra : [];
+    const items = contradictions(o, line);
     if (items.length > 0) {
       out += "**Contradicts:**\n\n";
       for (const item of items) out += `- ${jqRaw(item)}\n`;
@@ -122,7 +181,10 @@ export function main(argv: readonly string[], env: Readonly<Record<string, strin
   let body: string;
   try {
     body = renderBody(text);
-  } catch {
+  } catch (e) {
+    if (e instanceof JqError) {
+      return fail(`jq: error (at ${verdictJson}:${e.line}): ${e.message}\n`, 5);
+    }
     return fail(`ERROR: ${verdictJson} is not valid JSON.\n`, 2);
   }
   if (dryRun) {
