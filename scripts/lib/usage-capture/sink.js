@@ -17,7 +17,7 @@
 // assertRecordShape() here is NOT the schema validation spec 0207 R1 owns —
 // ajv/ajv-formats are devDependencies, unavailable to a hook's bare `node`
 // process — it is the cheapest check that keeps a malformed record out of
-// the hand-off. CI (scripts/tests/test-usage-capture.sh) proves it never
+// the hand-off. CI (scripts/tests/usage-capture-*.test.ts) proves it never
 // passes a record the merged schema rejects.
 
 'use strict';

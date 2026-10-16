@@ -4,7 +4,7 @@
 //
 // Black-box runs against the loopback stub daemon in each of its modes, the
 // `hang` mode bounded at 5 s (replacing the source-text case of issue #90 that
-// spec 0247 R32 removed from scripts/tests/test-mempalace-transcript-hook.sh),
+// spec 0247 R32 removed from the former Bash hook suite, test-mempalace-transcript-hook.sh),
 // a closed port, QUIET gating, diagnostics on stderr with stdout empty
 // (replacing the removed case of issue #93), and a spawn-spy proof that the
 // only process ever started is `git rev-parse --show-toplevel`, with neither

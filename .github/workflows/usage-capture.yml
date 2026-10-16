@@ -13,7 +13,7 @@ on:
       - "scripts/lib/usage-headless.sh"
       - "scripts/usage-backfill.sh"
       - "scripts/usage-backfill.ts"
-      - "scripts/tests/test-usage-capture.sh"
+      - "scripts/tests/usage-headless-agy.test.ts"
       - "scripts/tests/fixtures/usage-capture/**"
       - "hooks/claude-usage-capture-hooks.json"
       - "hooks/gemini-usage-capture-hooks.json"
@@ -68,7 +68,7 @@ on:
       - "scripts/lib/usage-headless.sh"
       - "scripts/usage-backfill.sh"
       - "scripts/usage-backfill.ts"
-      - "scripts/tests/test-usage-capture.sh"
+      - "scripts/tests/usage-headless-agy.test.ts"
       - "scripts/tests/fixtures/usage-capture/**"
       - "hooks/claude-usage-capture-hooks.json"
       - "hooks/gemini-usage-capture-hooks.json"
@@ -135,7 +135,7 @@ jobs:
         run: npm install
 
       - name: Validate usage capture adapters and fixtures
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-usage-capture.sh
+        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-headless-agy.test.ts
 
       - name: Validate the usage-capture opt-in of Claude Code, Gemini CLI and Copilot CLI
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-usage-capture-optin.sh

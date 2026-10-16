@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // usage-capture-derive.js — companion Node driver for
-// scripts/tests/test-usage-capture.sh (PLAN v3 step 19). All pass/fail
-// accounting stays in the bash suite, matching test-usage-record-schema.sh's
+// scripts/tests/usage-capture-*.test.ts (PLAN v3 step 19). All pass/fail
+// accounting stays in the node:test suites, matching usage-record-schema.test.ts's
 // own convention; this script's only job is to call the real adapters
-// against a fixture and print a machine-parseable result the bash suite can
+// against a fixture and print a machine-parseable result the test suites can
 // assert on and hand to scripts/lib/usage-record-validator.js.
 //
 // Usage:
@@ -38,7 +38,7 @@ const fs = require('fs');
 const path = require('path');
 
 // USAGE_CAPTURE_MODULE_ROOT points the driver at an alternate copy of the
-// module tree. test-usage-capture.sh uses it to derive through a mutated
+// module tree. scripts/tests/usage-capture-headless.test.ts uses it to derive through a mutated
 // adapter and prove a negative assertion can fail (issue #1201).
 const MODULE_ROOT = process.env.USAGE_CAPTURE_MODULE_ROOT
   || path.join(__dirname, '..', '..', 'lib', 'usage-capture');

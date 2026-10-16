@@ -2134,7 +2134,6 @@ capabilities:
           - "scripts/tests/test-setup-gemini-transcript.sh"
           - "scripts/tests/test-antigravity-component-install.sh"
           - "scripts/tests/test-antigravity-discovery-probe.sh"
-          - "scripts/tests/test-worktree-git-guard.sh"
           - "hooks/worktree-git-guard.sh"
           - "hooks/worktree-git-guard.ts"
           - "hooks/mempalace-transcript.sh"
@@ -2168,7 +2167,6 @@ capabilities:
           - "scripts/tests/test-setup-gemini-transcript.sh"
           - "scripts/tests/test-antigravity-component-install.sh"
           - "scripts/tests/test-antigravity-discovery-probe.sh"
-          - "scripts/tests/test-worktree-git-guard.sh"
           - "hooks/worktree-git-guard.sh"
           - "hooks/worktree-git-guard.ts"
           - "hooks/mempalace-transcript.sh"
@@ -2210,7 +2208,6 @@ capabilities:
         - "scripts/tests/test-setup-gemini-transcript.sh"
         - "scripts/tests/test-antigravity-component-install.sh"
         - "scripts/tests/test-antigravity-discovery-probe.sh"
-        - "scripts/tests/test-worktree-git-guard.sh"
         - "hooks/worktree-git-guard.sh"
         - "hooks/worktree-git-guard.ts"
         - "hooks/mempalace-transcript.sh"
@@ -2238,10 +2235,8 @@ capabilities:
       # sandbox, which rebuilds the served overlay tiers and loads js-yaml.
       - npm ci --omit=dev --workspaces=false
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/mempalace-http-client-reuse.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-mempalace-transcript-hook.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-antigravity-transcript.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-claude-transcript.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-worktree-git-guard.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-copilot-transcript.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-gemini-transcript.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-antigravity-component-install.sh
@@ -2317,7 +2312,6 @@ capabilities:
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-test-wiring.sh
       - bash scripts/check-test-strays.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-test-strays.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-worktree-git-guard.sh
 
   - id: chroma-mcp
     name: "Test chroma server, MCP daemon, and worktree claim"
@@ -2327,7 +2321,7 @@ capabilities:
         paths:
           - "scripts/tests/test-chroma-*.sh"
           - "scripts/tests/test-mcp-daemon.sh"
-          - "scripts/tests/test-palace-path-propagation.sh"
+          - "scripts/tests/service-launcher-palace-path.test.ts"
           - "scripts/tests/test-repair-mempalace-http.sh"
           - "scripts/tests/test-rotate-mempalace-token.sh"
           - "scripts/worktree-claim.sh"
@@ -2345,7 +2339,7 @@ capabilities:
         paths:
           - "scripts/tests/test-chroma-*.sh"
           - "scripts/tests/test-mcp-daemon.sh"
-          - "scripts/tests/test-palace-path-propagation.sh"
+          - "scripts/tests/service-launcher-palace-path.test.ts"
           - "scripts/tests/test-repair-mempalace-http.sh"
           - "scripts/tests/test-rotate-mempalace-token.sh"
           - "scripts/worktree-claim.sh"
@@ -2370,7 +2364,7 @@ capabilities:
       files:
         - "scripts/tests/test-chroma-*.sh"
         - "scripts/tests/test-mcp-daemon.sh"
-        - "scripts/tests/test-palace-path-propagation.sh"
+        - "scripts/tests/service-launcher-palace-path.test.ts"
         - "scripts/tests/test-repair-mempalace-http.sh"
         - "scripts/tests/test-rotate-mempalace-token.sh"
         - "scripts/worktree-claim.sh"
@@ -2390,7 +2384,6 @@ capabilities:
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-chroma-health-race.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-chroma-server.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-mcp-daemon.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-palace-path-propagation.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-repair-mempalace-http.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-rotate-mempalace-token.sh
 
@@ -2989,7 +2982,7 @@ capabilities:
       # Spec 0252 PR B (issue #1330): the service module, the MCP launcher and the
       # MemPalace helpers. Linux runs every suite, the conformance test included;
       # the win32-only suites (service-windows*.test.ts) run in `windows-service-task`.
-      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/service-backend.test.ts scripts/tests/service-bundle-closure.test.ts scripts/tests/service-dual-source-conformance.test.ts scripts/tests/service-exec.test.ts scripts/tests/service-file-size.test.ts scripts/tests/service-install.test.ts scripts/tests/service-launchd-systemd.test.ts scripts/tests/service-launcher-child.test.ts scripts/tests/service-launcher-record.test.ts scripts/tests/service-launcher-token.test.ts scripts/tests/service-listener-pid.test.ts scripts/tests/service-names.test.ts scripts/tests/service-os-inspect.test.ts scripts/tests/service-owner-check.test.ts scripts/tests/service-probe.test.ts scripts/tests/service-process-tree.test.ts scripts/tests/service-program-install.test.ts scripts/tests/service-schtasks.test.ts scripts/tests/service-schtasks-uninstall.test.ts scripts/tests/service-snapshot-failure.test.ts scripts/tests/service-task-ownership.test.ts scripts/tests/service-task-snapshot.test.ts scripts/tests/service-task-state.test.ts scripts/tests/service-token-argv.test.ts scripts/tests/service-trust-wrapper.test.ts scripts/tests/service-unit-render.test.ts scripts/tests/service-windows-task-xml.test.ts scripts/tests/mcp-launcher-lifecycle.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/service-backend.test.ts scripts/tests/service-bundle-closure.test.ts scripts/tests/service-dual-source-conformance.test.ts scripts/tests/service-exec.test.ts scripts/tests/service-file-size.test.ts scripts/tests/service-install.test.ts scripts/tests/service-launchd-systemd.test.ts scripts/tests/service-launcher-child.test.ts scripts/tests/service-launcher-record.test.ts scripts/tests/service-launcher-token.test.ts scripts/tests/service-launcher-palace-path.test.ts scripts/tests/service-listener-pid.test.ts scripts/tests/service-names.test.ts scripts/tests/service-os-inspect.test.ts scripts/tests/service-owner-check.test.ts scripts/tests/service-probe.test.ts scripts/tests/service-process-tree.test.ts scripts/tests/service-program-install.test.ts scripts/tests/service-schtasks.test.ts scripts/tests/service-schtasks-uninstall.test.ts scripts/tests/service-snapshot-failure.test.ts scripts/tests/service-task-ownership.test.ts scripts/tests/service-task-snapshot.test.ts scripts/tests/service-task-state.test.ts scripts/tests/service-token-argv.test.ts scripts/tests/service-trust-wrapper.test.ts scripts/tests/service-unit-render.test.ts scripts/tests/service-windows-task-xml.test.ts scripts/tests/mcp-launcher-lifecycle.test.ts
       # Spec 0258 R15, R28, R34 (ticket #1337): the calendar-trigger renderers and backends of the
       # service layer, the harness-curator differential (the shell leg is skipped: the three `.sh` are
       # forwarding shims, spec 0258 R32) and its callers guard. No `paths:` filter: the job already runs on
@@ -3608,7 +3601,7 @@ capabilities:
         paths:
           - "schemas/**"
           - "scripts/lib/usage-record-validator.js"
-          - "scripts/tests/test-usage-record-schema.sh"
+          - "scripts/tests/usage-record-schema.test.ts"
           - "scripts/tests/fixtures/usage-records/**"
           - "package.json"
           - "package-lock.json"
@@ -3617,16 +3610,16 @@ capabilities:
         paths:
           - "schemas/**"
           - "scripts/lib/usage-record-validator.js"
-          - "scripts/tests/test-usage-record-schema.sh"
+          - "scripts/tests/usage-record-schema.test.ts"
           - "scripts/tests/fixtures/usage-records/**"
           - "package.json"
           - "package-lock.json"
     portability: portable
     requires:
-      runtime: node@22
+      runtime: node@24
     command:
       - npm install
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-usage-record-schema.sh
+      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-record-schema.test.ts
 
   # release-notes renders an extension release note through the real
   # scripts/monorepo-release.ts configuration against a hermetic fixture
@@ -3698,7 +3691,7 @@ capabilities:
           - "scripts/lib/usage-headless.sh"
           - "scripts/usage-backfill.sh"
           - "scripts/usage-backfill.ts"
-          - "scripts/tests/test-usage-capture.sh"
+          - "scripts/tests/usage-headless-agy.test.ts"
           - "scripts/tests/fixtures/usage-capture/**"
           - "hooks/claude-usage-capture-hooks.json"
           - "hooks/gemini-usage-capture-hooks.json"
@@ -3753,7 +3746,7 @@ capabilities:
           - "scripts/lib/usage-headless.sh"
           - "scripts/usage-backfill.sh"
           - "scripts/usage-backfill.ts"
-          - "scripts/tests/test-usage-capture.sh"
+          - "scripts/tests/usage-headless-agy.test.ts"
           - "scripts/tests/fixtures/usage-capture/**"
           - "hooks/claude-usage-capture-hooks.json"
           - "hooks/gemini-usage-capture-hooks.json"
@@ -3802,7 +3795,7 @@ capabilities:
       tools: [jq]
     command:
       - npm install
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-usage-capture.sh
+      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-headless-agy.test.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-usage-capture-optin.sh
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/antigravity-statusline-shim.test.ts scripts/tests/hook-*.test.ts scripts/tests/usage-capture-*.test.ts
 
