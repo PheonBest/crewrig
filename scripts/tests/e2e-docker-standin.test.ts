@@ -125,6 +125,8 @@ describe("normalise", () => {
       "e2e /scratch/t/home/e2e/z",
       "url http://localhost:41234/p",
       "name crewrig-e2e-claude-20260102T030405Z-ab12",
+      "tmp /scratch/t/tmp/crewrig-e2e-probe-b.tnKtFY:/x",
+      "nonce crewrig-probe-b-baseline-0123456789abcdef",
     ].join("\n");
     assert.equal(
       normalise(text, ctx),
@@ -137,6 +139,8 @@ describe("normalise", () => {
         "e2e <E2E_HOME>/z",
         "url http://localhost:<PORT>/p",
         "name <CONTAINER>",
+        "tmp <TMP>/tmp/crewrig-e2e-probe-b.<RAND>:/x",
+        "nonce crewrig-probe-b-baseline-<NONCE>",
       ].join("\n"),
     );
   });

@@ -9,6 +9,8 @@
 //   6. run ids `YYYYMMDDTHHMMSSZ-xxxx`                       -> <RUN_ID>
 //   7. ISO timestamps `YYYY-MM-DDTHH:MM:SS[.fff]Z`           -> <TS>
 //   8. ports in `:NNNN` / `:NNNNN` URLs                      -> <PORT>
+//   9. `mktemp` suffixes of `crewrig-e2e-*.XXXXXX` dirs        -> .<RAND>
+//  10. probe nonces `crewrig-probe-<x>-<word>-<16 hex>`        -> <NONCE>
 
 import fs from "node:fs";
 
@@ -22,6 +24,8 @@ export interface NormaliseContext {
 const RUN_ID = /\d{8}T\d{6}Z-[0-9a-f]{4}/g;
 const CONTAINER = /crewrig-e2e-[A-Za-z0-9_.-]*?\d{8}T\d{6}Z-[0-9a-f]{4}[A-Za-z0-9_.-]*/g;
 const ISO = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z/g;
+const MKTEMP = /(crewrig-e2e-[A-Za-z0-9-]+)\.[A-Za-z0-9]{6}\b/g;
+const NONCE = /(crewrig-probe-[a-z]-[a-z]+-)[0-9a-f]{16}\b/g;
 const PORT = /(:\/\/[^\s/:]+):\d{4,5}\b/g;
 
 function real(dir: string): string {
@@ -47,7 +51,9 @@ export function normalise(text: string, ctx: NormaliseContext): string {
     .replace(CONTAINER, "<CONTAINER>")
     .replace(RUN_ID, "<RUN_ID>")
     .replace(ISO, "<TS>")
-    .replace(PORT, "$1:<PORT>");
+    .replace(PORT, "$1:<PORT>")
+    .replace(MKTEMP, "$1.<RAND>")
+    .replace(NONCE, "$1<NONCE>");
 }
 
 export function normaliseArgv(argv: readonly string[], ctx: NormaliseContext): string[] {
