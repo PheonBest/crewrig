@@ -59,3 +59,28 @@ export function bashQuote(value: string): string {
   }
   return value.replace(/[^A-Za-z0-9_\-.,:/@%+=~\u0080-￿]/g, "\\$&").replace(/^~/, "\\~");
 }
+
+/** Bash `printf %q` in the C locale the goldens were recorded under: every byte >= 0x80 is octal-escaped. */
+const ANSI_C: Readonly<Record<number, string>> = {
+  7: "\\a",
+  8: "\\b",
+  9: "\\t",
+  10: "\\n",
+  11: "\\v",
+  12: "\\f",
+  13: "\\r",
+  27: "\\E",
+  39: "\\'",
+  92: "\\\\",
+};
+
+export function bashQuoteC(value: string): string {
+  if (!/[^\u0000-\u007f]/.test(value)) return bashQuote(value);
+  let body = "";
+  for (const byte of Buffer.from(value, "utf8")) {
+    if (byte >= 0x80 || (byte < 0x20 && ANSI_C[byte] === undefined) || byte === 0x7f) {
+      body += `\\${byte.toString(8).padStart(3, "0")}`;
+    } else body += ANSI_C[byte] ?? String.fromCharCode(byte);
+  }
+  return `$'${body}'`;
+}
