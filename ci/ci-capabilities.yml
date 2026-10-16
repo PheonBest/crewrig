@@ -2508,6 +2508,13 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/tests/test-setup-*.sh"
+          - "scripts/tests/setup-common-*.test.ts"
+          - "scripts/tests/setup-identity-flow.test.ts"
+          - "scripts/tests/setup-legacy-gemini-md-declaration.test.ts"
+          - "scripts/tests/setup-mcp-merge-policy.test.ts"
+          - "scripts/tests/setup-org-mcp-wiring.test.ts"
+          - "scripts/tests/setup-secrets-fold.test.ts"
+          - "scripts/tests/setup-tier-staging-declared.test.ts"
           - "scripts/tests/test-tls-delegation.sh"
           - "scripts/setup-*.sh"
           - "scripts/setup-*-interactive.ts"
@@ -2529,6 +2536,13 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/tests/test-setup-*.sh"
+          - "scripts/tests/setup-common-*.test.ts"
+          - "scripts/tests/setup-identity-flow.test.ts"
+          - "scripts/tests/setup-legacy-gemini-md-declaration.test.ts"
+          - "scripts/tests/setup-mcp-merge-policy.test.ts"
+          - "scripts/tests/setup-org-mcp-wiring.test.ts"
+          - "scripts/tests/setup-secrets-fold.test.ts"
+          - "scripts/tests/setup-tier-staging-declared.test.ts"
           - "scripts/tests/test-tls-delegation.sh"
           - "scripts/setup-*.sh"
           - "scripts/setup-*-interactive.ts"
@@ -2554,15 +2568,8 @@ capabilities:
     command:
       # The retargeted suites run the TypeScript setup in a sandbox that copies js-yaml and argparse from here.
       - npm ci --omit=dev --workspaces=false
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-validation-backend.sh
+      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-common-catalogue-picker.test.ts scripts/tests/setup-common-org-mcp.test.ts scripts/tests/setup-common-secrets-argv-pin.test.ts scripts/tests/setup-common-tier-built-pin.test.ts scripts/tests/setup-common-validation.test.ts scripts/tests/setup-identity-flow.test.ts scripts/tests/setup-legacy-gemini-md-declaration.test.ts scripts/tests/setup-mcp-merge-policy.test.ts scripts/tests/setup-org-mcp-wiring.test.ts scripts/tests/setup-secrets-fold.test.ts scripts/tests/setup-tier-staging-declared.test.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-tls-delegation.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-mcp-merge.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-org-mcp.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-mcp-fold-secrets-argv.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-catalogue-picker.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-ensure-tier-built.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-gemini-md-cleanup.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-init-command-instructions.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-gemini-settings-merge.sh
 
   - id: misc
