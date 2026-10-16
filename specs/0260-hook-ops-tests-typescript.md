@@ -174,8 +174,15 @@ suite red too.
     `System32\bash.exe`.
 18. **Static reads.** Every file that names a deleted suite (a source comment, a document,
     a workflow, an allowlist) SHALL be retargeted in the pull request that deletes the
-    suite, except the files of another row, which this row reports to the coordinator
-    (see *Open questions*).
+    suite. Two edits outside this row's own files are authorized by the coordinator and are
+    the only ones: (a) the lines of `scripts/tests/test-check-ci-parity.sh` (row J2) that
+    select the `usage-pricing` capability, its workflow job and its `test-usage-pricing`
+    step SHALL be retargeted, in the pull request that replaces the pricing suite, to a bare
+    stray-scanned capability that is in the scope of no sibling row of the wave, the pull
+    request body SHALL say so and a note SHALL be left on #1343; (b) the comments of
+    `scripts/lib/usage-capture/record.js`, `scripts/lib/usage-capture/sink.js`,
+    `scripts/lib/usage-store/mcp.js` and `scripts/worktree-claim.sh` that name a deleted
+    suite MAY be edited, comment text only, with no change of behaviour.
 
 ### Delivery
 
@@ -285,7 +292,7 @@ at the base commit remains the reference.
 | A6 | plist: no `__CHROMA_PALACE_PATH__` residue | `setup-chroma-unit.test.ts` residual-placeholder refusal | placeholder absent |
 | A7 | plist custom `<string>/var/data/custom-palace</string>` | `setup-chroma-unit.test.ts` L97-114 (value `/data/palace`, same behaviour) | `MEMPALACE_PALACE_PATH` wins when non-empty |
 | A8 | plist custom: no residue | `setup-chroma-unit.test.ts` | same as A6 |
-| A9 | systemd service default (Bash only asserts no residue) | `setup-chroma-unit.test.ts` L84 | `--path %h/.mempalace/palace` (stronger than Bash) |
+| A9 | systemd service default (Bash only asserts no residue) | `setup-chroma-unit.test.ts` L84 | `--path %h/.mempalace/palace` (stronger than Bash); no `__CHROMA_PALACE_PATH__` residue (the Bash assertion) |
 | A10 | service custom -> `--path /var/data/custom-palace` | `service-launcher-palace-path.test.ts::service unit custom path` (NEW; today only `service-dual-source-conformance.test.ts`, Linux-only and retired with J4) | `--path` followed by a space, plus the custom value |
 | A11 | service custom: no residue | same new file | placeholder absent |
 | A12 | start-script fallback (comment only, no assertion in this file) | `chroma-lifecycle.test.ts` (spec 0252 R21) | n/a |
@@ -833,7 +840,7 @@ No helper. `spawnSync(process.execPath, [scripts/lib/usage-record-validator.js, 
 
 Five pull requests, so that each stays reviewable (about 1.5 to 5 thousand removed Bash
 lines) and so that the long CI jobs of different workflows overlap. Pull requests B to E
-are independent of one another and of A except for the shared mutation helper of A; they
+are independent of one another and of A except for the generic mutation helper of A, `scripts/tests/lib/mutation-copy.ts` (copy the tracked files of a tree to a temporary directory, apply a text edit, fail loudly when the text is absent); the suite-specific helpers named in the suite sections (`usage-mutants.ts` for storage, attribution, mirror and pricing, `usage-dashboard-mutate.ts` for the dashboard) are thin wrappers over it, created by the pull request that first needs them. They
 open from the same release tip, in parallel worktrees, and merge one at a time at the
 coordinator's request.
 
@@ -899,7 +906,7 @@ Then they pass, and the files that need `bash` report a skip that names `win32`.
 **Scenario:** The retired library test leaves nothing uncovered
 
 Given the deletion of `test-palace-path-propagation.sh`
-When each of its fifteen assertions is looked up in the mapping
+When each assertion of the suite (labels A1 to A13 of its mapping) is looked up
 Then every one names a consumer-level test that exists on the release branch, and the
 assertions on the launcher's configured palace path are checked by
 `service-launcher-palace-path.test.ts`.
@@ -944,16 +951,6 @@ with a comment naming the report, and the script is unchanged.
 
 ## Open questions
 
-- **`scripts/tests/test-check-ci-parity.sh` (row J2) reads the real `usage-pricing`
-  capability.** Its cases SC1 and SC2 select the job `usage-pricing`, a step whose text
-  matches `test-usage-pricing`, and the declared scanned command, as the example of a bare
-  stray-scanned step. Replacing the pricing suite changes that step. The retarget (another
-  bare scanned capability, or a fixture built in the suite) belongs to J2's file; the
-  coordinator decides whether J1a edits those lines in pull request D or J2 does after it.
-- **Stale source comments.** `scripts/lib/usage-capture/{record,sink}.js`,
-  `scripts/lib/usage-store/mcp.js` and `scripts/worktree-claim.sh` name deleted suites in
-  comments. A comment-only edit leaves behaviour frozen; the coordinator confirms that
-  this row may make it.
 - **`scripts/tests/lib/usage-capture-derive.js` and the usage-storage fake daemon
   `fixtures/usage-storage/fake-mempalace-mcp.js`** are tracked JavaScript files of the
   ratchet baseline. Porting them to TypeScript shrinks the baseline; the PLAN decides per
