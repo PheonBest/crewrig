@@ -1763,6 +1763,9 @@ jobs:
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
         with:
           node-version: 24
+      - name: Install the production dependencies
+        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
+        run: npm ci --omit=dev --workspaces=false
       - name: Floor guard accepts Node.js 24
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
         run: node scripts/lib/node-floor-guard.js

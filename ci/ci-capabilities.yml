@@ -2450,6 +2450,7 @@ capabilities:
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-taskfile.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-toml-merge.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-versions-lock.sh
+      - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-docker-standin.test.ts scripts/tests/e2e-oracle-scenarios.test.ts
 
