@@ -204,9 +204,9 @@ probe returns the same verdict for each CLI after it.
     against a TypeScript module, so, under the first bounded exception of that requirement,
     the suites `test-e2e-assert-lib`, `test-e2e-structural-lib`, `test-e2e-llm-judge-lib`,
     `test-e2e-auth-common` and `test-e2e-auth-ready` MAY migrate in the same pull request as
-    the library they source, and the resolver cases of `test-e2e-probes` (the only cases that
-    source a library; the pull request moves those cases to TypeScript and leaves the other
-    cases of the file unchanged until requirement 19), always within item (7) of requirement
+    the library they source, and the cases of `test-e2e-probes` that source a library (the resolvers of probes A, B and C,
+    `mask_command` and `probe_spawn_markers`; the pull request moves those cases to TypeScript
+    and leaves the other cases of the file unchanged until requirement 19), always within item (7) of requirement
     25 and after the switch pull request, because the unchanged
     suites still source the libraries until then, on the conditions of that
     requirement: before that pull request, every behaviour each asserts SHALL be covered by an
