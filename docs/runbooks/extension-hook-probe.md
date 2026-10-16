@@ -14,7 +14,7 @@ targets from the installed tool rather than trusted vendor prose.
 ## Running it
 
 ```sh
-node scripts/probe-extension-hooks.ts
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/probe-extension-hooks.ts
 ```
 
 Preconditions: `claude`, `gemini`, `agy` and `copilot` all on `PATH`, each

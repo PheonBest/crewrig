@@ -14,4 +14,4 @@ fi
 
 node "$DIR/../lib/node-floor-guard.js" || exit $?
 
-exec node "$DIR/auth-copilot.ts" "$@"
+exec node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$DIR/auth-copilot.ts" "$@"

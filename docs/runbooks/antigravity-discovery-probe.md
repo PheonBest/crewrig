@@ -24,7 +24,7 @@ re-run stays true.
 ## Running it
 
 ```sh
-node scripts/probe-antigravity-discovery.ts
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/probe-antigravity-discovery.ts
 ```
 
 Preconditions: the `agy` binary on `PATH`, and a machine whose model calls

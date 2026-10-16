@@ -27,7 +27,7 @@ unstated — the same lesson spec 0123 already drew for skill/agent discovery.
 ## Running it
 
 ```sh
-node scripts/probe-extension-mcp-token.ts [q1|q2q3|q4|all]
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/probe-extension-mcp-token.ts [q1|q2q3|q4|all]
 ```
 
 Preconditions: `jq`, `copilot`, `agy`, `claude` on `PATH`; `gh` authenticated

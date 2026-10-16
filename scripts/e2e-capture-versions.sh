@@ -14,4 +14,4 @@ fi
 
 node "$DIR/lib/node-floor-guard.js" || exit $?
 
-exec node "$DIR/e2e-capture-versions.ts" "$@"
+exec node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$DIR/e2e-capture-versions.ts" "$@"

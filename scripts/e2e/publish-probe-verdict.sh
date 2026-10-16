@@ -14,4 +14,4 @@ fi
 
 node "$DIR/../lib/node-floor-guard.js" || exit $?
 
-exec node "$DIR/publish-probe-verdict.ts" "$@"
+exec node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$DIR/publish-probe-verdict.ts" "$@"
