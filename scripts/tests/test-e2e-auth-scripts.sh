@@ -33,9 +33,9 @@ SCRIPTS_DIR="${REPO_DIR}/scripts/e2e"
 STANDIN="${REPO_DIR}/scripts/tests/lib/e2e-docker-standin.ts"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-mkdir -p "$TMP/bin" "$TMP/home/.claude/rules" "$TMP/home/.copilot/instructions"
-echo "rule" > "$TMP/home/.claude/rules/00-test.md"
-echo "rule" > "$TMP/home/.copilot/instructions/00-test.instructions.md"
+mkdir -p "$TMP/bin" "$TMP/fakehome/.claude/rules" "$TMP/fakehome/.copilot/instructions"
+echo "rule" > "$TMP/fakehome/.claude/rules/00-test.md"
+echo "rule" > "$TMP/fakehome/.copilot/instructions/00-test.instructions.md"
 node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$STANDIN" --write-launcher "$TMP/bin"
 cat > "$TMP/fixtures.json" <<'JSON'
 {
@@ -53,7 +53,7 @@ run_auth() {
   RUN_SEQ=$((RUN_SEQ + 1))
   local state="$TMP/state-$RUN_SEQ"
   mkdir -p "$state"
-  out="$(env -u COPILOT_GITHUB_TOKEN HOME="$TMP/home" CREWRIG_E2E_HOME="$TMP/e2e-$RUN_SEQ" \
+  out="$(env -u COPILOT_GITHUB_TOKEN HOME="$TMP/fakehome" CREWRIG_E2E_HOME="$TMP/e2e-$RUN_SEQ" \
     PATH="$TMP/bin:$PATH" E2E_STANDIN_FIXTURES="$TMP/fixtures.json" \
     E2E_STANDIN_CASE="auth/${cli}" E2E_STANDIN_STATE="$state" \
     E2E_STANDIN_LOG="$state/docker.log" "$@" \

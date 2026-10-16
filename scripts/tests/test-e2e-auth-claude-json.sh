@@ -46,14 +46,14 @@ fi
 STANDIN="${REPO_DIR}/scripts/tests/lib/e2e-docker-standin.ts"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-mkdir -p "$TMP/bin" "$TMP/home/.claude/rules" "$TMP/state"
-echo "rule" > "$TMP/home/.claude/rules/00-test.md"
+mkdir -p "$TMP/bin" "$TMP/fakehome/.claude/rules" "$TMP/state"
+echo "rule" > "$TMP/fakehome/.claude/rules/00-test.md"
 node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$STANDIN" --write-launcher "$TMP/bin"
 printf '%s' '{"auth/claude":[{"files":{"/home/agent/.claude/.credentials.json":"{}","/home/agent/.claude.json":"{}"}}]}' \
   > "$TMP/fixtures.json"
 : > "$TMP/docker.log"
 
-out="$(env HOME="$TMP/home" CREWRIG_E2E_HOME="$TMP/e2e" PATH="$TMP/bin:$PATH" \
+out="$(env HOME="$TMP/fakehome" CREWRIG_E2E_HOME="$TMP/e2e" PATH="$TMP/bin:$PATH" \
   E2E_STANDIN_FIXTURES="$TMP/fixtures.json" E2E_STANDIN_CASE="auth/claude" \
   E2E_STANDIN_STATE="$TMP/state" E2E_STANDIN_LOG="$TMP/docker.log" \
   bash "$AUTH_SCRIPT" </dev/null 2>&1)"
