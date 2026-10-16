@@ -213,5 +213,11 @@ export function writeLauncher(dir: string): { posix: string; cmd: string } {
 }
 
 if (process.argv[1] !== undefined && path.resolve(process.argv[1]) === import.meta.filename) {
-  process.exitCode = main(process.argv.slice(2), process.env);
+  const args = process.argv.slice(2);
+  if (args[0] === "--write-launcher" && args[1] !== undefined) {
+    // For Bash suites: `node e2e-docker-standin.ts --write-launcher <dir>` puts `docker` in <dir>.
+    writeLauncher(args[1]);
+  } else {
+    process.exitCode = main(args, process.env);
+  }
 }
