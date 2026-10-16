@@ -6,6 +6,7 @@
 
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { after, describe, test } from "node:test";
 import assert from "node:assert/strict";
@@ -29,7 +30,7 @@ function tsEntry(out: string, err: string, code: number, extra = ""): string {
 }
 
 function shEntry(out: string, err: string, code: number, extra = ""): string {
-  return `#!/usr/bin/env bash\n${extra}printf '%s' ${JSON.stringify(out)}\nprintf '%s' ${JSON.stringify(err)} >&2\nexit ${code}\n`;
+  return `#!/usr/bin/env bash\n${extra}printf '%s' ${JSON.stringify(out)}\nprintf '%b' ${JSON.stringify(err)} >&2\nexit ${code}\n`;
 }
 
 interface Legs {
@@ -109,6 +110,59 @@ describe("governance tee oracle mutation", { skip }, () => {
     const r = runScript(box, "probe");
     assert.equal(r.status, 3);
     assert.equal(fs.readFileSync(path.join(box.root, "out.txt"), "utf8"), "a\n");
+  });
+
+  test("a copied scripts/ directory runs its own copy of the tee, not the outer one", () => {
+    const outer = standIn(same, same);
+    const copy = fs.mkdtempSync(path.join(os.tmpdir(), "gov-copy-"));
+    try {
+      fs.cpSync(path.join(outer.root, "scripts"), path.join(copy, "scripts"), { recursive: true });
+      // Mutate the copy's TS twin: the copied stub must see it, through the copied tee.
+      fs.writeFileSync(path.join(copy, "scripts/probe.ts"), tsEntry("other", "warn", 3));
+      fs.symlinkSync(path.join(outer.root, "node_modules"), path.join(copy, "node_modules"));
+      fs.writeFileSync(path.join(copy, "package.json"), "{}\n");
+      // Break the OUTER tee: if the stub still pointed at it, the run could not reach exit 99.
+      fs.writeFileSync(path.join(outer.root, TEE_PATH), "process.exit(0);\n");
+      const r = spawnSync("bash", [path.join(copy, "scripts/probe.sh")], {
+        cwd: copy,
+        env: outer.env,
+        encoding: "utf8",
+      });
+      assert.equal(r.status, 99);
+      assert.match(r.stderr, /stdout differs/);
+    } finally {
+      fs.rmSync(copy, { recursive: true, force: true });
+    }
+  });
+
+  test("stderr noise lines that differ between legs are ignored", () => {
+    const noise = String.raw`Traceback \(most recent call last\):|  File ".*", line [0-9]+, in .*|    .*|[A-Za-z_][A-Za-z0-9_.]*(Error|Exception): .*`;
+    const sh = {
+      ...same,
+      err: 'warn\nTraceback (most recent call last):\n  File "/a/b.py", line 3, in <module>\n    x()\njson.JSONDecodeError: bad at 1\n',
+    };
+    const ts = {
+      ...same,
+      err: 'warn\nTraceback (most recent call last):\n  File "/c/d.py", line 9, in <module>\n    y()\njson.JSONDecodeError: bad at 2\n',
+    };
+    const r = runScript(standIn(sh, ts, { stderrNoise: noise }), "probe");
+    assert.equal(r.status, 3);
+    assert.equal(r.stdout, "hello");
+  });
+
+  test("a differing plain Error line is still a divergence under stderr noise", () => {
+    const noise = String.raw`[A-Za-z_][A-Za-z0-9_.]+(Error|Exception): .*`;
+    const r = runScript(
+      standIn(
+        { ...same, err: "Error: one\n" },
+        { ...same, err: "Error: two\n" },
+        { stderrNoise: noise },
+      ),
+      "probe",
+    );
+    assert.equal(r.status, 99);
+    assert.match(r.stderr, /stderr differs/);
+    assert.match(r.stderr, /compared without lines matching/);
   });
 
   test("statusOnly ignores stdout and stderr but still compares the status", () => {

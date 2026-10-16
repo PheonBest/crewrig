@@ -27,6 +27,9 @@ export interface GovernanceCase extends TeeCase {
   readonly needsCommit?: boolean;
 }
 
+/** Python traceback lines: header, `  File "...", line N, in f`, 4-space source, `Mod.NameError: x`. */
+const PYTHON_TRACEBACK = String.raw`Traceback \(most recent call last\):|  File ".*", line [0-9]+, in .*|    .*|[A-Za-z_][A-Za-z0-9_.]*\.[A-Za-z_][A-Za-z0-9_]*(Error|Exception): .*|[A-Za-z_][A-Za-z0-9_]+(Error|Exception): .*`;
+
 const suite = (x: string): string => `test-check-${x}.sh`;
 
 /** Base-ref checks: a sandbox with one commit, compared with itself, resolves `HEAD`. */
@@ -147,6 +150,7 @@ export const GOVERNANCE_CASES: readonly GovernanceCase[] = [
     suite: suite("gemini-overlay-enrollment"),
     realRepoArgv: [],
     needs: ["python3"],
+    stderrNoise: PYTHON_TRACEBACK,
   },
   {
     name: "check-claude-agent-layout",

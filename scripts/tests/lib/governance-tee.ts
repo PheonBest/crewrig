@@ -9,6 +9,8 @@
 //   GOVERNANCE_TEE_MUTATING=1     the check writes files; leg (b) runs in a copy taken BEFORE
 //                                 leg (a) and the post-run file trees (and bytes) are compared.
 //   GOVERNANCE_TEE_STATUS_ONLY=1  deviation (d): only the exit status is compared.
+//   GOVERNANCE_TEE_STDERR_NOISE=<regex source>  lines of stderr matching it in full (multiline)
+//                                 are removed from BOTH legs before comparison (Python tracebacks).
 // The sandbox root is three levels above this file (scripts/tests/lib/).
 
 import { spawnSync } from "node:child_process";
@@ -31,6 +33,17 @@ if (name === undefined || name === "") {
 }
 const mutating = process.env["GOVERNANCE_TEE_MUTATING"] === "1";
 const statusOnly = process.env["GOVERNANCE_TEE_STATUS_ONLY"] === "1";
+const noiseSource = process.env["GOVERNANCE_TEE_STDERR_NOISE"];
+const noise =
+  noiseSource === undefined || noiseSource === ""
+    ? undefined
+    : new RegExp(`^(?:${noiseSource})$\\n?`, "gm");
+
+/** stderr minus the noise lines (latin1 round trip keeps every byte). */
+function denoise(stderr: Buffer): Buffer {
+  if (noise === undefined) return stderr;
+  return Buffer.from(stderr.toString("latin1").replace(noise, ""), "latin1");
+}
 
 function readStdin(): Buffer {
   try {
@@ -119,7 +132,7 @@ const reasons: string[] = [];
 if (a.status !== b.status) reasons.push(`exit status: shell ${a.status}, typescript ${b.status}`);
 if (!statusOnly) {
   if (!a.stdout.equals(b.stdout)) reasons.push("stdout differs");
-  if (!a.stderr.equals(b.stderr)) reasons.push("stderr differs");
+  if (!denoise(a.stderr).equals(denoise(b.stderr))) reasons.push("stderr differs");
 }
 if (mutating && snapshot !== undefined) {
   const ta = fileTree(inRoot ? root : cwd);
@@ -134,7 +147,9 @@ if (reasons.length > 0) {
   const show = (label: string, l: Leg): string =>
     `--- ${label} (exit ${l.status}) stdout:\n${l.stdout.toString()}--- ${label} stderr:\n${l.stderr.toString()}`;
   process.stderr.write(
-    `governance-tee: DIVERGENCE in ${name}: ${reasons.join("; ")}\n${show("shell", a)}${show("typescript", b)}`,
+    `governance-tee: DIVERGENCE in ${name}: ${reasons.join("; ")}\n` +
+      (noise === undefined ? "" : `(stderr compared without lines matching /${noiseSource}/)\n`) +
+      `${show("shell", a)}${show("typescript", b)}`,
   );
   process.exit(99);
 }
