@@ -9,12 +9,12 @@ plugin-level hook surface was ungrounded at spec-authoring time. This runbook
 is the re-runnable procedure that grounds it, and re-grounds the other three
 targets from the installed tool rather than trusted vendor prose.
 
-`scripts/probe-extension-hooks.sh` is the procedure.
+`scripts/probe-extension-hooks.ts` is the procedure (the `scripts/probe-extension-hooks.sh` path is a forwarding shim until its final removal).
 
 ## Running it
 
 ```sh
-bash scripts/probe-extension-hooks.sh
+node scripts/probe-extension-hooks.ts
 ```
 
 Preconditions: `claude`, `gemini`, `agy` and `copilot` all on `PATH`, each

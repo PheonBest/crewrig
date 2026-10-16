@@ -8,7 +8,7 @@ kind. R14 requires that procedure to tell a component the assistant does not
 find apart from an assistant that failed to answer.
 
 This runbook is that procedure's documentation.
-`scripts/probe-antigravity-discovery.sh` is the procedure.
+`scripts/probe-antigravity-discovery.ts` is the procedure (the `scripts/probe-antigravity-discovery.sh` path is a forwarding shim until its final removal).
 
 ## Why observation and not the vendor guide
 
@@ -24,7 +24,7 @@ re-run stays true.
 ## Running it
 
 ```sh
-bash scripts/probe-antigravity-discovery.sh
+node scripts/probe-antigravity-discovery.ts
 ```
 
 Preconditions: the `agy` binary on `PATH`, and a machine whose model calls
