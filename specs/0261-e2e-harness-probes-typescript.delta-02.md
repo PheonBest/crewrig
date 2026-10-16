@@ -14,7 +14,7 @@ version: 1.2.0
 differentials and the seated reviews of ticket 1342 (pull requests #1622, #1631 to #1638 and
 the switch pull request): the shell oracle and the TypeScript twins disagree on a finite list
 of observable details that requirement 24 reserved the letters (h) onward for, and the
-shim form (requirement 16) needs the warning flag the repository already uses. It runs under
+shim form (requirement 16) names the warning flag the repository already uses. It runs under
 the release-branch regime of `specs/0215-shell-to-typescript-migration.delta-04.md`: its
 spec-PR targets `release/1231-ts-migration`, and the base ref of every protocol is
 `origin/release/1231-ts-migration` (requirement 34 of that delta). This delta modifies
@@ -54,12 +54,19 @@ reaches standard error; a forwarding shim, a `Taskfile.yml` entry, a workflow st
 runbook SHALL name that flag."
 
 Requirement 16, the sentence "A shim is a `bash` file of three lines that runs `node` on the
-sibling `.ts` and forwards its arguments and status". Replacement: "A shim is a `bash` file in
-the form of `scripts/create-extension.sh` (a Node.js presence check, the floor guard, then
-`exec node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON <stem>.ts \"$@\"`) that forwards its
-arguments and status". A differential test that compares the shell leg with the TypeScript
-leg SHALL skip the shell leg when the shell file is such a shim: the recorded goldens are
-then the oracle.
+sibling `.ts` and forwards its arguments and status, stays on `ci/shell-allowlist.txt`, and is
+deleted in the pull request that migrates the last J3 suite that spawns it when no file outside
+this row names it, and is otherwise left to row J4." Replacement: "A shim is a `bash` file that
+checks that `node` is on the path, runs the Node.js floor guard, then runs `exec node
+--disable-warning=MODULE_TYPELESS_PACKAGE_JSON <stem>.ts \"$@\"` on the sibling `.ts`, so that
+every argument, the standard input and the exit status reach the entry and the loader notice
+that an entry written with `import` would cause never reaches standard error (a plain `exec
+node` prints it); it stays on `ci/shell-allowlist.txt`, is deleted in the pull request that
+migrates the last J3 suite that spawns it when no file outside this row names it, and is
+otherwise left to row J4. The form follows the shims of the earlier rows, which load a
+self-contained entry and so need no flag; this row's entries import their modules." A
+differential test that compares the shell leg with the TypeScript leg SHALL skip the shell leg
+when the shell file is such a shim: the recorded goldens are then the oracle.
 
 Requirement 24, the list "(a) to (g)". Replacement: the list below is the whole closed list.
 (a) to (g) are those of the original; (b) also covers the diagnostics of a TOML file that
