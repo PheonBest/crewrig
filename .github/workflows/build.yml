@@ -2678,9 +2678,6 @@ jobs:
       - name: No deprecation reaches the entries
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/hook-deprecations.test.ts
 
-      - name: Install dependencies (ajv for the schema and derivation suites)
-        run: npm ci
-
       - name: Usage-record storage suites (the POSIX-only gate suite is excluded)
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-storage-journal.test.ts scripts/tests/usage-storage-query.test.ts scripts/tests/usage-storage-wing.test.ts scripts/tests/usage-storage-drain.test.ts scripts/tests/usage-storage-prune.test.ts
 
