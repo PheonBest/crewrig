@@ -39,8 +39,8 @@ once the cache layer is removed, and the cache key inputs of the capability, the
 Given a replacement file whose name matches the `node --test` glob of an existing
 capability (for example `worktree-*.test.ts`)
 When the replacement is wired
-Then it runs in that capability's job on Linux and, where the job has one, on
-`windows-latest`, it gets no second step, and the job that ran the deleted Bash suite loses
+Then it runs in that capability's job on Linux and, where the job has one and subject to
+requirement 17, on `windows-latest`, it gets no second step, and the job that ran the deleted Bash suite loses
 its step.
 
 ## MODIFIED
@@ -51,7 +51,7 @@ Original: `usage-storage-driver.cjs`, `usage-attribution-driver.cjs` and
 `usage-pricing-driver.js` (the "committed driver" helpers of the usage suites).
 
 Replacement: `usage-storage-driver.ts`, `usage-attribution-driver.ts` and
-`usage-pricing-driver.ts`. Requirement 4 already says that every new file is TypeScript,
+`usage-pricing-driver.ts`, and the word "CJS" in the cell of the first becomes "TypeScript". Requirement 4 already says that every new file is TypeScript,
 and the shell-and-JavaScript ratchet of parent requirements 10 and 11 admits no new
 JavaScript file; the three cells named a JavaScript file by mistake. A TypeScript driver
 runs as a child process the same way, and keeps the isolation the Bash driver gave.
@@ -78,12 +78,19 @@ scan reads.
 **Requirement 18.**
 
 Original: the second sentence, "Two edits outside this row's own files are authorized by the
-coordinator and are the only ones: (a) ... ; (b) ...".
+coordinator and are the only ones: (a) the lines of `scripts/tests/test-check-ci-parity.sh`
+(row J2) that select the `usage-pricing` capability, its workflow job and its
+`test-usage-pricing` step SHALL be retargeted ...; (b) the comments of
+`scripts/lib/usage-capture/record.js`, `scripts/lib/usage-capture/sink.js`,
+`scripts/lib/usage-store/mcp.js` and `scripts/worktree-claim.sh` that name a deleted suite
+MAY be edited, comment text only, with no change of behaviour."
 
-Replacement: a comment in a file of another row that names a deleted suite and that is not
-named in (b) SHALL be left to its owning row and reported to the coordinator in the pull
-request body; this row SHALL NOT edit that file. At the time of writing this applies to the
-comment at line 367 of `scripts/tests/test-mcp-daemon.sh` (row J1b).
+Replacement: that sentence is kept as it stands, with edits (a) and (b) unchanged, and the
+following sentence is added after it. A comment in a file of another row that names a
+deleted suite and that is not named in (b) SHALL be left to its owning row and reported to
+the coordinator in the pull request body; this row SHALL NOT edit that file. At the time of
+writing this applies to the comment at line 367 of `scripts/tests/test-mcp-daemon.sh` (row
+J1b).
 
 ## REMOVED
 
