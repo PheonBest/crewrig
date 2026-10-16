@@ -2453,7 +2453,7 @@ capabilities:
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-versions-lock.sh
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-docker-standin.test.ts scripts/tests/e2e-oracle-scenarios.test.ts scripts/tests/e2e-oracle-libs.test.ts scripts/tests/e2e-oracle-judge.test.ts scripts/tests/e2e-libs-differential.test.ts scripts/tests/e2e-auth-differential.test.ts scripts/tests/e2e-publisher-differential.test.ts scripts/tests/e2e-publisher-differential-edge.test.ts scripts/tests/e2e-capture-differential.test.ts scripts/tests/e2e-toml-subset.test.ts scripts/tests/e2e-judge-differential.test.ts scripts/tests/e2e-runner-differential.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-docker-standin.test.ts scripts/tests/e2e-oracle-scenarios.test.ts scripts/tests/e2e-oracle-libs.test.ts scripts/tests/e2e-oracle-judge.test.ts scripts/tests/e2e-libs-differential.test.ts scripts/tests/e2e-auth-differential.test.ts scripts/tests/e2e-publisher-differential.test.ts scripts/tests/e2e-publisher-differential-edge.test.ts scripts/tests/e2e-capture-differential.test.ts scripts/tests/e2e-toml-subset.test.ts scripts/tests/e2e-judge-differential.test.ts scripts/tests/e2e-runner-differential.test.ts scripts/tests/e2e-scenario-05-differential.test.ts scripts/tests/e2e-scenario-06-differential.test.ts scripts/tests/e2e-scenario-07-differential.test.ts
 
   - id: setup
     name: "Test setup helpers and validation backend"
