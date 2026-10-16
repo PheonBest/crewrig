@@ -19,10 +19,17 @@ describe("e2e library twins against the recorded shell", () => {
   for (const c of cases) {
     it(c.id, async (t) => {
       if (bindingFor(c) === undefined) return t.todo("no TypeScript twin bound yet");
-      const golden: unknown = JSON.parse(
+      const golden = JSON.parse(
         fs.readFileSync(path.join(GOLDENS, c.id, "tuple.json.golden"), "utf8"),
-      );
+      ) as { rc: number };
       const tuple = await observeLibTs(c);
+      const deviation = EXPECTED_TOML_DEVIATIONS.find((d) => d.id === c.id);
+      if (deviation !== undefined) {
+        // Deviation (b) of spec 0261: the TypeScript reader refuses what yq accepted or words it alone.
+        assert.equal(golden.rc, deviation.goldenRc);
+        assert.equal(tuple?.rc, deviation.twinRc);
+        return t.skip("expected deviation (b): the TypeScript reader refuses the construct");
+      }
       assert.deepEqual(tuple, golden);
     });
   }
