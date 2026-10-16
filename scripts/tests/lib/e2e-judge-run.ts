@@ -141,7 +141,13 @@ export async function runCase(c: JudgeCase, repoRoot: string, bash = "bash"): Pr
       id: c.id,
       rc: res.rc,
       stdout: normalise(res.stdout, ctx).trimEnd(),
-      stderr: normalise(res.stderr, ctx),
+      // The drivers re-enable `set -x` themselves (`{ set -x; } 2>/dev/null` after each secret-bearing
+      // step), so the shell's stderr carries xtrace lines whose order is racy and one of which holds a
+      // signature. They are dropped: the oracle is the request shape and the verdict, not the trace.
+      stderr: normalise(res.stderr, ctx)
+        .split("\n")
+        .filter((line) => !/^\++ /.test(line))
+        .join("\n"),
       requests: srv.requests(),
       files,
     };
