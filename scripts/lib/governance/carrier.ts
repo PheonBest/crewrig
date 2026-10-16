@@ -1,5 +1,5 @@
 // carrier.ts — parser for the crewrig-provenance HTML-comment carrier (spec 0259),
-// the TypeScript twin of scripts/lib/provenance-carrier.sh.
+// the TypeScript twin of the retired scripts/lib/provenance-carrier.sh.
 //
 // Usage: firstBodyLine(text) / carrierField(line, "version")
 // Exit codes: not applicable (library).

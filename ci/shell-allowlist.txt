@@ -70,11 +70,9 @@ scripts/lib/common.sh
 scripts/lib/component-resolve.sh
 scripts/lib/extension-hooks.sh
 scripts/lib/extension-install.sh
-scripts/lib/extension-manifest.sh
 scripts/lib/gemini-settings.sh
 scripts/lib/mcp-daemon-launcher.sh
 scripts/lib/model-resolve.sh
-scripts/lib/provenance-carrier.sh
 scripts/lib/render-command.sh
 scripts/lib/tls-delegation.sh
 scripts/lib/tls-exec.sh

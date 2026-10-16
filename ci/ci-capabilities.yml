@@ -416,7 +416,6 @@ capabilities:
           - "scripts/build-copilot-plugin.*"
           - "scripts/build-antigravity-extension.*"
           - "scripts/migrate-extension.*"
-          - "scripts/lib/extension-manifest.sh"
           - "scripts/lib/extension-hooks.sh"
           - "scripts/lib/extension-*.json"
           - "scripts/lib/common.sh"
@@ -455,7 +454,6 @@ capabilities:
           - "scripts/build-copilot-plugin.*"
           - "scripts/build-antigravity-extension.*"
           - "scripts/migrate-extension.*"
-          - "scripts/lib/extension-manifest.sh"
           - "scripts/lib/extension-hooks.sh"
           - "scripts/lib/extension-*.json"
           - "scripts/lib/common.sh"
@@ -1599,7 +1597,6 @@ capabilities:
           - "scripts/lib/org-mcp.ts"
           - "scripts/lib/node-floor-guard.js"
           - "scripts/install-extension.sh"
-          - "scripts/lib/extension-manifest.sh"
           - "scripts/lib/extension-percli-keys.json"
           - "scripts/lib/extension-generated-class.json"
           - "scripts/tests/test-check-extension-pivot.sh"
@@ -1663,7 +1660,6 @@ capabilities:
           - "scripts/lib/org-mcp.ts"
           - "scripts/lib/node-floor-guard.js"
           - "scripts/install-extension.sh"
-          - "scripts/lib/extension-manifest.sh"
           - "scripts/lib/extension-percli-keys.json"
           - "scripts/lib/extension-generated-class.json"
           - "scripts/tests/test-check-extension-pivot.sh"
@@ -1745,7 +1741,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/check-extension-provenance.sh"
-          - "scripts/lib/provenance-carrier.sh"
           - "scripts/tests/test-check-extension-provenance.sh"
           - "extensions/**"
           - "artifacts/**"
@@ -1755,7 +1750,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/check-extension-provenance.sh"
-          - "scripts/lib/provenance-carrier.sh"
           - "scripts/tests/test-check-extension-provenance.sh"
           - "extensions/**"
           - "artifacts/**"
@@ -1779,7 +1773,6 @@ capabilities:
           - "scripts/check-extension-manifest-version.sh"
           - "scripts/check-extension-version-bump.sh"
           - "scripts/lib/base-ref-resolve.sh"
-          - "scripts/lib/extension-manifest.sh"
           - "scripts/lib/common.sh"
           - "scripts/lib/extension-hooks.sh"
           - "scripts/tests/test-check-extension-manifest-version.sh"
@@ -1796,7 +1789,6 @@ capabilities:
           - "scripts/check-extension-manifest-version.sh"
           - "scripts/check-extension-version-bump.sh"
           - "scripts/lib/base-ref-resolve.sh"
-          - "scripts/lib/extension-manifest.sh"
           - "scripts/lib/common.sh"
           - "scripts/lib/extension-hooks.sh"
           - "scripts/tests/test-check-extension-manifest-version.sh"

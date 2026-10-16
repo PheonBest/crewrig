@@ -1,5 +1,5 @@
 // mcp-delivery.ts — the MCP delivery gate and the root-token rewrite (spec 0254 R11).
-// Twins of `ext_mcp_delivery` and `ext_mcp_native` (scripts/lib/extension-manifest.sh:383-428).
+// Twins of `ext_mcp_delivery` and `ext_mcp_native` (the retired scripts/lib/extension-manifest.sh:383-428).
 // A null Antigravity root token means "leave `${extensionRoot}` unresolved" for MCP, the opposite
 // of the hook translator, so this module deliberately does not use `resolveCommand`.
 

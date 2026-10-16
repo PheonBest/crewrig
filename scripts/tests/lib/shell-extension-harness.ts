@@ -106,7 +106,10 @@ const GOLDENS = path.join(REPO, "scripts", "tests", "fixtures", "extension-manif
 /** The frozen shell expectations of the manifest library, keyed by fixture label. */
 export function manifestGoldens(): Readonly<Record<string, ManifestGolden>> {
   const read = (name: string): Record<string, unknown> =>
-    JSON.parse(fs.readFileSync(path.join(GOLDENS, `${name}.json.golden`), "utf8"));
+    JSON.parse(fs.readFileSync(path.join(GOLDENS, `${name}.json.golden`), "utf8")) as Record<
+      string,
+      unknown
+    >;
   const validate = read("validate");
   const delivery = read("mcp-delivery");
   const native = read("mcp-native");

@@ -1,5 +1,5 @@
 // validate.ts — the manifest validation pass (spec 0254 R9).
-// Twin of `ext_validate_manifest` (scripts/lib/extension-manifest.sh:120-167): shape guard,
+// Twin of `ext_validate_manifest` (the retired scripts/lib/extension-manifest.sh:120-167): shape guard,
 // per-CLI keys, hooks, MCP shape, MCP tokens, MCP names, in that order. Pure: the caller
 // prints the returned lines (the shell wrote them to stderr) and counts a non-empty result as
 // a failure.

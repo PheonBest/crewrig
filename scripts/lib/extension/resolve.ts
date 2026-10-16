@@ -1,6 +1,6 @@
 // resolve.ts — extension directory resolution and discovery (spec 0254 R6).
 // Twins of `resolve_extension_dir`, scripts/build-extension.sh:108-132, and `ext_discover_dirs`,
-// scripts/lib/extension-manifest.sh:169-185. Neither prints nor exits: the result says which
+// the retired scripts/lib/extension-manifest.sh:169-185. Neither prints nor exits: the result says which
 // message to show, and the caller picks the stream (stdout for the plugin builders, stderr for
 // the build and migration entries).
 

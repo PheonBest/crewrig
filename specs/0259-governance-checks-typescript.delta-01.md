@@ -1,7 +1,7 @@
 ---
 id: "0259"
 slug: governance-checks-typescript
-status: approved
+status: implemented
 complexity: standard
 interaction-mode: MINIMAL
 related-issue: 1338

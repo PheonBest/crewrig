@@ -1,4 +1,4 @@
-// extension-manifest.test.ts — the manifest accessors, twins of extension-manifest.sh:39-72,187-202 (spec 0254 R8).
+// extension-manifest.test.ts — the manifest accessors, twins of the retired scripts/lib/extension-manifest.sh:39-72,187-202 (spec 0254 R8).
 
 import assert from "node:assert/strict";
 import fs from "node:fs";

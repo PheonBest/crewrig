@@ -1,7 +1,7 @@
 // ext-version-bump.ts — logic of the extension version-bump check (spec 0259),
 // the TypeScript twin of scripts/check-extension-version-bump.sh (spec 0044).
 //
-// Reuses carrier.ts (provenance-carrier.sh twin), base-ref.ts and bump-scan.ts.
+// Reuses carrier.ts (twin of the retired provenance-carrier.sh), base-ref.ts and bump-scan.ts.
 //
 // Usage: runVersionBump(baseArg, cwd) -> { code, stdout, stderr }
 // Exit codes: 0 all bumped or exempt, 1 a failure, 2 unresolvable base ref.

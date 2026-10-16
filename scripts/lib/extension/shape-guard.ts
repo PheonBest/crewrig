@@ -1,5 +1,5 @@
 // shape-guard.ts — the retired-declaration-shape guard (spec 0254 R8).
-// Twin of `ext_assert_current_shape`, scripts/lib/extension-manifest.sh:84-117 (spec 0183
+// Twin of `ext_assert_current_shape`, the retired scripts/lib/extension-manifest.sh:84-117 (spec 0183
 // R12/R13). Reads the SAME enumeration the migration tool reads; fail-closed when it cannot.
 // The messages are the shell's, byte for byte (the em dash included); `detectShape` is the
 // detection half, reused by the migration tool.

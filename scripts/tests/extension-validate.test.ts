@@ -1,5 +1,5 @@
 // extension-validate.test.ts — the per-CLI, hook and MCP validators (spec 0254 R9).
-// Expected lines are the literal text of scripts/lib/extension-manifest.sh and extension-hooks.sh.
+// Expected lines are the literal text of the retired scripts/lib/extension-manifest.sh and extension-hooks.sh.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
