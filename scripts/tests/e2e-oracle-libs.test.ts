@@ -34,7 +34,8 @@ describe("e2e oracle library registry", () => {
     for (const c of cases) {
       const file = path.join(REPO_ROOT, c.lib);
       assert.ok(fs.existsSync(file), `${c.id}: ${c.lib} does not exist`);
-      if (c.script !== true) {
+      // `eval` cases wrap the real function in a one-off command line (copilot_ephemeral_home).
+      if (c.script !== true && c.fn !== "eval") {
         assert.ok(defines(fs.readFileSync(file, "utf8"), c.fn), `${c.id}: ${c.fn} not in ${c.lib}`);
       }
     }
