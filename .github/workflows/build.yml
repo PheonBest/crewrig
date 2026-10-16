@@ -384,6 +384,49 @@ jobs:
         if: failure()
         uses: ./.github/actions/cancel-on-failure
 
+  # Spec 0259 R26-R28 (ticket #1338), PR P0: the governance-check suites and their shell oracle legs.
+  # Linux only: the legs spawn `bash`, `jq` and Go `yq` until the switch PR retires the shell originals.
+  governance-checks-ts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            governance-checks-ts:
+              - 'scripts/check-*.ts'
+              - 'scripts/lib/governance/**'
+              - 'scripts/lib/sequence-matcher.ts'
+              - 'scripts/tests/governance-*'
+              - 'scripts/tests/lib/governance-*'
+              - 'scripts/tests/check-agents-size.test.ts'
+              - 'scripts/check-*.sh'
+              - 'scripts/tests/test-check-*.sh'
+      - uses: actions/setup-node@v4
+        if: steps.filter.outputs.governance-checks-ts == 'true'
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install production dependencies
+        if: steps.filter.outputs.governance-checks-ts == 'true'
+        run: npm ci --omit=dev --workspaces=false
+      - name: Install yq v4.44.3
+        if: steps.filter.outputs.governance-checks-ts == 'true'
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.44.3/yq_linux_amd64
+          echo "a2c097180dd884a8d50c956ee16a9cec070f30a7947cf4ebf87d5f36213e9ed7  /usr/local/bin/yq" | sha256sum -c -
+          sudo chmod +x /usr/local/bin/yq
+      - name: Floor guard accepts Node.js 24
+        if: steps.filter.outputs.governance-checks-ts == 'true'
+        run: node scripts/lib/node-floor-guard.js
+      - name: Test the governance checks
+        if: steps.filter.outputs.governance-checks-ts == 'true'
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test 'scripts/tests/governance-*.test.ts' scripts/tests/check-agents-size.test.ts
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
+
   # Spec 0255 (row F2), PR B: the dark link-or-copy, component twin and manage module suites.
   # Linux only: the conformance suites spawn `bash` and `jq`.
   install-ts:
@@ -3110,6 +3153,34 @@ jobs:
       # `.cmd` launch refusals.
       - name: Skill scripts proof
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/windows-skill-scripts.test.ts
+
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
+
+  # Spec 0259 R26-R28: the governance checks from PowerShell on Windows. Every
+  # scripts/tests/windows-governance-*.test.ts file runs (glob discovery). No path filter, like the
+  # Windows jobs above.
+  windows-governance-checks:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install production dependencies
+        run: npm ci --omit=dev --workspaces=false
+
+      - name: Floor guard accepts Node.js 24
+        run: node scripts/lib/node-floor-guard.js
+
+      - name: Governance checks proof
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test 'scripts/tests/windows-governance-*.test.ts'
 
       - name: Cancel workflow on job failure
         if: failure()
