@@ -36,7 +36,7 @@ Then that pull request deletes `scripts/lib/usage-headless.sh`, its allowlist li
 
 ## MODIFIED
 
-Requirement 17, its last two sentences. Original: "This row SHALL delete each of the two
+Requirement 17, its last sentence. Original: "This row SHALL delete each of the two
 files in its last pull request when `git grep` finds no `source` of it and no
 sandbox-mutating suite that reads its text; when a consumer of another row remains, this
 row SHALL leave the file, its allowlist line and its path filters untouched and SHALL
