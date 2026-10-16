@@ -14,7 +14,7 @@ User-gate validation backend (spec 0080):
     -> <HOME>/.crewrig/validation.conf
 
 
-Production dependencies: skipped — package-lock.json unchanged since the last successful install (sha256 d85982f9d098). Delete .crewrig-state/production-deps.sha256 to force a re-install.
+Production dependencies: skipped — package-lock.json unchanged since the last successful install (sha256 411fa1e7938a). Delete .crewrig-state/production-deps.sha256 to force a re-install.
 
 Configuring ~/.gemini/settings.json...
   Detected MemPalace interpreter: <HOME>/.local/share/pipx/venvs/mempalace/bin/python (mempalace 3.6.0)
