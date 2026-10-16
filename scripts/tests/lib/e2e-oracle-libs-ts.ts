@@ -8,6 +8,7 @@
 import type { LibCase, LibTuple } from "./e2e-oracle-libs-types.ts";
 import { finishSandbox, makeSandbox } from "./e2e-oracle-libs-observe.ts";
 import { bindings as assertBindings } from "./e2e-oracle-libs-ts-assert.ts";
+import { bindings as authBindings } from "./e2e-oracle-libs-ts-auth.ts";
 import { bindings as markerBindings } from "./e2e-oracle-libs-ts-markers.ts";
 import { bindings as probeBindings } from "./e2e-oracle-libs-ts-probes.ts";
 import { bindings as tomlBindings } from "./e2e-oracle-libs-ts-toml.ts";
@@ -35,6 +36,7 @@ export type Binding = (
 
 export const bindings: Readonly<Record<string, Binding>> = {
   ...assertBindings,
+  ...authBindings,
   ...markerBindings,
   ...probeBindings,
   ...tomlBindings,
