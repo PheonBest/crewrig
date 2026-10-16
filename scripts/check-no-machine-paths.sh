@@ -87,7 +87,11 @@ while IFS= read -r hit; do
 done < <(git -C "$REPO_DIR" grep -nE "$PATTERN" -- \
            . \
            ':(exclude)scripts/check-no-machine-paths.sh' \
-           ':(exclude)scripts/tests/test-check-no-machine-paths.sh' || true)
+           ':(exclude)scripts/tests/test-check-no-machine-paths.sh' \
+           ':(exclude)scripts/check-no-machine-paths.ts' \
+           ':(exclude)scripts/tests/governance-check-no-machine-paths.test.ts' \
+           ':(exclude)scripts/tests/governance-repo-scans-differential.test.ts' \
+           ':(exclude)scripts/tests/windows-governance-repo-scans.test.ts' || true)
 
 if [ "$failures" -gt 0 ]; then
   echo "" >&2
