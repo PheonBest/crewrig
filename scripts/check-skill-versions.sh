@@ -1,112 +1,23 @@
 #!/bin/bash
-# check-skill-versions.sh — Enforce the version-bump rule on component sources.
+# check-skill-versions.sh — forwarding shim (spec 0259 requirement 21). The check is
+# scripts/check-skill-versions.ts; this file remains so every caller that still runs
+# `bash scripts/check-skill-versions.sh` reaches the TypeScript version until row J4 removes the shell files.
 #
-# Per artifacts/FORMAT.md → Version semantics, every PR that touches
-# a skill, command, or agent source under artifacts/core/, artifacts/library/, or
-# artifacts/community/ MUST bump `metadata.provenance.version` in the same
-# diff. This script enforces the rule.
+# It runs the Node.js floor guard (scripts/lib/node-floor-guard.js), then the TypeScript entry
+# with every argument and its standard input, and returns the entry's exit status, standard
+# output and standard error unchanged. It fails closed: with `node` absent it writes one
+# `Error:` line and exits 1; below the floor it exits with the floor guard's status and
+# diagnostic, and the entry is not run.
 #
-# Usage:
-#   bash scripts/check-skill-versions.sh [<base-ref>]
-#
-# Default base ref: probes remotes for crewrig or origin, falls back to the
-# first available remote, then prefers /main, falling back to /develop when
-# the reference remote carries no main branch (issue #1214). CI passes
-# BASE_REF env var pointing at the PR's *target* branch (`base.ref` in GitHub
-# Actions context) — NOT the PR's source/head branch. The guard diffs the PR
-# against what it's about to merge into, so changes that haven't yet
-# landed in the base are subject to the bump rule. A BASE_REF ending in `/`
-# (an unexpanded CI variable) is normalized to unset rather than handed to
-# git verbatim — see scripts/lib/base-ref-resolve.sh.
-#
-# Exits 0 if all changed sources include a version bump, non-zero (with a
-# per-file failure list) otherwise.
+# Usage: bash scripts/check-skill-versions.sh [<arguments of scripts/check-skill-versions.ts> ...]
 
-set -euo pipefail
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=scripts/lib/base-ref-resolve.sh
-source "$SCRIPT_DIR/lib/base-ref-resolve.sh"
-
-BASE_REF="$(normalize_base_ref "${1:-${BASE_REF:-}}")"
-if [ -z "$BASE_REF" ]; then
-  BASE_REF="$(default_base_ref "$(git remote | grep -E -m1 'crewrig|origin' || git remote | head -1)")"
-fi
-
-# Make sure the base is fetched. CI runners do shallow clones by default.
-if ! git rev-parse --verify "$BASE_REF" >/dev/null 2>&1; then
-  # Try fetching (covers fresh CI clones).
-  remote="${BASE_REF%%/*}"
-  ref="${BASE_REF#*/}"
-  git fetch --depth=50 "$remote" "$ref" >/dev/null 2>&1 || {
-    echo "Error: cannot resolve base ref '$BASE_REF' and `git fetch` failed." >&2
-    echo "       Pass a resolvable ref as the first argument or via BASE_REF." >&2
-    exit 2
-  }
-fi
-
-# Collect changed component sources, split by status (A=added, M=modified).
-# New files (A) start at 1.0.0 by definition — no bump required until they
-# land on the base branch and are subsequently modified. Only modified files
-# (M) are subject to the version-bump rule.
-# `while read` rather than `mapfile` for bash 3.2 compat (macOS default).
-modified=()
-while IFS= read -r line; do
-  [ -z "$line" ] && continue
-  status="${line%%$'\t'*}"
-  file="${line#*$'\t'}"
-  if [ "$status" = "M" ]; then
-    modified+=("$file")
-  fi
-done < <(git diff --name-status "$BASE_REF" -- \
-  'artifacts/core/skills/*/SKILL.md' \
-  'artifacts/library/skills/*/SKILL.md' \
-  'artifacts/community/skills/*/SKILL.md' \
-  'artifacts/core/commands/*.md' \
-  'artifacts/library/commands/*.md' \
-  'artifacts/community/commands/*.md' \
-  'artifacts/core/agents/*/AGENT.md' \
-  'artifacts/library/agents/*/AGENT.md' \
-  'artifacts/community/agents/*/AGENT.md' 2>/dev/null || true)
-
-if [ "${#modified[@]}" -eq 0 ]; then
-  echo "OK: no existing component sources modified vs $BASE_REF."
-  exit 0
-fi
-
-echo "Checking version bumps on ${#modified[@]} modified component source(s)..."
-
-failures=()
-for f in ${modified[@]+"${modified[@]}"}; do
-  [ ! -f "$f" ] && continue  # deleted file: skip (deletions don't need a bump)
-
-  # Look at the diff for a `version:` line addition. The
-  # metadata.provenance.version field is nested under `metadata:` →
-  # `provenance:` so the line typically reads `    version: "X.Y.Z"`
-  # (indent 4). We match any added line whose trimmed text starts with
-  # `version:` — covers the nested form and any hypothetical placement.
-  if git diff "$BASE_REF" -- "$f" | grep -qE '^\+[[:space:]]+version:[[:space:]]*"'; then
-    echo "  OK   $f"
-  else
-    echo "  FAIL $f — metadata.provenance.version not bumped"
-    failures+=("$f")
-  fi
-done
-
-if [ "${#failures[@]}" -gt 0 ]; then
-  echo ""
-  echo "FAILED: ${#failures[@]} source(s) changed without a version bump:"
-  for f in ${failures[@]+"${failures[@]}"}; do
-    echo "  - $f"
-  done
-  echo ""
-  echo "Per artifacts/FORMAT.md → Version semantics, bump"
-  echo "metadata.provenance.version in the same diff. SemVer:"
-  echo "  PATCH (1.0.0 → 1.0.1) — friction fix / wording change"
-  echo "  MINOR (1.0.0 → 1.1.0) — additive (new section, new field)"
-  echo "  MAJOR (1.0.0 → 2.0.0) — breaking contract change"
+if ! command -v node >/dev/null 2>&1; then
+  echo "Error: node was not found on PATH; check-skill-versions needs Node.js 24 or later (https://nodejs.org/en/download)." >&2
   exit 1
 fi
 
-echo ""
-echo "OK: all changed component sources include a version bump."
+node "$DIR/lib/node-floor-guard.js" || exit $?
+
+exec node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$DIR/check-skill-versions.ts" "$@"

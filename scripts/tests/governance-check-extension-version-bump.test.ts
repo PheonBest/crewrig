@@ -1,12 +1,12 @@
 // check-extension-version-bump.test.ts — black-box test of
 // scripts/check-extension-version-bump.ts for the edge cases the Bash suite does not
 // cover (spec 0259): duplicate field, no body line, empty or absent carrier on the
-// base. Each case also runs the shell script under LC_ALL=C and compares stdout,
-// stderr and exit code when bash is available.
+// base. Each case asserts stdout, stderr and exit status byte for byte against the frozen
+// output of the original shell script (recorded under LC_ALL=C on Linux).
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, describe, it } from "node:test";
@@ -15,10 +15,6 @@ import { carrierField, firstBodyLine } from "../lib/governance/carrier.ts";
 
 const SCRIPTS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ENTRY = path.join(SCRIPTS, "check-extension-version-bump.ts");
-const SHELL = path.join(SCRIPTS, "check-extension-version-bump.sh");
-const bashOk = process.platform !== "win32" && spawnSync("bash", ["--version"]).status === 0;
-if (process.platform !== "win32" && !bashOk && process.env.CI)
-  throw new Error("bash is required in CI for the oracle comparison");
 
 const tmp = mkdtempSync(path.join(tmpdir(), "ext-bump-"));
 after(() => rmSync(tmp, { recursive: true, force: true }));
@@ -50,6 +46,26 @@ function repo(name: string, base: string, head: string): string {
   return dir;
 }
 
+/** Frozen {status, stdout, stderr} of the original shell script, one per check, in call order. */
+const GOLDEN = JSON.parse(
+  readFileSync(
+    path.join(
+      SCRIPTS,
+      "tests",
+      "fixtures",
+      "governance-oracle",
+      "extension-version-bump.json.golden",
+    ),
+    "utf8",
+  ),
+) as Run[];
+let nextGolden = 0;
+function frozen(): Run {
+  const g = GOLDEN[nextGolden++];
+  assert.ok(g, "frozen shell expectations exhausted");
+  return g;
+}
+
 const doc = (body: string): string => `---\nname: example\n---\n${body}`;
 const carrier = (fields: string): string => `<!-- crewrig-provenance: ${fields}${CARRIER_TAIL}\n`;
 
@@ -72,7 +88,7 @@ function check(dir: string, expectedStatus: number, stdoutPart: string): void {
   );
   assert.equal(actual.status, expectedStatus, actual.stdout + actual.stderr);
   assert.ok(actual.stdout.includes(stdoutPart), actual.stdout);
-  if (bashOk) assert.deepEqual(actual, run("bash", [SHELL, "HEAD~1"], dir, { LC_ALL: "C" }));
+  assert.deepEqual(actual, frozen());
 }
 
 describe("carrier parser", () => {
@@ -118,8 +134,6 @@ describe("extension version bump edge cases", () => {
       "Error: cannot resolve base ref 'no-such-remote/zzz' and `git fetch` failed.\n" +
         "       Pass a resolvable ref as the first argument or via BASE_REF.\n",
     );
-    if (bashOk)
-      assert.deepEqual(actual, run("bash", [SHELL, "no-such-remote/zzz"], dir, { LC_ALL: "C" }));
   });
   it("carrier absent on base: exempt", () => {
     const head = doc(carrier('version="1.0.0"'));

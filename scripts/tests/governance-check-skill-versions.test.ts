@@ -1,11 +1,19 @@
 // check-skill-versions.test.ts — black-box edge cases the Bash suite does not
 // cover (spec 0259): unresolvable base, deleted, added and renamed sources.
-// Each case also runs the shell script under LC_ALL=C and compares stdout,
-// stderr and exit status when bash is available.
+// Each case asserts stdout, stderr and exit status byte for byte against the frozen
+// output of the original shell script (recorded under LC_ALL=C on Linux).
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, renameSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, before, describe, it } from "node:test";
@@ -13,8 +21,6 @@ import { fileURLToPath } from "node:url";
 
 const SCRIPTS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ENTRY = path.join(SCRIPTS, "check-skill-versions.ts");
-const SHELL = path.join(SCRIPTS, "check-skill-versions.sh");
-const bashOk = process.platform !== "win32" && spawnSync("bash", ["--version"]).status === 0;
 
 const repo = mkdtempSync(path.join(tmpdir(), "skill-versions-"));
 after(() => rmSync(repo, { recursive: true, force: true }));
@@ -32,6 +38,20 @@ const GIT_ENV = {
   GIT_COMMITTER_EMAIL: "t@example.invalid",
 };
 
+/** Frozen {status, stdout, stderr} of the original shell script, one per check, in call order. */
+const GOLDEN = JSON.parse(
+  readFileSync(
+    path.join(SCRIPTS, "tests", "fixtures", "governance-oracle", "skill-versions.json.golden"),
+    "utf8",
+  ),
+) as Run[];
+let nextGolden = 0;
+function frozen(): Run {
+  const g = GOLDEN[nextGolden++];
+  assert.ok(g, "frozen shell expectations exhausted");
+  return g;
+}
+
 function git(...args: string[]): void {
   const r = spawnSync("git", args, { cwd: repo, env: { ...process.env, ...GIT_ENV } });
   assert.equal(r.status, 0, String(r.stderr));
@@ -46,14 +66,14 @@ function run(cmd: string, args: string[], env: NodeJS.ProcessEnv = {}): Run {
   return { status: r.status, stdout: r.stdout, stderr: r.stderr };
 }
 
-/** Run the TypeScript entry; assert it matches the shell oracle when possible. */
+/** Run the TypeScript entry; assert it matches the frozen shell output. */
 function check(args: string[]): Run {
   const actual = run(process.execPath, [
     "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
     ENTRY,
     ...args,
   ]);
-  if (bashOk) assert.deepEqual(actual, run("bash", [SHELL, ...args], { LC_ALL: "C" }));
+  assert.deepEqual(actual, frozen());
   return actual;
 }
 

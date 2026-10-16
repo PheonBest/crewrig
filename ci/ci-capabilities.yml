@@ -1473,9 +1473,9 @@ capabilities:
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0258 R27).
 
-  # Spec 0259 R26-R28 (ticket #1338), PR P0: the governance-check suites. Linux only: the shell
-  # oracle legs spawn `bash`, `jq` and Go `yq` until the switch PR retires the shell originals. The
-  # floor guard runs after the production dependency step, before the first test call.
+  # Spec 0259 R26-R28 (ticket #1338): the governance-check suites. Linux only. The shell oracle legs
+  # retired with the switch PR (the shell originals are forwarding shims), so no jq or yq is
+  # needed. The floor guard runs after the production dependency step, before the first test call.
   - id: governance-checks-ts
     name: "Run the TypeScript governance-check suites and their shell oracle legs"
     trigger:
@@ -1504,7 +1504,6 @@ capabilities:
     portability: portable
     requires:
       runtime: node@24
-      tools: [jq, yq]
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
@@ -1651,6 +1650,10 @@ capabilities:
           - "scripts/lib/extension-install.sh"
           - "scripts/tests/test-release-package-extension.sh"
           - "scripts/tests/test-create-extension-combinations.sh"
+          - "scripts/check-extension-pivot.ts"
+          - "scripts/lib/governance/**"
+          - "scripts/check-extension-hook-map.ts"
+          - "scripts/check-extension-hook-tokens.ts"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -1712,6 +1715,10 @@ capabilities:
           - "scripts/lib/extension-install.sh"
           - "scripts/tests/test-release-package-extension.sh"
           - "scripts/tests/test-create-extension-combinations.sh"
+          - "scripts/check-extension-pivot.ts"
+          - "scripts/lib/governance/**"
+          - "scripts/check-extension-hook-map.ts"
+          - "scripts/check-extension-hook-tokens.ts"
     portability: portable
     changeset-gated: true
     requires:
@@ -1719,16 +1726,16 @@ capabilities:
       tools: [jq, yq]
     command:
       - npm ci --omit=dev --workspaces=false
-      - bash scripts/check-extension-pivot.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-pivot.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-pivot.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-build-extension.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-extension-render-conformance.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-extension-mcp-manifest.sh
       - node scripts/lib/node-floor-guard.js
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-extension.ts --check
-      - bash scripts/check-extension-hook-tokens.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-hook-tokens.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-hook-tokens.sh
-      - bash scripts/check-extension-hook-map.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-hook-map.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-hook-map.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-migrate-extension.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-release-package-extension.sh
@@ -1745,6 +1752,8 @@ capabilities:
           - "scripts/tests/test-check-extension-provenance.sh"
           - "extensions/**"
           - "artifacts/**"
+          - "scripts/check-extension-provenance.ts"
+          - "scripts/lib/governance/**"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -1753,14 +1762,15 @@ capabilities:
           - "scripts/tests/test-check-extension-provenance.sh"
           - "extensions/**"
           - "artifacts/**"
+          - "scripts/check-extension-provenance.ts"
+          - "scripts/lib/governance/**"
     portability: portable
     changeset-gated: true
     requires:
       runtime: node@24
-      tools: [yq]
     command:
       - npm ci --omit=dev --workspaces=false
-      - bash scripts/check-extension-provenance.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-provenance.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-provenance.sh
 
   - id: extension-manifest
@@ -1779,6 +1789,10 @@ capabilities:
           - "scripts/tests/test-check-extension-version-bump.sh"
           - "extensions/**"
           - "artifacts/**"
+          - "scripts/check-extension-version-bump.ts"
+          - "scripts/lib/governance/**"
+          - "scripts/check-extension-manifest-version.ts"
+          - "scripts/lib/extension/**"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -1792,12 +1806,16 @@ capabilities:
           - "scripts/tests/test-check-extension-version-bump.sh"
           - "extensions/**"
           - "artifacts/**"
+          - "scripts/check-extension-version-bump.ts"
+          - "scripts/lib/governance/**"
+          - "scripts/check-extension-manifest-version.ts"
+          - "scripts/lib/extension/**"
     portability: portable
     changeset-gated: true
     requires:
-      tools: [yq]
+      runtime: node@24
     command:
-      - bash scripts/check-extension-manifest-version.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-manifest-version.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-manifest-version.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-version-bump.sh
 
@@ -1965,6 +1983,8 @@ capabilities:
           - ".crewrig/core-paths.txt"
           - "docs/layers.md"
           - "model-mappings/**"
+          - "scripts/check-core-paths.ts"
+          - "scripts/lib/governance/**"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -1986,6 +2006,8 @@ capabilities:
           - ".crewrig/core-paths.txt"
           - "docs/layers.md"
           - "model-mappings/**"
+          - "scripts/check-core-paths.ts"
+          - "scripts/lib/governance/**"
     portability: portable
     changeset-gated: true
     requires:
@@ -2099,24 +2121,29 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/check-figure-labels.sh"
-          - "scripts/lib/check-figure-labels.py"
           - "scripts/tests/test-check-figure-labels.sh"
           - "docs/assets/**/*.png"
           - "docs/assets/**/*.prompt.md"
+          - "scripts/check-figure-labels.ts"
+          - "scripts/lib/governance/**"
+          - "scripts/lib/sequence-matcher.ts"
       - on: push
         branches: [main, "release/**"]
         paths:
           - "scripts/check-figure-labels.sh"
-          - "scripts/lib/check-figure-labels.py"
           - "scripts/tests/test-check-figure-labels.sh"
           - "docs/assets/**/*.png"
           - "docs/assets/**/*.prompt.md"
+          - "scripts/check-figure-labels.ts"
+          - "scripts/lib/governance/**"
+          - "scripts/lib/sequence-matcher.ts"
     portability: portable
     changeset-gated: true
     requires:
-      tools: [tesseract, python3]
+      runtime: node@24
+      tools: [tesseract]
     command:
-      - bash scripts/check-figure-labels.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-figure-labels.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-figure-labels.sh
 
   - id: mempalace
@@ -2265,6 +2292,9 @@ capabilities:
           - "scripts/tests/test-check-test-wiring.sh"
           - "scripts/check-test-strays.sh"
           - "scripts/tests/test-check-test-strays.sh"
+          - "scripts/check-test-strays.ts"
+          - "scripts/lib/governance/**"
+          - "scripts/check-test-wiring.ts"
           # Not sourced by this capability any more; its unit case lives in
           # test-check-test-strays.sh (case r), so a change to it still reruns that suite.
           - "scripts/lib/base-ref-resolve.sh"
@@ -2286,6 +2316,9 @@ capabilities:
           - "scripts/tests/test-check-test-wiring.sh"
           - "scripts/check-test-strays.sh"
           - "scripts/tests/test-check-test-strays.sh"
+          - "scripts/check-test-strays.ts"
+          - "scripts/lib/governance/**"
+          - "scripts/check-test-wiring.ts"
           # Not sourced by this capability any more; its unit case lives in
           # test-check-test-strays.sh (case r), so a change to it still reruns that suite.
           - "scripts/lib/base-ref-resolve.sh"
@@ -2308,9 +2341,9 @@ capabilities:
     requires:
       runtime: node@24
     command:
-      - bash scripts/check-test-wiring.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-test-wiring.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-test-wiring.sh
-      - bash scripts/check-test-strays.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-test-strays.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-test-strays.sh
 
   - id: chroma-mcp
@@ -2544,6 +2577,9 @@ capabilities:
           - "scripts/lib/**"
           - "scripts/tests/lib/print-setup-declarations.ts"
           - "scripts/tests/lib/setup-declarations-*.ts"
+          - "scripts/check-gemini-overlay-enrollment.ts"
+          - "scripts/lib/governance/**"
+          - "scripts/check-no-machine-paths.ts"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -2566,6 +2602,9 @@ capabilities:
           - "scripts/lib/**"
           - "scripts/tests/lib/print-setup-declarations.ts"
           - "scripts/tests/lib/setup-declarations-*.ts"
+          - "scripts/check-gemini-overlay-enrollment.ts"
+          - "scripts/lib/governance/**"
+          - "scripts/check-no-machine-paths.ts"
     portability: portable
     changeset-gated: true
     requires:
@@ -2573,17 +2612,17 @@ capabilities:
       # GitLab image is derived from the FIRST entry, so the job runs on the
       # pinned node:24 image like every other Node job, instead of piping an
       # unpinned NodeSource script into bash on a python:3.12 image.
-      # check-gemini-overlay-enrollment.sh reads the Gemini descriptor through
-      # a TypeScript printer, which fails closed below Node.js 24. python is
-      # the SECONDARY runtime: the shell checks only call a bare `python3`
-      # (no minor pinned), which the apt install satisfies. The GitLab leg
-      # cannot be run locally; it is covered by build-ci.sh --check and
+      # check-gemini-overlay-enrollment.ts runs on Node.js 24 and the Bash
+      # suites reach the check shims, which fail closed below Node.js 24. No
+      # python runtime is declared: check-markdown-links was the only
+      # python3 consumer and it is TypeScript now. The GitLab leg cannot be
+      # run locally; it is covered by build-ci.sh --check and
       # check-ci-parity.sh only.
-      runtime: [node@24, python@3.12]
+      runtime: node@24
     command:
       - npm ci --omit=dev --workspaces=false
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-no-machine-paths.sh
-      - bash scripts/check-gemini-overlay-enrollment.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-gemini-overlay-enrollment.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-gemini-overlay-enrollment.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-bash32-portability.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-pipefail-grep.sh
@@ -2601,7 +2640,8 @@ capabilities:
   # file count as owned and turn `path-ownership` vacuous. It is not
   # changeset-gated and runs no test suite (R3): the suites of the three scans
   # stay in misc, markdown-links and core-paths, under their own filters.
-  # python@3.12 is for check-markdown-links.sh (`exec python3`); check-core-paths.sh
+  # The three scans are TypeScript entries on Node.js 24: no python runtime is
+  # declared (check-markdown-links was its only consumer), and check-core-paths
   # needs no yq because `build-components.sh --list-output-dirs` exits in its
   # list_output_dirs guard (scripts/build-components.sh:64-117) before the yq
   # prerequisite check (scripts/build-components.sh:120).
@@ -2614,15 +2654,15 @@ capabilities:
         branches: [main, "release/**"]
     portability: portable
     requires:
-      # SECONDARY runtime: on the release branch build-components.sh is a shim
-      # over the TypeScript build, which check-core-paths.sh runs through
-      # `--list-output-dirs`; below Node.js 24 the shim fails closed (spec 0215
-      # R31 follow-up noted in #1550).
-      runtime: [python@3.12, node@24]
+      # check-core-paths.ts runs build-components.sh through
+      # `--list-output-dirs`; on the release branch that is a shim over the
+      # TypeScript build, which fails closed below Node.js 24 (spec 0215 R31
+      # follow-up noted in #1550).
+      runtime: node@24
     command:
-      - bash scripts/check-no-machine-paths.sh
-      - bash scripts/check-markdown-links.sh
-      - bash scripts/check-core-paths.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-no-machine-paths.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-markdown-links.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-core-paths.ts
 
   - id: frontmatter
     name: "Test frontmatter, skill-version, and assembly contracts"
@@ -2655,6 +2695,8 @@ capabilities:
           - "scripts/tests/lib/print-setup-declarations.ts"
           - "scripts/tests/fixtures/setup-golden/**"
           - "scripts/tests/fixtures/setup-declarations/**"
+          - "scripts/check-skill-versions.ts"
+          - "scripts/lib/governance/**"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -2683,6 +2725,8 @@ capabilities:
           - "scripts/tests/lib/print-setup-declarations.ts"
           - "scripts/tests/fixtures/setup-golden/**"
           - "scripts/tests/fixtures/setup-declarations/**"
+          - "scripts/check-skill-versions.ts"
+          - "scripts/lib/governance/**"
     portability: portable
     changeset-gated: true
     requires:
@@ -2759,18 +2803,33 @@ capabilities:
           - "artifacts/**"
           - "scripts/check-component-metadata-keys.sh"
           - "scripts/tests/test-check-component-metadata-keys.sh"
+          - "scripts/check-component-metadata-keys.ts"
+          - "scripts/lib/governance/**"
+          - "scripts/lib/build-components/**"
+          - "scripts/lib/render-command.ts"
+          - "scripts/lib/yaml-text.ts"
+          - "scripts/lib/require-dependency.ts"
       - on: push
         branches: [main, "release/**"]
         paths:
           - "artifacts/**"
           - "scripts/check-component-metadata-keys.sh"
           - "scripts/tests/test-check-component-metadata-keys.sh"
+          - "scripts/check-component-metadata-keys.ts"
+          - "scripts/lib/governance/**"
+          - "scripts/lib/build-components/**"
+          - "scripts/lib/render-command.ts"
+          - "scripts/lib/yaml-text.ts"
+          - "scripts/lib/require-dependency.ts"
     portability: portable
     changeset-gated: true
     requires:
+      runtime: node@24
       tools: [yq]
     command:
-      - bash scripts/check-component-metadata-keys.sh
+      - npm ci --omit=dev --workspaces=false
+      - node scripts/lib/node-floor-guard.js
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-component-metadata-keys.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-component-metadata-keys.sh
 
   - id: check-claude-agent-layout
@@ -2785,6 +2844,8 @@ capabilities:
           - "scripts/build-components.sh"
           - "scripts/build-components.ts"
           - "scripts/lib/build-components/**"
+          - "scripts/check-claude-agent-layout.ts"
+          - "scripts/lib/governance/**"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -2794,10 +2855,14 @@ capabilities:
           - "scripts/build-components.sh"
           - "scripts/build-components.ts"
           - "scripts/lib/build-components/**"
+          - "scripts/check-claude-agent-layout.ts"
+          - "scripts/lib/governance/**"
     portability: portable
     changeset-gated: true
+    requires:
+      runtime: node@24
     command:
-      - bash scripts/check-claude-agent-layout.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-claude-agent-layout.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-claude-agent-layout.sh
 
   - id: markdown-links
@@ -2812,6 +2877,8 @@ capabilities:
           - "README.md"
           - "AGENTS.md"
           - "**/*.md"
+          - "scripts/check-markdown-links.ts"
+          - "scripts/lib/governance/**"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -2821,10 +2888,12 @@ capabilities:
           - "README.md"
           - "AGENTS.md"
           - "**/*.md"
+          - "scripts/check-markdown-links.ts"
+          - "scripts/lib/governance/**"
     portability: portable
     changeset-gated: true
     requires:
-      runtime: python@3.12
+      runtime: node@24
     command:
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-markdown-links.sh
 
@@ -3441,11 +3510,12 @@ capabilities:
         branches: [main, "release/**"]
     portability: portable
     requires:
+      runtime: node@24
       history-depth: full
     env:
       BASE_REF: "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
     command:
-      - bash scripts/check-skill-versions.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-skill-versions.ts
 
   - id: check-extension-version-bump
     name: "Enforce carrier-version bump on changed extension sources"
@@ -3454,11 +3524,12 @@ capabilities:
         branches: [main, "release/**"]
     portability: portable
     requires:
+      runtime: node@24
       history-depth: full
     env:
       BASE_REF: "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
     command:
-      - bash scripts/check-extension-version-bump.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-version-bump.ts
 
   # check-spec-id-reserved compares the change against its base ref and reads
   # the reservation namespaces on the remote, so it needs full source history —
@@ -3509,8 +3580,10 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
     portability: portable
+    requires:
+      runtime: node@24
     command:
-      - bash scripts/check-agents-size.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-agents-size.ts
 
   - id: check-feedback-routing
     name: "Enforce upstream-tier feedback routing"
@@ -3521,9 +3594,11 @@ capabilities:
         branches: [main, "release/**"]
     portability: portable
     requires:
-      tools: [yq]
+      runtime: node@24
     command:
-      - bash scripts/check-feedback-routing.sh
+      - npm ci --omit=dev --workspaces=false
+      - node scripts/lib/node-floor-guard.js
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-feedback-routing.ts
 
   # --- Portable: standalone workflows -------------------------------------
 

@@ -1,89 +1,23 @@
-#!/usr/bin/env bash
-# check-markdown-links.sh — Validate relative Markdown links across tracked .md files
+#!/bin/bash
+# check-markdown-links.sh — forwarding shim (spec 0259 requirement 21). The check is
+# scripts/check-markdown-links.ts; this file remains so every caller that still runs
+# `bash scripts/check-markdown-links.sh` reaches the TypeScript version until row J4 removes the shell files.
 #
-# Usage:
-#   bash scripts/check-markdown-links.sh [file1.md file2.md ...]
+# It runs the Node.js floor guard (scripts/lib/node-floor-guard.js), then the TypeScript entry
+# with every argument and its standard input, and returns the entry's exit status, standard
+# output and standard error unchanged. It fails closed: with `node` absent it writes one
+# `Error:` line and exits 1; below the floor it exits with the floor guard's status and
+# diagnostic, and the entry is not run.
+#
+# Usage: bash scripts/check-markdown-links.sh [<arguments of scripts/check-markdown-links.ts> ...]
 
-set -euo pipefail
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-exec python3 - "$@" << 'EOF'
-import sys, os, re, subprocess, urllib.parse
+if ! command -v node >/dev/null 2>&1; then
+  echo "Error: node was not found on PATH; check-markdown-links needs Node.js 24 or later (https://nodejs.org/en/download)." >&2
+  exit 1
+fi
 
-def main():
-    repo_dir = subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip()
-    os.chdir(repo_dir)
+node "$DIR/lib/node-floor-guard.js" || exit $?
 
-    files = sys.argv[1:]
-    if not files:
-        files = subprocess.check_output(["git", "ls-files", "*.md"], text=True).splitlines()
-
-    errors = 0
-    link_regex = re.compile(r"\]\(([^)\s]+|\<[^>]+\>)\)")
-
-    for rel_file in files:
-        if not os.path.isfile(rel_file):
-            continue
-        
-        file_dir = os.path.dirname(rel_file)
-
-        with open(rel_file, "r", encoding="utf-8", errors="ignore") as f:
-            lines = f.readlines()
-
-        in_code_block = False
-        for line_idx, line in enumerate(lines, 1):
-            stripped = line.strip()
-            if stripped.startswith("```"):
-                in_code_block = not in_code_block
-                continue
-
-            if in_code_block:
-                continue
-
-            # Strip inline code spans (`...`)
-            line_no_inline = re.sub(r"`[^`]+`", "", line)
-
-            for match in link_regex.findall(line_no_inline):
-                target = match.strip("<>")
-
-                # 1. Ignore absolute URL schemes
-                if re.match(r"^(https?|mailto|ftp):", target, re.I):
-                    continue
-
-                # 2. Ignore pure fragment anchors
-                if target.startswith("#"):
-                    continue
-
-                # 3. Ignore templated targets
-                if "${" in target or "{{" in target or "$CANONICAL_REPO" in target:
-                    continue
-
-                # 4. Ignore GitHub tree-escape patterns
-                if re.search(r"\.\./.*(issues|pull)/[0-9]+", target):
-                    continue
-
-                # 5. Strip trailing fragment anchors
-                clean_target = target.split("#")[0]
-                if not clean_target:
-                    continue
-
-                # 6. Percent-decode URL
-                decoded_target = urllib.parse.unquote(clean_target)
-
-                # 7. Resolve relative path
-                resolved = os.path.normpath(os.path.join(file_dir, decoded_target))
-
-                # 8. Verify existence as file or directory
-                if not os.path.exists(resolved):
-                    print(f"FAIL: {rel_file}:{line_idx}: '{target}' -> resolved to '{resolved}' (does not exist)")
-                    errors += 1
-
-    if errors > 0:
-        print(f"Found {errors} broken relative Markdown link(s).")
-        sys.exit(1)
-    else:
-        print("All relative Markdown links resolved cleanly.")
-        sys.exit(0)
-
-if __name__ == "__main__":
-    main()
-EOF
+exec node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$DIR/check-markdown-links.ts" "$@"

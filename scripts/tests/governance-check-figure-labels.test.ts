@@ -1,13 +1,12 @@
 // check-figure-labels.test.ts — black-box test of scripts/check-figure-labels.ts with a
 // stand-in `tesseract` on the search path (spec 0259 R17). The Bash suite only passes by
 // skipping where tesseract is missing; this suite scripts the OCR output instead. Each case
-// also runs scripts/check-figure-labels.sh on the same fixture and stand-in and compares
-// stdout, stderr and exit status (bash and python3 needed: skipped locally when absent,
-// a failure when CI is set).
+// asserts stdout, stderr and exit status byte for byte against the frozen output of the
+// original shell script on the same fixture and stand-in (recorded under LC_ALL=C on Linux).
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, before, describe, it } from "node:test";
@@ -20,14 +19,6 @@ import {
 } from "./lib/tesseract-standin.ts";
 
 const SCRIPTS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const WIN = process.platform === "win32";
-const shellOk =
-  !WIN &&
-  spawnSync("bash", ["--version"]).status === 0 &&
-  spawnSync("python3", ["--version"]).status === 0;
-if (!WIN && !shellOk && process.env["CI"]) {
-  throw new Error("bash and python3 are required in CI for the shell comparison");
-}
 
 let repo = "";
 
@@ -35,6 +26,20 @@ interface Run {
   status: number | null;
   stdout: string;
   stderr: string;
+}
+
+/** Frozen {status, stdout, stderr} of the original shell script, one per run, in call order. */
+const GOLDEN = JSON.parse(
+  readFileSync(
+    path.join(SCRIPTS, "tests", "fixtures", "governance-oracle", "figure-labels.json.golden"),
+    "utf8",
+  ),
+) as Run[];
+let nextGolden = 0;
+function frozen(): Run {
+  const g = GOLDEN[nextGolden++];
+  assert.ok(g, "frozen shell expectations exhausted");
+  return g;
 }
 
 function exec(cmd: string, args: string[], env: NodeJS.ProcessEnv): Run {
@@ -49,11 +54,6 @@ const runTs = (env: NodeJS.ProcessEnv): Run =>
     [...NODE_FLAGS, path.join(repo, "scripts", "check-figure-labels.ts")],
     env,
   );
-const runSh = (env: NodeJS.ProcessEnv): Run =>
-  exec("bash", [path.join(repo, "scripts", "check-figure-labels.sh")], {
-    ...env,
-    LC_ALL: "C",
-  });
 
 interface Figure {
   name: string;
@@ -80,16 +80,13 @@ function setup(figures: Figure[]): ReturnType<typeof installTesseractStandIn> {
   return installTesseractStandIn(tsv);
 }
 
-/** Run the TS entry, optionally compare the shell script; return the TS run. */
+/** Run the TS entry and assert it equals the frozen shell output; return the run. */
 function both(figures: Figure[]): Run {
   const standIn = setup(figures);
   try {
     const env = standIn.env();
     const ts = runTs(env);
-    if (shellOk) {
-      const sh = runSh(env);
-      assert.deepEqual(ts, sh, "TypeScript entry and shell script diverge");
-    }
+    assert.deepEqual(ts, frozen(), "TypeScript entry and original shell output diverge");
     return ts;
   } finally {
     standIn.dispose();
@@ -102,12 +99,9 @@ const at = (text: string, left: number, top = 10): OcrWord => ({ text, left, top
 before(() => {
   repo = mkdtempSync(path.join(tmpdir(), "figure-labels-"));
   mkdirSync(path.join(repo, "scripts", "lib"), { recursive: true });
-  for (const f of ["check-figure-labels.sh", "check-figure-labels.ts"]) {
-    cpSync(path.join(SCRIPTS, f), path.join(repo, "scripts", f));
-  }
   cpSync(
-    path.join(SCRIPTS, "lib", "check-figure-labels.py"),
-    path.join(repo, "scripts", "lib", "check-figure-labels.py"),
+    path.join(SCRIPTS, "check-figure-labels.ts"),
+    path.join(repo, "scripts", "check-figure-labels.ts"),
   );
   cpSync(
     path.join(SCRIPTS, "lib", "sequence-matcher.ts"),
@@ -201,7 +195,7 @@ describe("check-figure-labels", () => {
         ts.stdout,
         "[SKIP] tesseract is not installed. Skipping figure label OCR check.\n",
       );
-      if (shellOk) assert.deepEqual(runSh(absent.env), ts);
+      assert.deepEqual(ts, frozen());
     } finally {
       absent.dispose();
     }

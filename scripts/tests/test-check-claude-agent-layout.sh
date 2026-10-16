@@ -158,49 +158,27 @@ assert "case-h: the real repository tree exits 0" "$([ "$CHECK_EXIT" -eq 0 ] && 
 # vacuous pass), then run the mutant against case d's nested fixture and
 # assert it exits 0 where the shipped guard exits non-zero.
 # ---------------------------------------------------------------------------
-# Behind the governance tee the guard path is a stub and the shell original sits
-# next to it as <guard>.shell; mutate that original, and mutate the TypeScript
-# twin the same way, so the tee still compares two implementations of the mutant.
-SHELL_SRC="$SCRIPT_UNDER_TEST"
-[ -f "$SCRIPT_UNDER_TEST.shell" ] && SHELL_SRC="$SCRIPT_UNDER_TEST.shell"
-MUTANT="$TMP_ROOT/mutant.sh"
+# The guard is the TypeScript module scripts/lib/governance/agent-layout.ts, run through the
+# entry. Mutate a copy of the module, insert the guard after the `legal` test, and run the
+# mutant through a sandbox copy of the shim, the entry, the governance modules and the floor
+# guard.
+TS_SRC="$SCRIPT_DIR/lib/governance/agent-layout.ts"
+MUT_ROOT="$TMP_ROOT/mutant-root"
+mkdir -p "$MUT_ROOT/scripts/lib"
+cp "$REPO_DIR/package.json" "$MUT_ROOT/package.json"
+cp "$SCRIPT_DIR/lib/node-floor-guard.js" "$MUT_ROOT/scripts/lib/"
+cp -R "$SCRIPT_DIR/lib/governance" "$MUT_ROOT/scripts/lib/governance"
+cp "$SCRIPT_DIR/check-claude-agent-layout.ts" "$SCRIPT_UNDER_TEST" "$MUT_ROOT/scripts/"
 awk '{
   print
-  if ($0 ~ /\[ "\$legal" -eq 1 \] && continue/) {
-    print "  [ -d \"$entry\" ] && continue"
+  if ($0 ~ /if \(legal\) continue;/) {
+    print "    if (followsToDirectory(entry)) continue;"
   }
-}' "$SHELL_SRC" > "$MUTANT"
-chmod +x "$MUTANT"
-
-TS_ENTRY="$SCRIPT_DIR/check-claude-agent-layout.ts"
-if [ "$SHELL_SRC" != "$SCRIPT_UNDER_TEST" ] && [ -f "$TS_ENTRY" ]; then
-  # Mutant sandbox: the tee, the TypeScript entry and its libs (with the guard
-  # inserted after the `legal` test), the shell mutant as <stub>.shell, and a stub.
-  MUT_ROOT="$TMP_ROOT/mutant-root"
-  mkdir -p "$MUT_ROOT/scripts/tests/lib" "$MUT_ROOT/scripts/lib"
-  cp "$REPO_DIR/package.json" "$MUT_ROOT/package.json"
-  cp "$SCRIPT_DIR/tests/lib/governance-tee.ts" "$MUT_ROOT/scripts/tests/lib/"
-  cp -R "$SCRIPT_DIR/lib/governance" "$MUT_ROOT/scripts/lib/governance"
-  cp "$TS_ENTRY" "$MUT_ROOT/scripts/"
-  awk '{
-    print
-    if ($0 ~ /if \(legal\) continue;/) {
-      print "    if (followsToDirectory(entry)) continue;"
-    }
-  }' "$SCRIPT_DIR/lib/governance/agent-layout.ts" > "$MUT_ROOT/scripts/lib/governance/agent-layout.ts"
-  assert "case-i: TypeScript mutant differs from the shipped twin" \
-    "$(diff -q "$SCRIPT_DIR/lib/governance/agent-layout.ts" "$MUT_ROOT/scripts/lib/governance/agent-layout.ts" >/dev/null 2>&1 && echo false || echo true)"
-  cp "$MUTANT" "$MUT_ROOT/scripts/check-claude-agent-layout.sh.shell"
-  {
-    echo '#!/usr/bin/env bash'
-    echo "exec node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON '$MUT_ROOT/scripts/tests/lib/governance-tee.ts' 'check-claude-agent-layout' \"\$@\""
-  } > "$MUT_ROOT/scripts/check-claude-agent-layout.sh"
-  MUTANT="$MUT_ROOT/scripts/check-claude-agent-layout.sh"
-  chmod +x "$MUTANT"
-fi
+}' "$TS_SRC" > "$MUT_ROOT/scripts/lib/governance/agent-layout.ts"
+MUTANT="$MUT_ROOT/scripts/check-claude-agent-layout.sh"
 
 assert "case-i: mutant differs from the shipped guard" \
-  "$(diff -q "$SHELL_SRC" "$TMP_ROOT/mutant.sh" >/dev/null 2>&1 && echo false || echo true)"
+  "$(diff -q "$TS_SRC" "$MUT_ROOT/scripts/lib/governance/agent-layout.ts" >/dev/null 2>&1 && echo false || echo true)"
 
 run_check "$repo_d" "$MUTANT"
 assert "case-i: mutant exits 0 on the nested fixture the shipped guard rejects" \

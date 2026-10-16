@@ -384,8 +384,8 @@ jobs:
         if: failure()
         uses: ./.github/actions/cancel-on-failure
 
-  # Spec 0259 R26-R28 (ticket #1338), PR P0: the governance-check suites and their shell oracle legs.
-  # Linux only: the legs spawn `bash`, `jq` and Go `yq` until the switch PR retires the shell originals.
+  # Spec 0259 R26-R28 (ticket #1338), PR P0: the governance-check suites.
+  # Linux only. The shell oracle legs retired with the switch PR, so no jq or yq is installed.
   governance-checks-ts:
     runs-on: ubuntu-latest
     steps:
@@ -411,12 +411,6 @@ jobs:
       - name: Install production dependencies
         if: steps.filter.outputs.governance-checks-ts == 'true'
         run: npm ci --omit=dev --workspaces=false
-      - name: Install yq v4.44.3
-        if: steps.filter.outputs.governance-checks-ts == 'true'
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.44.3/yq_linux_amd64
-          echo "a2c097180dd884a8d50c956ee16a9cec070f30a7947cf4ebf87d5f36213e9ed7  /usr/local/bin/yq" | sha256sum -c -
-          sudo chmod +x /usr/local/bin/yq
       - name: Floor guard accepts Node.js 24
         if: steps.filter.outputs.governance-checks-ts == 'true'
         run: node scripts/lib/node-floor-guard.js
@@ -1057,6 +1051,10 @@ jobs:
               - 'scripts/lib/extension-install.sh'
               - 'scripts/tests/test-release-package-extension.sh'
               - 'scripts/tests/test-create-extension-combinations.sh'
+              - 'scripts/check-extension-pivot.ts'
+              - 'scripts/lib/governance/**'
+              - 'scripts/check-extension-hook-map.ts'
+              - 'scripts/check-extension-hook-tokens.ts'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.extension-render == 'true'
         with:
@@ -1072,7 +1070,7 @@ jobs:
           sudo chmod +x /usr/local/bin/yq
       - name: Check Extension Pivot
         if: steps.filter.outputs.extension-render == 'true'
-        run: bash scripts/check-extension-pivot.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-pivot.ts
       - name: Test Check Extension Pivot
         if: steps.filter.outputs.extension-render == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-pivot.sh
@@ -1093,13 +1091,13 @@ jobs:
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-extension.ts --check
       - name: Check Extension Hook Tokens
         if: steps.filter.outputs.extension-render == 'true'
-        run: bash scripts/check-extension-hook-tokens.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-hook-tokens.ts
       - name: Test Check Extension Hook Tokens
         if: steps.filter.outputs.extension-render == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-hook-tokens.sh
       - name: Check Extension Hook Map
         if: steps.filter.outputs.extension-render == 'true'
-        run: bash scripts/check-extension-hook-map.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-hook-map.ts
       - name: Test Check Extension Hook Map
         if: steps.filter.outputs.extension-render == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-hook-map.sh
@@ -1129,6 +1127,8 @@ jobs:
               - 'scripts/tests/test-check-extension-provenance.sh'
               - 'extensions/**'
               - 'artifacts/**'
+              - 'scripts/check-extension-provenance.ts'
+              - 'scripts/lib/governance/**'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.extension-provenance == 'true'
         with:
@@ -1137,14 +1137,9 @@ jobs:
       - name: Install production dependencies
         if: steps.filter.outputs.extension-provenance == 'true'
         run: npm ci --omit=dev --workspaces=false
-      - name: Install yq
-        if: steps.filter.outputs.extension-provenance == 'true'
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
       - name: Check Extension Provenance
         if: steps.filter.outputs.extension-provenance == 'true'
-        run: bash scripts/check-extension-provenance.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-provenance.ts
       - name: Test Check Extension Provenance
         if: steps.filter.outputs.extension-provenance == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-provenance.sh
@@ -1170,14 +1165,17 @@ jobs:
               - 'scripts/tests/test-check-extension-version-bump.sh'
               - 'extensions/**'
               - 'artifacts/**'
-      - name: Install yq
+              - 'scripts/check-extension-version-bump.ts'
+              - 'scripts/lib/governance/**'
+              - 'scripts/check-extension-manifest-version.ts'
+              - 'scripts/lib/extension/**'
+      - uses: actions/setup-node@v4
         if: steps.filter.outputs.extension-manifest == 'true'
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
+        with:
+          node-version: 24
       - name: Check Extension Manifest Version
         if: steps.filter.outputs.extension-manifest == 'true'
-        run: bash scripts/check-extension-manifest-version.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-manifest-version.ts
       - name: Test Check Extension Manifest Version
         if: steps.filter.outputs.extension-manifest == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-manifest-version.sh
@@ -1313,6 +1311,8 @@ jobs:
               - '.crewrig/core-paths.txt'
               - 'docs/layers.md'
               - 'model-mappings/**'
+              - 'scripts/check-core-paths.ts'
+              - 'scripts/lib/governance/**'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.core-paths == 'true'
         with:
@@ -1420,19 +1420,22 @@ jobs:
           filters: |
             figure-labels:
               - 'scripts/check-figure-labels.sh'
-              - 'scripts/lib/check-figure-labels.py'
               - 'scripts/tests/test-check-figure-labels.sh'
               - 'docs/assets/**/*.png'
               - 'docs/assets/**/*.prompt.md'
+              - 'scripts/check-figure-labels.ts'
+              - 'scripts/lib/governance/**'
+              - 'scripts/lib/sequence-matcher.ts'
       - name: Install tesseract
         if: steps.filter.outputs.figure-labels == 'true'
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends tesseract-ocr
-      - name: Install python3
+      - uses: actions/setup-node@v4
         if: steps.filter.outputs.figure-labels == 'true'
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends python3
+        with:
+          node-version: 24
       - name: Check Figure Labels
         if: steps.filter.outputs.figure-labels == 'true'
-        run: bash scripts/check-figure-labels.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-figure-labels.ts
       - name: Test Check Figure Labels
         if: steps.filter.outputs.figure-labels == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-figure-labels.sh
@@ -1566,19 +1569,22 @@ jobs:
               - '.github/workflows/*.yml'
               - '.github/workflows/*.yaml'
               - 'ci/ci-capabilities.yml'
+              - 'scripts/check-test-strays.ts'
+              - 'scripts/lib/governance/**'
+              - 'scripts/check-test-wiring.ts'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.test-wiring == 'true'
         with:
           node-version: 24
       - name: Check Test Wiring
         if: steps.filter.outputs.test-wiring == 'true'
-        run: bash scripts/check-test-wiring.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-test-wiring.ts
       - name: Test Check Test Wiring
         if: steps.filter.outputs.test-wiring == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-test-wiring.sh
       - name: Check Test Strays
         if: steps.filter.outputs.test-wiring == 'true'
-        run: bash scripts/check-test-strays.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-test-strays.ts
       - name: Test Check Test Strays
         if: steps.filter.outputs.test-wiring == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-test-strays.sh
@@ -1911,14 +1917,31 @@ jobs:
               - 'artifacts/**'
               - 'scripts/check-component-metadata-keys.sh'
               - 'scripts/tests/test-check-component-metadata-keys.sh'
+              - 'scripts/check-component-metadata-keys.ts'
+              - 'scripts/lib/governance/**'
+              - 'scripts/lib/build-components/**'
+              - 'scripts/lib/render-command.ts'
+              - 'scripts/lib/yaml-text.ts'
+              - 'scripts/lib/require-dependency.ts'
+      - uses: actions/setup-node@v4
+        if: steps.filter.outputs.check-metadata-keys == 'true'
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install production dependencies
+        if: steps.filter.outputs.check-metadata-keys == 'true'
+        run: npm ci --omit=dev --workspaces=false
       - name: Install yq
         if: steps.filter.outputs.check-metadata-keys == 'true'
         run: |
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
+      - name: Floor guard accepts Node.js 24
+        if: steps.filter.outputs.check-metadata-keys == 'true'
+        run: node scripts/lib/node-floor-guard.js
       - name: Check Component Metadata Keys
         if: steps.filter.outputs.check-metadata-keys == 'true'
-        run: bash scripts/check-component-metadata-keys.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-component-metadata-keys.ts
       - name: Test Check Component Metadata Keys
         if: steps.filter.outputs.check-metadata-keys == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-component-metadata-keys.sh
@@ -1940,9 +1963,15 @@ jobs:
               - 'scripts/build-components.sh'
               - 'scripts/build-components.ts'
               - 'scripts/lib/build-components/**'
+              - 'scripts/check-claude-agent-layout.ts'
+              - 'scripts/lib/governance/**'
+      - uses: actions/setup-node@v4
+        if: steps.filter.outputs.check-claude-agent-layout == 'true'
+        with:
+          node-version: 24
       - name: Check Claude Agent Layout
         if: steps.filter.outputs.check-claude-agent-layout == 'true'
-        run: bash scripts/check-claude-agent-layout.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-claude-agent-layout.ts
       - name: Test Check Claude Agent Layout
         if: steps.filter.outputs.check-claude-agent-layout == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-claude-agent-layout.sh
@@ -1977,10 +2006,9 @@ jobs:
               - 'scripts/lib/**'
               - 'scripts/tests/lib/print-setup-declarations.ts'
               - 'scripts/tests/lib/setup-declarations-*.ts'
-      - uses: actions/setup-python@v5
-        if: steps.filter.outputs.misc == 'true'
-        with:
-          python-version: "3.12"
+              - 'scripts/check-gemini-overlay-enrollment.ts'
+              - 'scripts/lib/governance/**'
+              - 'scripts/check-no-machine-paths.ts'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.misc == 'true'
         with:
@@ -1993,7 +2021,7 @@ jobs:
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-no-machine-paths.sh
       - name: Check Gemini Overlay Enrollment
         if: steps.filter.outputs.misc == 'true'
-        run: bash scripts/check-gemini-overlay-enrollment.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-gemini-overlay-enrollment.ts
       - name: Test Check Gemini Overlay Enrollment
         if: steps.filter.outputs.misc == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-gemini-overlay-enrollment.sh
@@ -2019,18 +2047,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - uses: actions/setup-node@v4
         with:
           node-version: 24
       - name: Check No Machine Paths
-        run: bash scripts/check-no-machine-paths.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-no-machine-paths.ts
       - name: Check Markdown Links
-        run: bash scripts/check-markdown-links.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-markdown-links.ts
       - name: Check Core Paths
-        run: bash scripts/check-core-paths.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-core-paths.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -2068,6 +2093,8 @@ jobs:
               - 'scripts/tests/lib/print-setup-declarations.ts'
               - 'scripts/tests/fixtures/setup-golden/**'
               - 'scripts/tests/fixtures/setup-declarations/**'
+              - 'scripts/check-skill-versions.ts'
+              - 'scripts/lib/governance/**'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.frontmatter == 'true'
         with:
@@ -2119,10 +2146,12 @@ jobs:
               - 'README.md'
               - 'AGENTS.md'
               - '**/*.md'
-      - uses: actions/setup-python@v5
+              - 'scripts/check-markdown-links.ts'
+              - 'scripts/lib/governance/**'
+      - uses: actions/setup-node@v4
         if: steps.filter.outputs.markdown-links == 'true'
         with:
-          python-version: "3.12"
+          node-version: 24
       - name: Test Check Markdown Links
         if: steps.filter.outputs.markdown-links == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-markdown-links.sh
@@ -3340,10 +3369,13 @@ jobs:
         with:
           fetch-depth: 0  # full history so the base ref resolves
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
       - name: Enforce version bump on changed skill/agent sources
         env:
           BASE_REF: origin/${{ github.event.pull_request.base.ref }}
-        run: bash scripts/check-skill-versions.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-skill-versions.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -3356,10 +3388,13 @@ jobs:
         with:
           fetch-depth: 0  # full history so `git show BASE:path` resolves the old carrier
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
       - name: Enforce carrier-version bump on changed extension sources (spec 0044)
         env:
           BASE_REF: origin/${{ github.event.pull_request.base.ref }}
-        run: bash scripts/check-extension-version-bump.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-version-bump.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -3410,8 +3445,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
       - name: Check AGENTS.md file size
-        run: bash scripts/check-agents-size.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-agents-size.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -3421,13 +3459,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install yq
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install production dependencies
+        run: npm ci --omit=dev --workspaces=false
+      - name: Floor guard accepts Node.js 24
+        run: node scripts/lib/node-floor-guard.js
 
       - name: Enforce upstream-tier feedback routing (spec 0030)
-        run: bash scripts/check-feedback-routing.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-feedback-routing.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure

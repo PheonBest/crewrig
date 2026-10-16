@@ -304,14 +304,17 @@ refute_in() {
 
 # ---------------------------------------------------------------------------
 # P6 — `python3` tool requirement satisfied by `actions/setup-python` alone.
-# figure-labels declares `requires.tools: [tesseract, python3]`; its GHA job
-# step[3] is the "Install python3" apt-get recipe — swap it for a bare
-# `actions/setup-python@v5` step (no explicit apt-get install) and confirm the
-# tool requirement still resolves.
+# No capability declares `python3` any more (check-figure-labels is TypeScript), so the
+# fixture adds it to figure-labels' `requires.tools` (GHA-only: no .gitlab-ci.yml) and
+# appends a bare `actions/setup-python@v5` step (no explicit apt-get install) to its GHA
+# job; confirm the tool requirement still resolves.
 # ---------------------------------------------------------------------------
 {
   f="$(make_fixture)"
-  yq -i '.jobs."figure-labels".steps[3] = {"name": "Set up Python", "uses": "actions/setup-python@v5", "with": {"python-version": "3.12"}}' \
+  rm -f "$f/.gitlab-ci.yml"
+  yq -i '(.capabilities[] | select(.id == "figure-labels") | .requires.tools) += ["python3"]' \
+    "$f/ci/ci-capabilities.yml"
+  yq -i '.jobs."figure-labels".steps += [{"name": "Set up Python", "uses": "actions/setup-python@v5", "with": {"python-version": "3.12"}}]' \
     "$f/.github/workflows/build.yml"
 
   run_check "$f"
@@ -510,8 +513,9 @@ refute_in() {
 # ---------------------------------------------------------------------------
 {
   f="$(make_fixture)"
-  yq -i 'del(.jobs."figure-labels".steps[3])' \
-    "$f/.github/workflows/build.yml"
+  rm -f "$f/.gitlab-ci.yml"
+  yq -i '(.capabilities[] | select(.id == "figure-labels") | .requires.tools) += ["python3"]' \
+    "$f/ci/ci-capabilities.yml"
 
   run_check "$f"
   expect_exit 1 "S12: python3 requirement still fails closed with no setup step"

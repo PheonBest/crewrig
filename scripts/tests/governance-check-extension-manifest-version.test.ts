@@ -1,11 +1,12 @@
 // check-extension-manifest-version.test.ts — black-box edge cases for
 // scripts/check-extension-manifest-version.ts that the Bash suite does not cover (spec 0259 R14).
-// Each case also runs the shell script under LC_ALL=C when bash and jq exist and compares
-// stdout, stderr and exit status.
+// Each case asserts stdout, stderr and exit status byte for byte against the frozen output of
+// the original shell script, recorded on Ubuntu 24.04 under LC_ALL=C and stored in
+// fixtures/governance-oracle/extension-manifest-version.json.golden.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, describe, it } from "node:test";
@@ -13,12 +14,13 @@ import { fileURLToPath } from "node:url";
 
 const SCRIPTS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ENTRY = path.join(SCRIPTS, "check-extension-manifest-version.ts");
-const SHELL = path.join(SCRIPTS, "check-extension-manifest-version.sh");
-const WIN = process.platform === "win32";
-const shellOk =
-  !WIN &&
-  spawnSync("bash", ["--version"]).status === 0 &&
-  spawnSync("jq", ["--version"]).status === 0;
+const GOLDEN = path.join(
+  SCRIPTS,
+  "tests",
+  "fixtures",
+  "governance-oracle",
+  "extension-manifest-version.json.golden",
+);
 
 const tmp = mkdtempSync(path.join(tmpdir(), "ext-manifest-version-"));
 after(() => rmSync(tmp, { recursive: true, force: true }));
@@ -51,9 +53,11 @@ function run(cmd: string, args: string[], cwd: string): Run {
   return { status: r.status, stdout: r.stdout, stderr: r.stderr };
 }
 
-function check(root: string): Run {
+const frozen = JSON.parse(readFileSync(GOLDEN, "utf8")) as Record<string, Run>;
+
+function check(id: string, root: string): Run {
   const r = run(process.execPath, ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", ENTRY], root);
-  if (shellOk) assert.deepEqual(r, run("bash", [SHELL], root));
+  assert.deepEqual(r, frozen[id], `case ${id} diverges from the frozen original-shell output`);
   return r;
 }
 
@@ -61,32 +65,32 @@ const v = (x: string): string => `{"version":${x}}`;
 
 describe("check-extension-manifest-version", () => {
   it("an empty tree passes with zero extensions", () => {
-    const r = check(tree({}));
+    const r = check("c1", tree({}));
     assert.equal(r.status, 0);
     assert.match(r.stdout, /^\nOK: 0 extension\(s\)/);
   });
 
   it("package.json without version fails and skips the sibling", () => {
-    const r = check(tree({ "core/a": ['{"name":"a"}', v('"1.0.0"')] }));
+    const r = check("c2", tree({ "core/a": ['{"name":"a"}', v('"1.0.0"')] }));
     assert.equal(r.status, 1);
     assert.match(r.stdout, /FAIL extensions\/core\/a\/package\.json — no \.version field/);
   });
 
   it("null, false and empty-string versions are all empty", () => {
     for (const bad of ["null", "false", '""']) {
-      const r = check(tree({ "core/a": [v(bad), null] }));
+      const r = check(`c3-${bad}`, tree({ "core/a": [v(bad), null] }));
       assert.equal(r.status, 1, bad);
     }
   });
 
   it("a non-string truthy version compares as jq prints it", () => {
-    assert.equal(check(tree({ "core/a": [v("1"), v('"1"')] })).status, 0);
-    assert.equal(check(tree({ "core/a": [v("true"), v('"true"')] })).status, 0);
-    assert.equal(check(tree({ "core/a": [v("2"), v('"1"')] })).status, 1);
+    assert.equal(check("c4", tree({ "core/a": [v("1"), v('"1"')] })).status, 0);
+    assert.equal(check("c5", tree({ "core/a": [v("true"), v('"true"')] })).status, 0);
+    assert.equal(check("c6", tree({ "core/a": [v("2"), v('"1"')] })).status, 1);
   });
 
   it("a diverging extension.json names the offender and both versions", () => {
-    const r = check(tree({ "library/b": [v('"1.0.0"'), v('"2.0.0"')] }));
+    const r = check("c7", tree({ "library/b": [v('"1.0.0"'), v('"2.0.0"')] }));
     assert.equal(r.status, 1);
     assert.match(r.stdout, /version '2\.0\.0' != authoritative package\.json version '1\.0\.0'/);
     assert.match(r.stdout, /FAILED: 1 manifest\(s\)/);
@@ -94,6 +98,7 @@ describe("check-extension-manifest-version", () => {
 
   it("an absent extension.json is not a divergence; extensions sort by code unit", () => {
     const r = check(
+      "c8",
       tree({
         "library/z": [v('"1.0.0"'), null],
         "core/B": [v('"1.0.0"'), null],
@@ -109,12 +114,16 @@ describe("check-extension-manifest-version", () => {
   });
 
   it("the org tier is exempt", () => {
-    const r = check(tree({ "org/o": [v('"1.0.0"'), v('"9.9.9"')] }, ["core", "library", "org"]));
+    const r = check(
+      "c9",
+      tree({ "org/o": [v('"1.0.0"'), v('"9.9.9"')] }, ["core", "library", "org"]),
+    );
     assert.equal(r.status, 0);
   });
 
   it("a retired components object fails with a VALIDATION-ERROR on stderr", () => {
     const r = check(
+      "c10",
       tree({ "core/a": [v('"1.0.0"'), '{"version":"1.0.0","components":{"skills":{}}}'] }),
     );
     assert.equal(r.status, 1);

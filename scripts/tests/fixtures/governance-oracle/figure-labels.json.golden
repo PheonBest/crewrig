@@ -1,0 +1,52 @@
+[
+  {
+    "status": 0,
+    "stdout": "Checking docs/assets/a/flow.png (2 expected labels)...\n  ✓ [PASS] Label: 'Claude Code'\n  ✓ [PASS] Label: 'Gemini CLI'\n  RESULT: PASS for docs/assets/a/flow.png\n\n[PASS] All 1 figure(s) passed label OCR verification.\n",
+    "stderr": ""
+  },
+  {
+    "status": 1,
+    "stdout": "Checking docs/assets/m.png (2 expected labels)...\n  ✓ [PASS] Label: 'Alpha'\n  ❌ [FAIL] Missing label: 'Zebra Crossing'\n  RESULT: FAIL for docs/assets/m.png\n\n[FAIL] 1/1 figure(s) failed label OCR verification.\n",
+    "stderr": ""
+  },
+  {
+    "status": 1,
+    "stdout": "Checking docs/assets/o.png (2 expected labels)...\n  ✓ [PASS] Label: 'Right'\n  ❌ [FAIL] Label out of order: 'Left' found at cluster 0 (x=10px), expected after cluster 1\n  RESULT: FAIL for docs/assets/o.png\n\n[FAIL] 1/1 figure(s) failed label OCR verification.\n",
+    "stderr": ""
+  },
+  {
+    "status": 0,
+    "stdout": "Checking docs/assets/n.png (0 expected labels)...\n  [WARN] No labels extracted from sidecar docs/assets/n.prompt.md\n[PASS] All 1 figure(s) passed label OCR verification.\n",
+    "stderr": ""
+  },
+  {
+    "status": 0,
+    "stdout": "Checking docs/assets/q.png (3 expected labels)...\n  ✓ [PASS] Label: 'Alpha'\n  ✓ [PASS] Label: 'Beta'\n  ✓ [PASS] Label: 'Gamma'\n  RESULT: PASS for docs/assets/q.png\n\n[PASS] All 1 figure(s) passed label OCR verification.\n",
+    "stderr": ""
+  },
+  {
+    "status": 0,
+    "stdout": "[INFO] No figure prompt sidecars found in docs/assets.\n",
+    "stderr": ""
+  },
+  {
+    "status": 0,
+    "stdout": "[PASS] All 0 figure(s) passed label OCR verification.\n",
+    "stderr": ""
+  },
+  {
+    "status": 0,
+    "stdout": "[SKIP] tesseract is not installed. Skipping figure label OCR check.\n",
+    "stderr": ""
+  },
+  {
+    "status": 0,
+    "stdout": "Checking docs/assets/u.png (3 expected labels)...\n  ✓ [PASS] Label: 'Café — naïve “quote”'\n  ✓ [PASS] Label: 'Жук большой'\n  ✓ [PASS] Label: 'Pre- fix'\n  RESULT: PASS for docs/assets/u.png\n\n[PASS] All 1 figure(s) passed label OCR verification.\n",
+    "stderr": ""
+  },
+  {
+    "status": 1,
+    "stdout": "Checking docs/assets/r1.png (1 expected labels)...\n  ✓ [PASS] Label: 'wxyz'\n  RESULT: PASS for docs/assets/r1.png\n\nChecking docs/assets/r2.png (1 expected labels)...\n  ❌ [FAIL] Missing label: 'wxy'\n  RESULT: FAIL for docs/assets/r2.png\n\nChecking docs/assets/r3.png (1 expected labels)...\n  ✓ [PASS] Label: 'tulip rose'\n  RESULT: PASS for docs/assets/r3.png\n\nChecking docs/assets/r4.png (1 expected labels)...\n  ❌ [FAIL] Missing label: 'tulip rose daisy'\n  RESULT: FAIL for docs/assets/r4.png\n\n[FAIL] 2/4 figure(s) failed label OCR verification.\n",
+    "stderr": ""
+  }
+]

@@ -1,10 +1,11 @@
 // check-extension-pivot.test.ts — black-box edge cases of scripts/check-extension-pivot.ts
-// not covered by the Bash suite (spec 0259). Each case also runs the shell
-// script under LC_ALL=C in the same directory and compares stdout, stderr and status.
+// not covered by the Bash suite (spec 0259). Each case asserts stdout, stderr and
+// status byte for byte against the frozen output of the original shell script
+// (recorded under LC_ALL=C on Linux).
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, it } from "node:test";
@@ -12,10 +13,6 @@ import { fileURLToPath } from "node:url";
 
 const SCRIPTS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ENTRY = path.join(SCRIPTS, "check-extension-pivot.ts");
-const SHELL = path.join(SCRIPTS, "check-extension-pivot.sh");
-const WIN = process.platform === "win32";
-const bashOk = !WIN && spawnSync("bash", ["--version"]).status === 0;
-if (!WIN && !bashOk && process.env.CI) throw new Error("bash is required in CI for the oracle");
 
 interface Run {
   status: number | null;
@@ -23,12 +20,26 @@ interface Run {
   stderr: string;
 }
 
+/** Frozen {status, stdout, stderr} of the original shell script, one per check, in call order. */
+const GOLDEN = JSON.parse(
+  readFileSync(
+    path.join(SCRIPTS, "tests", "fixtures", "governance-oracle", "extension-pivot.json.golden"),
+    "utf8",
+  ),
+) as Run[];
+let nextGolden = 0;
+function frozen(): Run {
+  const g = GOLDEN[nextGolden++];
+  assert.ok(g, "frozen shell expectations exhausted");
+  return g;
+}
+
 function run(cmd: string, args: string[], cwd: string, env: NodeJS.ProcessEnv = {}): Run {
   const r = spawnSync(cmd, args, { cwd, encoding: "utf8", env: { ...process.env, ...env } });
   return { status: r.status, stdout: r.stdout, stderr: r.stderr };
 }
 
-/** Run the TS entry in a fresh fixture tree; compare to the shell when bash exists. */
+/** Run the TS entry in a fresh fixture tree; compare to the frozen shell output. */
 function check(setup: (dir: string) => void): Run {
   const dir = mkdtempSync(path.join(tmpdir(), "ext-pivot-"));
   try {
@@ -38,7 +49,7 @@ function check(setup: (dir: string) => void): Run {
       ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", ENTRY],
       dir,
     );
-    if (bashOk) assert.deepEqual(ts, run("bash", [SHELL], dir, { LC_ALL: "C" }));
+    assert.deepEqual(ts, frozen());
     return ts;
   } finally {
     rmSync(dir, { recursive: true, force: true });

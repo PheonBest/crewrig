@@ -326,8 +326,9 @@ Spec 0251 R14 closes it with the following trigger rule.
 - **A check with an unbounded input.** A check whose input is the whole
   repository, or a set of files that cannot be listed in advance, runs in a
   capability with no `paths:` filter. In this repository that capability is
-  `repository-scan`. It runs `scripts/check-no-machine-paths.sh`,
-  `scripts/check-markdown-links.sh` and `scripts/check-core-paths.sh` on every
+  `repository-scan`. It runs `scripts/check-no-machine-paths.ts`,
+  `scripts/check-markdown-links.ts` and `scripts/check-core-paths.ts` (each `.sh`
+  of the same name is a forwarding shim to it) on every
   pull request and every push to `main` and `release/**`, and runs no test
   suite, so that the cost added to every change is that of the scans alone.
 - **The cache corollary.** When the check is cache-guarded (its capability

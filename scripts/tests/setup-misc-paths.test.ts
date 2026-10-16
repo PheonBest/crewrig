@@ -1,6 +1,6 @@
 // setup-misc-paths.test.ts — the `misc` CI path filters cover the whole import closure of the
 // declaration printer (spec 0256, seat review/1335 finding i1-F15). `misc` runs
-// `scripts/check-gemini-overlay-enrollment.sh`, which reads the Gemini descriptor through
+// `scripts/check-gemini-overlay-enrollment.ts`, which reads the Gemini descriptor through
 // `scripts/tests/lib/print-setup-declarations.ts`; a change to any module that printer imports
 // (descriptors, facts, hook/extension/link-or-copy/manage/install/service helpers) can change the
 // declaration, so it must trigger the job. Layer 1: node:fs only, no yaml dependency, runs on every OS.

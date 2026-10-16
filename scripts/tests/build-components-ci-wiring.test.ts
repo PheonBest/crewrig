@@ -40,8 +40,8 @@ const SUITE_COMMAND = /--test /;
 // The script names are the ones the reference runs for the capabilities `frontmatter`,
 // `model-resolution`, `agent-profile-migration`, `check-agent-profiles` and `component-drift`:
 // each shell test assembles components through the build, so it needs Node.js 24 and the
-// production dependencies exactly as the direct invocation does. `check-core-paths.sh` builds
-// nothing here; `core-paths` is listed separately in NODE_ONLY_CAPABILITIES.
+// production dependencies exactly as the direct invocation does. `check-core-paths` (the `.sh`
+// shim or the `.ts` entry) builds nothing here; `core-paths` is listed separately in NODE_ONLY_CAPABILITIES.
 const BUILD_COMMAND = new RegExp(
   [
     "scripts/build-components\\.(ts|sh)",
@@ -55,13 +55,13 @@ const BUILD_COMMAND = new RegExp(
     "test-extract-frontmatter\\.sh",
     "test-artifact-build-install-scope\\.sh",
     "test-build-components\\.sh",
-    "check-core-paths\\.sh",
+    "check-core-paths\\.(sh|ts)",
   ].join("|"),
 );
 
 // `core-paths` runs the core-paths checks, which are Node-only by design (no `js-yaml` at
 // run time, so no production install); it still declares the Node.js 24 runtime. `repository-scan`
-// (spec 0251) runs `check-core-paths.sh` too, next to two Python scans, so it declares Node.js 24
+// (spec 0251) runs `check-core-paths` too, next to two Python scans, so it declares Node.js 24
 // as a secondary runtime. Named by id because "needs no install" is a property of that job's
 // design, not derivable from its commands.
 const NODE_ONLY_CAPABILITIES: ReadonlySet<string> = new Set(["core-paths", "repository-scan"]);

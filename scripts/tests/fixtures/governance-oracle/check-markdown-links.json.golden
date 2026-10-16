@@ -1,0 +1,80 @@
+{
+ "lone_cr": {
+  "input": "a\r[x](nope1.md)\rb\r\n[y](nope2.md)\n",
+  "status": 1,
+  "stdout": "FAIL: docs/case.md:2: 'nope1.md' -> resolved to 'docs/nope1.md' (does not exist)\nFAIL: docs/case.md:4: 'nope2.md' -> resolved to 'docs/nope2.md' (does not exist)\nFound 2 broken relative Markdown link(s).\n",
+  "stderr": ""
+ },
+ "u2028_ff": {
+  "input": "aâ¨[x](nope.md)\f\n[y](nope.md)\n",
+  "status": 1,
+  "stdout": "FAIL: docs/case.md:1: 'nope.md' -> resolved to 'docs/nope.md' (does not exist)\nFAIL: docs/case.md:2: 'nope.md' -> resolved to 'docs/nope.md' (does not exist)\nFound 2 broken relative Markdown link(s).\n",
+  "stderr": ""
+ },
+ "fence_ws": {
+  "input": "âÂ```\n[x](nope.md)\n```\n[y](nope.md)\n",
+  "status": 1,
+  "stdout": "FAIL: docs/case.md:4: 'nope.md' -> resolved to 'docs/nope.md' (does not exist)\nFound 1 broken relative Markdown link(s).\n",
+  "stderr": ""
+ },
+ "percent": {
+  "input": "[x](%FF.md) [y](caf%C3%A9.md) [z](%E2%82.md) [w](%zz.md)\n",
+  "status": 1,
+  "stdout": "FAIL: docs/case.md:1: '%FF.md' -> resolved to 'docs/�.md' (does not exist)\nFAIL: docs/case.md:1: 'caf%C3%A9.md' -> resolved to 'docs/café.md' (does not exist)\nFAIL: docs/case.md:1: '%E2%82.md' -> resolved to 'docs/�.md' (does not exist)\nFAIL: docs/case.md:1: '%zz.md' -> resolved to 'docs/%zz.md' (does not exist)\nFound 4 broken relative Markdown link(s).\n",
+  "stderr": ""
+ },
+ "slashes": {
+  "input": "[x](//a/../b) [y](///c/../d) [z](../b)\n",
+  "status": 1,
+  "stdout": "FAIL: docs/case.md:1: '//a/../b' -> resolved to '//b' (does not exist)\nFAIL: docs/case.md:1: '///c/../d' -> resolved to '/d' (does not exist)\nFound 2 broken relative Markdown link(s).\n",
+  "stderr": ""
+ },
+ "parens": {
+  "input": "[x](sub/(p).md) [y](a(b)c) [z](sub/(p)\n",
+  "status": 1,
+  "stdout": "FAIL: docs/case.md:1: 'sub/(p' -> resolved to 'docs/sub/(p' (does not exist)\nFAIL: docs/case.md:1: 'a(b' -> resolved to 'docs/a(b' (does not exist)\nFAIL: docs/case.md:1: 'sub/(p' -> resolved to 'docs/sub/(p' (does not exist)\nFound 3 broken relative Markdown link(s).\n",
+  "stderr": ""
+ },
+ "angle": {
+  "input": "[x](<real.md>) [y](<no such.md>) [z](<<real.md>>)\n",
+  "status": 1,
+  "stdout": "FAIL: docs/case.md:1: 'no such.md' -> resolved to 'docs/no such.md' (does not exist)\nFound 1 broken relative Markdown link(s).\n",
+  "stderr": ""
+ },
+ "symlinks": {
+  "input": "[a](link.md) [b](dangling.md) [c](sub) [d](.) [e](../docs/)\n",
+  "status": 1,
+  "stdout": "FAIL: docs/case.md:1: 'dangling.md' -> resolved to 'docs/dangling.md' (does not exist)\nFound 1 broken relative Markdown link(s).\n",
+  "stderr": ""
+ },
+ "invalid_utf8": {
+  "input": "[x](aÿþ.md)\n[y](â.md) ï¿½ [z](ï¿½.md)\n",
+  "status": 1,
+  "stdout": "FAIL: docs/case.md:1: 'a.md' -> resolved to 'docs/a.md' (does not exist)\nFAIL: docs/case.md:2: '.md' -> resolved to 'docs/.md' (does not exist)\nFAIL: docs/case.md:2: '�.md' -> resolved to 'docs/�.md' (does not exist)\nFound 3 broken relative Markdown link(s).\n",
+  "stderr": ""
+ },
+ "scheme": {
+  "input": "[a](HTTPS://x) [b](MailTo:x) [c](Å¿tp:x) [d](maÄ±lto:x) [e](Ä°tem.md) [f](Ftp:y)\n",
+  "status": 1,
+  "stdout": "FAIL: docs/case.md:1: 'ſtp:x' -> resolved to 'docs/ſtp:x' (does not exist)\nFAIL: docs/case.md:1: 'İtem.md' -> resolved to 'docs/İtem.md' (does not exist)\nFound 2 broken relative Markdown link(s).\n",
+  "stderr": ""
+ },
+ "skipped": {
+  "input": "[a](${X}/p) [b]({{y}}) [c](../../pull/12) [d](real.md#f) [e](#only) [g](../aâ¨b/issues/3)\n",
+  "status": 0,
+  "stdout": "All relative Markdown links resolved cleanly.\n",
+  "stderr": ""
+ },
+ "code_fence": {
+  "input": "`[a](nope.md)` [b](nope2.md)\n```md\n[c](nope3.md)\n```\n[d](nope4.md)\n",
+  "status": 1,
+  "stdout": "FAIL: docs/case.md:1: 'nope2.md' -> resolved to 'docs/nope2.md' (does not exist)\nFAIL: docs/case.md:5: 'nope4.md' -> resolved to 'docs/nope4.md' (does not exist)\nFound 2 broken relative Markdown link(s).\n",
+  "stderr": ""
+ },
+ "all": {
+  "input": null,
+  "status": 0,
+  "stdout": "All relative Markdown links resolved cleanly.\n",
+  "stderr": ""
+ }
+}
