@@ -1,0 +1,44 @@
+{
+  "id": "04-harness-loop/copilot/sidecar-start-skip",
+  "exit": 0,
+  "scenarioTap": "1..0 # SKIP could not start sidecar (image crewrig/e2e-mempalace:latest missing?)\n",
+  "dockerCommands": [
+    [
+      "volume",
+      "create",
+      "<CONTAINER>"
+    ],
+    [
+      "run",
+      "-d",
+      "--rm",
+      "--name",
+      "<CONTAINER>",
+      "-v",
+      "<CONTAINER>:/home/agent/.mempalace",
+      "crewrig/e2e-mempalace:latest",
+      "sleep",
+      "600"
+    ],
+    [
+      "rm",
+      "-f",
+      "<CONTAINER>"
+    ],
+    [
+      "volume",
+      "rm",
+      "-f",
+      "<CONTAINER>"
+    ]
+  ],
+  "files": {
+    "copilot/04-harness-loop/exit": "78\n",
+    "copilot/04-harness-loop/scenario.tap": "1..0 # SKIP could not start sidecar (image crewrig/e2e-mempalace:latest missing?)\n",
+    "copilot/04-harness-loop/stderr": "",
+    "copilot/04-harness-loop/stdout": "SKIP - copilot/04-harness-loop: could not start sidecar (image crewrig/e2e-mempalace:latest missing?)\n",
+    "run.tap": "TAP version 13\nok 1 - copilot/04-harness-loop # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - copilot/04-harness-loop # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[copilot] auth ready: COPILOT_GITHUB_TOKEN set in host shell\n"
+}

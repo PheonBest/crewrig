@@ -1,0 +1,32 @@
+{
+  "id": "04-harness-loop/gemini/volume-create-skip",
+  "exit": 0,
+  "scenarioTap": "1..0 # SKIP could not create docker volume <CONTAINER>\n",
+  "dockerCommands": [
+    [
+      "volume",
+      "create",
+      "<CONTAINER>"
+    ],
+    [
+      "rm",
+      "-f",
+      "<CONTAINER>"
+    ],
+    [
+      "volume",
+      "rm",
+      "-f",
+      "<CONTAINER>"
+    ]
+  ],
+  "files": {
+    "gemini/04-harness-loop/exit": "78\n",
+    "gemini/04-harness-loop/scenario.tap": "1..0 # SKIP could not create docker volume <CONTAINER>\n",
+    "gemini/04-harness-loop/stderr": "",
+    "gemini/04-harness-loop/stdout": "SKIP - gemini/04-harness-loop: could not create docker volume <CONTAINER>\n",
+    "run.tap": "TAP version 13\nok 1 - gemini/04-harness-loop # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - gemini/04-harness-loop # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[gemini] auth ready: GEMINI_API_KEY set in host shell\n"
+}

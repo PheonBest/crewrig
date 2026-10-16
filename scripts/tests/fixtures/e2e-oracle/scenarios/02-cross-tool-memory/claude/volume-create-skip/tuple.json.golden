@@ -1,0 +1,32 @@
+{
+  "id": "02-cross-tool-memory/claude/volume-create-skip",
+  "exit": 0,
+  "scenarioTap": "1..0 # SKIP could not create docker volume <CONTAINER>\n",
+  "dockerCommands": [
+    [
+      "volume",
+      "create",
+      "<CONTAINER>"
+    ],
+    [
+      "rm",
+      "-f",
+      "<CONTAINER>"
+    ],
+    [
+      "volume",
+      "rm",
+      "-f",
+      "<CONTAINER>"
+    ]
+  ],
+  "files": {
+    "claude/02-cross-tool-memory/exit": "78\n",
+    "claude/02-cross-tool-memory/scenario.tap": "1..0 # SKIP could not create docker volume <CONTAINER>\n",
+    "claude/02-cross-tool-memory/stderr": "",
+    "claude/02-cross-tool-memory/stdout": "SKIP - claude/02-cross-tool-memory: could not create docker volume <CONTAINER>\n",
+    "run.tap": "TAP version 13\nok 1 - claude/02-cross-tool-memory # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - claude/02-cross-tool-memory # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[claude] auth ready: on-disk marker <E2E_HOME>/claude/.credentials.json\n"
+}

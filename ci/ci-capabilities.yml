@@ -2397,6 +2397,9 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/tests/test-e2e-*.sh"
+          - "scripts/tests/e2e-*.test.ts"
+          - "scripts/tests/lib/e2e-*.ts"
+          - "scripts/tests/fixtures/e2e-oracle/**"
           - "tests/e2e/**"
           - "scripts/e2e/**"
           - "docs/cli-matrix.md"
@@ -2406,6 +2409,9 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/tests/test-e2e-*.sh"
+          - "scripts/tests/e2e-*.test.ts"
+          - "scripts/tests/lib/e2e-*.ts"
+          - "scripts/tests/fixtures/e2e-oracle/**"
           - "tests/e2e/**"
           - "scripts/e2e/**"
           - "docs/cli-matrix.md"
@@ -2415,8 +2421,10 @@ capabilities:
     portability: portable
     changeset-gated: true
     requires:
-      runtime: python@3.12
-      tools: [yq]
+      # python@3.12 stays the primary/image runtime; node@24 is a SECONDARY runtime for the
+      # TypeScript oracle suites (spec 0261). jq is preinstalled on the GitHub runner.
+      runtime: [python@3.12, node@24]
+      tools: [yq, jq]
     command:
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-assert-lib.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-auth-claude-json.sh
@@ -2442,6 +2450,9 @@ capabilities:
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-taskfile.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-toml-merge.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-versions-lock.sh
+      - npm ci --omit=dev --workspaces=false
+      - node scripts/lib/node-floor-guard.js
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-docker-standin.test.ts scripts/tests/e2e-oracle-scenarios.test.ts
 
   - id: setup
     name: "Test setup helpers and validation backend"

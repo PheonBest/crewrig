@@ -1,0 +1,79 @@
+{
+  "id": "04-harness-loop/gemini/report-fails",
+  "exit": 1,
+  "scenarioTap": "not ok 1 - harness-report: drawer write exited non-zero\nok 2 - harness-curator: search returned\nok 3 - side-effect: curator stdout captured\nok 4 - structural: [FRICTION] marker present in curator output\nok 5 - llm-judge: friction summary coherent\n1..5\n",
+  "dockerCommands": [
+    [
+      "volume",
+      "create",
+      "<CONTAINER>"
+    ],
+    [
+      "run",
+      "-d",
+      "--rm",
+      "--name",
+      "<CONTAINER>",
+      "-v",
+      "<CONTAINER>:/home/agent/.mempalace",
+      "crewrig/e2e-mempalace:latest",
+      "sleep",
+      "600"
+    ],
+    [
+      "run",
+      "--rm",
+      "-v",
+      "<CONTAINER>:/home/agent/.mempalace",
+      "-v",
+      "<TMP>/reports/<RUN_ID>/gemini/04-harness-loop/friction-workspace:/tmp/harness-ws",
+      "crewrig/e2e-mempalace:latest",
+      "bash",
+      "-c",
+      "mempalace init --yes /tmp/harness-ws &&\n         mempalace mine /tmp/harness-ws --wing harness-friction"
+    ],
+    [
+      "run",
+      "--rm",
+      "-v",
+      "<CONTAINER>:/home/agent/.mempalace",
+      "crewrig/e2e-mempalace:latest",
+      "mempalace",
+      "search",
+      "[FRICTION]",
+      "--wing",
+      "harness-friction",
+      "--room",
+      "frictions",
+      "--results",
+      "5"
+    ],
+    [
+      "rm",
+      "-f",
+      "<CONTAINER>"
+    ],
+    [
+      "volume",
+      "rm",
+      "-f",
+      "<CONTAINER>"
+    ]
+  ],
+  "files": {
+    "gemini/04-harness-loop/curator.stderr": "",
+    "gemini/04-harness-loop/curator.stdout": "[FRICTION] e2e-04-build-version-drop | silent drop of version\n",
+    "gemini/04-harness-loop/exit": "1\n",
+    "gemini/04-harness-loop/friction-workspace/frictions/friction-01.txt": "[FRICTION] e2e-04-build-version-drop | silent drop of metadata.provenance.version\n\nwriter_agent: gemini-harness-report\ncomponent: scripts/build-components.sh\nvisible_to: [\"*\"]\nsymptom: build exits 0 even though metadata.provenance.version was dropped on rename\nexpected: explicit \"version field missing\" diagnostic; non-zero exit\n\n---\nYou hit a recognition signal while editing a SKILL.md: the build step\nsilently dropped the metadata.provenance.version field on a renamed\ncomponent, so CI rejected the PR for a missing version bump. Activate\nthe `harness-report` skill and tag the friction.\n\nThe friction summary must include: the symptom (silent drop), the\nsuspected component (`scripts/build-components.sh`), and what the user\nwould expect to happen instead (an explicit \"version field missing\"\nerror before the build exits 0).\n",
+    "gemini/04-harness-loop/judge-subject.txt": "You hit a recognition signal while editing a SKILL.md: the build step\nsilently dropped the metadata.provenance.version field on a renamed\ncomponent, so CI rejected the PR for a missing version bump. Activate\nthe `harness-report` skill and tag the friction.\n\nThe friction summary must include: the symptom (silent drop), the\nsuspected component (`scripts/build-components.sh`), and what the user\nwould expect to happen instead (an explicit \"version field missing\"\nerror before the build exits 0).\n",
+    "gemini/04-harness-loop/judge.log": "VERDICT=PASS confidence=0.95\n",
+    "gemini/04-harness-loop/report.stderr": "boom\n",
+    "gemini/04-harness-loop/report.stdout": "mined 1 drawer\n",
+    "gemini/04-harness-loop/scenario.tap": "not ok 1 - harness-report: drawer write exited non-zero\nok 2 - harness-curator: search returned\nok 3 - side-effect: curator stdout captured\nok 4 - structural: [FRICTION] marker present in curator output\nok 5 - llm-judge: friction summary coherent\n1..5\n",
+    "gemini/04-harness-loop/stderr": "",
+    "gemini/04-harness-loop/stdout": "1/5 FAIL — gemini/04-harness-loop\n",
+    "run.tap": "TAP version 13\nnot ok 1 - gemini/04-harness-loop\n1..1\n# pass: 0  fail: 1  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nnot ok 1 - gemini/04-harness-loop\n1..1\n# pass: 0  fail: 1  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[gemini] auth ready: GEMINI_API_KEY set in host shell\n[runner] gemini/04-harness-loop failed: exit 1\n[runner]   stdout: <TMP>/reports/<RUN_ID>/gemini/04-harness-loop/stdout\n[runner]   stderr: <TMP>/reports/<RUN_ID>/gemini/04-harness-loop/stderr\n"
+}
