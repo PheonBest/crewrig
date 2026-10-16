@@ -15,11 +15,31 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { defaultIsFile } from "../lib/worktree-claim/launch-windows.ts";
-import { expectStatus, resolveInterpreters, spawnEntry, why } from "./lib/windows-proof-support.ts";
+import { defaultIsFile, resolveOnPath } from "../lib/worktree-claim/launch-windows.ts";
+import {
+  expectStatus,
+  resolveInterpreters,
+  spawnEntry,
+  WIN,
+  why,
+} from "./lib/windows-proof-support.ts";
 import type { Run } from "./lib/windows-proof-support.ts";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+
+/**
+ * `git` must stay reachable once spawnEntry narrows the child PATH to node, System32 and the stubs:
+ * on Windows its directory (found on the PARENT PATH) is prepended to the stub directory.
+ */
+function withGitDir(bin: string): string {
+  if (!WIN) return bin;
+  const git = resolveOnPath("git", {
+    platform: process.platform,
+    env: process.env,
+    isFile: defaultIsFile,
+  });
+  return git === undefined ? bin : [path.win32.dirname(git), bin].join(path.delimiter);
+}
 
 function withBox<T>(body: (home: string, bin: string) => T): T {
   const root = fs.realpathSync.native(
@@ -58,7 +78,7 @@ function run(entry: string, tree: string, home: string, bin: string): Run {
         NODE_OPTIONS: "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
       },
       home,
-      bin,
+      bin: withGitDir(bin),
       interpreters,
     });
   } finally {
