@@ -12,12 +12,12 @@ import {
   type AssertOptions,
   type AssertResult,
   assertDiag,
-  ereMatches,
   fail,
   headBytes,
   missing,
   stripTrailingNewlines,
 } from "./assert.ts";
+import { ereMatches } from "./ere.ts";
 
 export function assertStdoutMatches(
   regex: string,

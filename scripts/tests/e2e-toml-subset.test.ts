@@ -123,7 +123,7 @@ describe("toml_subset: fuzz against yq", { skip }, () => {
     it(`defaults.toml merged with ${name}`, () => {
       const d = parseToml(fs.readFileSync(defaults, "utf8"), "defaults.toml");
       const l = parseToml(fs.readFileSync(path.join(fixtures, name), "latin1"), name);
-      const merged: unknown = JSON.parse(toJson(mergeValues(d, l), "yq"));
+      const merged = JSON.parse(toJson(mergeValues(d, l), "yq")) as unknown;
       const out = execFileSync(
         "yq",
         [
