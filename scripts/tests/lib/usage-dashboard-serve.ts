@@ -150,7 +150,8 @@ export async function startServer(
     );
     const poll = setInterval(() => {
       const m = /^LISTENING http:\/\/127\.0\.0\.1:(\d+)\//m.exec(out);
-      if (m) {
+      // BOUND is a second write of the same callback; on Windows it can arrive in a later chunk.
+      if (m && /^BOUND \S+$/m.test(out)) {
         clearTimeout(timer);
         clearInterval(poll);
         resolve(Number(m[1]));
