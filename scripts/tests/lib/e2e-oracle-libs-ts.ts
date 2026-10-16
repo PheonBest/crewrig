@@ -53,7 +53,11 @@ export async function observeLibTs(c: LibCase): Promise<LibTuple | null> {
   if (binding === undefined) return null;
   const box = makeSandbox(c);
   const res = await binding(c.args ?? [], { work: box.work, env: box.env, stdin: c.stdin ?? "" });
-  const printed = (c.printVars ?? []).map((v) => `${v}=${res.vars?.[v] ?? ""}\n`).join("");
+  // A call that exits (e2e_die, e2e_skip) never reaches the lines that print the variables.
+  const printed =
+    res.vars === undefined
+      ? ""
+      : (c.printVars ?? []).map((v) => `${v}=${res.vars?.[v] ?? ""}\n`).join("");
   return finishSandbox(c, box, {
     rc: res.rc,
     stdout: (res.stdout ?? "") + printed,
