@@ -284,7 +284,6 @@ jobs:
               - 'scripts/build-copilot-plugin.*'
               - 'scripts/build-antigravity-extension.*'
               - 'scripts/migrate-extension.*'
-              - 'scripts/lib/extension-manifest.sh'
               - 'scripts/lib/extension-hooks.sh'
               - 'scripts/lib/extension-*.json'
               - 'scripts/lib/common.sh'
@@ -1003,7 +1002,6 @@ jobs:
               - 'scripts/lib/org-mcp.ts'
               - 'scripts/lib/node-floor-guard.js'
               - 'scripts/install-extension.sh'
-              - 'scripts/lib/extension-manifest.sh'
               - 'scripts/lib/extension-percli-keys.json'
               - 'scripts/lib/extension-generated-class.json'
               - 'scripts/tests/test-check-extension-pivot.sh'
@@ -1029,7 +1027,6 @@ jobs:
               - 'scripts/tests/test-check-extension-hook-map.sh'
               - 'scripts/lib/common.sh'
               - 'scripts/probe-extension-mcp-token.sh'
-              - 'scripts/tests/test-extension-mcp-manifest.sh'
               - 'scripts/install-antigravity-extension.sh'
               - 'scripts/install-extension.ts'
               - 'scripts/install-antigravity-extension.ts'
@@ -1080,9 +1077,6 @@ jobs:
       - name: Test Extension Render Conformance
         if: steps.filter.outputs.extension-render == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-extension-render-conformance.sh
-      - name: Test Extension MCP Manifest
-        if: steps.filter.outputs.extension-render == 'true'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-extension-mcp-manifest.sh
       - name: Floor guard accepts Node.js 24
         if: steps.filter.outputs.extension-render == 'true'
         run: node scripts/lib/node-floor-guard.js
@@ -1123,7 +1117,6 @@ jobs:
           filters: |
             extension-provenance:
               - 'scripts/check-extension-provenance.sh'
-              - 'scripts/lib/provenance-carrier.sh'
               - 'scripts/tests/test-check-extension-provenance.sh'
               - 'extensions/**'
               - 'artifacts/**'
@@ -1158,7 +1151,6 @@ jobs:
               - 'scripts/check-extension-manifest-version.sh'
               - 'scripts/check-extension-version-bump.sh'
               - 'scripts/lib/base-ref-resolve.sh'
-              - 'scripts/lib/extension-manifest.sh'
               - 'scripts/lib/common.sh'
               - 'scripts/lib/extension-hooks.sh'
               - 'scripts/tests/test-check-extension-manifest-version.sh'

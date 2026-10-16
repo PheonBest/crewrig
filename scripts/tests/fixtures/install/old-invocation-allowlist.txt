@@ -33,9 +33,6 @@ ci/ci-capabilities.yml
 .gitlab-ci.yml
 .github/workflows/build.yml
 
-# Shell scripts that remain until their own migration row and comment on the shim path.
-scripts/lib/extension-manifest.sh
-
 # Descriptive data in scripts/lib JSON tables: a `_readme` text and per-key evidence citations
 # of the original shell lines (historical references, not instructions).
 scripts/lib/extension-targets.json

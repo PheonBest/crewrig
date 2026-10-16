@@ -1,5 +1,5 @@
 // manifest.ts — manifest accessors over a parsed `extension.json` (spec 0254 R8).
-// Twins of scripts/lib/extension-manifest.sh: `ext_subject_present` :39, `ext_subject_location`
+// Twins of the retired scripts/lib/extension-manifest.sh: `ext_subject_present` :39, `ext_subject_location`
 // :52, `ext_subject_option` :61, `ext_version` :69, `ext_build_dir` :187, `ext_gap_dir` :197,
 // plus the `jq -r` field reads the plugin builders perform on the manifest.
 //

@@ -1,6 +1,6 @@
 // validate-mcp.ts — the shape, reserved-name and path-token validators of the generic
 // `mcpServers` section (spec 0254 R9). Twins of `ext_validate_mcp_shape`,
-// `ext_validate_mcp_names` and `ext_validate_mcp_tokens` (scripts/lib/extension-manifest.sh,
+// `ext_validate_mcp_names` and `ext_validate_mcp_tokens` (the retired scripts/lib/extension-manifest.sh,
 // the three functions after "Extension-scoped MCP server declaration").
 // Pure: each returns the VALIDATION-ERROR lines the shell prints to stderr.
 

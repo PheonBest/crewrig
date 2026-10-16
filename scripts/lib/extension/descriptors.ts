@@ -1,5 +1,5 @@
 // descriptors.ts — typed readers of the four `extension-*.json` descriptors (spec 0254 R8).
-// Reads the files the shell libraries read: scripts/lib/extension-manifest.sh:24-25 (the
+// Reads the files the retired shell libraries read: scripts/lib/extension-manifest.sh:24-25 (the
 // targets and legacy-shape paths), :383 (`ext_mcp_delivery`, fail-closed), :84-117
 // (`ext_assert_current_shape`, which consumes the legacy-shape enumeration), and
 // scripts/build-extension.sh `ext_class_scan` (the generated-output class).

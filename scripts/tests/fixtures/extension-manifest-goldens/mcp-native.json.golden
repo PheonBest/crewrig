@@ -1,0 +1,1442 @@
+{
+  "real: hello-world": {
+    "gemini": {
+      "out": "{\"default\":{\"command\":\"node\",\"args\":[\"${extensionPath}/dist/index.js\"]}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"default\":{\"command\":\"node\",\"args\":[\"${CLAUDE_PLUGIN_ROOT}/dist/index.js\"]}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"default\":{\"command\":\"node\",\"args\":[\"${COPILOT_PLUGIN_ROOT}/dist/index.js\"],\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"default\":{\"command\":\"node\",\"args\":[\"${extensionRoot}/dist/index.js\"]}}",
+      "status": 0
+    }
+  },
+  "subjects: every subject": {
+    "gemini": {
+      "out": "{\"s\":{\"command\":\"node\",\"args\":[\"${extensionPath}/s.js\"]}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"s\":{\"command\":\"node\",\"args\":[\"${CLAUDE_PLUGIN_ROOT}/s.js\"]}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"s\":{\"command\":\"node\",\"args\":[\"${COPILOT_PLUGIN_ROOT}/s.js\"],\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"s\":{\"command\":\"node\",\"args\":[\"${extensionRoot}/s.js\"]}}",
+      "status": 0
+    }
+  },
+  "subjects: empty object": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "subjects: name and version only": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: PreToolUse with matcher": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: PreToolUse without matcher": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: UserPromptSubmit without matcher": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: matcher on an event that accepts none": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: unknown event": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: unknown matcher class": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: empty matcher string": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: null matcher": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: numeric matcher": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: missing id": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: missing event": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: missing command": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: entry is empty object": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: id outside the pattern": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: id with allowed punctuation": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: numeric id": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: section is an object": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: section is a string": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: section is null": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: empty array": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: entry is a string": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: root token twice": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: bare root token at the end": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: command with a trailing line feed": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: two entries sharing an event": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: no name (antigravity id)": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: numeric name": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "hooks: unicode command": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "mcp: stdio": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":[\"a\"],\"env\":{\"K\":\"v\"},\"cwd\":\"/w\",\"timeout\":30}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":[\"a\"],\"env\":{\"K\":\"v\"},\"cwd\":\"/w\",\"timeout\":30}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":[\"a\"],\"env\":{\"K\":\"v\"},\"cwd\":\"/w\",\"timeout\":30,\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":[\"a\"],\"env\":{\"K\":\"v\"},\"cwd\":\"/w\",\"timeout\":30}}",
+      "status": 0
+    }
+  },
+  "mcp: stdio explicit transport": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"node\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"node\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"node\",\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"node\"}}",
+      "status": 0
+    }
+  },
+  "mcp: stdio null transport": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"node\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"node\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"node\",\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"node\"}}",
+      "status": 0
+    }
+  },
+  "mcp: http": {
+    "gemini": {
+      "out": "{\"srv\":{\"httpUrl\":\"https://h/x\",\"headers\":{\"A\":\"b\"},\"timeout\":9}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"type\":\"http\",\"url\":\"https://h/x\",\"headers\":{\"A\":\"b\"},\"timeout\":9}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"type\":\"http\",\"url\":\"https://h/x\",\"headers\":{\"A\":\"b\"},\"timeout\":9}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"serverUrl\":\"https://h/x\",\"headers\":{\"A\":\"b\"},\"timeout\":9}}",
+      "status": 0
+    }
+  },
+  "mcp: sse": {
+    "gemini": {
+      "out": "{\"srv\":{\"url\":\"https://h/s\",\"headers\":{\"A\":\"b\"}}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"type\":\"sse\",\"url\":\"https://h/s\",\"headers\":{\"A\":\"b\"}}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"type\":\"sse\",\"url\":\"https://h/s\",\"headers\":{\"A\":\"b\"}}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"serverUrl\":\"https://h/s\",\"headers\":{\"A\":\"b\"}}}",
+      "status": 0
+    }
+  },
+  "mcp: stdio missing command": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":null,\"args\":[\"a\"]}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":null,\"args\":[\"a\"]}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":null,\"args\":[\"a\"],\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":null,\"args\":[\"a\"]}}",
+      "status": 0
+    }
+  },
+  "mcp: stdio empty command": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"\",\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"\"}}",
+      "status": 0
+    }
+  },
+  "mcp: http missing url": {
+    "gemini": {
+      "out": "{\"srv\":{\"httpUrl\":null}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"type\":\"http\",\"url\":null}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"type\":\"http\",\"url\":null}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"serverUrl\":null}}",
+      "status": 0
+    }
+  },
+  "mcp: sse missing url": {
+    "gemini": {
+      "out": "{\"srv\":{\"url\":null,\"headers\":{}}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"type\":\"sse\",\"url\":null,\"headers\":{}}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"type\":\"sse\",\"url\":null,\"headers\":{}}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"serverUrl\":null,\"headers\":{}}}",
+      "status": 0
+    }
+  },
+  "mcp: stdio inadmissible key": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"node\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"node\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"node\",\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"node\"}}",
+      "status": 0
+    }
+  },
+  "mcp: http inadmissible key": {
+    "gemini": {
+      "out": "{\"srv\":{\"httpUrl\":\"https://h\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"type\":\"http\",\"url\":\"https://h\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"type\":\"http\",\"url\":\"https://h\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"serverUrl\":\"https://h\"}}",
+      "status": 0
+    }
+  },
+  "mcp: sse inadmissible key": {
+    "gemini": {
+      "out": "{\"srv\":{\"url\":\"https://h\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"type\":\"sse\",\"url\":\"https://h\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"type\":\"sse\",\"url\":\"https://h\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"serverUrl\":\"https://h\"}}",
+      "status": 0
+    }
+  },
+  "mcp: unknown transport": {
+    "gemini": {
+      "out": "{\"srv\":{\"url\":\"ws://h\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"type\":\"ws\",\"url\":\"ws://h\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"type\":\"ws\",\"url\":\"ws://h\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"serverUrl\":\"ws://h\"}}",
+      "status": 0
+    }
+  },
+  "mcp: reserved name mempalace": {
+    "gemini": {
+      "out": "{\"mempalace\":{\"command\":\"node\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"mempalace\":{\"command\":\"node\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"mempalace\":{\"command\":\"node\",\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"mempalace\":{\"command\":\"node\"}}",
+      "status": 0
+    }
+  },
+  "mcp: reserved name sequentialthinking": {
+    "gemini": {
+      "out": "{\"sequentialthinking\":{\"command\":\"node\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"sequentialthinking\":{\"command\":\"node\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"sequentialthinking\":{\"command\":\"node\",\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"sequentialthinking\":{\"command\":\"node\"}}",
+      "status": 0
+    }
+  },
+  "mcp: root token in command": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"${extensionPath}/bin/run\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"${CLAUDE_PLUGIN_ROOT}/bin/run\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"${COPILOT_PLUGIN_ROOT}/bin/run\",\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"${extensionRoot}/bin/run\"}}",
+      "status": 0
+    }
+  },
+  "mcp: root token in args and cwd": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":[\"${extensionPath}/a.js\",\"-x\"],\"cwd\":\"${extensionPath}\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":[\"${CLAUDE_PLUGIN_ROOT}/a.js\",\"-x\"],\"cwd\":\"${CLAUDE_PLUGIN_ROOT}\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":[\"${COPILOT_PLUGIN_ROOT}/a.js\",\"-x\"],\"cwd\":\"${COPILOT_PLUGIN_ROOT}\",\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":[\"${extensionRoot}/a.js\",\"-x\"],\"cwd\":\"${extensionRoot}\"}}",
+      "status": 0
+    }
+  },
+  "mcp: other token in command": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"${HOME}/bin\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"${HOME}/bin\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"${HOME}/bin\",\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"${HOME}/bin\"}}",
+      "status": 0
+    }
+  },
+  "mcp: other token in args": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":[\"${extensionPath}/a\",\"${A}${B}\"]}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":[\"${extensionPath}/a\",\"${A}${B}\"]}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":[\"${extensionPath}/a\",\"${A}${B}\"],\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":[\"${extensionPath}/a\",\"${A}${B}\"]}}",
+      "status": 0
+    }
+  },
+  "mcp: path token in env": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"node\",\"env\":{\"P\":\"${extensionPath}/x\",\"Q\":\"${CLAUDE_PLUGIN_ROOT}\"}}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"node\",\"env\":{\"P\":\"${CLAUDE_PLUGIN_ROOT}/x\",\"Q\":\"${CLAUDE_PLUGIN_ROOT}\"}}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"node\",\"env\":{\"P\":\"${COPILOT_PLUGIN_ROOT}/x\",\"Q\":\"${CLAUDE_PLUGIN_ROOT}\"},\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"node\",\"env\":{\"P\":\"${extensionRoot}/x\",\"Q\":\"${CLAUDE_PLUGIN_ROOT}\"}}}",
+      "status": 0
+    }
+  },
+  "mcp: gemini slash token in env": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"node\",\"env\":{\"P\":\"${/}\"}}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"node\",\"env\":{\"P\":\"${/}\"}}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"node\",\"env\":{\"P\":\"${/}\"},\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"node\",\"env\":{\"P\":\"${/}\"}}}",
+      "status": 0
+    }
+  },
+  "mcp: path token in headers": {
+    "gemini": {
+      "out": "{\"srv\":{\"httpUrl\":\"https://h\",\"headers\":{\"P\":\"${COPILOT_PLUGIN_ROOT}\"}}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"type\":\"http\",\"url\":\"https://h\",\"headers\":{\"P\":\"${COPILOT_PLUGIN_ROOT}\"}}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"type\":\"http\",\"url\":\"https://h\",\"headers\":{\"P\":\"${COPILOT_PLUGIN_ROOT}\"}}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"serverUrl\":\"https://h\",\"headers\":{\"P\":\"${COPILOT_PLUGIN_ROOT}\"}}}",
+      "status": 0
+    }
+  },
+  "mcp: ordinary interpolation in env": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"node\",\"env\":{\"KEY\":\"${API_KEY}\"}}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"node\",\"env\":{\"KEY\":\"${API_KEY}\"}}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"node\",\"env\":{\"KEY\":\"${API_KEY}\"},\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"node\",\"env\":{\"KEY\":\"${API_KEY}\"}}}",
+      "status": 0
+    }
+  },
+  "mcp: root token in url": {
+    "gemini": {
+      "out": "{\"srv\":{\"httpUrl\":\"https://h/${extensionPath}\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"type\":\"http\",\"url\":\"https://h/${CLAUDE_PLUGIN_ROOT}\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"type\":\"http\",\"url\":\"https://h/${COPILOT_PLUGIN_ROOT}\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"serverUrl\":\"https://h/${extensionRoot}\"}}",
+      "status": 0
+    }
+  },
+  "mcp: two servers, sorted by name": {
+    "gemini": {
+      "out": "{\"zeta\":{\"command\":\"node\"},\"alpha\":{\"command\":\"node\",\"args\":[\"${extensionPath}\"]}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"zeta\":{\"command\":\"node\"},\"alpha\":{\"command\":\"node\",\"args\":[\"${CLAUDE_PLUGIN_ROOT}\"]}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"zeta\":{\"command\":\"node\",\"type\":\"stdio\"},\"alpha\":{\"command\":\"node\",\"args\":[\"${COPILOT_PLUGIN_ROOT}\"],\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"zeta\":{\"command\":\"node\"},\"alpha\":{\"command\":\"node\",\"args\":[\"${extensionRoot}\"]}}",
+      "status": 0
+    }
+  },
+  "mcp: section is an array": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "mcp: section is a string": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "mcp: section is null": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "mcp: section is empty": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "mcp: entry is null": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":null}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":null}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":null,\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":null}}",
+      "status": 0
+    }
+  },
+  "mcp: entry is a string": {
+    "gemini": {
+      "out": "",
+      "status": 0
+    },
+    "claude": {
+      "out": "",
+      "status": 0
+    },
+    "copilot": {
+      "out": "",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "",
+      "status": 0
+    }
+  },
+  "mcp: falsy optional members": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"node\",\"cwd\":\"\",\"timeout\":0}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"node\",\"cwd\":\"\",\"timeout\":0}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"node\",\"cwd\":\"\",\"timeout\":0,\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"node\",\"cwd\":\"\",\"timeout\":0}}",
+      "status": 0
+    }
+  },
+  "mcp: args is not an array": {
+    "gemini": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":\"x\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":\"x\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":\"x\",\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"srv\":{\"command\":\"node\",\"args\":\"x\"}}",
+      "status": 0
+    }
+  },
+  "mcp: no name, reserved name": {
+    "gemini": {
+      "out": "{\"mempalace\":{\"command\":\"node\"}}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{\"mempalace\":{\"command\":\"node\"}}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{\"mempalace\":{\"command\":\"node\",\"type\":\"stdio\"}}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{\"mempalace\":{\"command\":\"node\"}}",
+      "status": 0
+    }
+  },
+  "percli: admissible keys": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "percli: inadmissible key per CLI": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "percli: sections null, false and string": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "percli: section is an array": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "percli: section is a number": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "percli: empty key": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "percli: unicode key order": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "legacy: components with subjects": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "legacy: components empty object": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "legacy: components null": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "legacy: components string": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "legacy: claude.skills": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "legacy: every retired per-CLI key": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  },
+  "legacy: components and claude.skills": {
+    "gemini": {
+      "out": "{}",
+      "status": 0
+    },
+    "claude": {
+      "out": "{}",
+      "status": 0
+    },
+    "copilot": {
+      "out": "{}",
+      "status": 0
+    },
+    "antigravity": {
+      "out": "{}",
+      "status": 0
+    }
+  }
+}

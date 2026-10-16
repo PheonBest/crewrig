@@ -1,7 +1,8 @@
-// extension-conformance.test.ts — the shell libraries and their TypeScript twins, over the same
-// manifests (spec 0254 R22): the validator lines, the hook translation, the hook gaps, the closed
-// event set and the MCP delivery. The shell side is one `bash` sourcing the repository's libraries;
-// the twin side is the TypeScript modules. A difference is a failing case, never papered over.
+// extension-conformance.test.ts — the TypeScript twins over the same manifests as the shell
+// (spec 0254 R22): the validator lines, the hook translation, the hook gaps, the closed event set
+// and the MCP delivery. The hooks library still runs live in one `bash`; the retired manifest
+// library (validator, MCP delivery, MCP native) is asserted against goldens recorded from its
+// original text on Linux. A difference is a failing case, never papered over.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -13,7 +14,9 @@ import { fixtures } from "./lib/extension-fixtures.ts";
 import {
   LIB_DIR,
   PERCLI_KEYS_FILE,
+  manifestGoldens,
   runShellCases,
+  type ManifestGolden,
   skipReason,
   type CaseOutput,
 } from "./lib/shell-extension-harness.ts";
@@ -52,7 +55,9 @@ interface Case {
 let dir = "";
 const cases: Case[] = [];
 
-describe("extension shell/TypeScript conformance", { skip: skipReason || false }, () => {
+const goldens = manifestGoldens();
+
+describe("extension shell/TypeScript conformance", () => {
   before(() => {
     dir = fs.mkdtempSync(path.join(os.tmpdir(), "ext-conformance-"));
     fixtures.forEach((f, i) => {
@@ -62,26 +67,27 @@ describe("extension shell/TypeScript conformance", { skip: skipReason || false }
       assert.ok(manifest instanceof Map, `${f.label}: fixtures are objects`);
       cases.push({ label: f.label, file, manifest, shell: {} });
     });
-    const outputs = runShellCases(
-      cases.map((c) => c.file),
-      PERCLI_KEYS_FILE,
-    );
+    if (skipReason) return;
+    const outputs = runShellCases(cases.map((c) => c.file));
     cases.forEach((c, i) => (c.shell = outputs[i] ?? {}));
   });
   after(() => fs.rmSync(dir, { recursive: true, force: true }));
 
-  const each = (name: string, check: (c: Case) => void): void => {
-    describe(name, () => {
+  const eachIn = (name: string, check: (c: Case) => void, skip: string | false): void => {
+    describe(name, { skip }, () => {
       fixtures.forEach((f, i) => test(f.label, () => check(cases[i] as Case)));
     });
   };
+  const each = (name: string, check: (c: Case) => void): void => eachIn(name, check, false);
+  const eachLive = (name: string, check: (c: Case) => void): void =>
+    eachIn(name, check, skipReason || false);
 
   test("fixture labels are unique", () => {
     const labels = fixtures.map((f) => f.label);
     assert.equal(new Set(labels).size, labels.length);
   });
 
-  each("validator lines, in the shell's order", (c) => {
+  each("validator lines, in the shell's order (golden)", (c) => {
     // Only the VALIDATION-ERROR lines: jq's own diagnostics on stderr are not behaviour.
     const twin = [
       ...assertCurrentShape(c.file, c.manifest, LIB_DIR),
@@ -91,10 +97,13 @@ describe("extension shell/TypeScript conformance", { skip: skipReason || false }
       ...validateMcpTokens(c.file, c.manifest),
       ...validateMcpNames(c.file, c.manifest, MCP_RESERVED_NAMES),
     ];
-    assert.deepEqual(twin, lines(out(c, "validate.err"), "VALIDATION-ERROR:"));
+    assert.deepEqual(
+      twin.map((l) => l.replaceAll(c.file, "<M>").replaceAll(PERCLI_KEYS_FILE, "<K>")),
+      golden(c).validate,
+    );
   });
 
-  each("hook files rendered per target", (c) => {
+  eachLive("hook files rendered per target", (c) => {
     for (const target of TARGETS) {
       const file = renderHookFile(target, c.manifest, table, "linux");
       const twin = file === null ? {} : { [file.file]: writeJsonText(file.value) };
@@ -108,7 +117,7 @@ describe("extension shell/TypeScript conformance", { skip: skipReason || false }
     }
   });
 
-  each("hook gaps per target: records and warnings", (c) => {
+  eachLive("hook gaps per target: records and warnings", (c) => {
     for (const target of TARGETS) {
       const { gaps, warnings } = hookGaps(target, c.manifest, table);
       const records = gaps.map((g) => `${writeJsonCompact(gapToJson(g))}\n`).join("");
@@ -117,24 +126,23 @@ describe("extension shell/TypeScript conformance", { skip: skipReason || false }
     }
   });
 
-  each("closed hook event set", (c) => {
+  eachLive("closed hook event set", (c) => {
     assert.deepEqual(knownEvents(), out(c, "known.out").split("\n").slice(0, -1));
   });
 
-  each("MCP delivery gate per target", (c) => {
+  each("MCP delivery gate per target (golden)", (c) => {
     for (const target of TARGETS)
-      assert.equal(String(mcpDelivery(target, table)), out(c, `delivery-${target}.out`).trim());
+      assert.equal(String(mcpDelivery(target, table)), golden(c).delivery[target]);
   });
 
-  each("MCP native declaration per target", (c) => {
+  each("MCP native declaration per target (golden)", (c) => {
     for (const target of TARGETS) assertNative(c, target);
   });
 });
 
-/** Shell: stdout of `ext_mcp_native` and its status; the twin: compact JSON, or a throw. */
+/** Golden: stdout of `ext_mcp_native` and its status; the twin: compact JSON, or a throw. */
 function assertNative(c: Case, target: Target): void {
-  const shell = out(c, `native-${target}.out`).replace(/\n$/, "");
-  const status = Number(out(c, `native-${target}.status`));
+  const { out: shell, status } = golden(c).native[target] as { out: string; status: number };
   let twin: string;
   try {
     twin = writeJsonCompact(mcpNative(target, c.manifest, table));
@@ -151,6 +159,9 @@ function assertNative(c: Case, target: Target): void {
   assert.equal(twin, shell, `${target} (shell status ${status})`);
 }
 const NON_OBJECT_SERVER = /^mcp: entry is a string$/;
+function golden(c: Case): ManifestGolden {
+  return goldens[c.label] as ManifestGolden;
+}
 function out(c: Case, name: string): string {
   return c.shell[name] ?? "";
 }

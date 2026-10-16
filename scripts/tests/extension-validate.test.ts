@@ -1,7 +1,9 @@
 // extension-validate.test.ts — the per-CLI, hook and MCP validators (spec 0254 R9).
-// Expected lines are the literal text of scripts/lib/extension-manifest.sh and extension-hooks.sh.
+// Expected lines are the literal text of the retired scripts/lib/extension-manifest.sh and extension-hooks.sh.
 
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import { describe, test } from "node:test";
 
 import { parseJson } from "../lib/extension/json-ordered.ts";
@@ -12,8 +14,11 @@ import {
   validateMcpTokens,
 } from "../lib/extension/validate-mcp.ts";
 import { validatePerCli } from "../lib/extension/validate-percli.ts";
+import { validateManifest } from "../lib/extension/validate.ts";
+import { MCP_RESERVED_NAMES } from "../lib/org-mcp.ts";
 import type { JsonValue } from "../lib/extension/types.ts";
 
+const LIB_DIR = path.resolve(import.meta.dirname, "../lib");
 const P = "m.json";
 const H = `VALIDATION-ERROR: ${P} —`;
 
@@ -95,7 +100,7 @@ describe("validateMcpShape", () => {
     assert.deepEqual(validateMcpShape(P, manifest("{}")), []);
     assert.deepEqual(validateMcpShape(P, manifest('{"mcpServers":null}')), []);
     const ok =
-      '{"mcpServers":{"a":{"command":"c","args":[],"cwd":"/","timeout":1},"b":{"transport":"http","url":"u","headers":{}}}}';
+      '{"mcpServers":{"a":{"command":"c","args":[],"cwd":"/","timeout":1},"b":{"transport":"http","url":"u","headers":{},"timeout":60},"c":{"transport":"sse","url":"https://x"}}}';
     assert.deepEqual(validateMcpShape(P, manifest(ok)), []);
   });
   test("not an object", () => {
@@ -181,5 +186,34 @@ describe("validateMcpTokens", () => {
       validateMcpTokens(P, manifest('{"mcpServers":{"a":{"command":"${x}","args":"s"}}}')),
       [],
     );
+  });
+});
+
+describe("validateManifest against the real descriptors", () => {
+  const lines = (text: string): string[] =>
+    validateManifest(P, manifest(text), { libDir: LIB_DIR });
+
+  test("the reserved set is exactly the shell's MCP_RESERVED_NAMES", () => {
+    const common = fs.readFileSync(path.join(LIB_DIR, "common.sh"), "utf8");
+    const declared = /^MCP_RESERVED_NAMES=\(([^)]*)\)/m.exec(common);
+    assert.ok(declared);
+    assert.deepEqual([...MCP_RESERVED_NAMES], declared[1].trim().split(/\s+/));
+    assert.deepEqual([...MCP_RESERVED_NAMES], ["mempalace", "sequentialthinking"]);
+  });
+  test("every reserved name yields a reserved-name line", () => {
+    for (const name of MCP_RESERVED_NAMES) {
+      const got = lines(`{"name":"x","mcpServers":{"${name}":{"command":"node"}}}`);
+      assert.ok(
+        got.some((l) => l.includes(`declares MCP server '${name}', a framework-reserved name`)),
+        name,
+      );
+    }
+    assert.deepEqual(lines('{"name":"x","mcpServers":{"acme":{"command":"node"}}}'), []);
+  });
+  test("R3: claude.mcpServers is not admissible per-CLI and the allowlist has no such row", () => {
+    const got = lines('{"name":"x","claude":{"mcpServers":{"a":{"command":"node"}}}}');
+    assert.ok(got.some((l) => l.includes("inadmissible per-CLI key 'claude.mcpServers'")));
+    const keys = fs.readFileSync(path.join(LIB_DIR, "extension-percli-keys.json"), "utf8");
+    assert.doesNotMatch(keys, /\.mcpServers/);
   });
 });

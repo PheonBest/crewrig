@@ -1,5 +1,5 @@
 // validate-percli.ts — the per-CLI key validator (spec 0254 R9).
-// Twin of the second block of `ext_validate_manifest` (scripts/lib/extension-manifest.sh:141-151).
+// Twin of the second block of `ext_validate_manifest` (the retired scripts/lib/extension-manifest.sh:141-151).
 // Pure: the caller passes the parsed manifest and the allowlist's `key` column.
 
 import type { JsonValue } from "./types.ts";

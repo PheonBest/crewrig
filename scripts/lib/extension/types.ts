@@ -5,7 +5,7 @@
 //   json-ordered.ts   `parseJson`: an order-preserving JSON reader (R12)
 //   json-write.ts     `writeJsonText`, `jqText`, `obj`: the `jq` pretty writer (R12)
 //   descriptors.ts    typed readers of the four `extension-*.json` descriptors
-//   manifest.ts       manifest accessors, the twins of `extension-manifest.sh` :39-72, :187-202
+//   manifest.ts       manifest accessors, the twins of the retired `extension-manifest.sh` :39-72, :187-202
 //   shape-guard.ts    `assertCurrentShape` (R8)
 //   validate-*.ts     the per-CLI key, hook and MCP validators (R9)
 //   hooks-*.ts        the hook translator (R10)

@@ -29,6 +29,9 @@ scripts/tests/test-migrate-extension.sh
 scripts/tests/extension-ci-wiring.test.ts
 scripts/tests/extension-shim.test.ts
 
+# A frozen record of the original shell output (the shell quoted the old invocation in its diagnostics).
+scripts/tests/fixtures/governance-oracle/extension-manifest-version.json.golden
+
 # Specifications are dated records of the requirement, including the old invocation.
 specs/
 

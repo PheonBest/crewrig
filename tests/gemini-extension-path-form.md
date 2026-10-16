@@ -147,7 +147,8 @@ per the project's append-only convention:
   Gemini-specific token directly; `hello-world` now declares
   `${extensionRoot}/dist/index.js`, and the render rewrites it to
   `${extensionPath}/dist/index.js` for Gemini specifically (see
-  `ext_mcp_native` in `scripts/lib/extension-manifest.sh`) — the delivered
+  `ext_mcp_native`, formerly in the retired shell library
+  `scripts/lib/extension-manifest.sh`, now `scripts/lib/extension/mcp-delivery.ts`) — the delivered
   Gemini output is unchanged, only the AUTHORING vocabulary moved.
 - **"`scripts/build-extension.sh` passes a declared `args` value through to
   the built manifest verbatim — the render does not itself resolve or
