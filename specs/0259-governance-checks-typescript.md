@@ -50,7 +50,8 @@ exception no longer exists.
    claude-agent-layout,agents-size,no-machine-paths,markdown-links,figure-labels,
    test-wiring,test-strays}.sh`, each at the path of its predecessor with `.sh` changed
    to `.ts`. `scripts/lib/check-figure-labels.py` SHALL be replaced by TypeScript and
-   deleted (parent requirement 16). The two Python files that import `mempalace` and
+   deleted (parent requirement 16). The Python files that import `mempalace` and
+   `scripts/lib/en_us_sweep.py` (row I2, #1339) are outside this row and SHALL NOT change;
    every other file outside this list SHALL NOT change in behaviour.
 
 2. **Entry form.** Each entry SHALL be runnable as a direct
@@ -108,7 +109,7 @@ exception no longer exists.
    only modified files (status `M`), and SHALL print the same `OK`, `FAIL` and summary
    lines and the same exit status. The text of the unresolvable-base diagnostic SHALL be
    the text the shell actually prints (its backtick command substitution included),
-   not the text it was meant to print.
+   not the text it was meant to print; correcting that text is a separate change.
 
 8. **Provenance contract.** `check-extension-provenance` SHALL apply the same rules R1,
    R5 and R7 of spec 0043 to every `SKILL.md` and `AGENT.md` regular file below
@@ -251,7 +252,13 @@ exception no longer exists.
 
 24. **Deviations (closed list).** (a) Ordering follows requirement 6. (b) On Windows,
     paths printed by `check-markdown-links` and `check-figure-labels` use forward slashes.
-    (c) `check-test-strays` on `win32` follows requirement 20. No other deviation is
+    (c) `check-test-strays` on `win32` follows requirement 20. (d) Where the shell fails
+    through its own runtime and not through a message of the script (an unreadable or
+    missing input file whose `set -e` failure prints a Bash diagnostic that carries the
+    script path and a line number, as `check-agents-size` does for a missing path), the
+    entry SHALL print one `Error: <path>: <reason>` line on standard error and exit with
+    the shell's status; such inputs are excluded from the byte comparison of
+    requirement 26, which still compares their exit status. No other deviation is
     permitted.
 
 25. **The `yq` and `jq` pin of the GitLab generator.** This row SHALL NOT change
