@@ -26,10 +26,15 @@ function merge(...files: string[]) {
   return tomlMerge(files, TMP, ENV);
 }
 
-function json(...files: string[]): any {
+type CliTable = Record<string, unknown>;
+interface MergedDoc {
+  cli: Record<string, CliTable>;
+}
+
+function json(...files: string[]): MergedDoc {
   const r = merge(...files);
   assert.equal(r.rc, 0, r.stderr);
-  return JSON.parse(r.stdout);
+  return JSON.parse(r.stdout) as MergedDoc;
 }
 
 describe("e2e toml merge", () => {
