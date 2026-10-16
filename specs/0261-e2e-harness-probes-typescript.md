@@ -45,7 +45,8 @@ probe returns the same verdict for each CLI after it.
 
 ### Scope and entry points
 
-1. **Entry points.** Thirty-six TypeScript files SHALL replace the behaviour of the shell
+1. **Entry points.** Thirty-six TypeScript files, and one new module with no predecessor
+   (`tests/e2e/lib/toml_subset.ts`, requirement 6), SHALL replace the behaviour of the shell
    files below, each at the path of its predecessor with `.sh` changed to `.ts` (parent
    requirement 9):
    - `tests/e2e/run.ts` and `tests/e2e/scenarios/{01-layered-context,02-cross-tool-memory,
@@ -192,7 +193,7 @@ probe returns the same verdict for each CLI after it.
     (the publisher, the resolvers, the masking and the scenario structure) SHALL stay
     unchanged in their assertions while the probe and the publisher migrate and SHALL pass
     against the TypeScript twins through forwarding shims (requirement 16); they migrate only
-    in the pull requests of requirement 19.
+    in the Bash-suite pull requests of item (7) of requirement 25, never earlier.
 
 ### Libraries, shims and callers
 
@@ -202,8 +203,12 @@ probe returns the same verdict for each CLI after it.
     sourced libraries (parent requirement 13). A Bash suite that sources one cannot run
     against a TypeScript module, so, under the first bounded exception of that requirement,
     the suites `test-e2e-assert-lib`, `test-e2e-structural-lib`, `test-e2e-llm-judge-lib`,
-    `test-e2e-auth-common`, `test-e2e-auth-ready` and the resolver cases of `test-e2e-probes`
-    MAY migrate in the same pull request as the library they source, on the conditions of that
+    `test-e2e-auth-common` and `test-e2e-auth-ready` MAY migrate in the same pull request as
+    the library they source, and the resolver cases of `test-e2e-probes` (the only cases that
+    source a library; the pull request moves those cases to TypeScript and leaves the other
+    cases of the file unchanged until requirement 19), always within item (7) of requirement
+    25 and after the switch pull request, because the unchanged
+    suites still source the libraries until then, on the conditions of that
     requirement: before that pull request, every behaviour each asserts SHALL be covered by an
     unchanged test that does not source the library. The substitute tests are the black-box
     recordings of requirements 7 and 9, which run the scenarios, the auth scripts and the
@@ -252,8 +257,12 @@ probe returns the same verdict for each CLI after it.
     SHALL be deleted, not shimmed, in the pull request of its suite.
 
 17. **Retirement of `usage-headless.sh` and `extension-hooks.sh`.** `scripts/lib/usage-headless.ts`
-    SHALL expose the behaviour the probes use (`capture_usage_file` and
-    `agy_rewrite_json_response`) by importing the headless adapter of the usage subsystem, and
+    SHALL expose the behaviour the probes use (`usage_headless_capture_usage_file` and
+    `usage_headless_agy_rewrite_json_response`) by loading
+    `scripts/lib/usage-capture/adapters/headless-envelope.js`, `record.js` and `sink.js` (the
+    adapter and sink of spec 0243, which left `usage-headless.sh` itself unmigrated: its
+    out-of-scope list names it for this row), with the same never-fail-the-wrapped-run
+    contract, and
     SHALL replace the `source` of `scripts/lib/usage-headless.sh` in the three probes. Parent
     requirement 8 retires a shell library with its last consumer; at authoring time
     `scripts/lib/usage-headless.sh` has, besides the three probes, the consumer
@@ -278,8 +287,8 @@ probe returns the same verdict for each CLI after it.
 
 19. **Bash suites.** The twenty-six suites — the twenty-five `scripts/tests/test-e2e-*.sh` and
     `scripts/tests/test-antigravity-discovery-probe.sh` — SHALL each migrate to a TypeScript
-    suite `scripts/tests/e2e-<topic>.test.ts` (a file over 300 lines is split), in pull
-    requests that follow the switch pull request, only after the TypeScript harness has
+    suite `scripts/tests/e2e-<topic>.test.ts` (a file over 300 lines is split), in the pull
+    requests of item (7) of requirement 25, which follow the switch pull request, only after the TypeScript harness has
     shipped green on Linux CI and on its `windows-latest` job (parent requirement 13). A
     migrated suite SHALL keep every assertion that is not a requirement-14 assertion, SHALL
     run on Windows when it needs no Docker and no POSIX-only facility, and SHALL be wired
