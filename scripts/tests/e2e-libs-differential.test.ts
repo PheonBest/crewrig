@@ -36,9 +36,8 @@ describe("e2e library twins against the recorded shell", () => {
 });
 
 describe("e2e library twins: completeness", () => {
-  it("lists the cases that have no twin binding", (t) => {
+  it("binds every recorded library case to a TypeScript twin", () => {
     const unbound = cases.filter((c) => bindingFor(c) === undefined).map((c) => c.id);
-    if (unbound.length > 0) t.diagnostic(`${unbound.length} unbound case(s), first: ${unbound[0]}`);
-    assert.ok(unbound.length <= cases.length);
+    assert.deepEqual(unbound, []);
   });
 });
