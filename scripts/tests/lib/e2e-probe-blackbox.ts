@@ -38,6 +38,8 @@ export interface ProbeCase {
   /** Files seeded under the scratch HOME, by relative path. */
   readonly homeFiles?: Readonly<Record<string, string>>;
   readonly env?: Readonly<Record<string, string>>;
+  /** Force the subject: the `.sh` (`shell`) or the `.ts` twin (`entry`); wins over PROBE_BLACKBOX_LEG. */
+  readonly leg?: "shell" | "entry";
 }
 
 export interface ProbeRun {
@@ -59,10 +61,10 @@ export interface ProbeRun {
 export type Subject = { kind: "entry"; file: string } | { kind: "shell"; file: string };
 
 /** The subject by file presence: the `.ts` twin when it exists, else the `.sh`. */
-export function subjectOf(script: string): Subject {
+export function subjectOf(script: string, leg?: "shell" | "entry"): Subject {
   const ts = path.join(SCRIPTS, `${script}.ts`);
   const sh = path.join(SCRIPTS, `${script}.sh`);
-  const forced = process.env["PROBE_BLACKBOX_LEG"];
+  const forced = leg ?? process.env["PROBE_BLACKBOX_LEG"];
   if (forced === "shell") return { kind: "shell", file: sh };
   if (forced === "entry") return { kind: "entry", file: ts };
   return fs.existsSync(ts) ? { kind: "entry", file: ts } : { kind: "shell", file: sh };
@@ -152,10 +154,17 @@ export function runProbe(build: (calls: string) => ProbeCase): ProbeRun {
     };
     delete env["CI"];
     delete env["NODE_TEST_CONTEXT"];
-    const subject = subjectOf(testCase.script);
+    const subject = subjectOf(testCase.script, testCase.leg);
     const [cmd, argv] =
       subject.kind === "entry"
-        ? [process.execPath, [subject.file, ...(testCase.args ?? [])]]
+        ? [
+            process.execPath,
+            [
+              "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
+              subject.file,
+              ...(testCase.args ?? []),
+            ],
+          ]
         : [findTool("bash") ?? "bash", [subject.file, ...(testCase.args ?? [])]];
     const res = spawnSync(cmd, argv, { env, encoding: "utf8", cwd: root, maxBuffer: 1 << 24 });
     const norm = (text: string): string =>
