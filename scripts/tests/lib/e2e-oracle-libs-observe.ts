@@ -83,7 +83,7 @@ export function observeLib(c: LibCase): LibTuple {
     }
   }
   const ctx = { tmp: root, home, e2eHome: path.join(home, ".crewrig-e2e") };
-  const fixed = (s: string) => normalise(s, ctx).split(REPO_ROOT).join("<REPO>");
+  const fixed = (s: string) => normalise(s, ctx);
   const tuple: LibTuple = {
     id: c.id,
     rc: res.status ?? -1,
