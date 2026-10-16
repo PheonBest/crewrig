@@ -211,7 +211,6 @@ scripts/tests/test-setup-org-mcp.sh
 scripts/tests/test-setup-usage-capture-optin.sh
 scripts/tests/test-setup-validation-backend.sh
 scripts/tests/test-spec-linter.sh
-scripts/tests/test-sync-from-upstream.sh
 scripts/tests/test-system-context-store.sh
 scripts/tests/test-tls-delegation.sh
 scripts/tests/test-usage-attribution.sh
@@ -221,7 +220,6 @@ scripts/tests/test-usage-pricing.sh
 scripts/tests/test-usage-record-schema.sh
 scripts/tests/test-usage-storage-mirror.sh
 scripts/tests/test-usage-storage.sh
-scripts/tests/test-worktree-claim.sh
 scripts/tests/test-worktree-git-guard.sh
 scripts/uninstall-mcp-daemon.sh
 scripts/unlink-component.sh

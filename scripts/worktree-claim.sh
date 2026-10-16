@@ -1,7 +1,7 @@
 #!/bin/bash
 # worktree-claim.sh — forwarding shim (spec 0248 R26). The tool is
-# scripts/worktree-claim.ts; this file remains so the Bash oracle
-# (scripts/tests/test-worktree-claim.sh), the nested invocations its tests make
+# scripts/worktree-claim.ts; this file remains so the node --test suites
+# (scripts/tests/worktree-claim-*.test.ts), the nested invocations its tests make
 # and any documentation not yet re-read keep working until the shims retire.
 #
 # It runs the Node.js floor guard (scripts/lib/node-floor-guard.js), then the

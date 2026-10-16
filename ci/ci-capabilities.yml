@@ -1952,7 +1952,13 @@ capabilities:
           - "scripts/sync-from-upstream.ts"
           - "scripts/lib/sync-from-upstream/**"
           - "scripts/tests/test-check-core-paths.sh"
-          - "scripts/tests/test-sync-from-upstream.sh"
+          - "scripts/tests/sync-from-upstream-policies.test.ts"
+          - "scripts/tests/sync-from-upstream-reconcile.test.ts"
+          - "scripts/tests/sync-from-upstream-orphans.test.ts"
+          - "scripts/tests/sync-from-upstream-dirty-report.test.ts"
+          - "scripts/tests/sync-from-upstream-preserve.test.ts"
+          - "scripts/tests/sync-from-upstream-signing.test.ts"
+          - "scripts/tests/lib/sync-fixture.ts"
           - "scripts/tests/sync-from-upstream-self-update.test.ts"
           - "scripts/tests/lib/hermetic-env.ts"
           - "scripts/tests/fixtures/sync-from-upstream/**"
@@ -1967,7 +1973,13 @@ capabilities:
           - "scripts/sync-from-upstream.ts"
           - "scripts/lib/sync-from-upstream/**"
           - "scripts/tests/test-check-core-paths.sh"
-          - "scripts/tests/test-sync-from-upstream.sh"
+          - "scripts/tests/sync-from-upstream-policies.test.ts"
+          - "scripts/tests/sync-from-upstream-reconcile.test.ts"
+          - "scripts/tests/sync-from-upstream-orphans.test.ts"
+          - "scripts/tests/sync-from-upstream-dirty-report.test.ts"
+          - "scripts/tests/sync-from-upstream-preserve.test.ts"
+          - "scripts/tests/sync-from-upstream-signing.test.ts"
+          - "scripts/tests/lib/sync-fixture.ts"
           - "scripts/tests/sync-from-upstream-self-update.test.ts"
           - "scripts/tests/lib/hermetic-env.ts"
           - "scripts/tests/fixtures/sync-from-upstream/**"
@@ -1981,7 +1993,7 @@ capabilities:
       tools: [yq]
     command:
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-core-paths.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-sync-from-upstream.sh
+      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/sync-from-upstream-policies.test.ts scripts/tests/sync-from-upstream-reconcile.test.ts scripts/tests/sync-from-upstream-orphans.test.ts scripts/tests/sync-from-upstream-dirty-report.test.ts scripts/tests/sync-from-upstream-preserve.test.ts scripts/tests/sync-from-upstream-signing.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/sync-from-upstream-self-update.test.ts
 
   - id: ci-parity
@@ -2318,7 +2330,6 @@ capabilities:
           - "scripts/tests/test-palace-path-propagation.sh"
           - "scripts/tests/test-repair-mempalace-http.sh"
           - "scripts/tests/test-rotate-mempalace-token.sh"
-          - "scripts/tests/test-worktree-claim.sh"
           - "scripts/worktree-claim.sh"
           - "scripts/worktree-claim.ts"
           - "hooks/worktree-git-guard.ts"
@@ -2337,7 +2348,6 @@ capabilities:
           - "scripts/tests/test-palace-path-propagation.sh"
           - "scripts/tests/test-repair-mempalace-http.sh"
           - "scripts/tests/test-rotate-mempalace-token.sh"
-          - "scripts/tests/test-worktree-claim.sh"
           - "scripts/worktree-claim.sh"
           - "scripts/worktree-claim.ts"
           - "hooks/worktree-git-guard.ts"
@@ -2363,7 +2373,6 @@ capabilities:
         - "scripts/tests/test-palace-path-propagation.sh"
         - "scripts/tests/test-repair-mempalace-http.sh"
         - "scripts/tests/test-rotate-mempalace-token.sh"
-        - "scripts/tests/test-worktree-claim.sh"
         - "scripts/worktree-claim.sh"
         - "scripts/worktree-claim.ts"
         - "hooks/worktree-git-guard.ts"
@@ -2384,7 +2393,6 @@ capabilities:
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-palace-path-propagation.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-repair-mempalace-http.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-rotate-mempalace-token.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-worktree-claim.sh
 
   # e2e is the heaviest group; it stays enforced on push/PR (changeset-gated)
   # but is ALSO manually triggerable (spec 0147 R8) so a contributor can run it
