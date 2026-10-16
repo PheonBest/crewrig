@@ -87,7 +87,10 @@ export function installTesseractStandIn(tsvByPng: Readonly<Record<string, string
         ...base,
         [key]: `${binDir}${path.delimiter}${base[key] ?? ""}`,
       };
-      if (WIN) env["NODE_OPTIONS"] = `--require "${path.join(binDir, "standin.cjs")}"`;
+      // NODE_OPTIONS reads a backslash as an escape: hand it the path with forward slashes.
+      if (WIN)
+        env["NODE_OPTIONS"] =
+          `--require "${path.join(binDir, "standin.cjs").replaceAll("\\", "/")}"`;
       return env;
     },
     dispose() {
