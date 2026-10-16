@@ -158,7 +158,7 @@ describe("usage mirror mutants", { skip: SKIP_REASON }, () => {
     assert.deepEqual(red, { status: 0, entry: false, drawers: 1 });
   });
 
-  // MUT lock race L1381: hold locks/mirror.lock ~0.5 s, WAIT_MS=5000
+  // MUT lock race L1381: hold locks/mirror.lock ~3 s (the Bash suite held it 0.5 s, too tight under load)
   const lockScenario = async (rig: Rig, repo: string): Promise<boolean> => {
     const rids = seedOpts("lockrace", "claude-code", "2020-05-01T00:00:00.000Z", 3).map((o) =>
       writeRecord(o),
@@ -166,12 +166,12 @@ describe("usage mirror mutants", { skip: SKIP_REASON }, () => {
     const lock = path.join(rig.root, "locks", "mirror.lock");
     fs.mkdirSync(path.dirname(lock), { recursive: true });
     fs.writeFileSync(lock, ""); // fresh mtime: a live peer holds the lock
-    const releaser = setTimeout(() => fs.rmSync(lock, { force: true }), 500);
+    const releaser = setTimeout(() => fs.rmSync(lock, { force: true }), 3000);
     const run = await spawnShim(
       rig,
       "usage-mirror",
       [],
-      { CREWRIG_USAGE_MIRROR_WAIT_MS: "5000" },
+      { CREWRIG_USAGE_MIRROR_WAIT_MS: "30000" },
       repo,
     );
     clearTimeout(releaser);
