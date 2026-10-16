@@ -10,6 +10,7 @@ import { describe, it } from "node:test";
 import { cases } from "./lib/e2e-oracle-libs-cases.ts";
 import { cases as markerCases } from "./lib/e2e-oracle-libs-cases-markers.ts";
 import { observeLib, REPO_ROOT, shellLibPrerequisites } from "./lib/e2e-oracle-libs-observe.ts";
+import { shellLegSkipReason } from "./lib/e2e-shim.ts";
 
 const GOLDENS = path.join(REPO_ROOT, "scripts", "tests", "fixtures", "e2e-oracle", "libs");
 
@@ -46,7 +47,11 @@ describe("e2e oracle library replay", () => {
   const reason = shellLibPrerequisites();
   for (const c of cases) {
     const golden = path.join(GOLDENS, c.id, "tuple.json.golden");
-    const skip = reason ?? shellLibPrerequisites(c.tools ?? []) ?? false;
+    // A forwarding shim has no shell behaviour left to replay: the TypeScript twin is proven against
+    // the same goldens by e2e-libs-differential.test.ts (spec 0261 requirement 16).
+    const skip =
+      shellLegSkipReason(path.join(REPO_ROOT, c.lib)) ||
+      (reason ?? shellLibPrerequisites(c.tools ?? []) ?? false);
     if (!fs.existsSync(golden)) {
       it(c.id, { todo: "no recorded golden yet" }, () => {});
       continue;
