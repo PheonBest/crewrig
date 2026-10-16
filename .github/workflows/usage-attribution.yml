@@ -10,7 +10,17 @@ on:
       - "scripts/usage-task.ts"
       - "scripts/usage-attribute.sh"
       - "scripts/usage-attribute.ts"
-      - "scripts/tests/test-usage-attribution.sh"
+      - "scripts/tests/usage-attribution-channels.test.ts"
+      - "scripts/tests/usage-attribution-ledger-rollup.test.ts"
+      - "scripts/tests/usage-attribution-period-rollup.test.ts"
+      - "scripts/tests/usage-attribution-prune.test.ts"
+      - "scripts/tests/usage-attribution-mutations.test.ts"
+      - "scripts/tests/lib/usage-attribution-rig.ts"
+      - "scripts/tests/lib/usage-attribution-driver.ts"
+      - "scripts/tests/lib/usage-attribution-prune-rig.ts"
+      - "scripts/tests/lib/usage-mutants.ts"
+      - "scripts/tests/lib/mutation-copy.ts"
+      - "scripts/tests/lib/capability.ts"
       - "scripts/tests/fixtures/usage-attribution/**"
       - "docs/usage-attribution.md"
       - "schemas/**"
@@ -25,7 +35,17 @@ on:
       - "scripts/usage-task.ts"
       - "scripts/usage-attribute.sh"
       - "scripts/usage-attribute.ts"
-      - "scripts/tests/test-usage-attribution.sh"
+      - "scripts/tests/usage-attribution-channels.test.ts"
+      - "scripts/tests/usage-attribution-ledger-rollup.test.ts"
+      - "scripts/tests/usage-attribution-period-rollup.test.ts"
+      - "scripts/tests/usage-attribution-prune.test.ts"
+      - "scripts/tests/usage-attribution-mutations.test.ts"
+      - "scripts/tests/lib/usage-attribution-rig.ts"
+      - "scripts/tests/lib/usage-attribution-driver.ts"
+      - "scripts/tests/lib/usage-attribution-prune-rig.ts"
+      - "scripts/tests/lib/usage-mutants.ts"
+      - "scripts/tests/lib/mutation-copy.ts"
+      - "scripts/tests/lib/capability.ts"
       - "scripts/tests/fixtures/usage-attribution/**"
       - "docs/usage-attribution.md"
       - "schemas/**"
@@ -55,7 +75,7 @@ jobs:
         run: npm install
 
       - name: Validate the declaration channels, ledger, and rollups (no daemon)
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-usage-attribution.sh
+        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-attribution-channels.test.ts scripts/tests/usage-attribution-ledger-rollup.test.ts scripts/tests/usage-attribution-period-rollup.test.ts scripts/tests/usage-attribution-prune.test.ts scripts/tests/usage-attribution-mutations.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure

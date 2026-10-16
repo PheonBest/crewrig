@@ -2678,6 +2678,12 @@ jobs:
       - name: No deprecation reaches the entries
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/hook-deprecations.test.ts
 
+      - name: Usage-record storage suites (the POSIX-only gate suite is excluded)
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-storage-journal.test.ts scripts/tests/usage-storage-query.test.ts scripts/tests/usage-storage-wing.test.ts scripts/tests/usage-storage-drain.test.ts scripts/tests/usage-storage-prune.test.ts
+
+      - name: Usage attribution suites
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-attribution-channels.test.ts scripts/tests/usage-attribution-ledger-rollup.test.ts scripts/tests/usage-attribution-period-rollup.test.ts scripts/tests/usage-attribution-prune.test.ts scripts/tests/usage-attribution-mutations.test.ts
+
       # Writes the transcripts, payloads and a real stamp, and exports
       # CREWRIG_USAGE_ROOT and the TIMING_*_PAYLOAD paths to the steps below.
       - name: Timing fixtures
