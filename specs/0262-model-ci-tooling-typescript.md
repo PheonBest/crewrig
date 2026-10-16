@@ -77,7 +77,10 @@ sweep engine no longer exist.
    spawn are exactly: Git; `gh` (only `merge-spec-pr`, as a pass-through); the current
    Node.js interpreter (`process.execPath`); `aspell` for `sweep-en-us --aspell`
    (optional, as today); the commands that `ci-cache-guard` and `ci-changeset-coverage`
-   exist to run, through the platform shell they use today.
+   exist to run, through the shell they use today (`bash -c`, including the
+   `ci-cache-guard` probe), the one permitted shell spawn; on Windows these two entries
+   use the `bash` resolved from the parent `PATH`, and their Windows cases are
+   POSIX-only where none exists.
 
 5. **Shared modules.** The entries SHALL reuse `scripts/lib/model-resolve.ts`,
    `scripts/lib/model-resolve/**`, `scripts/lib/component-resolve.ts` and
@@ -182,9 +185,19 @@ sweep engine no longer exist.
       case of its TypeScript substitute;
     - `scripts/tests/lib/shell-resolve-harness.ts`,
       `scripts/tests/lib/component-twins-harness.ts`,
-      `scripts/tests/model-resolve-ladders.test.ts` and the conformance tests that use
-      them, whose shell legs SHALL be replaced by golden expectations generated from the
-      shell before the library is deleted.
+      `scripts/tests/model-resolve-ladders.test.ts`,
+      `scripts/tests/component-resolve.test.ts`,
+      `scripts/tests/build-components-conformance-render.test.ts` and the conformance
+      tests that use them, whose shell legs SHALL be replaced by golden expectations
+      generated from the shell before the library is deleted (the rule of substitute
+      and mutation case applies to the two that source `component-resolve.sh` in
+      process);
+    - `scripts/tests/test-check-model-mappings.sh`, whose `setup_pass3_root` copies
+      `model-resolve.sh` into each hermetic root for the shell checker to source. That
+      copy is setup, not an assertion: a pull request before the switch SHALL retarget
+      it (the hermetic root no longer needs the library once the entry imports its own
+      modules from the checkout), assertions unchanged, consistently with
+      requirement 26.
     The wiring that names the libraries (path filters in `ci/ci-capabilities.yml` and the
     generated files, `.crewrig/core-paths.txt`, `ci/shell-allowlist.txt`,
     `scripts/tests/fixtures/build-components/old-invocation-allowlist.txt`) SHALL be
