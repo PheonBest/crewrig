@@ -8,6 +8,7 @@ import { describe, it } from "node:test";
 
 import {
   copilotStandIn,
+  hostLacksProbeTools,
   runProbe,
   shStandIn,
   type CopilotMode,
@@ -55,7 +56,7 @@ function assertClean(run: ProbeRun, seeded: readonly string[] = []): void {
   assert.deepEqual(run.tmpLeft, [], "the probe must remove its own scratch directory");
 }
 
-describe("probe-extension-hooks black box", () => {
+describe("probe-extension-hooks black box", { skip: hostLacksProbeTools() }, () => {
   describe("all four CLIs present", () => {
     it("B1A when the root hooks.json fires: verdict, extra probes, exit 0, nothing left", () => {
       const run = probe({ copilot: "root" });

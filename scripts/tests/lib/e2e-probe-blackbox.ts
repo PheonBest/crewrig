@@ -21,6 +21,12 @@ export const PROBE_TOOLS: readonly string[] =
     " ",
   );
 
+/** A skip reason when the host lacks a tool the probes need (`strings` is binutils), else `false`. */
+export function hostLacksProbeTools(extra: readonly string[] = []): string | false {
+  const missing = [...PROBE_TOOLS, ...extra].filter((name) => findTool(name) === undefined);
+  return missing.length > 0 ? `skipped: the host lacks ${missing.join(", ")}` : false;
+}
+
 export interface ProbeCase {
   /** `probe-extension-hooks` or `probe-extension-mcp-token`. */
   readonly script: string;

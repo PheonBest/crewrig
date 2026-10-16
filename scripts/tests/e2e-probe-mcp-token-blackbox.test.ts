@@ -8,7 +8,12 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import { findTool } from "./lib/hermetic-env.ts";
-import { runProbe, shStandIn, type ProbeRun } from "./lib/e2e-probe-blackbox.ts";
+import {
+  hostLacksProbeTools,
+  runProbe,
+  shStandIn,
+  type ProbeRun,
+} from "./lib/e2e-probe-blackbox.ts";
 
 const SCRIPT = "probe-extension-mcp-token";
 const AGY_NAME = "crewrig-probe-mcp-token";
@@ -130,7 +135,7 @@ function probe(o: Options = {}): ProbeRun {
 const count = (run: ProbeRun, prefix: string): number =>
   run.calls.split("\n").filter((l) => l.startsWith(prefix)).length;
 
-describe("probe-extension-mcp-token black box", () => {
+describe("probe-extension-mcp-token black box", { skip: hostLacksProbeTools() }, () => {
   it("exits 1 when jq is not on PATH, before any CLI runs", () => {
     const run = probe({ jq: false });
     assert.equal(run.status, 1);
