@@ -34,8 +34,8 @@ the same exit status on the same input, whether they run Linux, macOS or Windows
 without a POSIX layer. The checks that gate every pull request, among them the
 version-bump convention, the test-wiring guard, the machine-path guard and the
 Markdown link checker, need no `jq`, `yq`, `awk`, `sed`, `grep`, `find`, `sort` or
-Python on the machine. The one helper written in Python outside the `mempalace`
-exception no longer exists.
+Python on the machine. The Python helper of these checks,
+`scripts/lib/check-figure-labels.py`, no longer exists.
 
 <!-- markdownlint-disable MD029 -->
 
@@ -256,8 +256,8 @@ exception no longer exists.
     through its own runtime and not through a message of the script (an unreadable or
     missing input file whose `set -e` failure prints a Bash diagnostic that carries the
     script path and a line number, as `check-agents-size` does for a missing path), the
-    entry SHALL print one `Error: <path>: <reason>` line on standard error and exit with
-    the shell's status; such inputs are excluded from the byte comparison of
+    entry SHALL print one `Error: <path>: <reason>` line on standard error and exit 1
+    (the status of the shell's `set -e` abort); such inputs are excluded from the byte comparison of
     requirement 26, which still compares their exit status. No other deviation is
     permitted.
 
