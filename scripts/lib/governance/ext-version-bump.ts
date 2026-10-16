@@ -60,7 +60,7 @@ export function runVersionBump(baseArg: string, cwd: string = process.cwd()): Bu
   let base = normalizeBaseRef(baseArg);
   if (base === "") base = defaultBaseRef(preferredRemote(cwd), cwd);
   if (!ensureBaseResolvable(base, cwd))
-    return { code: 2, stdout: out, stderr: [...unresolvableBaseLines(base)] };
+    return { code: 2, stdout: out, stderr: [...unresolvableBaseLines(base, true)] };
 
   const modified = modifiedFiles(base, PATHSPECS, cwd);
   if (modified.length === 0) {

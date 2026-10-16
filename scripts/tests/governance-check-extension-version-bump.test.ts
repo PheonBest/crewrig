@@ -104,6 +104,23 @@ describe("extension version bump edge cases", () => {
     const head = doc(carrier('version="1.0.0"'));
     check(repo("emptybase", base, head), 1, "base carrier present but its version is empty");
   });
+  it("unresolvable base: escaped-backtick diagnostic, exit 2", () => {
+    const dir = repo("nobase", doc(carrier('version="1.0.0"')), doc(carrier('version="1.0.1"')));
+    const actual = run(
+      process.execPath,
+      ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", ENTRY, "no-such-remote/zzz"],
+      dir,
+    );
+    assert.equal(actual.status, 2);
+    assert.equal(actual.stdout, "");
+    assert.equal(
+      actual.stderr,
+      "Error: cannot resolve base ref 'no-such-remote/zzz' and `git fetch` failed.\n" +
+        "       Pass a resolvable ref as the first argument or via BASE_REF.\n",
+    );
+    if (bashOk)
+      assert.deepEqual(actual, run("bash", [SHELL, "no-such-remote/zzz"], dir, { LC_ALL: "C" }));
+  });
   it("carrier absent on base: exempt", () => {
     const head = doc(carrier('version="1.0.0"'));
     check(repo("nocarrier", doc("Body.\n"), head), 0, "base had no provenance carrier");

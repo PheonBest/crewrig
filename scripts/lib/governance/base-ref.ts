@@ -84,14 +84,17 @@ export function ensureBaseResolvable(baseRef: string, cwd: string = process.cwd(
 }
 
 /**
- * The two-line stderr diagnostic. The shell's first line holds backticks inside
- * double quotes, so `git fetch` runs as a command substitution and contributes
- * its (empty) stdout: the real text reads "and  failed." with two spaces.
- * Frozen from the shell run on an unresolvable-base fixture.
+ * The two-line stderr diagnostic. The default variant is check-skill-versions.sh:
+ * its first line holds unescaped backticks inside double quotes, so `git fetch`
+ * runs as a command substitution and contributes its (empty) stdout: the real
+ * text reads "and  failed." with two spaces. check-extension-version-bump.sh
+ * escapes the backticks, so `escaped` yields "and `git fetch` failed.".
+ * Frozen from each shell run on an unresolvable-base fixture.
  */
-export function unresolvableBaseLines(baseRef: string): [string, string] {
+export function unresolvableBaseLines(baseRef: string, escaped = false): [string, string] {
+  const fetchText = escaped ? "`git fetch`" : "";
   return [
-    `Error: cannot resolve base ref '${baseRef}' and  failed.`,
+    `Error: cannot resolve base ref '${baseRef}' and ${fetchText} failed.`,
     "       Pass a resolvable ref as the first argument or via BASE_REF.",
   ];
 }
