@@ -84,7 +84,8 @@ Python on the machine. The Python helper of these checks,
    shape guard, `discoverDirs`, the hook vocabulary, emitter and resolver, the
    in-process renderer), `scripts/lib/build-components/*` (front-matter reader,
    output-directory list), `scripts/lib/ts-scope.ts` (repository root, `git`, tracked
-   file list), `scripts/lib/paths.ts`, `scripts/lib/line-endings.ts`,
+   file list, `preferredRemote` and `showAt`; its `resolveBase` has other semantics and is
+   not reused), `scripts/lib/paths.ts`, `scripts/lib/line-endings.ts`,
    `scripts/lib/glob-engine.ts` and `scripts/lib/link-or-copy.ts` wherever the shell
    performed the same operation. Logic with no existing twin SHALL be added once, as a
    module of its own: a Git base-ref resolver with the semantics of
@@ -181,7 +182,10 @@ Python on the machine. The Python helper of these checks,
     directory), from the current working directory's Git top level, with the same
     messages, all on standard output. Resolved paths SHALL be printed with forward
     slashes (requirement 24 (b)). Line numbers SHALL be those of Python's universal
-    newlines.
+    newlines, and the Python text rules (the `strip()` whitespace set, `unquote` with
+    replacement characters, `normpath`, `\w` as Unicode, invalid UTF-8 ignored) SHALL be
+    covered by edge fixtures, any residual difference going to a delta-spec and not to a
+    silent deviation.
 
 17. **`check-figure-labels`.** It SHALL keep the `[SKIP]` note and exit 0 when
     `tesseract` is absent, found by spawning it (no `command -v`), SHALL delete the
@@ -206,7 +210,10 @@ Python on the machine. The Python helper of these checks,
     block. Because a POSIX shell is not a prerequisite on Windows (parent requirement 5)
     and Bash suites run only on POSIX runners, on `win32` it SHALL print one `SKIP:`
     line naming the reason on standard output and exit 0 without spawning (deviation
-    (c)); a missing `bash` on a POSIX host SHALL exit 2 with an `Error:` line.
+    (c)); this skip is transitional (the Bash suites run on Linux only and the check retires
+    with row J4) and every other check of this row, and the argument handling of this one,
+    still run on `windows-latest`; a missing `bash` on a POSIX host SHALL exit 2 with an
+    `Error:` line.
 
 ### Switch, retirement and wiring
 
@@ -228,7 +235,8 @@ Python on the machine. The Python helper of these checks,
     `extension-manifest.sh` in process and is therefore retired in the same pull request
     as the library under the sourced-library exception of parent requirement 13, with
     the list of the behaviours it asserts each mapped to an unchanged black-box test of
-    a consumer script or to a test of `scripts/lib/extension/` recorded in the plan;
+    a consumer script or to a test of `scripts/lib/extension/` recorded in the plan, a mutation case of that suite gaining a mutation case of its
+    TypeScript substitute;
     and `scripts/tests/lib/shell-extension-harness.ts`, whose shell leg for
     `extension-manifest.sh` SHALL be replaced by golden expectations generated from
     the shell before the library is deleted. `scripts/lib/extension-hooks.sh` is
@@ -244,11 +252,18 @@ Python on the machine. The Python helper of these checks,
     `scripts/tests/build-components-ci-wiring.test.ts`, the
     `old-invocation-allowlist.txt` fixtures, `scripts/tests/lib/setup-declarations-consumers.ts`)
     and the runtime requirements of each capability: `jq`, `yq`, `python@3.12` and the
-    `yq` install steps SHALL be removed from the jobs that no longer need them. Every
+    `yq` install steps SHALL be removed from a job only when neither the entry nor any
+    unchanged Bash suite that the job runs still needs the tool (the suites build fixtures
+    with `yq` and `jq` until row J2). Every
     Bash suite that greps or mutates the TEXT of a migrated script (the hook-map, hook-tokens
     and claude-agent-layout suites, and any further suite the plan lists) SHALL be
     retargeted, assertions unchanged, in a pull request before the switch so that its
-    mutation reaches the TypeScript twin as well.
+    mutation reaches the TypeScript twin as well, and a suite whose fixtures commit stub
+    shell builders SHALL gain a TypeScript stub twin beside each (same declared output).
+    Retargets leave every assertion unchanged except one class: an assertion that only
+    probes the absence of a tool the entry no longer needs (the `yq`-absent case of
+    `test-check-component-metadata-keys.sh`) has no TypeScript counterpart and SHALL be
+    removed in a pull request before the switch, the plan listing each such case.
 
 24. **Deviations (closed list).** (a) Ordering follows requirement 6. (b) On Windows,
     paths printed by `check-markdown-links` and `check-figure-labels` use forward slashes.
@@ -287,7 +302,9 @@ Python on the machine. The Python helper of these checks,
     against the real repository and against a fixture that makes it fail, and asserts
     verdict, diagnostic and exit status, with the interpreters resolved from the parent
     `PATH`, the Windows git settings of `GIT_CONFIG_NOSYSTEM=1`, and each test file under
-    300 lines. The job SHALL pass before the pull request merges (parent requirement 17).
+    300 lines. The cases MAY be discovered by glob so that parallel pull requests do not
+    edit the shared capability file; a case needing a symlink privilege that
+    `windows-latest` lacks SHALL be labelled POSIX-only. The job SHALL pass before the pull request merges (parent requirement 17).
 
 28. **Ratchet and quality gates.** Every tracked file counts for the ratchet, fixtures
     included (stored with a `.golden` suffix and no leading `#!`). All new TypeScript
