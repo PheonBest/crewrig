@@ -6,6 +6,6 @@
     "h/.crewrig-e2e": "absent",
     "h/.crewrig-e2e/gemini": "absent"
   },
-  "stderr": "[gemini] Asserting writability on <TMP><REPO>/h/.crewrig-e2e/gemini (uid:1000 gid:1000)â¦\nchmod: cannot access '<TMP><REPO>/h/.crewrig-e2e/gemini': No such file or directory\nERROR: [gemini] writability bootstrap failed â cannot chmod <TMP><REPO>/h/.crewrig-e2e/gemini.\n",
+  "stderr": "[gemini] Asserting writability on <TMP>/work/h/.crewrig-e2e/gemini (uid:1000 gid:1000)â¦\nchmod: cannot access '<TMP>/work/h/.crewrig-e2e/gemini': No such file or directory\nERROR: [gemini] writability bootstrap failed â cannot chmod <TMP>/work/h/.crewrig-e2e/gemini.\n",
   "stdout": ""
 }

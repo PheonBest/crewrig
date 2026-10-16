@@ -2,7 +2,7 @@
   "id": "claude-code/unknown-auth-mode",
   "rc": 1,
   "stdout": "",
-  "stderr": "# FAIL claude-code preflight\n#   expected: JUDGE_AUTH_MODE in {oauth, api_key}\n#   actual:   JUDGE_AUTH_MODE=bogus\n#   report:   <TMP>/report\n# FAIL llm_judge <TMP><REPO>/prompt <TMP><REPO>/answer is it polite?\n#   expected: preflight success for backend=claude-code\n#   actual:   preflight returned hard failure (rc=1)\n#   report:   <TMP>/report\n",
+  "stderr": "# FAIL claude-code preflight\n#   expected: JUDGE_AUTH_MODE in {oauth, api_key}\n#   actual:   JUDGE_AUTH_MODE=bogus\n#   report:   <TMP>/report\n# FAIL llm_judge <TMP>/work/prompt <TMP>/work/answer is it polite?\n#   expected: preflight success for backend=claude-code\n#   actual:   preflight returned hard failure (rc=1)\n#   report:   <TMP>/report\n",
   "requests": [],
   "files": {
     "effective.json": "{\"judge\":{\"backend\":\"claude-code\",\"model\":\"claude-sonnet-4-6\",\"api_key_env\":\"ANTHROPIC_JUDGE_API_KEY\",\"auth_mode\":\"bogus\",\"strict\":false,\"max_calls\":30,\"endpoint\":\"http://127.0.0.1:<PORT>/claude-code/v1/messages\",\"max_tokens\":256,\"temperature\":0}}\n"

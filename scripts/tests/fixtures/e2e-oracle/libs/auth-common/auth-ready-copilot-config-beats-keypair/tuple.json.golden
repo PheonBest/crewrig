@@ -12,6 +12,6 @@
   "id": "auth-common/auth-ready-copilot-config-beats-keypair",
   "rc": 0,
   "stats": {},
-  "stderr": "[copilot] auth ready: workstation credential <TMP><REPO>/h/.crewrig-e2e/copilot/config.json\n",
+  "stderr": "[copilot] auth ready: workstation credential <TMP>/work/h/.crewrig-e2e/copilot/config.json\n",
   "stdout": "E2E_AUTH_READY_CREDENTIAL_PATH=workstation-credential\n"
 }

@@ -2,7 +2,7 @@
   "id": "quorum/uncertain-strict",
   "rc": 1,
   "stdout": "VERDICT=UNCERTAIN confidence=0.57",
-  "stderr": "# FAIL llm_judge <TMP><REPO>/prompt <TMP><REPO>/answer is it polite?\n#   expected: VERDICT=PASS (strict mode upgrades UNCERTAIN to FAIL)\n#   actual:   VERDICT=UNCERTAIN confidence=0.57 (slots: PASS FAIL UNCERTAIN)\n#   report:   <TMP>/report\n",
+  "stderr": "# FAIL llm_judge <TMP>/work/prompt <TMP>/work/answer is it polite?\n#   expected: VERDICT=PASS (strict mode upgrades UNCERTAIN to FAIL)\n#   actual:   VERDICT=UNCERTAIN confidence=0.57 (slots: PASS FAIL UNCERTAIN)\n#   report:   <TMP>/report\n",
   "requests": [
     {
       "endpoint": "anthropic",

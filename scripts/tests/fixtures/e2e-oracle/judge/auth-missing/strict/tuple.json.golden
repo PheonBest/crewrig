@@ -2,7 +2,7 @@
   "id": "auth-missing/strict",
   "rc": 1,
   "stdout": "VERDICT=UNCERTAIN confidence=0.00",
-  "stderr": "# FAIL llm_judge <TMP><REPO>/prompt <TMP><REPO>/answer is it polite?\n#   expected: judge credentials present (strict mode)\n#   actual:   backend=anthropic auth-missing\n#   report:   <TMP>/report\n",
+  "stderr": "# FAIL llm_judge <TMP>/work/prompt <TMP>/work/answer is it polite?\n#   expected: judge credentials present (strict mode)\n#   actual:   backend=anthropic auth-missing\n#   report:   <TMP>/report\n",
   "requests": [],
   "files": {
     "effective.json": "{\"judge\":{\"backend\":\"anthropic\",\"model\":\"claude-sonnet-4-6\",\"api_key_env\":\"ANTHROPIC_JUDGE_API_KEY\",\"auth_mode\":\"api_key\",\"strict\":false,\"max_calls\":30,\"endpoint\":\"http://127.0.0.1:<PORT>/anthropic/v1/messages\",\"max_tokens\":256,\"temperature\":0}}\n"

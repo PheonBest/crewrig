@@ -2,7 +2,7 @@
   "id": "backend/unknown",
   "rc": 1,
   "stdout": "",
-  "stderr": "# FAIL llm_judge <TMP><REPO>/prompt <TMP><REPO>/answer is it polite?\n#   expected: driver for backend=nonexistent at tests/e2e/lib/llm_judge_drivers/nonexistent.sh\n#   actual:   file not found\n#   report:   <TMP>/report\n",
+  "stderr": "# FAIL llm_judge <TMP>/work/prompt <TMP>/work/answer is it polite?\n#   expected: driver for backend=nonexistent at tests/e2e/lib/llm_judge_drivers/nonexistent.sh\n#   actual:   file not found\n#   report:   <TMP>/report\n",
   "requests": [],
   "files": {
     "effective.json": "{\"judge\":{\"backend\":\"nonexistent\",\"model\":\"claude-sonnet-4-6\",\"api_key_env\":\"ANTHROPIC_JUDGE_API_KEY\",\"auth_mode\":\"api_key\",\"strict\":false,\"max_calls\":30,\"endpoint\":\"http://127.0.0.1:<PORT>/anthropic/v1/messages\",\"max_tokens\":256,\"temperature\":0}}\n"

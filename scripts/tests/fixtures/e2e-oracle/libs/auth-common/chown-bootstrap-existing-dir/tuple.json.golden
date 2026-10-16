@@ -11,6 +11,6 @@
     "h/.crewrig-e2e": "0755",
     "h/.crewrig-e2e/claude": "0777"
   },
-  "stderr": "[claude] Asserting writability on <TMP><REPO>/h/.crewrig-e2e/claude (uid:1000 gid:1000)â¦\n",
+  "stderr": "[claude] Asserting writability on <TMP>/work/h/.crewrig-e2e/claude (uid:1000 gid:1000)â¦\n",
   "stdout": ""
 }
