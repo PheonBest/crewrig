@@ -77,8 +77,8 @@ function treeOf(root: string): string {
 }
 
 // The shell leg sometimes lets bash print the job notice of its own watchdog subshell
-// ("Terminated: 15 ... sleep") on stderr: a race in the shell, never printed by the twin.
-const JOB_NOTICE = /^Terminated: 15 .*\n/gm;
+// ("Terminated: 15 ... sleep" on macOS, a bare "Terminated" on Linux) on stderr: a race in the shell, never printed by the twin.
+const JOB_NOTICE = /^Terminated(: 15 .*)?\n/gm;
 
 let counter = 0;
 function runLeg(
