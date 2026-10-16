@@ -1,16 +1,23 @@
-#!/usr/bin/env bash
-# Fails CI if AGENTS.md meets or exceeds the 22 000-byte threshold.
-set -euo pipefail
+#!/bin/bash
+# check-agents-size.sh — forwarding shim (spec 0259 requirement 21). The check is
+# scripts/check-agents-size.ts; this file remains so every caller that still runs
+# `bash scripts/check-agents-size.sh` reaches the TypeScript version until row J4 removes the shell files.
+#
+# It runs the Node.js floor guard (scripts/lib/node-floor-guard.js), then the TypeScript entry
+# with every argument and its standard input, and returns the entry's exit status, standard
+# output and standard error unchanged. It fails closed: with `node` absent it writes one
+# `Error:` line and exits 1; below the floor it exits with the floor guard's status and
+# diagnostic, and the entry is not run.
+#
+# Usage: bash scripts/check-agents-size.sh [<arguments of scripts/check-agents-size.ts> ...]
 
-THRESHOLD=22000
-AGENTS_MD="${1:-AGENTS.md}"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-SIZE=$(wc -c < "$AGENTS_MD")
-
-if [ "$SIZE" -ge "$THRESHOLD" ]; then
-  echo "ERROR: AGENTS.md is ${SIZE} bytes — meets or exceeds the ${THRESHOLD}-byte threshold." >&2
-  echo "Extract more content to docs/ to bring AGENTS.md below 22 000 bytes." >&2
+if ! command -v node >/dev/null 2>&1; then
+  echo "Error: node was not found on PATH; check-agents-size needs Node.js 24 or later (https://nodejs.org/en/download)." >&2
   exit 1
 fi
 
-echo "OK: AGENTS.md is ${SIZE} bytes (threshold: ${THRESHOLD} bytes)"
+node "$DIR/lib/node-floor-guard.js" || exit $?
+
+exec node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$DIR/check-agents-size.ts" "$@"

@@ -1,0 +1,45 @@
+{
+ "crlf": {
+  "input": [
+   [
+    "test-a.sh"
+   ],
+   "",
+   "# header\r\ntest-a.sh\tkept on purpose\r\n"
+  ],
+  "status": 0,
+  "stdout": "OK: all test scripts are wired (0) or exempted with a reason (1); the exemption allowlist is honest.\n",
+  "stderr": ""
+ },
+ "prefix": {
+  "input": [
+   [
+    "test-foo.sh",
+    "test-foo.sh.sh"
+   ],
+   "      - run: bash scripts/tests/test-foo.sh.sh\n",
+   null
+  ],
+  "status": 1,
+  "stdout": "",
+  "stderr": "FAILED: 1 test script(s) run in no CI workflow and are not exempted:\n  - scripts/tests/test-foo.sh\n\nWire each into a CI workflow (a step in the check-components job of\n.github/workflows/build.yml and ci/ci-capabilities.yml), or add it to\nci/test-wiring-exemptions.txt with a reason (spec 0076).\n"
+ },
+ "first": {
+  "input": [
+   [
+    "test-a.sh"
+   ],
+   "# scripts/tests/test-a.sh then scripts/tests/test-a.sh\n",
+   null
+  ],
+  "status": 1,
+  "stdout": "",
+  "stderr": "FAILED: 1 test script(s) run in no CI workflow and are not exempted:\n  - scripts/tests/test-a.sh\n\nWire each into a CI workflow (a step in the check-components job of\n.github/workflows/build.yml and ci/ci-capabilities.yml), or add it to\nci/test-wiring-exemptions.txt with a reason (spec 0076).\n"
+ },
+ "missing": {
+  "input": null,
+  "status": 2,
+  "stdout": "",
+  "stderr": "Error: tests directory not found: <REPO>/scripts/tests\n"
+ }
+}

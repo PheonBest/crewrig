@@ -1,0 +1,22 @@
+[
+  {
+    "status": 2,
+    "stdout": "",
+    "stderr": "Error: cannot resolve base ref 'no-such-remote/zzz' and  failed.\n       Pass a resolvable ref as the first argument or via BASE_REF.\n"
+  },
+  {
+    "status": 0,
+    "stdout": "OK: no existing component sources modified vs HEAD.\n",
+    "stderr": ""
+  },
+  {
+    "status": 1,
+    "stdout": "Checking version bumps on 1 modified component source(s)...\n  FAIL artifacts/core/skills/keep/SKILL.md — metadata.provenance.version not bumped\n\nFAILED: 1 source(s) changed without a version bump:\n  - artifacts/core/skills/keep/SKILL.md\n\nPer artifacts/FORMAT.md → Version semantics, bump\nmetadata.provenance.version in the same diff. SemVer:\n  PATCH (1.0.0 → 1.0.1) — friction fix / wording change\n  MINOR (1.0.0 → 1.1.0) — additive (new section, new field)\n  MAJOR (1.0.0 → 2.0.0) — breaking contract change\n",
+    "stderr": ""
+  },
+  {
+    "status": 0,
+    "stdout": "Checking version bumps on 1 modified component source(s)...\n  OK   artifacts/core/skills/keep/SKILL.md\n\nOK: all changed component sources include a version bump.\n",
+    "stderr": ""
+  }
+]

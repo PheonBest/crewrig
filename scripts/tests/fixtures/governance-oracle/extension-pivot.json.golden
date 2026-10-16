@@ -1,0 +1,22 @@
+[
+  {
+    "status": 0,
+    "stdout": "\nOK: every upstream-owned extension component is pivot-authored (0 command .toml, 0 agent dir checked).\n",
+    "stderr": ""
+  },
+  {
+    "status": 1,
+    "stdout": "  OK   extensions/core/commands/a.b.toml (pivot sibling present)\n  FAIL extensions/library/commands/c.d.toml — generated Gemini .toml has no pivot sibling commands/c.d.md (authored-native command)\n\nFAILED: 1 extension component(s) are authored CLI-native instead of pivot:\n  - extensions/library/commands/c.d.toml\n\nPer spec 0042 R1/R7, every skill, agent, and command under an upstream-owned\nextension tier (extensions/core, extensions/library) MUST be authored in the\npivot source format:\n  - command → commands/<name>.md  (the .toml is a GENERATED Gemini output\n    under the render-at-publication model — spec 0173 delta-01 — and MUST\n    NOT be committed; delete it and reach it through one of the delivery\n    paths in extension-skeleton/EXTENSION-FORMAT.md instead)\n  - agent   → agents/<name>/AGENT.md\n  - skill   → skills/<name>/SKILL.md\n",
+    "stderr": ""
+  },
+  {
+    "status": 1,
+    "stdout": "  FAIL extensions/core/pkg/commands/sub/n.toml — generated Gemini .toml has no pivot sibling commands/n.md (authored-native command)\n  FAIL extensions/core/agents/bad — agent directory lacks the pivot source AGENT.md\n  OK   extensions/core/agents/ok (AGENT.md present)\n\nFAILED: 2 extension component(s) are authored CLI-native instead of pivot:\n  - extensions/core/pkg/commands/sub/n.toml\n  - extensions/core/agents/bad\n\nPer spec 0042 R1/R7, every skill, agent, and command under an upstream-owned\nextension tier (extensions/core, extensions/library) MUST be authored in the\npivot source format:\n  - command → commands/<name>.md  (the .toml is a GENERATED Gemini output\n    under the render-at-publication model — spec 0173 delta-01 — and MUST\n    NOT be committed; delete it and reach it through one of the delivery\n    paths in extension-skeleton/EXTENSION-FORMAT.md instead)\n  - agent   → agents/<name>/AGENT.md\n  - skill   → skills/<name>/SKILL.md\n",
+    "stderr": ""
+  },
+  {
+    "status": 0,
+    "stdout": "\nOK: every upstream-owned extension component is pivot-authored (0 command .toml, 0 agent dir checked).\n",
+    "stderr": ""
+  }
+]

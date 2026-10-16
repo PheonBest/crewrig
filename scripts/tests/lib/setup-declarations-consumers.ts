@@ -160,7 +160,7 @@ export const CONSUMERS: readonly Consumer[] = [
     keys: ["init.soul", "init.profile"],
   },
   {
-    suite: "scripts/check-gemini-overlay-enrollment.sh (r3 #18)",
+    suite: "scripts/check-gemini-overlay-enrollment.ts (r3 #18)",
     keys: [
       "rules.shared.1",
       "rules.selection.team",

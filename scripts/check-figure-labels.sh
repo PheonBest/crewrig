@@ -1,18 +1,23 @@
 #!/bin/bash
-# check-figure-labels.sh — Verify figure PNG labels against sidecar prompt expectations using OCR (spec 0156 / issue #881).
+# check-figure-labels.sh — forwarding shim (spec 0259 requirement 21). The check is
+# scripts/check-figure-labels.ts; this file remains so every caller that still runs
+# `bash scripts/check-figure-labels.sh` reaches the TypeScript version until row J4 removes the shell files.
+#
+# It runs the Node.js floor guard (scripts/lib/node-floor-guard.js), then the TypeScript entry
+# with every argument and its standard input, and returns the entry's exit status, standard
+# output and standard error unchanged. It fails closed: with `node` absent it writes one
+# `Error:` line and exits 1; below the floor it exits with the floor guard's status and
+# diagnostic, and the entry is not run.
+#
+# Usage: bash scripts/check-figure-labels.sh [<arguments of scripts/check-figure-labels.ts> ...]
 
-set -e
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-
-if ! command -v tesseract >/dev/null 2>&1; then
-  echo "[SKIP] tesseract is not installed. Skipping figure label OCR check."
-  exit 0
+if ! command -v node >/dev/null 2>&1; then
+  echo "Error: node was not found on PATH; check-figure-labels needs Node.js 24 or later (https://nodejs.org/en/download)." >&2
+  exit 1
 fi
 
-if ! command -v python3 >/dev/null 2>&1; then
-  echo "[SKIP] python3 is not installed. Skipping figure label OCR check."
-  exit 0
-fi
+node "$DIR/lib/node-floor-guard.js" || exit $?
 
-python3 "$SCRIPT_DIR/lib/check-figure-labels.py" "$@"
+exec node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$DIR/check-figure-labels.ts" "$@"

@@ -1,0 +1,62 @@
+{
+  "c1": {
+    "status": 0,
+    "stdout": "\nOK: 0 extension(s) declare a single authoritative version across their manifests.\n",
+    "stderr": ""
+  },
+  "c2": {
+    "status": 1,
+    "stdout": "  FAIL extensions/core/a/package.json — no .version field (authoritative source must declare one)\n\nFAILED: 1 manifest(s) diverge from their extension's authoritative version:\n  - extensions/core/a/package.json\n\nPer spec 0044 (as amended by delta-01), an extension's package.json version\nis authoritative; its committed extension.json sibling MUST declare the SAME\nversion (gemini-extension.json is a build output, asserted separately by\n'bash scripts/build-extension.sh --check'). The release driver\n(scripts/monorepo-release.sh) syncs both in lockstep, so post-release drift\nmeans a manual edit fell out of step.\n",
+    "stderr": ""
+  },
+  "c3-null": {
+    "status": 1,
+    "stdout": "  FAIL extensions/core/a/package.json — no .version field (authoritative source must declare one)\n\nFAILED: 1 manifest(s) diverge from their extension's authoritative version:\n  - extensions/core/a/package.json\n\nPer spec 0044 (as amended by delta-01), an extension's package.json version\nis authoritative; its committed extension.json sibling MUST declare the SAME\nversion (gemini-extension.json is a build output, asserted separately by\n'bash scripts/build-extension.sh --check'). The release driver\n(scripts/monorepo-release.sh) syncs both in lockstep, so post-release drift\nmeans a manual edit fell out of step.\n",
+    "stderr": ""
+  },
+  "c3-false": {
+    "status": 1,
+    "stdout": "  FAIL extensions/core/a/package.json — no .version field (authoritative source must declare one)\n\nFAILED: 1 manifest(s) diverge from their extension's authoritative version:\n  - extensions/core/a/package.json\n\nPer spec 0044 (as amended by delta-01), an extension's package.json version\nis authoritative; its committed extension.json sibling MUST declare the SAME\nversion (gemini-extension.json is a build output, asserted separately by\n'bash scripts/build-extension.sh --check'). The release driver\n(scripts/monorepo-release.sh) syncs both in lockstep, so post-release drift\nmeans a manual edit fell out of step.\n",
+    "stderr": ""
+  },
+  "c3-\"\"": {
+    "status": 1,
+    "stdout": "  FAIL extensions/core/a/package.json — no .version field (authoritative source must declare one)\n\nFAILED: 1 manifest(s) diverge from their extension's authoritative version:\n  - extensions/core/a/package.json\n\nPer spec 0044 (as amended by delta-01), an extension's package.json version\nis authoritative; its committed extension.json sibling MUST declare the SAME\nversion (gemini-extension.json is a build output, asserted separately by\n'bash scripts/build-extension.sh --check'). The release driver\n(scripts/monorepo-release.sh) syncs both in lockstep, so post-release drift\nmeans a manual edit fell out of step.\n",
+    "stderr": ""
+  },
+  "c4": {
+    "status": 0,
+    "stdout": "  OK   extensions/core/a (version 1)\n\nOK: 1 extension(s) declare a single authoritative version across their manifests.\n",
+    "stderr": ""
+  },
+  "c5": {
+    "status": 0,
+    "stdout": "  OK   extensions/core/a (version true)\n\nOK: 1 extension(s) declare a single authoritative version across their manifests.\n",
+    "stderr": ""
+  },
+  "c6": {
+    "status": 1,
+    "stdout": "  FAIL extensions/core/a/extension.json — version '1' != authoritative package.json version '2'\n\nFAILED: 1 manifest(s) diverge from their extension's authoritative version:\n  - extensions/core/a/extension.json\n\nPer spec 0044 (as amended by delta-01), an extension's package.json version\nis authoritative; its committed extension.json sibling MUST declare the SAME\nversion (gemini-extension.json is a build output, asserted separately by\n'bash scripts/build-extension.sh --check'). The release driver\n(scripts/monorepo-release.sh) syncs both in lockstep, so post-release drift\nmeans a manual edit fell out of step.\n",
+    "stderr": ""
+  },
+  "c7": {
+    "status": 1,
+    "stdout": "  FAIL extensions/library/b/extension.json — version '2.0.0' != authoritative package.json version '1.0.0'\n\nFAILED: 1 manifest(s) diverge from their extension's authoritative version:\n  - extensions/library/b/extension.json\n\nPer spec 0044 (as amended by delta-01), an extension's package.json version\nis authoritative; its committed extension.json sibling MUST declare the SAME\nversion (gemini-extension.json is a build output, asserted separately by\n'bash scripts/build-extension.sh --check'). The release driver\n(scripts/monorepo-release.sh) syncs both in lockstep, so post-release drift\nmeans a manual edit fell out of step.\n",
+    "stderr": ""
+  },
+  "c8": {
+    "status": 0,
+    "stdout": "  OK   extensions/core/B (version 1.0.0)\n  OK   extensions/core/a (version 1.0.0)\n  OK   extensions/library/z (version 1.0.0)\n\nOK: 3 extension(s) declare a single authoritative version across their manifests.\n",
+    "stderr": ""
+  },
+  "c9": {
+    "status": 0,
+    "stdout": "\nOK: 0 extension(s) declare a single authoritative version across their manifests.\n",
+    "stderr": ""
+  },
+  "c10": {
+    "status": 1,
+    "stdout": "\nFAILED: 1 manifest(s) diverge from their extension's authoritative version:\n  - extensions/core/a/extension.json\n\nPer spec 0044 (as amended by delta-01), an extension's package.json version\nis authoritative; its committed extension.json sibling MUST declare the SAME\nversion (gemini-extension.json is a build output, asserted separately by\n'bash scripts/build-extension.sh --check'). The release driver\n(scripts/monorepo-release.sh) syncs both in lockstep, so post-release drift\nmeans a manual edit fell out of step.\n",
+    "stderr": "VALIDATION-ERROR: extensions/core/a/extension.json — declares the retired 'components' object  — run scripts/migrate-extension.sh, see docs/adoption-guide.md\n"
+  }
+}

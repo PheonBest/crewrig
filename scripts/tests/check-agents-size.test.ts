@@ -1,11 +1,11 @@
 // check-agents-size.test.ts — black-box test of scripts/check-agents-size.ts.
-// The shell script has no Bash test, so this suite is the oracle (spec 0259 R14):
-// each case also runs the shell script under LC_ALL=C and compares stdout,
-// stderr and exit code, except the missing-file case (deviation (d)).
+// Each case asserts the entry against FROZEN expectations recorded on Linux from the
+// original shell script under LC_ALL=C (fixtures/governance-oracle/check-agents-size.json.golden),
+// except the missing-file case (deviation (d)).
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, describe, it } from "node:test";
@@ -13,12 +13,13 @@ import { fileURLToPath } from "node:url";
 
 const SCRIPTS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ENTRY = path.join(SCRIPTS, "check-agents-size.ts");
-const SHELL = path.join(SCRIPTS, "check-agents-size.sh");
-const WIN = process.platform === "win32";
-const bashOk = !WIN && spawnSync("bash", ["--version"]).status === 0;
-if (!WIN && !bashOk && process.env.CI)
-  throw new Error("bash is required in CI for the oracle comparison");
-
+const GOLDEN = path.join(
+  SCRIPTS,
+  "tests",
+  "fixtures",
+  "governance-oracle",
+  "check-agents-size.json.golden",
+);
 const tmp = mkdtempSync(path.join(tmpdir(), "agents-size-"));
 after(() => rmSync(tmp, { recursive: true, force: true }));
 
@@ -28,26 +29,20 @@ interface Run {
   stderr: string;
 }
 
-function run(cmd: string, args: string[], env: NodeJS.ProcessEnv = {}): Run {
-  const r = spawnSync(cmd, args, {
-    cwd: tmp,
-    encoding: "utf8",
-    env: { ...process.env, ...env },
-  });
+const ORACLE: Record<string, Run> = JSON.parse(readFileSync(GOLDEN, "utf8")) as Record<string, Run>;
+
+const ts = (args: string[]): Run => {
+  const r = spawnSync(
+    process.execPath,
+    ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", ENTRY, ...args],
+    { cwd: tmp, encoding: "utf8", env: { ...process.env } },
+  );
   return { status: r.status, stdout: r.stdout, stderr: r.stderr };
-}
+};
 
-const ts = (args: string[]): Run =>
-  run(process.execPath, ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", ENTRY, ...args]);
-
-/** Compare to the shell oracle when bash is available. */
-function sameAsShell(args: string[], actual: Run): void {
-  if (!bashOk) return;
-  const sh = run("bash", [SHELL, ...args], { LC_ALL: "C" });
-  // BSD wc (macOS) left-pads the count with spaces; GNU wc does not. Not a TS divergence.
-  sh.stdout = sh.stdout.replace(/(AGENTS\.md is) +(\d)/, "$1 $2");
-  sh.stderr = sh.stderr.replace(/(AGENTS\.md is) +(\d)/, "$1 $2");
-  assert.deepEqual(actual, sh);
+/** Byte-for-byte comparison with the frozen shell recording of `key`. */
+function sameAsShell(key: string, actual: Run): void {
+  assert.deepEqual(actual, ORACLE[key]);
 }
 
 function sized(name: string, bytes: number, fill = "a"): string {
@@ -62,7 +57,7 @@ describe("check-agents-size", () => {
     assert.equal(r.status, 0);
     assert.equal(r.stdout, "OK: AGENTS.md is 100 bytes (threshold: 22000 bytes)\n");
     assert.equal(r.stderr, "");
-    sameAsShell([f], r);
+    sameAsShell("pass", r);
   });
 
   it("fails over the threshold", () => {
@@ -75,7 +70,7 @@ describe("check-agents-size", () => {
       "ERROR: AGENTS.md is 30000 bytes — meets or exceeds the 22000-byte threshold.\n" +
         "Extract more content to docs/ to bring AGENTS.md below 22 000 bytes.\n",
     );
-    sameAsShell([f], r);
+    sameAsShell("fail", r);
   });
 
   for (const [bytes, status] of [
@@ -87,7 +82,7 @@ describe("check-agents-size", () => {
       const f = sized(`b${bytes}.md`, bytes);
       const r = ts([f]);
       assert.equal(r.status, status);
-      sameAsShell([f], r);
+      sameAsShell(`b${bytes}`, r);
     });
   }
 
@@ -97,7 +92,7 @@ describe("check-agents-size", () => {
     const r = ts([f]);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /is 22000 bytes/);
-    sameAsShell([f], r);
+    sameAsShell("multi", r);
   });
 
   it("defaults to AGENTS.md in the current directory", () => {
@@ -105,7 +100,7 @@ describe("check-agents-size", () => {
     const r = ts([]);
     assert.equal(r.status, 0);
     assert.equal(r.stdout, "OK: AGENTS.md is 42 bytes (threshold: 22000 bytes)\n");
-    sameAsShell([], r);
+    sameAsShell("default", r);
   });
 
   it("reports a missing file on one stderr line (deviation d, no shell comparison)", () => {

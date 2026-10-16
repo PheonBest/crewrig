@@ -1136,11 +1136,6 @@ packaging-modules-ts:
 
 governance-checks-ts:
   image: node:24
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends jq
-    - apt-get update && apt-get install -y --no-install-recommends wget ca-certificates
-    - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-    - chmod +x /usr/local/bin/yq
   script:
     - "npm ci --omit=dev --workspaces=false"
     - "node scripts/lib/node-floor-guard.js"
@@ -1176,16 +1171,16 @@ extension-render:
     - chmod +x /usr/local/bin/yq
   script:
     - "npm ci --omit=dev --workspaces=false"
-    - "bash scripts/check-extension-pivot.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-pivot.ts"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-pivot.sh"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-build-extension.sh"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-extension-render-conformance.sh"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-extension-mcp-manifest.sh"
     - "node scripts/lib/node-floor-guard.js"
     - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-extension.ts --check"
-    - "bash scripts/check-extension-hook-tokens.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-hook-tokens.ts"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-hook-tokens.sh"
-    - "bash scripts/check-extension-hook-map.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-hook-map.ts"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-hook-map.sh"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-migrate-extension.sh"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-release-package-extension.sh"
@@ -1251,6 +1246,10 @@ extension-render:
         - "scripts/lib/extension-install.sh"
         - "scripts/tests/test-release-package-extension.sh"
         - "scripts/tests/test-create-extension-combinations.sh"
+        - "scripts/check-extension-pivot.ts"
+        - "scripts/lib/governance/**"
+        - "scripts/check-extension-hook-map.ts"
+        - "scripts/check-extension-hook-tokens.ts"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/check-extension-pivot.sh"
@@ -1311,16 +1310,16 @@ extension-render:
         - "scripts/lib/extension-install.sh"
         - "scripts/tests/test-release-package-extension.sh"
         - "scripts/tests/test-create-extension-combinations.sh"
+        - "scripts/check-extension-pivot.ts"
+        - "scripts/lib/governance/**"
+        - "scripts/check-extension-hook-map.ts"
+        - "scripts/check-extension-hook-tokens.ts"
 
 extension-provenance:
   image: node:24
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends wget ca-certificates
-    - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-    - chmod +x /usr/local/bin/yq
   script:
     - "npm ci --omit=dev --workspaces=false"
-    - "bash scripts/check-extension-provenance.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-provenance.ts"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-provenance.sh"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
@@ -1330,6 +1329,8 @@ extension-provenance:
         - "scripts/tests/test-check-extension-provenance.sh"
         - "extensions/**"
         - "artifacts/**"
+        - "scripts/check-extension-provenance.ts"
+        - "scripts/lib/governance/**"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/check-extension-provenance.sh"
@@ -1337,15 +1338,13 @@ extension-provenance:
         - "scripts/tests/test-check-extension-provenance.sh"
         - "extensions/**"
         - "artifacts/**"
+        - "scripts/check-extension-provenance.ts"
+        - "scripts/lib/governance/**"
 
 extension-manifest:
-  image: debian:stable-slim
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends wget ca-certificates
-    - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-    - chmod +x /usr/local/bin/yq
+  image: node:24
   script:
-    - "bash scripts/check-extension-manifest-version.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-manifest-version.ts"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-manifest-version.sh"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-extension-version-bump.sh"
   rules:
@@ -1361,6 +1360,10 @@ extension-manifest:
         - "scripts/tests/test-check-extension-version-bump.sh"
         - "extensions/**"
         - "artifacts/**"
+        - "scripts/check-extension-version-bump.ts"
+        - "scripts/lib/governance/**"
+        - "scripts/check-extension-manifest-version.ts"
+        - "scripts/lib/extension/**"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/check-extension-manifest-version.sh"
@@ -1373,6 +1376,10 @@ extension-manifest:
         - "scripts/tests/test-check-extension-version-bump.sh"
         - "extensions/**"
         - "artifacts/**"
+        - "scripts/check-extension-version-bump.ts"
+        - "scripts/lib/governance/**"
+        - "scripts/check-extension-manifest-version.ts"
+        - "scripts/lib/extension/**"
 
 extension-install:
   image: node:24
@@ -1543,6 +1550,8 @@ core-paths:
         - ".crewrig/core-paths.txt"
         - "docs/layers.md"
         - "model-mappings/**"
+        - "scripts/check-core-paths.ts"
+        - "scripts/lib/governance/**"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/check-core-paths.sh"
@@ -1563,6 +1572,8 @@ core-paths:
         - ".crewrig/core-paths.txt"
         - "docs/layers.md"
         - "model-mappings/**"
+        - "scripts/check-core-paths.ts"
+        - "scripts/lib/governance/**"
 
 ci-parity:
   image: debian:stable-slim
@@ -1657,28 +1668,31 @@ docs-index:
         - "docs/**"
 
 figure-labels:
-  image: debian:stable-slim
+  image: node:24
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends tesseract-ocr
-    - apt-get update && apt-get install -y --no-install-recommends python3
   script:
-    - "bash scripts/check-figure-labels.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-figure-labels.ts"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-figure-labels.sh"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
         - "scripts/check-figure-labels.sh"
-        - "scripts/lib/check-figure-labels.py"
         - "scripts/tests/test-check-figure-labels.sh"
         - "docs/assets/**/*.png"
         - "docs/assets/**/*.prompt.md"
+        - "scripts/check-figure-labels.ts"
+        - "scripts/lib/governance/**"
+        - "scripts/lib/sequence-matcher.ts"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/check-figure-labels.sh"
-        - "scripts/lib/check-figure-labels.py"
         - "scripts/tests/test-check-figure-labels.sh"
         - "docs/assets/**/*.png"
         - "docs/assets/**/*.prompt.md"
+        - "scripts/check-figure-labels.ts"
+        - "scripts/lib/governance/**"
+        - "scripts/lib/sequence-matcher.ts"
 
 mempalace:
   image: python:3.12
@@ -1808,9 +1822,9 @@ mempalace:
 test-wiring:
   image: node:24
   script:
-    - "bash scripts/check-test-wiring.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-test-wiring.ts"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-test-wiring.sh"
-    - "bash scripts/check-test-strays.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-test-strays.ts"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-test-strays.sh"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
@@ -1819,6 +1833,9 @@ test-wiring:
         - "scripts/tests/test-check-test-wiring.sh"
         - "scripts/check-test-strays.sh"
         - "scripts/tests/test-check-test-strays.sh"
+        - "scripts/check-test-strays.ts"
+        - "scripts/lib/governance/**"
+        - "scripts/check-test-wiring.ts"
         - "scripts/lib/base-ref-resolve.sh"
         - "scripts/tests/**"
         - "hooks/worktree-git-guard.sh"
@@ -1837,6 +1854,9 @@ test-wiring:
         - "scripts/tests/test-check-test-wiring.sh"
         - "scripts/check-test-strays.sh"
         - "scripts/tests/test-check-test-strays.sh"
+        - "scripts/check-test-strays.ts"
+        - "scripts/lib/governance/**"
+        - "scripts/check-test-wiring.ts"
         - "scripts/lib/base-ref-resolve.sh"
         - "scripts/tests/**"
         - "hooks/worktree-git-guard.sh"
@@ -2047,12 +2067,10 @@ setup:
 
 misc:
   image: node:24
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends python3
   script:
     - "npm ci --omit=dev --workspaces=false"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-no-machine-paths.sh"
-    - "bash scripts/check-gemini-overlay-enrollment.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-gemini-overlay-enrollment.ts"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-gemini-overlay-enrollment.sh"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-bash32-portability.sh"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-pipefail-grep.sh"
@@ -2080,6 +2098,9 @@ misc:
         - "scripts/lib/**"
         - "scripts/tests/lib/print-setup-declarations.ts"
         - "scripts/tests/lib/setup-declarations-*.ts"
+        - "scripts/check-gemini-overlay-enrollment.ts"
+        - "scripts/lib/governance/**"
+        - "scripts/check-no-machine-paths.ts"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/check-no-machine-paths.sh"
@@ -2101,16 +2122,16 @@ misc:
         - "scripts/lib/**"
         - "scripts/tests/lib/print-setup-declarations.ts"
         - "scripts/tests/lib/setup-declarations-*.ts"
+        - "scripts/check-gemini-overlay-enrollment.ts"
+        - "scripts/lib/governance/**"
+        - "scripts/check-no-machine-paths.ts"
 
 repository-scan:
-  image: python:3.12
-  before_script:
-    - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
-    - apt-get install -y --no-install-recommends nodejs
+  image: node:24
   script:
-    - "bash scripts/check-no-machine-paths.sh"
-    - "bash scripts/check-markdown-links.sh"
-    - "bash scripts/check-core-paths.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-no-machine-paths.ts"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-markdown-links.ts"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-core-paths.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -2159,6 +2180,8 @@ frontmatter:
         - "scripts/tests/lib/print-setup-declarations.ts"
         - "scripts/tests/fixtures/setup-golden/**"
         - "scripts/tests/fixtures/setup-declarations/**"
+        - "scripts/check-skill-versions.ts"
+        - "scripts/lib/governance/**"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/tests/test-extract-frontmatter.sh"
@@ -2186,6 +2209,8 @@ frontmatter:
         - "scripts/tests/lib/print-setup-declarations.ts"
         - "scripts/tests/fixtures/setup-golden/**"
         - "scripts/tests/fixtures/setup-declarations/**"
+        - "scripts/check-skill-versions.ts"
+        - "scripts/lib/governance/**"
 
 check-model-mappings:
   image: debian:stable-slim
@@ -2235,13 +2260,15 @@ check-agent-profiles:
         - "scripts/tests/test-check-agent-profiles.sh"
 
 check-metadata-keys:
-  image: debian:stable-slim
+  image: node:24
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends wget ca-certificates
     - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
     - chmod +x /usr/local/bin/yq
   script:
-    - "bash scripts/check-component-metadata-keys.sh"
+    - "npm ci --omit=dev --workspaces=false"
+    - "node scripts/lib/node-floor-guard.js"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-component-metadata-keys.ts"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-component-metadata-keys.sh"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
@@ -2249,16 +2276,28 @@ check-metadata-keys:
         - "artifacts/**"
         - "scripts/check-component-metadata-keys.sh"
         - "scripts/tests/test-check-component-metadata-keys.sh"
+        - "scripts/check-component-metadata-keys.ts"
+        - "scripts/lib/governance/**"
+        - "scripts/lib/build-components/**"
+        - "scripts/lib/render-command.ts"
+        - "scripts/lib/yaml-text.ts"
+        - "scripts/lib/require-dependency.ts"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "artifacts/**"
         - "scripts/check-component-metadata-keys.sh"
         - "scripts/tests/test-check-component-metadata-keys.sh"
+        - "scripts/check-component-metadata-keys.ts"
+        - "scripts/lib/governance/**"
+        - "scripts/lib/build-components/**"
+        - "scripts/lib/render-command.ts"
+        - "scripts/lib/yaml-text.ts"
+        - "scripts/lib/require-dependency.ts"
 
 check-claude-agent-layout:
-  image: debian:stable-slim
+  image: node:24
   script:
-    - "bash scripts/check-claude-agent-layout.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-claude-agent-layout.ts"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-claude-agent-layout.sh"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
@@ -2269,6 +2308,8 @@ check-claude-agent-layout:
         - "scripts/build-components.sh"
         - "scripts/build-components.ts"
         - "scripts/lib/build-components/**"
+        - "scripts/check-claude-agent-layout.ts"
+        - "scripts/lib/governance/**"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - ".claude/agents/**"
@@ -2277,9 +2318,11 @@ check-claude-agent-layout:
         - "scripts/build-components.sh"
         - "scripts/build-components.ts"
         - "scripts/lib/build-components/**"
+        - "scripts/check-claude-agent-layout.ts"
+        - "scripts/lib/governance/**"
 
 markdown-links:
-  image: python:3.12
+  image: node:24
   script:
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-markdown-links.sh"
   rules:
@@ -2291,6 +2334,8 @@ markdown-links:
         - "README.md"
         - "AGENTS.md"
         - "**/*.md"
+        - "scripts/check-markdown-links.ts"
+        - "scripts/lib/governance/**"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/check-markdown-links.sh"
@@ -2299,6 +2344,8 @@ markdown-links:
         - "README.md"
         - "AGENTS.md"
         - "**/*.md"
+        - "scripts/check-markdown-links.ts"
+        - "scripts/lib/governance/**"
 
 changeset-coverage:
   image: python:3.12
@@ -2691,22 +2738,22 @@ test-harness-curate:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
 
 check-skill-versions:
-  image: debian:stable-slim
+  image: node:24
   variables:
     GIT_DEPTH: "0"
     BASE_REF: "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
   script:
-    - "bash scripts/check-skill-versions.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-skill-versions.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
 
 check-extension-version-bump:
-  image: debian:stable-slim
+  image: node:24
   variables:
     GIT_DEPTH: "0"
     BASE_REF: "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
   script:
-    - "bash scripts/check-extension-version-bump.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-version-bump.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
 
@@ -2724,21 +2771,19 @@ check-spec-id-reserved:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
 
 check-agents-size:
-  image: debian:stable-slim
+  image: node:24
   script:
-    - "bash scripts/check-agents-size.sh"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-agents-size.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
 
 check-feedback-routing:
-  image: debian:stable-slim
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends wget ca-certificates
-    - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-    - chmod +x /usr/local/bin/yq
+  image: node:24
   script:
-    - "bash scripts/check-feedback-routing.sh"
+    - "npm ci --omit=dev --workspaces=false"
+    - "node scripts/lib/node-floor-guard.js"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-feedback-routing.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
