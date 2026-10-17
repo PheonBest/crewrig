@@ -39,7 +39,7 @@ describe("callers sweep: the whole repository", () => {
       "scripts/check-secrets-exposure",
     ]);
     assert.deepEqual(retired("bash scripts/curate.sh --apply"), ["curate.sh"]);
-    assert.deepEqual(retired("lint-shell.sh and lint-json.ts stay"), []);
+    assert.deepEqual(retired("lint-skill.ts and lint-json.ts stay"), []);
     const texts: Record<string, string> = { "a.md": "node lint-json.sh x", "b.md": "clean" };
     assert.deepEqual(
       sweep(["a.md", "b.md"], (file) => texts[file] ?? ""),

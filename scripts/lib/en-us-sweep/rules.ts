@@ -24,9 +24,7 @@ const X_DOC_TOKEN_FILES = new Set([
   "tests/e2e/lib/structural.sh",
 ]);
 
-const X_SAMPLE_PAYLOAD: Record<string, string[]> = {
-  "docs/research/artifacts/147/trace-gemini-p.sh": ["${1:-what colour"],
-};
+const X_SAMPLE_PAYLOAD: Record<string, string[]> = {};
 
 /** Raised where the Python engine does `raise SystemExit(<message>)`. */
 export class EngineExit extends Error {}

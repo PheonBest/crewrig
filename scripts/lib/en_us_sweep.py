@@ -64,13 +64,7 @@ X_DOC_TOKEN_FILES = {
 # Sample-payload strings: a British word inside a code-fed literal (not a
 # comment, not an echo/report message). Keyed by path -> set of substrings that,
 # when present on a line, mark the British token on that line as out-of-reach.
-X_SAMPLE_PAYLOAD = {
-    "docs/research/artifacts/147/trace-gemini-p.sh": [
-        # The `${1:-what colour is ...}` default is a literal model prompt
-        # fed to `gemini -p`. Load-bearing sample payload (R3), not prose.
-        '${1:-what colour',
-    ],
-}
+X_SAMPLE_PAYLOAD = {}
 
 
 # --------------------------------------------------------------------------- #

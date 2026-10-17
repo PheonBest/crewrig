@@ -2,7 +2,7 @@
 name: pr-reviewer
 description: "Independent PR review skill. Activate to audit a pull request cold — without authoring context — covering correctness, convention compliance, test coverage, and linter findings. Emits a structured verdict (Approve / Request Changes / Comment)."
 license: Apache-2.0
-compatibility: "Requires Node >= 24 (the linter scripts are TypeScript files run with node) and gh CLI (for diff fetch and review post). Optional: shellcheck and bash (lint-shell.sh), markdownlint (lint-markdown.ts), ruff or flake8 (lint-python.ts), oxlint and oxfmt (lint-typescript.ts). Missing tools degrade gracefully."
+compatibility: "Requires Node >= 24 (the linter scripts are TypeScript files run with node) and gh CLI (for diff fetch and review post). Optional: markdownlint (lint-markdown.ts), ruff or flake8 (lint-python.ts), oxlint and oxfmt (lint-typescript.ts). Missing tools degrade gracefully."
 allowed-tools:
   - Read
   - Bash
@@ -12,7 +12,7 @@ metadata:
   provenance:
     canonical: "https://github.com/crewrig/crewrig"
     feedback: "https://github.com/crewrig/crewrig"
-    version: "1.8.0"
+    version: "1.9.0"
 ---
 
 
@@ -310,26 +310,24 @@ the role that opened it. Full rule: `docs/agent-team-protocol.md` →
 
 ## Scripts
 
-The skill ships six linter scripts under `scripts/`. Each accepts
+The skill ships five linter scripts under `scripts/`. Each accepts
 file paths as positional arguments, prints findings to stdout, and
 returns exit 0 (clean) or exit 1 (findings).
 
 | Script | Targets | Checks | Degrades when |
 |---|---|---|---|
-| `lint-shell.sh` | `*.sh` | shellcheck output, executable bit, `set -e` presence | shellcheck absent |
 | `lint-markdown.ts` | `*.md` | markdownlint output | markdownlint absent |
 | `lint-skill.ts` | `SKILL.md` | required frontmatter fields, version bumped vs `BASE_REF` | `js-yaml` unresolvable (line-scan fallback) |
 | `lint-python.ts` | `*.py` | ruff or flake8 output, bare `print(` in non-test files | both ruff and flake8 absent |
 | `lint-json.ts` | `*.json` | `JSON.parse` validation, trailing-comma heuristic | never (no external tool) |
 | `lint-typescript.ts` | `*.ts` | Oxlint type-aware strict typing (`no-explicit-any`, `ban-ts-comment`, `no-unsafe-*`), Oxfmt check mode; `max-lines` > 300 is a non-blocking warning | oxlint or oxfmt absent (per tool) |
 
-`lint-shell.sh` uses `command -v <tool>` before invoking optional tools.
-The five other linters are invoked like `lint-typescript.ts`, through
+The linters are invoked like `lint-typescript.ts`, through
 Node (`node scripts/lint-markdown.ts <file>...`, resolved against this
 skill's directory). `lint-typescript.ts` resolves `./node_modules/.bin`
 then `PATH`; `lint-skill.ts` resolves `js-yaml` from the script
 directory, then from the working directory, and falls back to a line
-scan when neither has it. All six print a one-line note when degrading,
+scan when neither has it. All five print a one-line note when degrading,
 so a missing tool never aborts the review.
 
 ## Finding class taxonomy
