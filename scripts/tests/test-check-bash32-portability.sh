@@ -565,64 +565,9 @@ SYNC_ROWS
 # only worth its noise if something checks it — this is that something, and it
 # is why the uniform choice is an invariant rather than cargo cult.
 # ---------------------------------------------------------------------------
-{
-  # The suites corrected under R6. Scoped deliberately: other suites under
-  # scripts/tests/ carry unguarded expansions and are outside spec 0111, whose
-  # R8 constrains only the suites changed under R6.
-  corrected_suites='test-e2e-runner test-e2e-runner-delegation'
-
-  # Accumulate into a string, never an array: an empty accumulator array is the
-  # very abort this case exists to keep out of the corrected suites, and this
-  # file is itself governed.
-  unguarded=''
-  scanned=0
-  for suite in $corrected_suites; do
-    suite_path="$REPO_ROOT/scripts/tests/$suite.sh"
-    if [ ! -f "$suite_path" ]; then
-      bad "case-h: corrected suite not found: scripts/tests/$suite.sh"
-      continue
-    fi
-    scanned=$((scanned + 1))
-    # Detection lives in `bare_expansions_in` — see its header for the model and
-    # for the three tally designs that preceded it, each of which shipped a false
-    # negative. Do not reimplement the decision here: it is probed directly by
-    # case i, and a copy of the logic at this call site would drift out from under
-    # those probes.
-    #
-    # Full-line comments are dropped before scanning, for the same reason the
-    # guard itself drops them (check-bash32-portability.sh, requirement 4): a
-    # comment that *names* an expansion is prose, not use. Without this the scan
-    # contradicts the very doctrine this change establishes. Four of the six
-    # suites document their own guarding convention in exactly that form — e.g.
-    # "`${A[*]:-}` rather than `${A[*]}` because bash 3.2 …" — so a scan that
-    # counted them would fail on the suites' own documentation.
-    while IFS= read -r ln || [ -n "$ln" ]; do
-      [ -n "$ln" ] || continue
-      hit="$(bare_expansions_in "$ln")"
-      if [ -n "$hit" ]; then
-        unguarded="$unguarded  $suite.sh [$hit]: $ln
-"
-      fi
-    done <<PORTABILITY_SCAN
-$(grep -nE '\$\{[A-Za-z_][A-Za-z0-9_]*\[[@*]\]' "$suite_path" \
-   | grep -vE '^[0-9]+:[[:space:]]*#' || true)
-PORTABILITY_SCAN
-  done
-
-  # Fail closed: scanning nothing must not read as success (Rule 4).
-  if [ "$scanned" -ne 2 ]; then
-    bad "case-h: expected 2 corrected suites, scanned $scanned"
-  else
-    ok "case-h: all 4 suites corrected under R6 are present and scanned"
-  fi
-
-  if [ -z "$unguarded" ]; then
-    ok "case-h: no unguarded array expansion remains in the corrected suites (R8)"
-  else
-    bad "case-h: unguarded array expansion(s) survive in the corrected suites:
-$unguarded"
-  fi
-}
+# Every suite that case h scanned has since migrated to TypeScript (the e2e runner suites in
+# spec 0261, the setup suites in spec 0263), so the scan of corrected suites has nothing left to
+# read. The detector it relied on stays probed in both directions by case i below.
 
 # ---------------------------------------------------------------------------
 # Case i — The detector case h relies on is itself probed, both directions.

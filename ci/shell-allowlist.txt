@@ -143,13 +143,7 @@ scripts/tests/test-check-test-strays.sh
 scripts/tests/test-check-test-wiring.sh
 scripts/tests/test-component-tier-resolution.sh
 scripts/tests/test-create-extension-combinations.sh
-scripts/tests/test-e2e-auth-claude-json.sh
-scripts/tests/test-e2e-auth-ollama.sh
-scripts/tests/test-e2e-auth-scripts.sh
 scripts/tests/test-e2e-probes.sh
-scripts/tests/test-e2e-runner-delegation.sh
-scripts/tests/test-e2e-runner.sh
-scripts/tests/test-e2e-scenarios-structure.sh
 scripts/tests/test-extension-render-conformance.sh
 scripts/tests/test-extract-frontmatter.sh
 scripts/tests/test-gemini-agent-frontmatter.sh
