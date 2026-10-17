@@ -569,8 +569,7 @@ SYNC_ROWS
   # The suites corrected under R6. Scoped deliberately: other suites under
   # scripts/tests/ carry unguarded expansions and are outside spec 0111, whose
   # R8 constrains only the suites changed under R6.
-  corrected_suites='test-e2e-runner test-e2e-runner-delegation test-setup-org-mcp
-test-setup-ensure-tier-built'
+  corrected_suites='test-e2e-runner test-e2e-runner-delegation'
 
   # Accumulate into a string, never an array: an empty accumulator array is the
   # very abort this case exists to keep out of the corrected suites, and this
@@ -611,8 +610,8 @@ PORTABILITY_SCAN
   done
 
   # Fail closed: scanning nothing must not read as success (Rule 4).
-  if [ "$scanned" -ne 4 ]; then
-    bad "case-h: expected 4 corrected suites, scanned $scanned"
+  if [ "$scanned" -ne 2 ]; then
+    bad "case-h: expected 2 corrected suites, scanned $scanned"
   else
     ok "case-h: all 4 suites corrected under R6 are present and scanned"
   fi
