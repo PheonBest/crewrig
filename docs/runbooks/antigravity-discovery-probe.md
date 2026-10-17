@@ -131,7 +131,7 @@ making a reader predict which symptom a given call site will show.
 The probe itself cannot run in CI — it needs the vendor binary, a model-driven
 session, and minutes of wall time, which spec 0123 → *Out of scope* rules out.
 Its **classifier** is hermetically tested, with `AGY_BIN` stubbed, by
-`scripts/tests/test-antigravity-discovery-probe.sh`.
+`scripts/tests/e2e-probes-antigravity-discovery.test.ts`.
 
 ## Results
 
