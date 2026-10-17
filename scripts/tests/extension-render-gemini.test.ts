@@ -44,6 +44,22 @@ describe("renderGemini", () => {
     );
   });
 
+  test("a host-installed node_modules never reaches the build tree; dist/ does (spec 0257 R33)", () => {
+    const files = {
+      ...minimalTree(),
+      "node_modules/pkg/index.js": "host\n",
+      "tools/node_modules/other/index.js": "host\n",
+      "tools/lib.js": "lib\n",
+      "dist/index.js": "built\n",
+    };
+    const { status, build } = render(files, "minimal");
+    assert.equal(status, 0);
+    assert.equal(fs.existsSync(path.join(build, "node_modules")), false);
+    assert.equal(fs.existsSync(path.join(build, "tools", "node_modules")), false);
+    assert.equal(fs.readFileSync(path.join(build, "tools", "lib.js"), "utf8"), "lib\n");
+    assert.equal(fs.readFileSync(path.join(build, "dist", "index.js"), "utf8"), "built\n");
+  });
+
   test("a full extension: manifest keys, context, commands, hooks and gaps", () => {
     const { status, cap, gaps, ext, build } = render(fullTree(), "full");
     assert.equal(status, 0);

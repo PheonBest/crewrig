@@ -113,6 +113,45 @@ test("a .releaserc.json in the extension source never reaches the archive (spec 
   assert.ok(!paths.some((p) => p.endsWith(".releaserc.json")), paths.join("\n"));
 });
 
+/** What a workspace install leaves in an extension directory, plus a built `dist/`. */
+function pollute(sandbox: ReturnType<typeof makeSandbox>): void {
+  const base = `extensions/core/${NAME}`;
+  sandbox.write(`${base}/node_modules/some-package/index.js`, "host package\n");
+  sandbox.write(`${base}/node_modules/.bin/tool`, "#!/bin/sh\n");
+  sandbox.write(`${base}/tools/node_modules/other/index.js`, "nested host package\n");
+  sandbox.write(`${base}/dist/index.js`, "built\n");
+}
+
+test("an untracked node_modules reaches neither the build tree nor the archive (spec 0257 R33)", () => {
+  const sandbox = makeSandbox();
+  pollute(sandbox);
+  const out = path.join(sandbox.root, "release-out");
+  const res = run(sandbox, sandbox.version, out);
+  assert.equal(res.status, 0, res.stderr);
+  const archive = treeOfArchive(path.join(out, `${NAME}-${sandbox.version}.tar.gz`));
+  const built = treeOfDir(sandbox.resolve(`build/extensions/${NAME}`));
+  for (const tree of [archive, built]) {
+    const bad = Object.keys(tree).filter((p) => p.split("/").includes("node_modules"));
+    assert.deepEqual(bad, []);
+    assert.ok("dist/index.js" in tree, "the declared dist/ still travels");
+  }
+});
+
+test("the archive does not depend on the install state of the machine (spec 0257 R33)", () => {
+  const clean = makeSandbox();
+  clean.write(`extensions/core/${NAME}/dist/index.js`, "built\n");
+  clean.write(`extensions/core/${NAME}/tools/lib.js`, "lib\n");
+  const dirty = makeSandbox();
+  pollute(dirty);
+  dirty.write(`extensions/core/${NAME}/tools/lib.js`, "lib\n");
+  const outA = path.join(clean.root, "release-a");
+  const outB = path.join(dirty.root, "release-b");
+  assert.equal(run(clean, clean.version, outA).status, 0);
+  assert.equal(run(dirty, dirty.version, outB).status, 0);
+  const file = `${NAME}-${clean.version}.tar.gz`;
+  assert.deepEqual(treeOfArchive(path.join(outB, file)), treeOfArchive(path.join(outA, file)));
+});
+
 test("a builder that fails refuses the release", () => {
   const sandbox = makeSandbox();
   sandbox.write("scripts/build-extension.ts", "process.exitCode = 1;\n");

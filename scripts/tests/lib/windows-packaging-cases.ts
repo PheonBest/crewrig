@@ -176,6 +176,12 @@ function assertArchive(c: Cases, archive: string, expectShebang: boolean): void 
     root !== undefined,
     `no ./gemini-extension.json at the root: ${records.map((r) => r.path).join(", ")}`,
   );
+  const hostPackages = records.filter((r) => r.path.split("/").includes("node_modules"));
+  assert.deepEqual(
+    hostPackages.map((r) => r.path),
+    [],
+    "no host-installed package in the archive (spec 0257 R33)",
+  );
   c.proof.landed.push({ label: `${archive}!gemini-extension.json`, bytes: root.data });
   const shebang = records.filter(
     (r) => r.type === "file" && r.data.subarray(0, 2).toString() === "#!",
@@ -233,6 +239,10 @@ function packageCases(c: Cases): void {
       );
     });
     attempt(c.proof, "wp-release-package", () => {
+      // What a workspace install leaves in the extension directory (spec 0257 R33).
+      const hostDir = path.join(sb.root, "extensions/core/hello-world/node_modules/host-pkg");
+      fs.mkdirSync(hostDir, { recursive: true });
+      fs.writeFileSync(path.join(hostDir, "index.js"), "host package\n");
       const out = path.join(sb.root, "release out");
       const res = runIn(
         "release-package-extension",

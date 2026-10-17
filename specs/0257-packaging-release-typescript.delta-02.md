@@ -1,7 +1,7 @@
 ---
 id: "0257"
 slug: packaging-release-typescript
-status: approved
+status: implemented
 complexity: small
 interaction-mode: MINIMAL
 related-issue: 1599

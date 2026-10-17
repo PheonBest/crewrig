@@ -84,6 +84,35 @@ describe("copyTree", () => {
     assert.equal(fs.readlinkSync(path.join(dst, "dangling")), "/nonexistent/elsewhere");
   });
 
+  it("leaves out a directory named in skipDirNames at every depth, a file of that name stays", () => {
+    const src = tmp();
+    put(src, "keep.txt", "K");
+    put(src, "node_modules/pkg/index.js");
+    put(src, "tools/node_modules/other/index.js");
+    put(src, "tools/lib.js", "L");
+    put(src, "dist/index.js", "D");
+    put(src, "sub/node_modules", "a file, not a directory");
+    const dst = tmp();
+    assert.deepEqual(copyTree(src, dst, ["node_modules"]), []);
+    assert.equal(fs.existsSync(path.join(dst, "node_modules")), false);
+    assert.equal(fs.existsSync(path.join(dst, "tools/node_modules")), false);
+    assert.equal(fs.readFileSync(path.join(dst, "tools/lib.js"), "utf8"), "L");
+    assert.equal(fs.readFileSync(path.join(dst, "dist/index.js"), "utf8"), "D");
+    assert.equal(
+      fs.readFileSync(path.join(dst, "sub/node_modules"), "utf8"),
+      "a file, not a directory",
+    );
+  });
+
+  it("leaves out a link named in skipDirNames", { skip: !canLink() }, () => {
+    const src = tmp();
+    put(src, "keep.txt", "K");
+    fs.symlinkSync("/nonexistent/elsewhere", path.join(src, "node_modules"));
+    const dst = tmp();
+    copyTree(src, dst, ["node_modules"]);
+    assert.deepEqual(fs.readdirSync(dst), ["keep.txt"]);
+  });
+
   it("refuses to copy a tree into itself", () => {
     const src = tmp();
     assert.throws(() => copyTree(src, path.join(src, "inner")), ExtError);
