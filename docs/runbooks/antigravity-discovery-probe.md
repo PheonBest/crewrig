@@ -8,7 +8,7 @@ kind. R14 requires that procedure to tell a component the assistant does not
 find apart from an assistant that failed to answer.
 
 This runbook is that procedure's documentation.
-`scripts/probe-antigravity-discovery.ts` is the procedure (the `scripts/probe-antigravity-discovery.sh` path is a forwarding shim until its final removal).
+`scripts/probe-antigravity-discovery.ts` is the procedure (the former `.sh` forwarding shim is removed).
 
 ## Why observation and not the vendor guide
 

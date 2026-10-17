@@ -437,7 +437,7 @@ These framework-owned launch sites have been adopted to emit one `run-total` rec
 |---|---|---|---|
 | `scripts/probe-extension-mcp-token.sh` | Line 143 | Copilot CLI with `--usage-output-file` side channel | Live run verified; output unchanged |
 | `scripts/probe-extension-mcp-token.sh` | Line 237 | Antigravity CLI with `--output-format json` + `.response` rewrite | Calibrated against real Antigravity payloads |
-| `scripts/probe-antigravity-discovery.sh` | `probe_ask()` primitive | Antigravity CLI with `--output-format json` + `.response` rewrite | Isolated harness verified against stub payloads |
+| `scripts/probe-antigravity-discovery.ts` | `probe_ask()` primitive | Antigravity CLI with `--output-format json` + `.response` rewrite | Isolated harness verified against stub payloads |
 | `scripts/probe-extension-hooks.sh` | Lines ~206, ~235, ~256 | Copilot CLI with `--usage-output-file` | Live run verified; verdict unchanged |
 
 **Excluded sites (with reasons):**

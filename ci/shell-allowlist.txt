@@ -51,7 +51,6 @@ scripts/e2e/auth-copilot.sh
 scripts/e2e/auth-gemini.sh
 scripts/e2e/auth-ollama.sh
 scripts/e2e/lib/auth-common.sh
-scripts/e2e/publish-probe-verdict.sh
 scripts/import-antigravity-history.sh
 scripts/import-claude-history.sh
 scripts/import-copilot-history.sh
@@ -85,7 +84,6 @@ scripts/migrate-extension.sh
 scripts/monorepo-release.sh
 scripts/package-extension.sh
 scripts/package-extensions.sh
-scripts/probe-antigravity-discovery.sh
 scripts/probe-extension-hooks.sh
 scripts/probe-extension-mcp-token.sh
 scripts/prune-transcripts.sh
