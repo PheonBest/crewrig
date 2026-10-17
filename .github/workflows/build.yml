@@ -1684,30 +1684,15 @@ jobs:
       - name: Floor guard accepts Node.js 24
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
         run: node scripts/lib/node-floor-guard.js
-      - name: Test E2E Assert Lib
-        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-assert-lib.sh
       - name: Test E2E Auth Claude Json
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-auth-claude-json.sh
-      - name: Test E2E Auth Common
-        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-auth-common.sh
       - name: Test E2E Auth Ollama
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-auth-ollama.sh
-      - name: Test E2E Auth Ready
-        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-auth-ready.sh
-      - name: Test E2E Llm Judge Lib
-        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-llm-judge-lib.sh
       - name: Test E2E Probes
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-probes.sh
-      - name: Test E2E Report
-        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-report.sh
       - name: Test E2E Runner Delegation
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-runner-delegation.sh
@@ -1717,15 +1702,9 @@ jobs:
       - name: Test E2E Scenarios Structure
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-scenarios-structure.sh
-      - name: Test E2E Structural Lib
-        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-structural-lib.sh
-      - name: Test E2E Toml Merge
-        if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-e2e-toml-merge.sh
       - name: Test E2E Docker Stand-in And Oracle
         if: steps.filter.outputs.e2e == 'true' || github.event_name == 'workflow_dispatch'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-docker-standin.test.ts scripts/tests/e2e-oracle-scenarios.test.ts scripts/tests/e2e-oracle-libs.test.ts scripts/tests/e2e-oracle-judge.test.ts scripts/tests/e2e-libs-differential.test.ts scripts/tests/e2e-auth-differential.test.ts scripts/tests/e2e-publisher-differential.test.ts scripts/tests/e2e-publisher-differential-edge.test.ts scripts/tests/e2e-capture-differential.test.ts scripts/tests/e2e-toml-subset.test.ts scripts/tests/e2e-judge-differential.test.ts scripts/tests/e2e-runner-differential.test.ts scripts/tests/e2e-scenario-05-differential.test.ts scripts/tests/e2e-scenario-06-differential.test.ts scripts/tests/e2e-scenario-07-differential.test.ts scripts/tests/e2e-probe-hooks-blackbox.test.ts scripts/tests/e2e-probe-mcp-token-blackbox.test.ts scripts/tests/e2e-probe-antigravity-differential.test.ts scripts/tests/e2e-usage-headless.test.ts scripts/tests/e2e-defaults-config.test.ts scripts/tests/e2e-docs-lock.test.ts scripts/tests/e2e-taskfile-surface.test.ts scripts/tests/e2e-docker-images.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-docker-standin.test.ts scripts/tests/e2e-oracle-scenarios.test.ts scripts/tests/e2e-oracle-libs.test.ts scripts/tests/e2e-oracle-judge.test.ts scripts/tests/e2e-libs-differential.test.ts scripts/tests/e2e-auth-differential.test.ts scripts/tests/e2e-publisher-differential.test.ts scripts/tests/e2e-publisher-differential-edge.test.ts scripts/tests/e2e-capture-differential.test.ts scripts/tests/e2e-toml-subset.test.ts scripts/tests/e2e-judge-differential.test.ts scripts/tests/e2e-runner-differential.test.ts scripts/tests/e2e-scenario-05-differential.test.ts scripts/tests/e2e-scenario-06-differential.test.ts scripts/tests/e2e-scenario-07-differential.test.ts scripts/tests/e2e-probe-hooks-blackbox.test.ts scripts/tests/e2e-probe-mcp-token-blackbox.test.ts scripts/tests/e2e-probe-antigravity-differential.test.ts scripts/tests/e2e-usage-headless.test.ts scripts/tests/e2e-defaults-config.test.ts scripts/tests/e2e-docs-lock.test.ts scripts/tests/e2e-taskfile-surface.test.ts scripts/tests/e2e-docker-images.test.ts scripts/tests/e2e-assert-lib.test.ts scripts/tests/e2e-auth-common.test.ts scripts/tests/e2e-auth-ready.test.ts scripts/tests/e2e-llm-judge-lib-oauth.test.ts scripts/tests/e2e-llm-judge-lib-ollama.test.ts scripts/tests/e2e-llm-judge-lib-quorum.test.ts scripts/tests/e2e-report.test.ts scripts/tests/e2e-structural-lib.test.ts scripts/tests/e2e-toml-merge.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
