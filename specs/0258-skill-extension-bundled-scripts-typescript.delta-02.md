@@ -11,8 +11,8 @@ version: 1.2.0
 # Skill- and extension-bundled scripts in TypeScript
 
 *Delta 02 of `specs/0258-skill-extension-bundled-scripts-typescript.md`. Source: the review
-ledger of row H, issue #1611 (the deferred, non-blocking findings of pull requests #1603 to
-#1610). It runs under the release-branch regime of
+ledger of row H, issue #1611 (the deferred, non-blocking findings of the pull
+requests #1603 to #1610). It runs under the release-branch regime of
 `specs/0215-shell-to-typescript-migration.delta-04.md`: its spec-PR targets
 `release/1231-ts-migration`. No behaviour of any script changes. The delta adds five
 test and CI hardening requirements (36 to 40) and records two decisions on the behaviour
@@ -20,6 +20,8 @@ differences the ledger listed, neither of which adds a deviation letter. The ver
 MINOR bump. This delta opens no question.*
 
 ## ADDED
+
+<!-- markdownlint-disable MD029 -->
 
 36. **Frozen install of the extension-builder job.** The CI job `extension-builders-ts`
     SHALL install its dependencies with `npm ci --workspaces=false` (the lockfile frozen, the
@@ -61,6 +63,8 @@ MINOR bump. This delta opens no question.*
     `EBUSY`, so that a directory held for a moment by the previous step (the "rename with a
     held handle" test) does not fail the `windows-install-entries` job and cancel the whole
     `Build & Validate` run through its `cancel-on-failure` step.
+
+<!-- markdownlint-enable MD029 -->
 
 **Scenario:** The extension-builder job freezes its lockfile
 
