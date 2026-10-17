@@ -31,7 +31,7 @@ When  `build-ci` runs as the TypeScript entry
 Then  it prints one `Error:` line on standard error and exits 1, where the shell exits 0 with a
       header-only file after `yq`'s own message.
 
-**Scenario:** A drift whose minimal edit script is ambiguous
+**Scenario:** A drift whose hunk layout depends on the `diff` implementation
 
 Given a committed `.gitlab-ci.yml` that differs from the generated file by two swapped
       neighbouring lines
@@ -42,14 +42,17 @@ Then  it exits 1 and prints a normal-format diff whose hunks, applied to the com
 ## MODIFIED
 
 24. **Deviations (closed list).** Requirement 24 of the base spec, as replaced by delta 01, is
-    replaced again by items (a) to (f) of delta 01, unchanged, followed by: (g) Where `yq` itself succeeds (a case that item (c) of delta 01 does not cover, because `yq` does not abort), a YAML input
-    that the shared reader of requirement 5 cannot represent, where the shell does not abort
+    replaced again by items (a) to (f) of delta 01, unchanged, followed by: (g) Where the shell exits 0 or prints an accidental result (a case that item (c) of delta 01 does
+    not cover, because the shell does not abort), a YAML input that the shared reader of requirement 5 cannot represent, where the shell does not abort
     but lets `yq` produce an accidental result: malformed YAML, multi-document input outside
     `check-model-mappings` (for which (d) already applies), and a mapping or sequence where
     the script expects a scalar (the shell prints the block rendering of `yq -r` into its
     message or silently emits a header-only output). The entry SHALL print one
     `Error: <path>: <reason>` line on standard error and exit 1; such inputs are excluded from
-    the byte comparison and a test asserts that line and that status directly. (h) The hunk layout of the normal-format diff that `build-ci --check` prints after a drift: the entry SHALL print a normal-format diff of the same two files, with the same `--check` verdict, exit status and first line as the shell, and the differential proof SHALL NOT compare the hunk layout (the shell runs plain `diff`, whose edit script is not guaranteed minimal and differs between `diff` implementations); it SHALL instead assert that applying the printed hunks to the committed file yields the generated file. No other deviation is permitted.
+    the byte comparison and a test asserts that line and that status directly. 
+    (h) The hunk layout of the normal-format diff that `build-ci --check` prints after a drift:
+    the entry SHALL print a normal-format diff of the same two files, with the same `--check` verdict, exit status and first line as the shell, and the differential proof SHALL NOT compare the hunk layout (the shell runs plain `diff`, whose edit script is not guaranteed minimal and differs between `diff` implementations); it SHALL instead assert that applying the printed hunks to the committed file yields the generated file. Requirement 31 and its twenty-five-class corpus are unchanged by this delta. No other deviation is
+    permitted.
 
 ## REMOVED
 
