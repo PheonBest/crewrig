@@ -19,12 +19,12 @@ const literalPart = (raw: string): string => {
   return cut.replace(/\/$/, "");
 };
 
-/** Repo-relative paths the sandbox copies; `node_modules` comes from `npm ci` (package-lock.json). */
+/** Repo-relative paths the sandbox copies; `node_modules` is copied from the checkout. */
 export function sandboxSources(): string[] {
   const found = new Set<string>();
   const text = `${read("scripts/tests/lib/setup-sandbox.ts")}\n${read("scripts/tests/lib/build-fixture-tree.ts")}`;
   for (const m of text.matchAll(/\bcopy\(\s*["`]([^"`]+)["`]/g)) found.add(literalPart(m[1] ?? ""));
-  for (const m of text.matchAll(/path\.join\(REPO,\s*["`]([^"`]+)["`]\)/g))
+  for (const m of text.matchAll(/path\.join\(\s*REPO,\s*["`]([^"`]+)["`],?\s*\)/g))
     found.add(literalPart(m[1] ?? ""));
   // `createFixtureTree` copies every script (minus tests) through `copyScripts`.
   if (text.includes("copyScripts(root)")) found.add("scripts");
@@ -59,7 +59,12 @@ export const uncovered = (sources: readonly string[], patterns: readonly string[
 
 test("the sandbox copy list and the capability paths are non-empty (vacuity guard)", () => {
   const sources = sandboxSources();
-  for (const expected of ["scripts", "config", "hooks", "package-lock.json"])
+  for (const expected of [
+    "scripts",
+    "config",
+    "hooks",
+    "scripts/tests/fixtures/setup-golden/package-lock.json.golden",
+  ])
     assert.ok(sources.includes(expected), `${expected} is not detected in the sandbox copies`);
   const blocks = capabilityPaths();
   assert.ok(blocks.length >= 2, "expected a pull-request and a push `paths:` block");

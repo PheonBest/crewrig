@@ -55,7 +55,7 @@
     {"path":"<HOME>/.mempalace/server/<SERVER>","kind":"dir"},
     {"path":"<HOME>/.mempalace/server/<SERVER>/token","kind":"file","mode":"0600","sha256":"23d1bdea3b00cd0af7b832c68adb69efa7eea386f510fa25437cdae5d6b80be3"},
     {"path":"<REPO>/.crewrig-state","kind":"dir"},
-    {"path":"<REPO>/.crewrig-state/production-deps.sha256","kind":"file","mode":"0600","sha256":"344db3f739063179909376ea1a0370f4ecf094efc489188e278c90cbbbb6e8ba"}
+    {"path":"<REPO>/.crewrig-state/production-deps.sha256","kind":"file","mode":"0600","sha256":"2a95986b778fe580a34a96cabc9d9661eb0c1f10e3aa46b9c5f086272430fdf6"}
   ],
   "bakCount": {},
   "fzf": [
