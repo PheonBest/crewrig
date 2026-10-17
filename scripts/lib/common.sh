@@ -2529,7 +2529,7 @@ report_unused_transcript_copy() {
 # deploy_antigravity_transcript_hooks <manifest_src> <hook_src> <hooks_dir> <manifest_target> <env_prefix> <guard_src>
 #
 # Why this is a helper rather than an inline block like its three siblings:
-# `scripts/tests/test-setup-mcp-merge.sh` records the house rule that the
+# the `scripts/tests/setup-common-*.test.ts` suites record the house rule that the
 # interactive setup scripts cannot run end-to-end in CI (fzf prompts, the `agy`
 # guard, the chroma daemon). Spec 0116 R17 requires hermetic coverage of the
 # deployment, so the deployment has to live somewhere a test can call. The two

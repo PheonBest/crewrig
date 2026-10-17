@@ -1,5 +1,5 @@
-// setup-retarget-behaviour-a.test.ts — the BEHAVIOUR the three Bash suites test-setup-mcp-merge.sh,
-// test-setup-catalogue-picker.sh and test-setup-usage-capture-optin.sh used to read off the text of
+// setup-retarget-behaviour-a.test.ts — the BEHAVIOUR the three Bash suites (retired by spec 0263)
+// test-setup-mcp-merge, test-setup-catalogue-picker and test-setup-usage-capture-optin used to read off the text of
 // the shell setups (spec 0256 requirement 9, PR D2): each case RUNS the TypeScript entry in the golden
 // sandbox (`--answer` translated from the fzf table) and asserts on what it wrote and exited with.
 // The Bash suites call this file (`node --test --test-name-pattern=<group>`); Linux only, like the

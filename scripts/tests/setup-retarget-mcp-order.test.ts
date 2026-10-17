@@ -1,6 +1,6 @@
 // setup-retarget-mcp-order.test.ts — the order of the MCP sub-steps of the Copilot and Antigravity
-// setups, read from the declaration (spec 0256 requirement 9). The Bash suite test-setup-mcp-merge.sh
-// section 3 reads the declaration only; the shell it used to compare against is a forwarding shim now.
+// setups, read from the declaration (spec 0256 requirement 9). The retired Bash suite test-setup-mcp-merge
+// (spec 0263) section 3 read the declaration only; the shell it used to compare against is a forwarding shim now.
 //
 // Pinned property (spec 0089 R2/R4/R11): the operator's pre-run MCP servers are captured BEFORE the
 // framework overwrite, folded back AFTER it, and the org fold runs after that.

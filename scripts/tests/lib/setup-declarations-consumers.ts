@@ -28,11 +28,11 @@ const TRANSCRIPT_KEYS = [
 
 export const CONSUMERS: readonly Consumer[] = [
   {
-    suite: "scripts/tests/test-setup-mcp-merge.sh (r3 #1)",
+    suite: "scripts/tests/setup-mcp-merge-policy.test.ts (r3 #1)",
     keys: ["step:mcp", "substeps.mcp", "mcp.target"],
   },
   {
-    suite: "scripts/tests/test-setup-catalogue-picker.sh (r3 #2)",
+    suite: "scripts/tests/setup-common-catalogue-picker.test.ts (r3 #2)",
     keys: [
       "step:rules-selection",
       "rules.pick-order",
@@ -90,13 +90,16 @@ export const CONSUMERS: readonly Consumer[] = [
     suite: "scripts/tests/test-setup-mempalace-rc-guard.sh (r3 #7)",
     keys: ["step:mcp", "substeps.mcp"],
   },
-  { suite: "scripts/tests/test-setup-org-mcp.sh (r3 #8)", keys: ["substeps.mcp", "mcp.target"] },
   {
-    suite: "scripts/tests/test-setup-ensure-tier-built.sh (r3 #9)",
+    suite: "scripts/tests/setup-org-mcp-wiring.test.ts (r3 #8)",
+    keys: ["substeps.mcp", "mcp.target"],
+  },
+  {
+    suite: "scripts/tests/setup-tier-staging-declared.test.ts (r3 #9)",
     keys: ["tiers.build-target", "tiers.library-staging", "tiers.gate"],
   },
   {
-    suite: "scripts/tests/test-setup-validation-backend.sh (r3 #10)",
+    suite: "scripts/tests/setup-common-validation.test.ts (r3 #10)",
     keys: ["step:rules-shared", "prompts.rules-shared", "prompt.validation.backend.options"],
   },
   {
@@ -130,12 +133,12 @@ export const CONSUMERS: readonly Consumer[] = [
     clis: ["antigravity"],
   },
   {
-    suite: "scripts/tests/test-setup-gemini-md-cleanup.sh (r3 #15, gemini)",
+    suite: "scripts/tests/setup-legacy-gemini-md-declaration.test.ts (r3 #15, gemini)",
     keys: ["step:legacy-context-cleanup", "legacy.gemini-md", "legacy.marker"],
     clis: ["gemini"],
   },
   {
-    suite: "scripts/tests/test-setup-gemini-md-cleanup.sh (r3 #15, antigravity)",
+    suite: "scripts/tests/setup-legacy-gemini-md-declaration.test.ts (r3 #15, antigravity)",
     keys: [
       "step:system-context-file",
       "system-context-file.target",
@@ -156,7 +159,7 @@ export const CONSUMERS: readonly Consumer[] = [
     clis: ["gemini"],
   },
   {
-    suite: "scripts/tests/test-setup-init-command-instructions.sh (r3 #17)",
+    suite: "scripts/tests/setup-identity-flow.test.ts (r3 #17)",
     keys: ["init.soul", "init.profile"],
   },
   {

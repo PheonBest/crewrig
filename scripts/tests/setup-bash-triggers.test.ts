@@ -253,11 +253,11 @@ test("self-test: suites are parsed, an uncovered dependency is caught, covered o
     triggers: [],
     cache: [],
     commands: [
-      "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-mcp-merge.sh",
+      "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-example.sh",
       "node --test scripts/tests/some.test.ts",
     ],
   };
-  assert.deepEqual(suitesOf(cap), ["scripts/tests/test-setup-mcp-merge.sh"]);
+  assert.deepEqual(suitesOf(cap), ["scripts/tests/test-example.sh"]);
   const globs = [
     "scripts/lib/**",
     "scripts/setup-*-interactive.ts",

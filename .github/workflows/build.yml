@@ -1710,6 +1710,13 @@ jobs:
           filters: |
             setup:
               - 'scripts/tests/test-setup-*.sh'
+              - 'scripts/tests/setup-common-*.test.ts'
+              - 'scripts/tests/setup-identity-flow.test.ts'
+              - 'scripts/tests/setup-legacy-gemini-md-declaration.test.ts'
+              - 'scripts/tests/setup-mcp-merge-policy.test.ts'
+              - 'scripts/tests/setup-org-mcp-wiring.test.ts'
+              - 'scripts/tests/setup-secrets-fold.test.ts'
+              - 'scripts/tests/setup-tier-staging-declared.test.ts'
               - 'scripts/tests/test-tls-delegation.sh'
               - 'scripts/setup-*.sh'
               - 'scripts/setup-*-interactive.ts'
@@ -1741,33 +1748,12 @@ jobs:
       - name: Install production dependencies
         if: steps.filter.outputs.setup == 'true'
         run: npm ci --omit=dev --workspaces=false
-      - name: Test Setup Validation Backend
+      - name: Test Setup Helpers (TypeScript)
         if: steps.filter.outputs.setup == 'true'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-validation-backend.sh
+        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-common-catalogue-picker.test.ts scripts/tests/setup-common-org-mcp.test.ts scripts/tests/setup-common-secrets-argv-pin.test.ts scripts/tests/setup-common-tier-built-pin.test.ts scripts/tests/setup-common-validation.test.ts scripts/tests/setup-identity-flow.test.ts scripts/tests/setup-legacy-gemini-md-declaration.test.ts scripts/tests/setup-mcp-merge-policy.test.ts scripts/tests/setup-org-mcp-wiring.test.ts scripts/tests/setup-secrets-fold.test.ts scripts/tests/setup-tier-staging-declared.test.ts
       - name: Test Tls Delegation
         if: steps.filter.outputs.setup == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-tls-delegation.sh
-      - name: Test Setup Mcp Merge
-        if: steps.filter.outputs.setup == 'true'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-mcp-merge.sh
-      - name: Test Setup Org Mcp
-        if: steps.filter.outputs.setup == 'true'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-org-mcp.sh
-      - name: Test Setup Mcp Fold Secrets Argv
-        if: steps.filter.outputs.setup == 'true'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-mcp-fold-secrets-argv.sh
-      - name: Test Setup Catalogue Picker
-        if: steps.filter.outputs.setup == 'true'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-catalogue-picker.sh
-      - name: Test Setup Ensure Tier Built
-        if: steps.filter.outputs.setup == 'true'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-ensure-tier-built.sh
-      - name: Test Setup Gemini Md Cleanup
-        if: steps.filter.outputs.setup == 'true'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-gemini-md-cleanup.sh
-      - name: Test Setup Init Command Instructions
-        if: steps.filter.outputs.setup == 'true'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-init-command-instructions.sh
       - name: Test Setup Gemini Settings Merge
         if: steps.filter.outputs.setup == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-setup-gemini-settings-merge.sh

@@ -4,7 +4,7 @@
 // in a sandboxed HOME with the stubs of the golden harness (the `ts` leg) and asserts on the status,
 // the stdout and the file tree it produced. The Bash suites call this file with `node --test` and
 // report each test by name:
-//   * scripts/tests/test-setup-gemini-md-cleanup.sh        -> "legacy GEMINI.md cleanup"
+//   * the retired test-setup-gemini-md-cleanup (spec 0263) -> "legacy GEMINI.md cleanup"
 //   * scripts/tests/test-artifact-build-install-scope.sh   -> "overlay tiers"
 //   * scripts/tests/test-antigravity-component-install.sh  -> "antigravity tier install failure"
 // Pinned against the unchanged shell by the setup-golden cells named at each describe (the golden
