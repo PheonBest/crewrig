@@ -123,8 +123,7 @@ Keychain.** No special host capture path is needed.
 
 ### 4.1 Healthy host `gemini -p` — full trace
 
-Run via [`artifacts/147/trace-gemini-p.sh`](artifacts/147/trace-gemini-p.sh).
-See [`artifacts/147/trace.txt`](artifacts/147/trace.txt) for raw output.
+The wrapper script has since been removed; see [`artifacts/147/trace.txt`](artifacts/147/trace.txt) for raw output.
 
 | Observation | Result |
 |---|---|
@@ -261,5 +260,4 @@ All under [`artifacts/147/`](artifacts/147/):
 - `baseline.fs.txt` — snapshot of `~/.gemini` top-level before the trace.
 - `baseline.keychain.txt` — filtered Keychain entries matching gemini/google.
 - `baseline.library.txt` — `~/Library/...` Gemini-related state (none CLI-relevant).
-- `trace-gemini-p.sh` — the wrapper script used in §4.1.
 - `trace.txt` — output of the §4.1 wrapper run.

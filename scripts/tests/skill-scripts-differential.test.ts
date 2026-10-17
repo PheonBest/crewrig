@@ -114,7 +114,7 @@ describe("skill-script callers: every text names the `.ts` entry run through Nod
       checkCaller(first, text.replaceAll("node scripts/simulate-job.ts", "x")).length,
       1,
     );
-    assert.deepEqual(retiredSpellings("lint-shell.sh and lint-typescript.ts stay"), []);
+    assert.deepEqual(retiredSpellings("lint-skill.ts and lint-typescript.ts stay"), []);
   });
 });
 
