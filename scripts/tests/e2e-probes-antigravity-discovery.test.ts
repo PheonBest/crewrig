@@ -1,7 +1,6 @@
 // e2e-probes-antigravity-discovery.test.ts — scripts/tests/test-antigravity-discovery-probe.sh run
 // against `scripts/probe-antigravity-discovery.ts` alone (spec 0261 R11, R17; spec 0123 R13, R14).
-// Overlap note: e2e-probe-antigravity-differential.test.ts runs the same cases through shell and
-// TypeScript legs and skips the shell leg once the .sh is a shim; this file keeps the literal
+// The shell shim and its differential test are gone (spec 0266); this file keeps the literal
 // expectations. Hermetic: HOME and AGY_BIN point into a scratch root; no `agy`, no network.
 
 import assert from "node:assert/strict";
