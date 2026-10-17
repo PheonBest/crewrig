@@ -14,8 +14,8 @@ version: 4.3.0
 (row J4, sub-spec `specs/0266-final-removal-and-termination.md`). Requirement 37 of
 delta-04 leaves the merge method of the final pull request to the owner's choice at
 the time. The owner has chosen: a merge commit, never a squash or a rebase, because
-the recovery procedure of the `sync-from-upstream` shim (ticket #1331, pull request
-#1524, <https://github.com/crewrig/crewrig/issues/1231#issuecomment-6087488677>)
+the recovery procedure of the `sync-from-upstream` shim (ticket 1331, pull request 1524,
+<https://github.com/crewrig/crewrig/issues/1231#issuecomment-6087488677>)
 restores `scripts/sync-from-upstream.sh` from commit
 `cad08ac64d30dcd3ed96b4aadaf156ed7673abae` and only works while that commit, and
 `3ef0e4d03c443736efe75a659a0751478ab377a8`, are ancestors of `main`. This delta
