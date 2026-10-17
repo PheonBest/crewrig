@@ -46,7 +46,7 @@ export const CONSUMERS: readonly Consumer[] = [
     ],
   },
   {
-    suite: "scripts/tests/test-setup-usage-capture-optin.sh (r3 #3, #20)",
+    suite: "scripts/tests/usage-capture-optin-fragments.test.ts (r3 #3, #20)",
     keys: [
       "step:session-recording",
       "step:usage-capture",
@@ -59,14 +59,22 @@ export const CONSUMERS: readonly Consumer[] = [
     ],
   },
   {
-    suite: "test-setup-claude-transcript.sh (r3 #4)",
+    suite: "scripts/tests/setup-transcript-claude.test.ts (r3 #4)",
     keys: [...TRANSCRIPT_KEYS, "hooks.env-patch"],
     clis: ["claude"],
   },
-  { suite: "test-setup-gemini-transcript.sh (r3 #4)", keys: TRANSCRIPT_KEYS, clis: ["gemini"] },
-  { suite: "test-setup-copilot-transcript.sh (r3 #4)", keys: TRANSCRIPT_KEYS, clis: ["copilot"] },
   {
-    suite: "test-setup-antigravity-transcript.sh (r3 #4)",
+    suite: "scripts/tests/setup-transcript-gemini.test.ts (r3 #4)",
+    keys: TRANSCRIPT_KEYS,
+    clis: ["gemini"],
+  },
+  {
+    suite: "scripts/tests/setup-transcript-copilot.test.ts (r3 #4)",
+    keys: TRANSCRIPT_KEYS,
+    clis: ["copilot"],
+  },
+  {
+    suite: "scripts/tests/setup-transcript-antigravity-manifest.test.ts (r3 #4)",
     keys: [...TRANSCRIPT_KEYS, "hooks.unused-copy", "home.cli"],
     clis: ["antigravity"],
   },

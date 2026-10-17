@@ -1,7 +1,7 @@
 // hook-recognition.test.ts — tests for scripts/lib/hook-recognition.ts (spec 0243 R20).
 //
-// The corpus is shared with the Bash predicate: test-setup-usage-capture-optin.sh
-// §6 (a) runs the same rows through `uc_is_capture`. Neither predicate may be
+// The corpus is shared with the independent oracle of usage-capture-optin-fragments.test.ts
+// and with usage-capture-optin-recognition.test.ts, which run the same rows through the entry. Neither predicate may be
 // adjusted without the corpus changing.
 
 import assert from "node:assert/strict";

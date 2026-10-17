@@ -178,7 +178,7 @@ const retargeted = (): { cap: Capability; suite: string; files: Set<string> }[] 
 test("the retargeted suites, their capabilities and the dependency closure are non-empty (vacuity guard)", () => {
   const rows = retargeted();
   const ids = new Set(rows.map((r) => r.cap.id));
-  for (const id of ["setup", "mempalace", "usage-capture", "frontmatter"])
+  for (const id of ["setup", "mempalace", "frontmatter"])
     assert.ok(
       ids.has(id),
       `capability ${id} no longer runs a retargeted suite (detector regression?)`,
@@ -198,7 +198,7 @@ test("the retargeted suites, their capabilities and the dependency closure are n
     "scripts/lib/node-floor-guard.js",
     "scripts/tests/lib/setup-sandbox.ts",
     "scripts/tests/lib/setup-golden-all.ts",
-    "scripts/tests/setup-retarget-behaviour-a.test.ts",
+    "scripts/tests/setup-retarget-others.test.ts",
   ])
     assert.ok(all.has(expected), `${expected} is not in any dependency set`);
   assert.ok(
