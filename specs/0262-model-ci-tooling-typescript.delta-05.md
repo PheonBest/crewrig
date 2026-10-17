@@ -38,6 +38,19 @@ When  `check-ci-parity` runs as the TypeScript entry
 Then  it prints one `Error: <path>: <reason>` line and exits 1, where the shell prints the
       error of `yq keys` and skips the file.
 
+**Scenario:** A workflow that fails to parse
+
+Given a workflow file that is not valid YAML
+When  `check-ci-parity` runs as the TypeScript entry
+Then  it prints one `Error: <path>: <reason>` line and exits 1, where the shell skips the file
+      silently.
+
+**Scenario:** A multi-document reference
+
+Given a `ci/ci-capabilities.yml` that holds two YAML documents
+When  `check-ci-parity` runs as the TypeScript entry
+Then  it prints the stable validity line of the shell, byte for byte.
+
 ## MODIFIED
 
 24. **Deviations (closed list).** Requirement 24 of the base spec, as replaced by delta 03, is
@@ -45,14 +58,17 @@ Then  it prints one `Error: <path>: <reason>` line and exits 1, where the shell 
     (j) For `check-ci-parity`, a workflow file or `.gitlab-ci.yml` that the shared reader of
     requirement 5 cannot represent and on which the shell carries on instead of aborting:
     a file with several YAML documents (the shell joins the per-document results), a
-    `.gitlab-ci.yml` that fails to parse (the shell prints the message of `yq` and continues
-    with no keys), a scalar `jobs` key in a workflow (the shell prints the error of `yq keys`
-    and skips the file), and an explicit `? key` entry or a multi-line key at the scanned
-    indent. The entry SHALL print one `Error: <path>: <reason>` line on standard error and
+    workflow that fails to parse (the shell skips it silently), a `.gitlab-ci.yml` that fails
+    to parse (the shell prints the message of `yq` and continues with no keys), a scalar
+    `jobs` key in a workflow (the shell prints the error of `yq keys` and skips the file),
+    and an explicit `? key` entry or a multi-line key among the job keys of a workflow or the
+    top-level keys of `.gitlab-ci.yml`, which are the keys whose trailing comment the entry
+    reads. The entry SHALL print one `Error: <path>: <reason>` line on standard error and
     exit 1; such inputs are excluded from the byte comparison and a test asserts that line and
-    that status directly. A multi-document REFERENCE (`ci/ci-capabilities.yml`) is not covered
-    by this item: the shell prints a stable validity line and the entry SHALL reproduce it.
-    No other deviation is permitted.
+    that status directly. For these inputs item (j) takes precedence over item (g) of delta 02,
+    including its multi-document clause. A multi-document REFERENCE
+    (`ci/ci-capabilities.yml`) is governed by neither: the shell prints a stable validity line
+    and the entry SHALL reproduce it byte for byte. No other deviation is permitted.
 
 ## REMOVED
 
