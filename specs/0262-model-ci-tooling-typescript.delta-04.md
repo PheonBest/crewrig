@@ -17,8 +17,13 @@ yq-versus-reader suites of the `build-components-ts` job (`build-components-conf
 reproduced in an Ubuntu 24.04 container (42 of 42 pass on `v4.54.1`). Those jobs are path
 filtered, so the failure did not show on the pull requests that introduced the pin. It runs
 under the release-branch regime of `specs/0215-shell-to-typescript-migration.delta-04.md`.
-This delta modifies requirement 19 (the `yq` version only). The version is a MINOR bump.
-This delta opens no question.*
+This delta modifies requirement 19: the general `yq` version, and one new rule (an oracle
+suite names the `yq` version it was built against; a change of the general version is proved
+against those suites in a container; the headers of `build-components-conformance-org.test.ts`
+and `model-resolve-roundtrip.test.ts` SHALL record `v4.54.1` in the next pull request of the
+row that touches them). It is numbered 04 on top of delta 03
+(`1.3.0`, PR #1674), which SHALL merge first. The version is a MINOR bump. This delta opens no
+question.*
 
 <!-- markdownlint-disable MD029 -->
 
