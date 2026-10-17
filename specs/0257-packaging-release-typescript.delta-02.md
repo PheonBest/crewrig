@@ -27,10 +27,10 @@ input that the shell never meant to ship.*
 
 **Requirement 33 — No host-installed package in a build tree.** The Gemini render of
 spec 0254 (the `build/extensions/<name>` tree that requirement 9 packages) SHALL NOT copy a
-directory named `node_modules`, at any depth of the extension directory, into the build
+directory, or a symbolic link, named `node_modules`, at any depth of the extension directory, into the build
 tree. The filter lives in the tree copy of the render, so that the build tree and the archive
-of requirement 10 follow one definition and the packager holds no second one. A file or a link
-named `node_modules` is not a directory and is copied as before. The `dist/` directory is not
+of requirement 10 follow one definition and the packager holds no second one. A regular file
+named `node_modules` is copied as before. The `dist/` directory is not
 filtered: it is the declared output of the extension's own build (the delivered MCP server of
 spec 0254 requirement 11), untracked by design, and the render has no way to tell a stale
 `dist/` from a fresh one. The copy of requirement 17's release clone, the plugin outputs of the
