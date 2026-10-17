@@ -26,6 +26,7 @@ import { findTool, observe, resolveLeg, scriptFile } from "./lib/harness-curator
 import type { HcCase } from "./lib/harness-curator-observe.ts";
 
 const isShim = (script: string): boolean =>
+  fs.existsSync(scriptFile(script, "sh")) &&
   fs.readFileSync(scriptFile(script, "sh"), "utf8").includes("exec node");
 const needsPython = (c: HcCase): boolean => c.tools?.includes("python3") === true;
 

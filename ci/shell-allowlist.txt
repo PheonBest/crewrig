@@ -2,9 +2,6 @@
 # Regenerate with: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-ratchet.ts --write
 # Entries may only ever be removed: delete a line in the same PR that
 # deletes or migrates its file. See DEVELOPMENT.md (TypeScript toolchain and ratchet).
-artifacts/library/skills/harness-curator/scripts/curate.sh
-artifacts/library/skills/harness-curator/scripts/schedule-curator.sh
-artifacts/library/skills/harness-curator/scripts/setup-labels.sh
 hooks/mempalace-transcript.sh
 hooks/usage-capture.sh
 hooks/worktree-git-guard.sh

@@ -21,6 +21,10 @@ export interface Allowed {
 export const ALLOWED: readonly Allowed[] = [
   { prefix: "specs/", reason: "specs describe the retired spellings they replace" },
   { prefix: "docs/adr/", reason: "ADRs are history" },
+  {
+    prefix: "docs/shell-removal.md",
+    reason: "the migration table maps each removed path to its replacement",
+  },
   { prefix: "docs/research/", reason: "research notes are history" },
   { prefix: "scripts/tests/", reason: "tests and goldens name the spellings they guard" },
   { prefix: "artifacts/core/skills/", reason: "the skill scripts, their shims and oracles" },

@@ -8,7 +8,7 @@
 // (`Pick<ServiceNames, "label" | "unit">`).
 //
 // The label equals the one the shell wrote (`io.crewrig.harness-curator`), so a
-// plist written by `schedule-curator.sh` is replaced in place.
+// plist written by the retired `schedule-curator.sh` is replaced in place.
 
 import type { ServiceNames } from "./names.ts";
 import { windowsTaskPath } from "./names.ts";

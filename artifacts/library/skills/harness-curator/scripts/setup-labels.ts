@@ -1,5 +1,5 @@
 // setup-labels.ts — Bootstrap the GitHub labels used by the Harness Curator
-// (TypeScript port of setup-labels.sh, spec 0258 R14).
+// (spec 0258 R14).
 //
 // Run `node setup-labels.ts --help` for the usage. Self-contained on purpose:
 // the component build copies this file byte for byte into built trees and user
@@ -16,9 +16,9 @@ void (async () => {
   const out = (m: string) => process.stdout.write(`${m}\n`);
   const err = (m: string) => process.stderr.write(`${m}\n`);
 
-  // Usage: the header of setup-labels.sh up to `set -euo pipefail`, `# ` prefixes included.
+  // Usage: the usage header, `# ` prefixes included.
   const USAGE = [
-    "# setup-labels.sh — Bootstrap the GitHub labels used by the Harness Curator.",
+    "# setup-labels.ts — Bootstrap the GitHub labels used by the Harness Curator.",
     "#",
     "# `gh issue create --label <name>` fails if the label does not exist on",
     "# the target repo, so every fork that may receive curator output must",
@@ -28,7 +28,7 @@ void (async () => {
     "# are safe, see `gh label create --force` semantics).",
     "#",
     "# Usage:",
-    "#   bash scripts/setup-labels.sh [--repo <owner/repo>] [--dry-run]",
+    "#   node scripts/setup-labels.ts [--repo <owner/repo>] [--dry-run]",
     "#",
     "# Options:",
     "#   --repo <owner/repo>  Target repo. Omit to let `gh` resolve from the",
