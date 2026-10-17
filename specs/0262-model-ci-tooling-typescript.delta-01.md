@@ -1,7 +1,7 @@
 ---
 id: "0262"
 slug: model-ci-tooling-typescript
-status: draft
+status: approved
 complexity: standard
 interaction-mode: MINIMAL
 related-issue: 1339
@@ -27,7 +27,8 @@ no requirement is relaxed otherwise. This delta opens no question.*
      byte against `yq` v4.44.3 on the corpus of the spike (twenty-five classes, kept as goldens
      generated in a container and regenerated in a second image; the three classes that
      requirement 24 (d) and (f) excludes, namely multi-document input and the two explicit-tag
-     classes, are compared on exit status only), the following behaviours of
+     classes, are not compared with `yq`: a test asserts the `Error:` line and exit 1 of the
+     entry directly), the following behaviours of
      the accessors the scripts use: the plain-versus-quoted distinction of scalars (`false` and
      `"false"`, `~` and `"~"`), number and date token text (`0x1F`, `1e3`, `1_000`, `0b1`),
      empty values (rendered as an empty line by `yq -r`, absent keys as `null`), `tag`,
@@ -55,7 +56,8 @@ no requirement is relaxed otherwise. This delta opens no question.*
     (`!custom x`, `!!int 5`), which `yq` accepts and `js-yaml` rejects with an unknown-tag
     error (the tags `!!str`, `!!map` and `!!seq` load and are supported): the entry SHALL print one
     `Error: <path>: <reason>` line on standard error and exit 1, and such inputs are excluded
-    from the byte comparison and compared on exit status only; no YAML file tracked in this
+    from the comparison with `yq` (a test asserts the `Error:` line and exit 1 of the entry
+    directly, since `yq` itself exits 0 on them); no YAML file tracked in this
     repository carries an explicit tag, and a test SHALL assert that on the tracked files read
     by the scripts of this row (`ci/ci-capabilities.yml`, `.github/workflows/*.yml`,
     `.gitlab-ci.yml`, `model-mappings/*.yml`, the front matter of the agent and skill
@@ -65,8 +67,8 @@ no requirement is relaxed otherwise. This delta opens no question.*
 
 Given a Bash-suite fixture whose YAML carries an explicit tag
 When  the entry reads it
-Then  it prints one `Error:` line on standard error and exits 1, and the differential proof
-      compares only the exit status of that input.
+Then  it prints one `Error:` line on standard error and exits 1, and a test asserts exactly
+      that, without comparing the input with `yq`.
 
 **Scenario:** The tracked files carry no tag
 
