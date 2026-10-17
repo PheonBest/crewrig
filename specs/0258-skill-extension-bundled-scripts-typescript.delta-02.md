@@ -14,8 +14,8 @@ version: 1.2.0
 ledger of row H, issue #1611 (the deferred, non-blocking findings of pull requests #1603 to
 #1610). It runs under the release-branch regime of
 `specs/0215-shell-to-typescript-migration.delta-04.md`: its spec-PR targets
-`release/1231-ts-migration`. No behaviour of any script changes. The delta adds four
-test and CI hardening requirements (36 to 39) and records two decisions on the behaviour
+`release/1231-ts-migration`. No behaviour of any script changes. The delta adds five
+test and CI hardening requirements (36 to 40) and records two decisions on the behaviour
 differences the ledger listed, neither of which adds a deviation letter. The version is a
 MINOR bump. This delta opens no question.*
 
@@ -29,7 +29,8 @@ MINOR bump. This delta opens no question.*
     (`.github/workflows/build.yml`, `ci/ci-capabilities.yml` and the regenerated
     `.gitlab-ci.yml`) and the install-line pattern of
     `scripts/tests/extension-ci-wiring.test.ts` SHALL change together, and the pattern SHALL
-    keep rejecting an install that resolves instead of freezing.
+    reject, for this capability only, an install that resolves instead of freezing (the other
+    traced capabilities keep `npm install --include=dev`, which the release jobs need).
 
 37. **Unit tests of the scaffolder prompt.** `parseAnswer` and `promptComponents` of
     `scripts/lib/create-extension/prompt.ts` SHALL each have a unit test that does not go
@@ -45,13 +46,19 @@ MINOR bump. This delta opens no question.*
     `scripts/tests/lib/skill-scripts-callers.ts` and
     `scripts/tests/lib/harness-curator-callers.ts` SHALL be backed by a repository-wide scan
     over the tracked files: no tracked file outside a named allow-list SHALL carry a retired
-    spelling (`<name>.sh`, or the bare name after `scripts/`) of the eleven skill scripts or
-    the three curator scripts. The allow-list names its reason per entry (specs, ADRs,
-    the shims and the Bash oracle, the built mirrors that are regenerated from `artifacts/`),
-    and the scan SHALL be tested for non-vacuity. Separately, the teardown of the Windows
-    install proof SHALL retry on `EPERM` and `EBUSY`
-    (`scripts/tests/lib/build-fixture-tree.ts`, `dispose`), so that a directory held for a
-    moment by the previous step does not fail a whole `Build & Validate` run.
+    spelling of the eleven skill scripts or the three curator scripts. A retired spelling is
+    `<name>.sh`, or `scripts/<name>` not followed by a word character, a dot or a hyphen, where
+    `<name>` is the script's own name (so `check-secrets-exposure`, which exists under both
+    `github-actions` and `gitlab-ci`, is one name matched wherever it appears). The allow-list
+    names its reason per entry (specs, ADRs, the shims and the Bash oracle, the built mirrors
+    that are regenerated from `artifacts/`), and the scan SHALL be tested for non-vacuity.
+
+40. **Teardown retries on transient locks.** The teardown of the Windows install proof
+    fixtures (`dispose` of `scripts/tests/lib/build-fixture-tree.ts`, and the other `rmSync`
+    cleanups of `scripts/tests/lib/windows-install-proof.ts`) SHALL retry on `EPERM` and
+    `EBUSY`, so that a directory held for a moment by the previous step (the "rename with a
+    held handle" test) does not fail the `windows-install-entries` job and cancel the whole
+    `Build & Validate` run through its `cancel-on-failure` step.
 
 **Scenario:** The extension-builder job freezes its lockfile
 
