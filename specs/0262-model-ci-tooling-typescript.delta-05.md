@@ -47,9 +47,11 @@ Then  it prints one `Error: <path>: <reason>` line and exits 1, where the shell 
 
 **Scenario:** A multi-document reference
 
-Given a `ci/ci-capabilities.yml` that holds two YAML documents
+Given a `ci/ci-capabilities.yml` that holds two YAML documents, none of which declares a
+      capability
 When  `check-ci-parity` runs as the TypeScript entry
-Then  it prints the stable validity line of the shell, byte for byte.
+Then  it prints the stable validity line of the shell, byte for byte, with the same exit
+      status.
 
 ## MODIFIED
 
@@ -67,8 +69,12 @@ Then  it prints the stable validity line of the shell, byte for byte.
     exit 1; such inputs are excluded from the byte comparison and a test asserts that line and
     that status directly. For these inputs item (j) takes precedence over item (g) of delta 02,
     including its multi-document clause. A multi-document REFERENCE
-    (`ci/ci-capabilities.yml`) is governed by neither: the shell prints a stable validity line
-    and the entry SHALL reproduce it byte for byte. No other deviation is permitted.
+    (`ci/ci-capabilities.yml`) that declares no capability is governed by neither (j) nor
+    (g): the shell prints a stable validity line and the entry SHALL reproduce it byte for
+    byte, with the same exit status. A multi-document reference that declares capabilities
+    falls under this item (j), because the shell then mixes per-call results of `yq` with
+    Bash diagnostics that carry script paths and line numbers: one `Error: <path>: <reason>`
+    line and exit 1. No other deviation is permitted.
 
 ## REMOVED
 
