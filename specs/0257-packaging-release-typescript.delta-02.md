@@ -30,7 +30,9 @@ spec 0254 (the `build/extensions/<name>` tree that requirement 9 packages) SHALL
 directory, or a symbolic link, named `node_modules`, at any depth of the extension directory, into the build
 tree. The filter lives in the tree copy of the render, so that the build tree and the archive
 of requirement 10 follow one definition and the packager holds no second one. A regular file
-named `node_modules` is copied as before. The `dist/` directory is not
+named `node_modules` is copied as before. This narrows the "verbatim copy of the
+extension source" that requirement 14 of spec 0254 defines, as the MODIFIED section below
+declares. The `dist/` directory is not
 filtered: it is the declared output of the extension's own build (the delivered MCP server of
 spec 0254 requirement 11), untracked by design, and the render has no way to tell a stale
 `dist/` from a fresh one. The copy of requirement 17's release clone, the plugin outputs of the
@@ -51,6 +53,13 @@ checkout where `npm install` left `extensions/<tier>/<name>/node_modules`
 When the two archives are written
 Then their decompressed streams are byte-identical.
 
+**Scenario:** A link or a file named `node_modules` is handled by its kind
+
+Given an extension directory holding a symbolic link `node_modules` and, in another
+directory, a regular file named `node_modules`
+When the Gemini render runs
+Then the link is not in `build/extensions/<name>` and the regular file is.
+
 **Scenario:** `dist/` still travels
 
 Given an extension whose directory holds a built `dist/index.js`
@@ -58,6 +67,18 @@ When the Gemini render runs
 Then `build/extensions/<name>/dist/index.js` exists.
 
 ## MODIFIED
+
+**Requirement 14 of spec 0254 — Gemini render.** Original, the clause that defines the copy:
+
+> a verbatim copy of the extension source (dotfiles included, symbolic links reproduced as
+> links, the executable bit of a file kept where the system has one)
+
+Replacement:
+
+> a verbatim copy of the extension source (dotfiles included, symbolic links reproduced as
+> links, the executable bit of a file kept where the system has one), except that a directory
+> or a symbolic link named `node_modules`, at any depth, is not copied (spec 0257
+> requirement 33)
 
 **Requirement 31 — Deviations.** Original, the closing sentence of delta 01's replacement:
 
@@ -80,7 +101,7 @@ None.
 ## Decision record
 
 **Decision D5 — where the filter lives.** *Adopted:* requirement 33, a name filter in the tree
-copy of the Gemini render (spec 0254 requirement 6), so that `build/extensions/<name>` and every
+copy of the Gemini render (spec 0254 requirement 14), so that `build/extensions/<name>` and every
 consumer of it, the archive included, are clean by construction. *Rejected:* (i) a filter in the
 archive writer only: the build tree would stay dirty, `--check` and the install paths would
 still read host packages, and the writer, which requirement 11 keeps a pure function of the tree
@@ -93,4 +114,5 @@ server, so the filter would break the extensions that ship one.
 **Known consequence.** An extension whose `package.json` lists runtime `dependencies` (the
 reference extension `hello-world` does) ships them only if its own build bundles them into
 `dist/`; the archive no longer carries the packager machine's installed copies. Installing
-declared dependencies is the consumer's concern, and is not changed here.
+declared dependencies is the consumer's concern, and is not changed here; this delta opens no
+follow-up because the shell shipped them only by accident of the packaging machine's state.
