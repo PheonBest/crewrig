@@ -81,7 +81,7 @@ export const SENTINELS: readonly Sentinel[] = [
   ),
 ];
 
-const SELF = "scripts/probe-antigravity-discovery.sh";
+const SELF = "scripts/probe-antigravity-discovery.ts";
 
 /** Everything the probe created, so cleanup can restore the pre-run tree exactly. */
 export class Created {

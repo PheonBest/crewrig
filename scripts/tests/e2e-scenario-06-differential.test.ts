@@ -1,8 +1,6 @@
-// e2e-scenario-06-differential.test.ts — scenario 06 (probe B) through BOTH legs (`bash
-// tests/e2e/run.sh`, `node tests/e2e/run.ts`) on canned container outputs richer than the goldens
-// (spec 0261 R7, R10), in a scratch tree (tests/e2e without reports/, scripts/ and node_modules
-// symlinked) under the Docker stand-in; fixtures echo the scenario via the stand-in's template
-// tokens. Nonces and timestamps are normalised; everything else is compared byte for byte.
+// e2e-scenario-06-differential.test.ts — scenario 06 (probe B) through `node tests/e2e/run.ts` on canned
+// container outputs (spec 0261 R7), in a scratch tree under the Docker stand-in: the richer fixtures reach
+// the consumed, not-consumed and indeterminate verdicts. The shell leg is removed with run.sh.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -12,8 +10,7 @@ import path from "node:path";
 import { describe, it } from "node:test";
 
 import { writeLauncher, type FixtureEntry } from "./lib/e2e-docker-standin.ts";
-import { REPO_ROOT, shellPrerequisites } from "./lib/e2e-oracle-observe.ts";
-import { shellLegSkipReason } from "./lib/e2e-shim.ts";
+import { REPO_ROOT } from "./lib/e2e-oracle-observe.ts";
 
 const NODE_FLAG = "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON";
 const SCENARIO = "06-agent-surface-consumption";
@@ -205,7 +202,7 @@ function walk(dir: string, found: Record<string, string>, base: string): void {
   }
 }
 
-function runLeg(kind: "shell" | "entry", c: Case): Leg {
+function runLeg(_kind: "entry", c: Case): Leg {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "e2e-s06-diff-")));
   try {
     fs.cpSync(path.join(REPO_ROOT, "tests", "e2e"), path.join(root, "tests", "e2e"), {
@@ -243,9 +240,8 @@ function runLeg(kind: "shell" | "entry", c: Case): Leg {
       ...c.env,
     };
     const args = ["--scenario", SCENARIO, "--cli", c.cli, "--report-dir", reportDir];
-    const run = path.join(root, "tests/e2e", kind === "shell" ? "run.sh" : "run.ts");
-    const [cmd, argv] =
-      kind === "shell" ? ["bash", [run, ...args]] : [process.execPath, [NODE_FLAG, run, ...args]];
+    const run = path.join(root, "tests/e2e", "run.ts");
+    const [cmd, argv] = [process.execPath, [NODE_FLAG, run, ...args]];
     const res = spawnSync(cmd as string, argv as string[], {
       cwd: root,
       env,
@@ -285,18 +281,7 @@ function runLeg(kind: "shell" | "entry", c: Case): Leg {
   }
 }
 
-const skip = shellPrerequisites() ?? false;
-const shimSkip = shellLegSkipReason(path.join(REPO_ROOT, "tests/e2e/run.sh"));
-
-describe("scenario 06 (probe B): shell and entry agree", { skip }, () => {
-  for (const c of cases) {
-    it(c.name, { skip: shimSkip }, () => {
-      const shell = runLeg("shell", c);
-      const entry = runLeg("entry", c);
-      assert.deepEqual(entry, shell);
-    });
-  }
-
+describe("scenario 06 (probe B): entry on canned container outputs", () => {
   it("the richer fixtures reach consumed, not-consumed and indeterminate", () => {
     const outcomes = new Set<string>();
     for (const c of [cases[0], cases[1], cases[6]] as Case[]) {

@@ -1,4 +1,4 @@
-// publish-probe-verdict.ts — TypeScript twin of publish-probe-verdict.sh (spec 0261 R1-R4, R24).
+// publish-probe-verdict.ts — TypeScript successor of the removed publish-probe-verdict.sh (spec 0261 R1-R4, R24).
 //
 // Usage: node scripts/e2e/publish-probe-verdict.ts <report-dir> --issue <N> [--dry-run]
 //
@@ -13,7 +13,7 @@ import path from "node:path";
 
 import { findOnPath, runTool } from "../../tests/e2e/lib/exec.ts";
 
-const USAGE = `Usage: scripts/e2e/publish-probe-verdict.sh <report-dir> --issue <N> [--dry-run]
+const USAGE = `Usage: node scripts/e2e/publish-probe-verdict.ts <report-dir> --issue <N> [--dry-run]
 
 Reads <report-dir>/verdict.json and posts (or, with --dry-run, prints) the
 rendered Markdown comment body for issue #<N>.

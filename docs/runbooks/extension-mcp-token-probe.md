@@ -9,7 +9,7 @@ tool is delivered." R13 requires each target's own name-collision resolution
 to be recorded with evidence rather than assumed uniform across tools.
 
 This runbook is that procedure's documentation.
-`scripts/probe-extension-mcp-token.ts` is the procedure (the `scripts/probe-extension-mcp-token.sh` path is a forwarding shim until its final removal).
+`scripts/probe-extension-mcp-token.ts` is the procedure (the former `.sh` forwarding shim is removed).
 
 ## Why observation and not the vendor guide
 

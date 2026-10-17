@@ -9,7 +9,7 @@ plugin-level hook surface was ungrounded at spec-authoring time. This runbook
 is the re-runnable procedure that grounds it, and re-grounds the other three
 targets from the installed tool rather than trusted vendor prose.
 
-`scripts/probe-extension-hooks.ts` is the procedure (the `scripts/probe-extension-hooks.sh` path is a forwarding shim until its final removal).
+`scripts/probe-extension-hooks.ts` is the procedure (the former `.sh` forwarding shim is removed).
 
 ## Running it
 

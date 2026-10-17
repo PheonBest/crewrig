@@ -16,7 +16,6 @@ import path from "node:path";
 import { writeLauncher } from "./e2e-docker-standin.ts";
 import { normalise, normaliseArgv, type NormaliseContext } from "./e2e-normalise.ts";
 import type { OracleCase, Tuple } from "./e2e-oracle-types.ts";
-import { findTool } from "./hermetic-env.ts";
 
 export type Subject = "shell" | "entry" | "auto";
 
@@ -30,18 +29,6 @@ const NODE_FLAG = "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON";
 export function resolveSubject(subject: Subject): "shell" | "entry" {
   if (subject === "auto") return fs.existsSync(RUN_ENTRY) ? "entry" : "shell";
   return subject;
-}
-
-/** A skip reason when the shell harness cannot run on this host, else null. */
-export function shellPrerequisites(): string | null {
-  if (process.platform === "win32") return "the shell harness needs a POSIX host";
-  const bash = findTool("bash");
-  if (bash === undefined) return "bash is missing";
-  const probe = spawnSync(bash, ["-c", "printf %s ${BASH_VERSINFO[0]}"], { encoding: "utf8" });
-  const major = Number(probe.stdout);
-  if (!(major >= 4)) return `bash >= 4 is required (found ${probe.stdout || "unknown"})`;
-  for (const tool of ["jq", "yq"]) if (findTool(tool) === undefined) return `${tool} is missing`;
-  return null;
 }
 
 function isText(buf: Buffer): boolean {

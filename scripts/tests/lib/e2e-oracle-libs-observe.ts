@@ -1,10 +1,8 @@
-// e2e-oracle-libs-observe.ts — run one LibCase through the SHELL library in a scratch sandbox and
-// describe what it did (spec 0261 R9): return code, both streams, every file under `work/`.
-// `bash -c 'source "$LIB"; fn "$@"'` with LC_ALL=C, HOME and TMPDIR inside the sandbox, CI and
-// NODE_TEST_CONTEXT removed. Needs bash >= 4 for the harness libraries: `shellLibPrerequisites()`
-// returns the skip reason. Nothing here touches the real HOME or any account.
+// e2e-oracle-libs-observe.ts — the scratch sandbox of the library oracle (spec 0261 R9): `makeSandbox`
+// builds it, `finishSandbox` describes what a case left behind (return code, both streams, every file
+// under `work/`). The shell runner is removed with the shell libraries; the TypeScript twins run in the
+// same sandbox against the recorded goldens. Nothing here touches the real HOME or any account.
 
-import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -14,15 +12,6 @@ import { normalise } from "./e2e-normalise.ts";
 import type { LibCase, LibTuple } from "./e2e-oracle-libs-types.ts";
 
 export const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
-
-export function shellLibPrerequisites(tools: readonly string[] = []): string | null {
-  const v = spawnSync("bash", ["-c", 'echo "${BASH_VERSINFO[0]}"'], { encoding: "utf8" });
-  if (v.status !== 0 || Number(v.stdout.trim()) < 4) return "bash >= 4 is required";
-  for (const t of tools) {
-    if (spawnSync("sh", ["-c", `command -v ${t}`]).status !== 0) return `${t} is required`;
-  }
-  return null;
-}
 
 function walk(dir: string, base: string, out: Record<string, { content: string; mode: string }>) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -104,28 +93,4 @@ export function finishSandbox(c: LibCase, box: Sandbox, out: Outcome): LibTuple 
   };
   fs.rmSync(box.root, { recursive: true, force: true });
   return tuple;
-}
-
-export function observeLib(c: LibCase): LibTuple {
-  const box = makeSandbox(c);
-  const libPath = path.join(REPO_ROOT, c.lib);
-  const argv = c.script
-    ? [libPath, ...(c.args ?? [])]
-    : [
-        "-c",
-        'source "$1"; fn="$2"; vars="$3"; shift 3; "$fn" "$@"; rc=$?; ' +
-          'for v in $vars; do printf "%s=%s\\n" "$v" "${!v-}"; done; exit "$rc"',
-        "bash",
-        libPath,
-        c.fn,
-        (c.printVars ?? []).join(" "),
-        ...(c.args ?? []),
-      ];
-  const res = spawnSync("bash", argv, {
-    cwd: box.work,
-    env: box.env,
-    input: c.stdin ?? "",
-    encoding: "latin1",
-  });
-  return finishSandbox(c, box, { rc: res.status ?? -1, stdout: res.stdout, stderr: res.stderr });
 }

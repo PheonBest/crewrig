@@ -93,7 +93,7 @@ script's header for why two places holding one fact need a check).
   `1.0.49` (both readings carried, per spec 0179's own Notes precedent).
 - **Probe method:** a **live functional test** — a synthetic plugin loaded
   via `--plugin-dir`, one real tool-invoking session, and a side-channel log
-  the candidate hook command writes (`scripts/probe-extension-hooks.sh`,
+  the candidate hook command writes (`scripts/probe-extension-hooks.ts`,
   `docs/runbooks/extension-hook-probe.md`). No vendor documentation states
   any of the fields below; every one is grounded by observing the installed
   tool actually fire (or not fire) a hook. This is the R12 branch point:
