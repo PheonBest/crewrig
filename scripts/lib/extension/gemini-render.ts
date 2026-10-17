@@ -133,7 +133,8 @@ export function renderGemini(
 ): number {
   const buildDir = extBuildDir(ctx.repoDir, name);
   emptyDir(buildDir, ctx.repoDir);
-  copyTree(extDir, buildDir);
+  // Spec 0257 R33: never a host-installed package; `dist/` is the declared build output and stays.
+  copyTree(extDir, buildDir, ["node_modules"]);
   removeGenerated(buildDir, readGeneratedClass(ctx.libDir));
   fs.rmSync(`${buildDir}/.releaserc.json`, { force: true });
 

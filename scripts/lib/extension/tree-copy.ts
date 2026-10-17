@@ -55,18 +55,19 @@ export function assertSafeToRemove(dir: string, repoDir: string): void {
   }
 }
 
-function copyInto(src: string, dst: string, notices: string[]): void {
+function copyInto(src: string, dst: string, notices: string[], skip: ReadonlySet<string>): void {
   fs.mkdirSync(dst, { recursive: true });
   for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    if ((entry.isDirectory() || entry.isSymbolicLink()) && skip.has(entry.name)) continue;
     const from = `${src}/${entry.name}`;
     const to = `${dst}/${entry.name}`;
     const existing = lstatOrNull(to);
     if (entry.isSymbolicLink()) {
       if (existing !== null) fs.rmSync(to, { recursive: true, force: true });
-      copyLink(from, to, notices);
+      copyLink(from, to, notices, skip);
     } else if (entry.isDirectory()) {
       if (existing !== null && !existing.isDirectory()) fs.rmSync(to, { force: true });
-      copyInto(from, to, notices);
+      copyInto(from, to, notices, skip);
       fs.chmodSync(to, fs.statSync(from).mode & 0o7777);
     } else if (entry.isFile()) {
       if (existing !== null && !existing.isFile()) fs.rmSync(to, { recursive: true, force: true });
@@ -78,7 +79,7 @@ function copyInto(src: string, dst: string, notices: string[]): void {
   }
 }
 
-function copyLink(from: string, to: string, notices: string[]): void {
+function copyLink(from: string, to: string, notices: string[], skip: ReadonlySet<string>): void {
   const target = fs.readlinkSync(from);
   try {
     fs.symlinkSync(target, to);
@@ -94,7 +95,7 @@ function copyLink(from: string, to: string, notices: string[]): void {
     notices.push(`skipped ${from}: link creation refused and its target does not exist`);
     return;
   }
-  if (kind.isDirectory()) copyInto(from, to, notices);
+  if (kind.isDirectory()) copyInto(from, to, notices, skip);
   else fs.copyFileSync(from, to);
   notices.push(`copied the target of ${from} instead of a link: link creation refused`);
 }
@@ -102,12 +103,14 @@ function copyLink(from: string, to: string, notices: string[]): void {
 /**
  * `cp -a "$src"/. "$dst"/`: merge the contents of `src` into `dst` (created if absent).
  * Returns the notices (links that had to be copied as files; special files skipped).
+ * A directory, or a link, whose name is in `skipDirNames` is left out at every depth (spec 0257 R33: a
+ * workspace install's `node_modules` is host state, not a source of the tree being built).
  */
-export function copyTree(src: string, dst: string): string[] {
+export function copyTree(src: string, dst: string, skipDirNames: readonly string[] = []): string[] {
   if (isSameOrWithin(real(dst), real(src)))
     throw new ExtError(`cannot copy '${src}' into itself ('${dst}')`);
   const notices: string[] = [];
-  copyInto(src, dst, notices);
+  copyInto(src, dst, notices, new Set(skipDirNames));
   return notices;
 }
 
