@@ -1,7 +1,7 @@
 ---
 id: "0266"
 slug: final-removal-and-termination
-status: draft
+status: approved
 complexity: standard
 interaction-mode: MINIMAL
 related-issue: 1344
@@ -244,6 +244,75 @@ taken (#1601) recorded as an open gap rather than claimed.
     6. _empty-allowlist-and-status_ — requirements 17 to 19, the sync recovery rehearsal (12) and the
        status flip: the terminal act; also prepares the final release-to-main pull request body (21).
 
+### Parent changes
+
+- **Delta needed: `specs/0215-shell-to-typescript-migration.delta-06.md`** (not written here). Parent
+  requirement 37 leaves the merge method to the owner; the owner has decided it
+  (<https://github.com/crewrig/crewrig/issues/1231#issuecomment-6087488677>): merge commit only, because
+  the recovery of requirement 12 depends on `cad08ac…` staying an ancestor of `main`. That modifies a
+  normative statement of delta-04, so it goes through delta-06 (MODIFIED R37: "merge commit, never
+  squash or rebase"), merged before the final pull request is opened. Requirement 20 of this spec is the
+  statement the delta cites.
+- **No delta needed** for R9 (shims "removed no later than the final sub-spec": consistent), R25 (its
+  "no hook file ... invokes a shell script" holds once requirement 9 has rewritten installed lines and
+  the tracked hook JSON files are already `node` commands), R15 and R26 (this spec applies them).
+  Deltas 01 to 05 were read; none changes these requirements except as above. The plan MAY find that
+  "setup SHALL rewrite" of R15 needs a statement for lines setup cannot recognise (operator-edited
+  lines); if so it is a second modification of delta-06, not of this spec.
+
+### Decision record
+
+- **D1. Remove every shim; keep no stub.** Alternatives rejected: (a) keep Class B shims one more
+  release as a non-shell file at the same path: a file named `*.sh` is a tracked shell path and the
+  ratchet of requirement 17 fails; (b) keep a deprecation shim that prints a message: same objection and
+  violates parent requirement 25; (c) a native `command-not-found` hook in setup: no mechanism exists in
+  the four CLIs. The cost, a failing legacy line until setup is re-run, is documented (requirement 10).
+- **D2. Crontab is a documented manual step.** Alternative rejected: a cleanup in setup that reads and
+  rewrites the crontab: requires spawning `crontab`, forbidden by parent requirement 23, and an edit of a
+  user's own schedule is a higher-risk write than the problem it removes. The failure is loud, logged and
+  confined to one optional feature.
+- **D3. Rewriter keeps recognising `.sh` forms.** Alternative rejected: drop the legacy corpus entries
+  with the shims: setup would then leave a legacy line untouched and report it as foreign, so the
+  adopter keeps a dead hook.
+- **D4. Ratchet kept, allowlist emptied.** Alternative rejected: delete the ratchet with the last shell
+  file: parent requirement 10 asks for a check that fails when a shell file is added, and without it the
+  invariant has no guard after the epic.
+- **D5. Libraries and test ports retire together.** Alternative rejected: keep the oracle libraries as
+  a permanent reference: they are shell files, they would hold the allowlist non-empty, and every twin is
+  already proved against recorded tuples (spec 0261).
+- **D6. Six pull requests, Taskfile and CI first.** Alternative rejected: one large removal pull request:
+  one defect in the Class B group would force a revert of everything; and doing the shim removal before
+  the CI retarget would leave CI jobs that call deleted files.
+- **D7. Gating by re-derivation.** Alternative rejected: a frozen file list in this spec: I2 and J2 will
+  change the leftover set after this spec merges; a frozen list would then be wrong in one direction or
+  the other and would need a delta for each change.
+- **D8. Oxfmt scope for JavaScript.** Alternative rejected: leave all JavaScript outside the format check:
+  the files that remain are few, and an unformatted island is exactly a "carve-out" in the sense of the
+  #1344 comment.
+- **D9. #1601 stays a recorded gap.** Alternative rejected: infer Windows behaviour from rows 37 to 37f:
+  those measured project-directory tokens, not plugin-root tokens, and spec 0258 requirement 21 forbids
+  shipping a hook that does real work on an unmeasured cell.
+
+### Observable acceptance and verification
+
+Acceptance is observable on the release branch head after the last pull request of this row: the
+ratchet job is green with an empty allowlist and red on an added shell file; the audit report exists
+and every parent-25 condition has evidence; the final pull request body is complete and unmerged.
+
+| Requirement | Command or check that proves it                                                                                                                                              |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1-5         | `git ls-files '*.sh'` is empty; `git grep -l 'bash32\|pipefail-grep\|lint-shell\|shellcheck'` lists only the migration table and specs                                       |
+| 6-8         | `git ls-files` shows none of the paths of `docs/shell-removal.md`'s table; `node --test` runs the migration-table test (every row's replacement exists)                      |
+| 9-10        | `node --test scripts/tests/*hook*rewrite*.test.ts` (legacy `.sh` line to `.ts`, second run writes nothing); `docs/cli-matrix.md` cell per CLI                                |
+| 11          | `git grep -n 'crontab' scripts hooks` finds no spawn; the release notes carry the marker text                                                                                |
+| 12          | rehearsal log: `git checkout cad08ac… -- scripts/sync-from-upstream.sh`, restored script run twice, second run no-op                                                         |
+| 13-16       | `node scripts/check-taskfile-commands.ts` (scan of every task); `task lint` and `task format-check` green; `git diff` of the generator output empty; `check-ci-parity` green |
+| 17          | `node scripts/check-ratchet.ts` exit 0 on head, exit non-zero on a scratch tree with an added `.sh` and with an added allowlist line                                         |
+| 18          | `git ls-files` plus a shebang scan; `git grep` for the words bash and sh followed by a space, and for the suffix .sh, over the paths of requirement 18, every hit classified |
+| 19          | the audit report; `gh issue list --label` states of the follow-ups; row 37g unchanged                                                                                        |
+| 20-21       | `git merge-base --is-ancestor <sha> <merge-result>` for both commits on a throwaway clone; the body's checklist                                                              |
+| 24-25       | each removal pull request body shows the regenerated list and its classification                                                                                             |
+
 ## Scenarios
 
 **Scenario:** The allowlist is empty and the ratchet still rejects a new shell file
@@ -293,75 +362,6 @@ Then the file is classified by requirement 7, its consumers are removed first, a
 Given a Linux machine whose crontab holds the `# crewrig-harness-curator` marker and a command naming `curate.sh`
 When the `curate.sh` shim is gone and the job fires
 Then it fails and logs to `~/.local/state/crewrig/harness-curator.log`; the release notes describe the `crontab -e` removal, and no CrewRig code has touched the crontab
-
-## Parent changes
-
-- **Delta needed: `specs/0215-shell-to-typescript-migration.delta-06.md`** (not written here). Parent
-  requirement 37 leaves the merge method to the owner; the owner has decided it
-  (<https://github.com/crewrig/crewrig/issues/1231#issuecomment-6087488677>): merge commit only, because
-  the recovery of requirement 12 depends on `cad08ac…` staying an ancestor of `main`. That modifies a
-  normative statement of delta-04, so it goes through delta-06 (MODIFIED R37: "merge commit, never
-  squash or rebase"), merged before the final pull request is opened. Requirement 20 of this spec is the
-  statement the delta cites.
-- **No delta needed** for R9 (shims "removed no later than the final sub-spec": consistent), R25 (its
-  "no hook file ... invokes a shell script" holds once requirement 9 has rewritten installed lines and
-  the tracked hook JSON files are already `node` commands), R15 and R26 (this spec applies them).
-  Deltas 01 to 05 were read; none changes these requirements except as above. The plan MAY find that
-  "setup SHALL rewrite" of R15 needs a statement for lines setup cannot recognise (operator-edited
-  lines); if so it is a second modification of delta-06, not of this spec.
-
-## Decision record
-
-- **D1. Remove every shim; keep no stub.** Alternatives rejected: (a) keep Class B shims one more
-  release as a non-shell file at the same path: a file named `*.sh` is a tracked shell path and the
-  ratchet of requirement 17 fails; (b) keep a deprecation shim that prints a message: same objection and
-  violates parent requirement 25; (c) a native `command-not-found` hook in setup: no mechanism exists in
-  the four CLIs. The cost, a failing legacy line until setup is re-run, is documented (requirement 10).
-- **D2. Crontab is a documented manual step.** Alternative rejected: a cleanup in setup that reads and
-  rewrites the crontab: requires spawning `crontab`, forbidden by parent requirement 23, and an edit of a
-  user's own schedule is a higher-risk write than the problem it removes. The failure is loud, logged and
-  confined to one optional feature.
-- **D3. Rewriter keeps recognising `.sh` forms.** Alternative rejected: drop the legacy corpus entries
-  with the shims: setup would then leave a legacy line untouched and report it as foreign, so the
-  adopter keeps a dead hook.
-- **D4. Ratchet kept, allowlist emptied.** Alternative rejected: delete the ratchet with the last shell
-  file: parent requirement 10 asks for a check that fails when a shell file is added, and without it the
-  invariant has no guard after the epic.
-- **D5. Libraries and test ports retire together.** Alternative rejected: keep the oracle libraries as
-  a permanent reference: they are shell files, they would hold the allowlist non-empty, and every twin is
-  already proved against recorded tuples (spec 0261).
-- **D6. Six pull requests, Taskfile and CI first.** Alternative rejected: one large removal pull request:
-  one defect in the Class B group would force a revert of everything; and doing the shim removal before
-  the CI retarget would leave CI jobs that call deleted files.
-- **D7. Gating by re-derivation.** Alternative rejected: a frozen file list in this spec: I2 and J2 will
-  change the leftover set after this spec merges; a frozen list would then be wrong in one direction or
-  the other and would need a delta for each change.
-- **D8. Oxfmt scope for JavaScript.** Alternative rejected: leave all JavaScript outside the format check:
-  the files that remain are few, and an unformatted island is exactly a "carve-out" in the sense of the
-  #1344 comment.
-- **D9. #1601 stays a recorded gap.** Alternative rejected: infer Windows behaviour from rows 37 to 37f:
-  those measured project-directory tokens, not plugin-root tokens, and spec 0258 requirement 21 forbids
-  shipping a hook that does real work on an unmeasured cell.
-
-## Observable acceptance and verification
-
-Acceptance is observable on the release branch head after the last pull request of this row: the
-ratchet job is green with an empty allowlist and red on an added shell file; the audit report exists
-and every parent-25 condition has evidence; the final pull request body is complete and unmerged.
-
-| Requirement | Command or check that proves it                                                                                                                                              |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1-5         | `git ls-files '*.sh'` is empty; `git grep -l 'bash32\|pipefail-grep\|lint-shell\|shellcheck'` lists only the migration table and specs                                       |
-| 6-8         | `git ls-files` shows none of the paths of `docs/shell-removal.md`'s table; `node --test` runs the migration-table test (every row's replacement exists)                      |
-| 9-10        | `node --test scripts/tests/*hook*rewrite*.test.ts` (legacy `.sh` line to `.ts`, second run writes nothing); `docs/cli-matrix.md` cell per CLI                                |
-| 11          | `git grep -n 'crontab' scripts hooks` finds no spawn; the release notes carry the marker text                                                                                |
-| 12          | rehearsal log: `git checkout cad08ac… -- scripts/sync-from-upstream.sh`, restored script run twice, second run no-op                                                         |
-| 13-16       | `node scripts/check-taskfile-commands.ts` (scan of every task); `task lint` and `task format-check` green; `git diff` of the generator output empty; `check-ci-parity` green |
-| 17          | `node scripts/check-ratchet.ts` exit 0 on head, exit non-zero on a scratch tree with an added `.sh` and with an added allowlist line                                         |
-| 18          | `git ls-files` plus a shebang scan; `git grep` for the words bash and sh followed by a space, and for the suffix .sh, over the paths of requirement 18, every hit classified |
-| 19          | the audit report; `gh issue list --label` states of the follow-ups; row 37g unchanged                                                                                        |
-| 20-21       | `git merge-base --is-ancestor <sha> <merge-result>` for both commits on a throwaway clone; the body's checklist                                                              |
-| 24-25       | each removal pull request body shows the regenerated list and its classification                                                                                             |
 
 ## Out of scope
 
