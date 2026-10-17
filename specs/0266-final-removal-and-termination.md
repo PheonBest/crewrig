@@ -136,14 +136,24 @@ taken (#1601) recorded as an open gap rather than claimed.
     (parent requirement 23).
 12. **Sync recovery after the shim removal.** The recovery of #1524 (restore `scripts/sync-from-upstream.sh`
     from commit `cad08ac64d30dcd3ed96b4aadaf156ed7673abae`, run it once, a further run is a no-op) SHALL
-    be re-verified by a test or recorded rehearsal on the release branch head after the `sync-from-upstream.sh`
-    shim is deleted and on a throwaway clone of the final merge result (requirement 20): the commit
+    be re-verified in two recorded rehearsals on throwaway clones, never in the real checkout. The first runs
+    in the last pull request of this row, on the release branch head after the `sync-from-upstream.sh` shim is
+    deleted. The second runs when the final pull request is prepared (requirement 21), on a local merge of
+    the release branch into `main` made with the merge commit method, because that merge result does not exist
+    before then. In each: the commit
     resolves, `git checkout <commit> -- scripts/sync-from-upstream.sh` restores shell text, running it
     reconciles the TypeScript files against upstream, and the next run is a no-op. The procedure text in
     `docs/` SHALL state that the commit is reachable only through a merge commit (requirement 20) and
     SHALL name this dependency, so a later maintainer does not squash the final merge.
+    The command log of each rehearsal SHALL be attached to #1344.
 
 ### Toolchain, Taskfile and CI
+
+The two checks this section needs do not exist at authoring time and are created by this row, in
+TypeScript (parent requirement 12): `scripts/check-taskfile-commands.ts`, which fails when a task of
+`Taskfile.yml` names a shell, a `.sh` path or a POSIX-only utility, and a migration-table test, which
+fails when a row of `docs/shell-removal.md` names a replacement command that does not exist. Both are
+wired into CI and the Taskfile in the pull request that introduces them (requirement 25, slices 2 and 3).
 
 13. **Taskfile without shell.** Every task of `Taskfile.yml` SHALL invoke only commands permitted by
     parent requirement 23 (`node`, `npm`, the tool binaries of the lockfile, Git, the forge CLIs,
@@ -241,8 +251,14 @@ taken (#1601) recorded as an open gap rather than claimed.
        (requirements 9, 10), kept apart because a mistake here silently disables a guard.
     5. _library-retirement_ — requirements 3 and 4 with `common.sh` last: largest deletion, depends
        on the suites of J1b and J2 being gone.
-    6. _empty-allowlist-and-status_ — requirements 17 to 19, the sync recovery rehearsal (12) and the
-       status flip: the terminal act; also prepares the final release-to-main pull request body (21).
+    6. _empty-allowlist-and-status_ — requirements 17 to 19, the first sync recovery rehearsal (12) and
+       the status flip: the terminal act.
+
+    Two pull requests sit outside the six. The delta-spec `0215.delta-06` (Parent changes below) ships as its
+    own spec-PR, one file, merged before the final pull request is opened; its owner is this row and its
+    ticket is #1344. The final release-to-main pull request (requirement 20) is prepared after slice 6 has
+    merged and the last sync has landed, as parent requirement 37 orders, together with the second rehearsal
+    of requirement 12 and the audit report link; this row does not merge it.
 
 ### Parent changes
 
@@ -342,7 +358,7 @@ Then `git merge-base --is-ancestor cad08ac64d30dcd3ed96b4aadaf156ed7673abae <mai
 **Scenario:** The Taskfile contains no shell
 
 Given the `Taskfile.yml` after the retarget pull request
-When every `cmds`, `cmd` and `sh:` value is scanned for `bash`, `sh` followed by a space, `.sh` and the POSIX-only utilities of requirement 23, and `task lint` is run
+When every `cmds`, `cmd` and `sh:` value is scanned for `bash`, `sh` followed by a space, `.sh` and the POSIX-only utilities of parent requirement 23, and `task lint` is run
 Then the scan finds none, `oxlint --type-aware` and `oxfmt --check` run and fail on an injected defect, and no task needs the task runner for a user-facing install path
 
 **Scenario:** The audit report records the Windows gap without faking it
