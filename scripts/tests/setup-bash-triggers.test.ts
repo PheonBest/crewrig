@@ -198,7 +198,7 @@ test("the retargeted suites, their capabilities and the dependency closure are n
     "scripts/lib/node-floor-guard.js",
     "scripts/tests/lib/setup-sandbox.ts",
     "scripts/tests/lib/setup-golden-all.ts",
-    "scripts/tests/setup-retarget-behaviour-a.test.ts",
+    "scripts/tests/setup-retarget-others.test.ts",
   ])
     assert.ok(all.has(expected), `${expected} is not in any dependency set`);
   assert.ok(
