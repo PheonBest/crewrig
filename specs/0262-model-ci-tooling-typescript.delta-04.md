@@ -33,7 +33,7 @@ Then  it installs `v4.54.1` verified against its published checksum, and the
 
 **Scenario:** The skill-scripts oracle keeps its own version
 
-Given the `skill-scripts-ts` job of row H
+Given the `skill-scripts-ts` job of row H or the `model-ci-tooling-ts` job of this row
 When  it installs `yq`
 Then  it installs `v4.44.3`, the version its goldens were made with.
 
@@ -47,8 +47,9 @@ Then  it installs `v4.44.3`, the version its goldens were made with.
       from `latest`): Go `mikefarah/yq` `v4.54.1`, verified with `sha256sum -c` against the
       published checksum of the `linux_amd64` asset
       (`8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f`);
-    - `yq` (the two steps named "Install yq v4.44.3", which serve the `skill-scripts-ts`
-      oracle of row H): `v4.44.3`, unchanged, because their goldens were made with it;
+    - `yq` (the steps named "Install yq v4.44.3", which serve the `skill-scripts-ts` oracle
+      of row H, the end-to-end harness job and the `model-ci-tooling-ts` oracle of this row):
+      `v4.44.3`, unchanged, because the goldens of those suites were made with it;
     - `jq`: `1.7.1`, as in the base requirement.
     A suite that uses `yq` as an oracle SHALL name the version it was built against in its
     header, and a change of the general version SHALL be proved against those suites in an
