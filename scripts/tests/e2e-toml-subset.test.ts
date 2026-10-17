@@ -116,36 +116,3 @@ describe("toml_subset: fuzz against yq", { skip }, () => {
     });
   }
 });
-
-function shellUsable(): string | null {
-  const probe = (cmd: string, args: string[]) => spawnSync(cmd, args, { encoding: "utf8" });
-  const bash = probe("bash", ["-c", 'echo "${BASH_VERSINFO[0]}"']);
-  if (bash.status !== 0 || Number(bash.stdout.trim()) < 4) return "bash >= 4 is required";
-  if (probe("jq", ["--version"]).status !== 0) return "jq is not installed";
-  return yqUsable();
-}
-
-// The expected side is the real shell pipeline (yq merge plus the jq fixups), not a bare yq merge.
-describe("toml_merge: against the shell pipeline", { skip: shellUsable() ?? false }, () => {
-  const fixtures = path.join(REPO, "scripts", "tests", "fixtures", "e2e-oracle", "libs", "toml");
-  const defaults = path.join(REPO, "tests", "e2e", "defaults.toml");
-  for (const name of fs
-    .readdirSync(fixtures)
-    .filter((n) => n.startsWith("local-") && n.endsWith(".golden"))) {
-    it(`defaults.toml merged with ${name}`, () => {
-      const local = path.join(fixtures, name);
-      const shell = spawnSync(
-        "bash",
-        [path.join(REPO, "tests/e2e/lib/toml_merge.sh"), defaults, local],
-        {
-          encoding: "utf8",
-          env: { ...process.env, LC_ALL: "C" },
-        },
-      );
-      assert.equal(shell.status, 0, shell.stderr);
-      const twin = tomlMerge([defaults, local], REPO, {});
-      assert.equal(twin.rc, 0, twin.stderr);
-      assert.deepEqual(JSON.parse(twin.stdout), JSON.parse(shell.stdout));
-    });
-  }
-});

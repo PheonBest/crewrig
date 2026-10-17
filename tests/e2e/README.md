@@ -86,7 +86,7 @@ task e2e:test:scenario -- 01-layered-context  # one scenario, all CLIs
 task e2e:test:cli -- claude                   # all scenarios, one CLI
 ```
 
-Useful flags passed through `--` to the runner (`node tests/e2e/run.ts`; `tests/e2e/run.sh` is a forwarding shim until the final removal):
+Useful flags passed through `--` to the runner (`node tests/e2e/run.ts`):
 
 | Flag | Meaning |
 |---|---|

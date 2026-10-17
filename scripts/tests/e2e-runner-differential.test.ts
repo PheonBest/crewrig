@@ -1,8 +1,6 @@
-// e2e-runner-differential.test.ts — `bash tests/e2e/run.sh` and `node tests/e2e/run.ts` side by side
-// (spec 0261 R1-R4, R7): same exit status, stdout, stderr, effective.json bytes and report tree for
-// the usage errors, --dry-run (with and without a local.toml), --keep pruning and a missing-credential
-// skip. Each leg runs in its own scratch copy of tests/e2e and scripts/e2e/lib; run ids and scratch
-// paths are normalised. Skipped where the shell runner cannot run (bash >= 4, jq, yq).
+// e2e-runner-differential.test.ts — the end-to-end runner entry (`node tests/e2e/run.ts`) in a scratch copy of
+// tests/e2e (spec 0261 R1-R4, R7): the --dry-run plan carries the 16 skips and the summary. The shell
+// runner leg is removed with tests/e2e/run.sh; the recorded goldens (e2e-oracle-scenarios) stay the oracle.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -11,8 +9,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, it } from "node:test";
 
-import { REPO_ROOT, shellPrerequisites } from "./lib/e2e-oracle-observe.ts";
-import { shellLegSkipReason } from "./lib/e2e-shim.ts";
+import { REPO_ROOT } from "./lib/e2e-oracle-observe.ts";
 
 const NODE_FLAG = "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON";
 const LOCAL_TOML = '[scenarios.01-layered-context]\napplies_to = ["claude"]\n';
@@ -38,7 +35,7 @@ function tree(dir: string): string[] {
   return found.sort();
 }
 
-function runLeg(kind: "shell" | "entry", args: string[], local: boolean, seed: string[]): Leg {
+function runLeg(args: string[], local: boolean, seed: string[]): Leg {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "e2e-runner-diff-")));
   try {
     fs.cpSync(path.join(REPO_ROOT, "tests", "e2e"), path.join(root, "tests", "e2e"), {
@@ -62,9 +59,8 @@ function runLeg(kind: "shell" | "entry", args: string[], local: boolean, seed: s
       TMPDIR: root,
       LC_ALL: "C",
     };
-    const run = path.join(root, "tests/e2e", kind === "shell" ? "run.sh" : "run.ts");
-    const [cmd, argv] =
-      kind === "shell" ? ["bash", [run, ...args]] : [process.execPath, [NODE_FLAG, run, ...args]];
+    const run = path.join(root, "tests/e2e", "run.ts");
+    const [cmd, argv] = [process.execPath, [NODE_FLAG, run, ...args]];
     const res = spawnSync(cmd as string, argv as string[], { cwd: root, env, encoding: "utf8" });
     const norm = (s: string): string =>
       s
@@ -88,39 +84,9 @@ function runLeg(kind: "shell" | "entry", args: string[], local: boolean, seed: s
   }
 }
 
-const skip = shellPrerequisites() ?? false;
-const shimSkip = shellLegSkipReason(path.join(REPO_ROOT, "tests/e2e/run.sh"));
-
-describe("e2e runner: shell and entry agree", { skip }, () => {
-  const cases: Array<{ name: string; args: string[]; local?: boolean; seed?: string[] }> = [
-    { name: "--help", args: ["--help"] },
-    { name: "unknown flag", args: ["--bogus"] },
-    { name: "bad --cli", args: ["--cli", "nope"] },
-    { name: "bad --report", args: ["--report", "json"] },
-    { name: "unknown scenario", args: ["--scenario", "nope", "--dry-run"] },
-    { name: "--dry-run", args: ["--dry-run"] },
-    { name: "--dry-run with local.toml", args: ["--dry-run"], local: true },
-    {
-      name: "--dry-run filtered",
-      args: ["--dry-run", "--scenario", "03-skill-build", "--cli", "gemini"],
-    },
-    {
-      name: "--keep prunes old report dirs",
-      args: ["--dry-run", "--keep", "2"],
-      seed: ["20200101T000000Z-aaaa", "20210101T000000Z-bbbb", "20220101T000000Z-cccc"],
-    },
-    { name: "missing credential skips", args: ["--cli", "claude"] },
-  ];
-  for (const c of cases) {
-    it(c.name, { skip: shimSkip }, () => {
-      const shell = runLeg("shell", c.args, c.local ?? false, c.seed ?? []);
-      const entry = runLeg("entry", c.args, c.local ?? false, c.seed ?? []);
-      assert.deepEqual(entry, shell);
-    });
-  }
-
+describe("e2e runner entry", () => {
   it("--dry-run emits the 16 skips, the plan and the summary", () => {
-    const entry = runLeg("entry", ["--dry-run"], false, []);
+    const entry = runLeg(["--dry-run"], false, []);
     assert.equal(entry.status, 0);
     assert.equal(entry.stdout.split("\n").filter((l) => l.includes("# SKIP")).length, 16);
     assert.match(entry.stdout, /^1\.\.16$/m);

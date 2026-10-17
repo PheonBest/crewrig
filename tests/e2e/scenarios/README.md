@@ -19,8 +19,8 @@ metadata lives in `tests/e2e/defaults.toml`.
 
 ## Scenario contract
 
-Each `scenarios/<name>/run.sh` runs **on the host** and drives Docker
-itself. The runner (`node tests/e2e/run.ts`; `tests/e2e/run.sh` is a forwarding shim) exports the following before
+Each `scenarios/<name>/run.ts` runs **on the host** and drives Docker
+itself. The runner (`node tests/e2e/run.ts`) exports the following before
 delegating:
 
 | Env var | Meaning |
@@ -51,7 +51,7 @@ the scenario's stdout/stderr alongside.
 ## Adding another scenario
 
 1. Drop a new directory under `tests/e2e/scenarios/<name>/` with an
-   executable `run.sh` (start from any existing scenario as template).
+   `run.ts` entry (start from any existing scenario as template).
 2. Add a `[scenarios.<name>]` table to `tests/e2e/defaults.toml` with
    `description` and `applies_to`.
 3. Update `docs/cli-matrix.md` with one row per CLI × scenario.

@@ -25,7 +25,7 @@ export function isForwardingShim(absOrRepoRelPath: string): boolean {
 
 /** A stated skip reason when the shell file is a forwarding shim, else `false`. */
 export function shellLegSkipReason(absPath: string): string | false {
-  return isForwardingShim(absPath)
-    ? "the .sh is a forwarding shim: the recorded goldens are the oracle once the shell implementation is gone"
+  return !fs.existsSync(absPath) || isForwardingShim(absPath)
+    ? "the .sh is removed or a forwarding shim: the recorded goldens are the oracle once the shell implementation is gone"
     : false;
 }

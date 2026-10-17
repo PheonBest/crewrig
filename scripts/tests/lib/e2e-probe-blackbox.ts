@@ -63,8 +63,9 @@ export type Subject = { kind: "entry"; file: string } | { kind: "shell"; file: s
 
 /** A skip reason when the shell leg of `script` is unavailable (the `.sh` is a forwarding shim). */
 export function shellLegUnavailable(script: string): string | false {
-  return isForwardingShim(path.join(SCRIPTS, `${script}.sh`))
-    ? "the .sh is a forwarding shim: the recorded goldens are the oracle once the shell implementation is gone"
+  const sh = path.join(SCRIPTS, `${script}.sh`);
+  return !fs.existsSync(sh) || isForwardingShim(sh)
+    ? "the .sh is removed or a forwarding shim: the recorded goldens are the oracle once the shell implementation is gone"
     : false;
 }
 

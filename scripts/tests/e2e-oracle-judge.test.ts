@@ -1,18 +1,12 @@
-// e2e-oracle-judge.test.ts — judge oracle (spec 0261 R9): stand-in unit tests, registry shape, and
-// the replay of each case against scripts/tests/fixtures/e2e-oracle/judge/<id>/tuple.json.golden.
+// e2e-oracle-judge.test.ts — judge oracle (spec 0261 R9): stand-in unit tests and registry shape. The
+// replay against the shell judge is removed with llm_judge.sh; e2e-judge-differential.test.ts replays the
+// TypeScript twin against the recorded goldens.
 
 import assert from "node:assert/strict";
-import fs from "node:fs";
-import path from "node:path";
 import { describe, test } from "node:test";
-import { fileURLToPath } from "node:url";
 
 import { createJudgeEndpoints, ENDPOINT_PATHS, replyFor } from "./lib/e2e-judge-endpoints.ts";
-import { checkExpect, runCase, toolAvailable } from "./lib/e2e-judge-run.ts";
 import { JUDGE_CASES } from "./lib/e2e-oracle-judge-cases.ts";
-
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const goldens = path.join(root, "scripts/tests/fixtures/e2e-oracle/judge");
 
 async function post(url: string, headers: Record<string, string>, body: string) {
   const res = await fetch(url, { method: "POST", headers, body });
@@ -117,26 +111,4 @@ describe("judge case registry", () => {
     for (const b of ["anthropic", "claude-code", "gemini", "ollama-cloud", "nonexistent"])
       assert.ok(backends.has(b), b);
   });
-});
-
-describe("judge replay against the shell", async () => {
-  const avail = await toolAvailable(process.env["E2E_BASH"] ?? "bash");
-  for (const c of JUDGE_CASES) {
-    const golden = path.join(goldens, c.id, "tuple.json.golden");
-    const skip = !avail.ok
-      ? avail.reason
-      : c.posixOnly === true && process.platform === "win32"
-        ? "POSIX file modes"
-        : false;
-    const todo = !skip && !fs.existsSync(golden) ? "no recorded golden yet" : false;
-    test(c.id, { skip, todo }, async () => {
-      if (todo) return;
-      const tuple = await runCase(c, root, process.env["E2E_BASH"] ?? "bash");
-      assert.deepEqual(checkExpect(c, tuple), []);
-      assert.deepEqual(
-        JSON.parse(JSON.stringify(tuple)),
-        JSON.parse(fs.readFileSync(golden, "utf8")),
-      );
-    });
-  }
 });

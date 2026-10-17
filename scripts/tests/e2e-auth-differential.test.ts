@@ -1,22 +1,12 @@
-// e2e-auth-differential.test.ts — each auth entry through its shell leg and its TypeScript leg in the
-// same sandbox, with the Docker stand-in first on PATH; the tuples must be deepEqual (spec 0261 R10).
+// e2e-auth-differential.test.ts — the four auth entries through their TypeScript leg in a sandbox with the
+// Docker stand-in first on PATH (spec 0261 R10). The shell leg is removed with the auth-*.sh shims.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { describe, it } from "node:test";
 
-import {
-  entryExists,
-  runEntry,
-  shellLegPrerequisites,
-  type EntryBox,
-  type EntryCase,
-} from "./lib/e2e-entry-diff.ts";
-import { REPO_ROOT } from "./lib/e2e-normalise.ts";
-import { shellLegSkipReason } from "./lib/e2e-shim.ts";
-
-const skip = shellLegPrerequisites() ?? false;
+import { entryExists, runEntry, type EntryBox, type EntryCase } from "./lib/e2e-entry-diff.ts";
 
 function put(file: string, content: string): void {
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -226,22 +216,7 @@ const cases: EntryCase[] = [
     : []),
 ];
 
-describe("e2e auth entries: shell leg vs TypeScript leg", { skip }, () => {
-  for (const c of cases) {
-    it(
-      c.id,
-      {
-        skip: !entryExists(c, "entry") || shellLegSkipReason(path.join(REPO_ROOT, `${c.file}.sh`)),
-      },
-      () => {
-        const sh = runEntry(c, "shell");
-        const ts = runEntry(c, "entry");
-        assert.ok(sh !== null && ts !== null);
-        assert.deepEqual(ts, sh);
-      },
-    );
-  }
-
+describe("e2e auth entries: TypeScript entries", () => {
   const probe = (id: string) => cases.find((c) => c.id === id) as EntryCase;
   it(
     "claude success path prints the marker lines the shell suites rely on",

@@ -1,8 +1,7 @@
 // e2e-oracle-scenarios.test.ts — the end-to-end oracle for scenarios 01 and 03 (spec 0261 R5, R7,
 // R8): every registered case runs against the Docker stand-in and its tuple is compared with the
-// recorded golden. Every case is replayed through BOTH legs: the shell runner (bash >= 4, jq and yq
-// required: that leg skips elsewhere, e.g. macOS bash 3.2) and the TypeScript entry (once it and the
-// scenario's run.ts exist; todo otherwise).
+// recorded golden, through the TypeScript entry (todo until it and the scenario's run.ts exist). The shell
+// runner leg is removed with tests/e2e/run.sh; the goldens are the shell's recordings.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -10,14 +9,7 @@ import path from "node:path";
 import { describe, it, type TestContext } from "node:test";
 
 import { cases } from "./lib/e2e-oracle-cases.ts";
-import {
-  goldenPath,
-  observe,
-  REPO_ROOT,
-  RUN_ENTRY,
-  serialise,
-  shellPrerequisites,
-} from "./lib/e2e-oracle-observe.ts";
+import { goldenPath, observe, REPO_ROOT, RUN_ENTRY, serialise } from "./lib/e2e-oracle-observe.ts";
 import type { OracleCase } from "./lib/e2e-oracle-types.ts";
 
 const GOLDENS = path.join(import.meta.dirname, "fixtures", "e2e-oracle", "scenarios");
@@ -69,7 +61,6 @@ describe("e2e oracle registry", () => {
 });
 
 const SCENARIOS = path.join(REPO_ROOT, "tests", "e2e", "scenarios");
-const shellSkip = shellPrerequisites() ?? false;
 
 /** Why the entry leg cannot run for a case, else null. */
 const entryBlocker = (c: OracleCase): string | null => {
@@ -80,7 +71,7 @@ const entryBlocker = (c: OracleCase): string | null => {
   return null;
 };
 
-function replay(c: OracleCase, leg: "shell" | "entry", t: TestContext): void {
+function replay(c: OracleCase, leg: "entry", t: TestContext): void {
   const tuple = observe(c, leg);
   assert.equal(tuple.exit, c.expectedExit, `${leg} runner exit of ${c.id}`);
   const golden = goldenPath(GOLDENS, c);
@@ -90,10 +81,6 @@ function replay(c: OracleCase, leg: "shell" | "entry", t: TestContext): void {
   }
   assert.equal(serialise(tuple), fs.readFileSync(golden, "utf8"));
 }
-
-describe("e2e oracle scenarios: shell leg", { skip: shellSkip }, () => {
-  for (const c of cases) it(c.id, (t) => replay(c, "shell", t));
-});
 
 describe("e2e oracle scenarios: entry leg", () => {
   for (const c of cases) {
