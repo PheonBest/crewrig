@@ -30,7 +30,7 @@ no question.*
 
 Given a `model-mappings/claude.yml` with an unterminated flow collection
 When  `check-model-mappings` runs as the TypeScript entry
-Then  it prints the same `A0` finding line up to and including `does not parse as YAML: `,
+Then  it prints the same `A0` finding line up to and including `does not parse as YAML:` and one space,
       naming the same file, and exits with the same status as the shell, and the text of the
       parser message that follows may differ.
 
@@ -41,7 +41,7 @@ Then  it prints the same `A0` finding line up to and including `does not parse a
     (i) The `A0` finding of `check-model-mappings`, which the shell prints on standard error
     as `A0: <file>: does not parse as YAML: <message of yq>`: the entry SHALL print the same
     `A0` finding, naming the same file, with the same literal prefix
-    `does not parse as YAML: ` and the same exit status, followed by the message of the
+    `does not parse as YAML:` and one space and the same exit status, followed by the message of the
     YAML parser it uses (`js-yaml`), which MAY span several lines. Where an input is
     malformed YAML that reaches `A0`, this item applies and item (g) does not; item (g)
     keeps governing malformed YAML in every other script. The differential proof masks only
