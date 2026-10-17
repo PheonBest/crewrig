@@ -25,7 +25,9 @@ no requirement is relaxed otherwise. This delta opens no question.*
 
 31. **Reader parity classes.** The shared reader of requirement 5 SHALL reproduce, byte for
      byte against `yq` v4.44.3 on the corpus of the spike (twenty-five classes, kept as goldens
-     generated in a container and regenerated in a second image), the following behaviours of
+     generated in a container and regenerated in a second image; the three classes that
+     requirement 24 (d) and (f) excludes, namely multi-document input and the two explicit-tag
+     classes, are compared on exit status only), the following behaviours of
      the accessors the scripts use: the plain-versus-quoted distinction of scalars (`false` and
      `"false"`, `~` and `"~"`), number and date token text (`0x1F`, `1e3`, `1_000`, `0b1`),
      empty values (rendered as an empty line by `yq -r`, absent keys as `null`), `tag`,
@@ -49,8 +51,9 @@ no requirement is relaxed otherwise. This delta opens no question.*
     shell rejects it with unstable text). (e) An offering id that starts with `-` is treated
     literally by `check-model-mappings` (the shell makes `grep -qxF` print its usage text and
     accepts the id with exit 0): the entry accepts the id and prints no usage text. (f) A YAML
-    input that carries an explicit tag (`!!str 5`, `!custom x`), which `yq` accepts and
-    `js-yaml` rejects with an unknown-tag error: the entry SHALL print one
+    input that carries an explicit tag that the failsafe schema of the reader does not know
+    (`!custom x`, `!!int 5`), which `yq` accepts and `js-yaml` rejects with an unknown-tag
+    error (the tags `!!str`, `!!map` and `!!seq` load and are supported): the entry SHALL print one
     `Error: <path>: <reason>` line on standard error and exit 1, and such inputs are excluded
     from the byte comparison and compared on exit status only; no YAML file tracked in this
     repository carries an explicit tag, and a test SHALL assert that on the tracked files read
