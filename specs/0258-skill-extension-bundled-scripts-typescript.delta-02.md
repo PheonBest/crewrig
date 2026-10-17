@@ -39,8 +39,10 @@ MINOR bump. This delta opens no question.*
     answer, and a closed input (no component).
 
 38. **Windows curator proof scans something.** `assertNoCarriageReturn` of
-    `scripts/tests/lib/windows-curator-proof.ts` SHALL fail when its scan reads no file at all,
-    and the guard SHALL be tested with an empty landing zone.
+    `scripts/tests/lib/windows-curator-proof.ts` SHALL fail when its scan reads no file in one
+    of its landing zones (home, work, tmp). The dry-run entries write nothing there, so the
+    fixture SHALL seed a line-feed canary file in each zone, and the guard SHALL be tested
+    with an empty zone, with a clean file, with a carriage return and with `AppData` skipped.
 
 39. **Exhaustive callers guards.** The fixed lists of
     `scripts/tests/lib/skill-scripts-callers.ts` and
@@ -69,9 +71,9 @@ Then it is `npm ci --workspaces=false`, and the wiring test fails on
 
 **Scenario:** A scan that walks nothing fails
 
-Given an empty home, work and temporary directory
+Given a home, a work and a temporary directory of which one holds no file
 When `assertNoCarriageReturn` runs on them
-Then it throws that no file was scanned.
+Then it throws that the scan read no file under that directory.
 
 **Scenario:** A new caller outside the fixed list is caught
 
