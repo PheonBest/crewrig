@@ -141,9 +141,6 @@ scripts/tests/test-check-skill-versions.sh
 scripts/tests/test-check-spec-id-reserved.sh
 scripts/tests/test-check-test-strays.sh
 scripts/tests/test-check-test-wiring.sh
-scripts/tests/test-chroma-fd-limits.sh
-scripts/tests/test-chroma-health-race.sh
-scripts/tests/test-chroma-server.sh
 scripts/tests/test-component-tier-resolution.sh
 scripts/tests/test-create-extension-combinations.sh
 scripts/tests/test-e2e-auth-claude-json.sh
@@ -158,7 +155,6 @@ scripts/tests/test-extract-frontmatter.sh
 scripts/tests/test-gemini-agent-frontmatter.sh
 scripts/tests/test-install-claude-plugin-marketplace.sh
 scripts/tests/test-install-extension-all.sh
-scripts/tests/test-mcp-daemon.sh
 scripts/tests/test-mempalace-doctor.sh
 scripts/tests/test-mempalace-pin.sh
 scripts/tests/test-mempalace-runtime-guard.sh
@@ -170,9 +166,7 @@ scripts/tests/test-monorepo-release-notes.sh
 scripts/tests/test-monorepo-release.sh
 scripts/tests/test-pr-logbook-label-scope.sh
 scripts/tests/test-release-package-extension.sh
-scripts/tests/test-repair-mempalace-http.sh
 scripts/tests/test-reserve-spec-id.sh
-scripts/tests/test-rotate-mempalace-token.sh
 scripts/tests/test-setup-antigravity-transcript.sh
 scripts/tests/test-setup-catalogue-picker.sh
 scripts/tests/test-setup-claude-transcript.sh

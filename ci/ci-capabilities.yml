@@ -2367,11 +2367,18 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/tests/test-chroma-*.sh"
-          - "scripts/tests/test-mcp-daemon.sh"
+          - "scripts/tests/chroma-wrapper-source.test.ts"
+          - "scripts/tests/chroma-wrapper-live.test.ts"
+          - "scripts/tests/chroma-health-race.test.ts"
+          - "scripts/tests/chroma-fd-limits.test.ts"
+          - "scripts/tests/mcp-daemon-*.test.ts"
+          - "scripts/tests/lib/mcp-daemon-rig.ts"
           - "scripts/tests/service-launcher-palace-path.test.ts"
-          - "scripts/tests/test-repair-mempalace-http.sh"
-          - "scripts/tests/test-rotate-mempalace-token.sh"
+          - "scripts/tests/repair-restore-modes.test.ts"
+          - "scripts/tests/repair-report-handoff.test.ts"
+          - "scripts/tests/repair-common-sh.test.ts"
+          - "scripts/tests/lib/repair-rig.ts"
+          - "scripts/tests/switch-rotate-token.test.ts"
           - "scripts/worktree-claim.sh"
           - "scripts/worktree-claim.ts"
           - "hooks/worktree-git-guard.ts"
@@ -2385,11 +2392,18 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/tests/test-chroma-*.sh"
-          - "scripts/tests/test-mcp-daemon.sh"
+          - "scripts/tests/chroma-wrapper-source.test.ts"
+          - "scripts/tests/chroma-wrapper-live.test.ts"
+          - "scripts/tests/chroma-health-race.test.ts"
+          - "scripts/tests/chroma-fd-limits.test.ts"
+          - "scripts/tests/mcp-daemon-*.test.ts"
+          - "scripts/tests/lib/mcp-daemon-rig.ts"
           - "scripts/tests/service-launcher-palace-path.test.ts"
-          - "scripts/tests/test-repair-mempalace-http.sh"
-          - "scripts/tests/test-rotate-mempalace-token.sh"
+          - "scripts/tests/repair-restore-modes.test.ts"
+          - "scripts/tests/repair-report-handoff.test.ts"
+          - "scripts/tests/repair-common-sh.test.ts"
+          - "scripts/tests/lib/repair-rig.ts"
+          - "scripts/tests/switch-rotate-token.test.ts"
           - "scripts/worktree-claim.sh"
           - "scripts/worktree-claim.ts"
           - "hooks/worktree-git-guard.ts"
@@ -2410,11 +2424,18 @@ capabilities:
       tools: [yq]
     cache:
       files:
-        - "scripts/tests/test-chroma-*.sh"
-        - "scripts/tests/test-mcp-daemon.sh"
+        - "scripts/tests/chroma-wrapper-source.test.ts"
+        - "scripts/tests/chroma-wrapper-live.test.ts"
+        - "scripts/tests/chroma-health-race.test.ts"
+        - "scripts/tests/chroma-fd-limits.test.ts"
+        - "scripts/tests/mcp-daemon-*.test.ts"
+        - "scripts/tests/lib/mcp-daemon-rig.ts"
         - "scripts/tests/service-launcher-palace-path.test.ts"
-        - "scripts/tests/test-repair-mempalace-http.sh"
-        - "scripts/tests/test-rotate-mempalace-token.sh"
+        - "scripts/tests/repair-restore-modes.test.ts"
+        - "scripts/tests/repair-report-handoff.test.ts"
+        - "scripts/tests/repair-common-sh.test.ts"
+        - "scripts/tests/lib/repair-rig.ts"
+        - "scripts/tests/switch-rotate-token.test.ts"
         - "scripts/worktree-claim.sh"
         - "scripts/worktree-claim.ts"
         - "hooks/worktree-git-guard.ts"
@@ -2428,12 +2449,7 @@ capabilities:
         - "scripts/ci-cache-guard.sh"
       env: []
     command:
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-chroma-fd-limits.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-chroma-health-race.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-chroma-server.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-mcp-daemon.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-repair-mempalace-http.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-rotate-mempalace-token.sh
+      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/chroma-wrapper-source.test.ts scripts/tests/chroma-wrapper-live.test.ts scripts/tests/chroma-health-race.test.ts scripts/tests/chroma-fd-limits.test.ts scripts/tests/mcp-daemon-token-launcher.test.ts scripts/tests/mcp-daemon-static-guards.test.ts scripts/tests/mcp-daemon-registration.test.ts scripts/tests/mcp-daemon-switch.test.ts scripts/tests/mcp-daemon-status.test.ts scripts/tests/mcp-daemon-replace.test.ts scripts/tests/mcp-daemon-replace-live.test.ts scripts/tests/repair-restore-modes.test.ts scripts/tests/repair-report-handoff.test.ts scripts/tests/repair-common-sh.test.ts scripts/tests/switch-rotate-token.test.ts
 
   # e2e is the heaviest group; it stays enforced on push/PR (changeset-gated)
   # but is ALSO manually triggerable (spec 0147 R8) so a contributor can run it

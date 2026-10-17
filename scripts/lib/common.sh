@@ -962,7 +962,7 @@ install_daemon_supervisor() {
   # The supervisor-managed process needs a few seconds to bind its socket, so
   # poll with a 15s budget instead of one-shotting the health command
   # (see issue #138). The `# Health check` marker on this line is load-bearing:
-  # scripts/tests/test-chroma-health-race.sh extracts the block between it and
+  # scripts/tests/chroma-health-race.test.ts extracts the block between it and
   # this function's closing brace to assert the polling shape, so moving or
   # rewording it breaks that regression test.
   local deadline=$((SECONDS + 15))

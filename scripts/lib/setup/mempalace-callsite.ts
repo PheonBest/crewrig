@@ -6,7 +6,7 @@
 // but the registration could not be completed. The arms differ per CLI:
 //   - Claude ensures FIRST, writes nothing before, and only its rc 1 removes the user-scope entry
 //     and registers the stdio http-wrapper entry; its rc 2 keeps an existing entry.
-//   - Gemini, Copilot and Antigravity write the stdio entry BEFORE ensuring (test-mcp-daemon.sh
+//   - Gemini, Copilot and Antigravity write the stdio entry BEFORE ensuring (mcp-daemon-registration.test.ts
 //     pins it), ensure only when that entry was written, and rc 1 / rc 2 write nothing further:
 //     they print a warning and the entry stays.
 // Every line is printed on stdout (no `>&2` in any arm). Return codes 1 and 2 are documented,
