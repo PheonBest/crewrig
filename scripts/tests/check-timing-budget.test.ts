@@ -20,6 +20,7 @@ import {
   type RunExtras,
   type Runner,
 } from "../check-timing-budget.ts";
+import { bestOf } from "./lib/bounded-wall-clock.ts";
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const HARNESS = path.join(REPO, "scripts", "check-timing-budget.ts");
@@ -280,6 +281,106 @@ describe("evaluate", () => {
   });
 });
 
+describe("tolerance (spec 0264 R1-R5)", () => {
+  const TEN = ["--runs", "10", "--budget-ms", "550", "--", "s.js"];
+  const near = (...over: number[]): number[] => [
+    ...Array<number>(10 - over.length).fill(150),
+    ...over,
+  ];
+  const verdictOf = (args: string[], durations: number[], status = 0) => {
+    const opts = parseArgs(args);
+    return evaluate(opts, measure(opts, exitWith(status), fakeClock(durations)));
+  };
+
+  test("one slow run among ten passes, is labelled tolerated and the second-worst is shown", () => {
+    const v = verdictOf(TEN, near(681));
+    assert.equal(v.ok, true);
+    assert.deepEqual(v.lines.slice(0, 1), [
+      "timing-budget: s.js exceeded 550 ms: measured 681.0 ms (run 10/10) tolerated",
+    ]);
+    assert.match(v.lines.at(-1) ?? "", /max 681\.0 ms, second-worst 150\.0 ms$/);
+  });
+
+  test("two runs over budget fail and both are printed as before", () => {
+    const v = verdictOf(TEN, near(600, 700));
+    assert.equal(v.ok, false);
+    assert.deepEqual(v.lines, [
+      "timing-budget: s.js exceeded 550 ms: measured 600.0 ms (run 9/10)",
+      "timing-budget: s.js exceeded 550 ms: measured 700.0 ms (run 10/10)",
+    ]);
+  });
+
+  test("the case label reaches every failing line", () => {
+    const v = verdictOf(["--case", "c", ...TEN], near(600, 700));
+    assert.equal(v.lines.length, 2);
+    for (const line of v.lines)
+      assert.match(line, /^timing-budget: s\.js \[case c\] exceeded 550 ms/);
+  });
+
+  test("a run over three times the budget fails, whatever the tolerance", () => {
+    const v = verdictOf(TEN, near(1700));
+    assert.equal(v.ok, false);
+    assert.deepEqual(v.lines, [
+      "timing-budget: s.js exceeded 550 ms: measured 1700.0 ms (run 10/10)",
+    ]);
+    assert.equal(verdictOf(["--tolerate", "5", ...TEN], near(1700)).ok, false);
+  });
+
+  test("a wrong exit status in one run fails and names the run", () => {
+    const opts = parseArgs(["--expect-exit", "1", ...TEN]);
+    const statuses = [1, 1, 1, 0, 1, 1, 1, 1, 1, 1];
+    let i = 0;
+    const v = evaluate(
+      opts,
+      measure(opts, () => statuses[i++] ?? 1, fakeClock(near())),
+    );
+    assert.equal(v.ok, false);
+    assert.deepEqual(v.lines, ["timing-budget: s.js exited 0, expected 1 (run 4/10)"]);
+  });
+
+  test("--tolerate 0 is strict", () => {
+    assert.equal(verdictOf(["--tolerate", "0", ...TEN], near(681)).ok, false);
+  });
+
+  test("fewer than five runs are strict by default", () => {
+    const four = ["--runs", "4", "--budget-ms", "550", "--", "s.js"];
+    assert.equal(verdictOf(four, [150, 150, 150, 681]).ok, false);
+    assert.equal(verdictOf(["--tolerate", "1", ...four], [150, 150, 150, 681]).ok, true);
+  });
+
+  test("every run at 1.5 times the budget fails", () => {
+    const v = verdictOf(TEN, Array<number>(10).fill(825));
+    assert.equal(v.ok, false);
+    assert.equal(v.lines.length, 10);
+  });
+
+  test("a malformed --tolerate is a usage error with exit 2", () => {
+    assert.throws(
+      () => parseArgs(["--tolerate", "abc", ...TEN]),
+      /--tolerate needs a non-negative integer/,
+    );
+    assert.throws(() => parseArgs(["--tolerate", "-1", ...TEN]), /--tolerate/);
+    assert.equal(main(["--tolerate", "abc", ...TEN]), 2);
+  });
+
+  test("a tolerance at or above the run count prints one notice and exits 0", () => {
+    const five = ["--runs", "5", "--tolerate", "5", "--budget-ms", "550", "--", "s.js"];
+    const v = verdictOf(five, [150, 600, 700, 800, 900]);
+    assert.equal(v.ok, true);
+    assert.equal(v.lines.filter((l) => /ceiling/.test(l)).length, 1);
+    assert.match(
+      v.lines[0] ?? "",
+      /only the 1650 ms ceiling and the exit status can fail the step/,
+    );
+    assert.equal(main(five, exitWith(0), fakeClock([1, 1, 1, 1, 1])), 0);
+  });
+
+  test("the success line carries the second-worst run", () => {
+    const v = verdictOf(BASE, [40, 90, 60]);
+    assert.match(v.lines[0] ?? "", /max 90\.0 ms, second-worst 60\.0 ms/);
+  });
+});
+
 describe("main", () => {
   test("returns 2 on a usage error", () => {
     assert.equal(main(["--runs", "1"]), 2);
@@ -373,5 +474,75 @@ describe("--case (spec 0247 R19, delta-01)", () => {
       res.stderr,
       /^timing-budget: \S*node-floor-guard\.js \[case d-closed-port\] exceeded 0 ms: measured [\d.]+ ms \(run 1\/1\)$/m,
     );
+  });
+});
+
+describe("bestOf: a best-of-N upper wall-clock bound (spec 0264 R10)", () => {
+  const sample = (ok: boolean, message: string) => ({ ok, message, value: message });
+
+  test("a stall on attempt 1 passes", () => {
+    const seen: number[] = [];
+    const v = bestOf((n) => (seen.push(n), sample(n > 0, `attempt ${n}`)));
+    assert.equal(v, "attempt 1");
+    assert.deepEqual(seen, [0, 1]);
+  });
+
+  test("a slowdown on every attempt fails with every message", () => {
+    assert.throws(
+      () => bestOf((n) => sample(false, `slow ${n}`)),
+      (e: Error) =>
+        /attempt 1: slow 0/.test(e.message) &&
+        /attempt 2: slow 1/.test(e.message) &&
+        /attempt 3: slow 2/.test(e.message),
+    );
+  });
+
+  test("the attempt count is configurable", () => {
+    let runs = 0;
+    assert.throws(() => bestOf(() => (runs++, sample(false, "x")), 5));
+    assert.equal(runs, 5);
+  });
+
+  test("the third attempt is not run once the second passed", () => {
+    let runs = 0;
+    bestOf(() => sample(++runs === 2, "x"));
+    assert.equal(runs, 2);
+  });
+
+  test("an asynchronous measurement works, passing and failing", async () => {
+    let runs = 0;
+    const v = await bestOf(async () => sample(++runs === 2, `run ${runs}`));
+    assert.equal(v, "run 2");
+    await assert.rejects(
+      bestOf(async (n) => sample(false, `async slow ${n}`)),
+      /attempt 3: async slow 2/,
+    );
+  });
+
+  test("a hang is still bounded by the caller's own abort", async () => {
+    const hang = async () => {
+      await new Promise((_, reject) => setTimeout(() => reject(new Error("aborted")), 20));
+      return sample(true, "unreachable");
+    };
+    let runs = 0;
+    await assert.rejects(
+      bestOf(() => (runs++, hang())),
+      /aborted/,
+    );
+    assert.equal(runs, 1, "a thrown abort is not retried");
+  });
+
+  test("a lower bound is not softened: a violation inside measure fails at once", () => {
+    let runs = 0;
+    assert.throws(
+      () =>
+        bestOf(() => {
+          runs++;
+          assert.ok(false, "under the lower bound");
+          return sample(true, "x");
+        }),
+      /under the lower bound/,
+    );
+    assert.equal(runs, 1);
   });
 });
