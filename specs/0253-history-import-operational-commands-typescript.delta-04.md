@@ -53,9 +53,9 @@ and the recorded spawn is `[process.execPath, <abs>/scripts/usage-mirror.ts,
 
 **Scenario:** A failed spawn never changes the outcome of the write
 
-Given the setup above, with the spawn made to fail by a `NODE_OPTIONS --require` preload stub loaded in
-the writing process, once as an asynchronous `error` event and once as a
-synchronous throw from `spawn`
+Given the setup above, with the spawn made to fail by a
+`NODE_OPTIONS --require` preload stub loaded in the writing process, once as
+an asynchronous `error` event and once as a synchronous throw from `spawn`
 When a usage record is written
 Then the write exits 0 with its record stored, the pending marker exists, nothing
 is written to standard error, and no unhandled `error` event is raised.
@@ -122,11 +122,12 @@ Replacement:
 > before `unref()`, and the `spawn` call SHALL sit in a `try`/`catch`, so that a
 > failed spawn (`ENOENT`, `EACCES`, `EMFILE` and the like, asynchronous or a
 > synchronous throw) never raises an unhandled event and never changes the
-> outcome of the write: the pending marker is the recovery, since the next write's spawn or
-> `usage-mirror --reconcile` retries it. No `bash` on `PATH` is required anywhere
-> on this path. The earlier statement that this spec does not edit the JavaScript
-> under `scripts/lib/usage-store/` is withdrawn for this one function.
-> `scripts/usage-mirror.sh` is kept as a forwarding shim and is not deleted here.
+> outcome of the write: the pending marker is the recovery, since the next
+> write's spawn or `usage-mirror --reconcile` retries it. No `bash` on `PATH`
+> is required anywhere on this path. The earlier statement that this spec does
+> not edit the JavaScript under `scripts/lib/usage-store/` is withdrawn for this
+> one function. `scripts/usage-mirror.sh` is kept as a forwarding shim and is
+> not deleted here.
 
 Rejected alternatives:
 
