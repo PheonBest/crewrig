@@ -5,7 +5,7 @@
 // installs the Node.js trust wrapper to `~/.crewrig/tls-exec.ts` (the program and bundle of spec 0252
 // requirement 12, `installTrustWrapperProgram`). The supervisor runs it with the running Node.js
 // executable, as `service/unit-render.ts` does for the MCP daemon. A unit written by an earlier setup
-// (`bash ~/.crewrig/tls-exec.sh`) is overwritten by the next run; its installed `.sh` copy is left
+// (`bash ~/.crewrig/tls-exec.sh`, written by an earlier setup) is overwritten by the next run; its installed `.sh` copy is left
 // where it is, so a daemon loaded from the old unit keeps running until it is reloaded. On win32 the
 // daemon is a scheduled task, so only the chroma binary pre-flight runs (in its Windows form) and
 // nothing is written.
