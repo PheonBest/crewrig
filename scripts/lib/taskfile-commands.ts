@@ -18,6 +18,7 @@ export const FORBIDDEN_UTILITIES: readonly string[] = [
   "ln",
   "lsof",
   "ss",
+  "xargs",
   "test",
   "[",
 ];

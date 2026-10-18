@@ -553,7 +553,7 @@ tasks:
     preconditions:
       - sh: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON {{.REPO_DIR}}/scripts/check-tool-binaries.ts tsc oxlint oxfmt
         msg: "The TypeScript toolchain (typescript, oxlint, oxfmt) is required. Run: task lint-bootstrap"
-    cmd: git ls-files -z '*.ts' ':!:.claude/**' ':!:.gemini/**' ':!:.github/**' ':!:.agents/**' | xargs -0 node_modules/.bin/oxfmt --write
+    cmd: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON {{.REPO_DIR}}/scripts/format-typescript.ts
 
   spec:lint:
     desc: "Lint spec files for format compliance (markdown + custom semantic rules)"
