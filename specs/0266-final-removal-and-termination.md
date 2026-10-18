@@ -1,7 +1,7 @@
 ---
 id: "0266"
 slug: final-removal-and-termination
-status: approved
+status: implemented
 complexity: standard
 interaction-mode: MINIMAL
 related-issue: 1344
