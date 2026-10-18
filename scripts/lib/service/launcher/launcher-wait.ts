@@ -101,7 +101,7 @@ export async function waitForChroma(o: ChromaWaitOptions): Promise<WaitResult> {
         ok: false,
         message: `ChromaDB daemon unreachable at ${o.host}:${o.port} after ${seconds}s.
        The MCP daemon serves through it (ADR 0006) and will not start without it.
-       Check: bash ${o.repoDir}/scripts/status-chroma-server.sh`,
+       Check: node ${o.repoDir}/scripts/status-chroma-server.ts`,
       };
     }
     await sleep(1000);

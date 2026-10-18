@@ -464,7 +464,7 @@ describe("a Gemini file with comments is classified on its content after comment
         }) ?? "";
 
       assert.ok(
-        w.includes("scripts/setup-gemini-interactive.ts") &&
+        w.includes("scripts/setup-gemini-interactive.sh") &&
           /comment/i.test(w) &&
           /backup/i.test(w),
         `${f.name}: ${w}`,
@@ -573,7 +573,7 @@ describe("a launcher on a non-default port: the check reports wrong-endpoint (R4
     }
   });
 
-  test("status-mcp-server.ts reports the launcher's endpoint, not the environment's", async () => {
+  test("status-mcp-server reports the launcher's endpoint, not the environment's", async () => {
     const server = await startFakeServer("auth-refusal");
     try {
       const sb = makeSandbox();
@@ -613,7 +613,7 @@ describe("a launcher on a non-default port: the check reports wrong-endpoint (R4
   // Otherwise the host falls back to the environment/default one; the port
   // still comes from the launcher (R4: the installed endpoint).
   for (const host of ["example.invalid", "127.999.0.1", "127.0.0.256", "127.1", "127.0.0.01"]) {
-    test(`status-mcp-server.ts never targets non-loopback launcher host ${host}`, async () => {
+    test(`status-mcp-server never targets non-loopback launcher host ${host}`, async () => {
       const server = await startFakeServer("auth-refusal");
       try {
         const sb = makeSandbox();
@@ -650,7 +650,7 @@ describe("a launcher on a non-default port: the check reports wrong-endpoint (R4
     });
   }
 
-  test("status-mcp-server.ts keeps a loopback launcher host", async () => {
+  test("status-mcp-server keeps a loopback launcher host", async () => {
     const server = await startFakeServer("auth-refusal");
     try {
       const sb = makeSandbox();

@@ -16,6 +16,4 @@ scripts/ci-changeset-coverage.sh
 scripts/lib/tls-delegation.sh
 scripts/lib/tls-exec.sh
 scripts/reserve-spec-id.sh
-scripts/status-chroma-server.sh
-scripts/usage-mirror.sh
 tests/e2e/lib/test-gemini-headless.sh

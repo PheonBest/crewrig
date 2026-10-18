@@ -161,7 +161,7 @@ test("chroma wait: succeeds, retries once a second, fails on the deadline with t
   assert.ok(
     !bad.ok &&
       bad.message ===
-        "ChromaDB daemon unreachable at 127.0.0.1:8001 after 2s.\n       The MCP daemon serves through it (ADR 0006) and will not start without it.\n       Check: bash /repo/scripts/status-chroma-server.sh",
+        "ChromaDB daemon unreachable at 127.0.0.1:8001 after 2s.\n       The MCP daemon serves through it (ADR 0006) and will not start without it.\n       Check: node /repo/scripts/status-chroma-server.ts",
   );
   const env: Record<string, string | undefined> = {};
   exportChromaEnv(env, "h", "9");

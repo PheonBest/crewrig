@@ -39,7 +39,12 @@ const MCP = "scripts/lib/usage-store/mcp.js";
 const BREAKER = "CREWRIG_USAGE_MIRROR_TOOL_ERROR_BREAKER";
 const EXTRA = [
   "scripts/usage-mirror.ts",
+<<<<<<< HEAD
   "scripts/usage-mirror.sh",
+=======
+  "scripts/usage-prune.ts",
+  "scripts/usage-prune.sh",
+>>>>>>> 3c627809 (🔥 Delete the usage-mirror and status-chroma-server shims (J4 slice 5, part 7))
   "scripts/lib/node-floor-guard.js",
 ];
 
