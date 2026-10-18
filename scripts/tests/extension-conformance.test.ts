@@ -1,8 +1,7 @@
 // extension-conformance.test.ts — the TypeScript twins over the same manifests as the shell
 // (spec 0254 R22): the validator lines, the hook translation, the hook gaps, the closed event set
-// and the MCP delivery. The hooks library still runs live in one `bash`; the retired manifest
-// library (validator, MCP delivery, MCP native) is asserted against goldens recorded from its
-// original text on Linux. A difference is a failing case, never papered over.
+// and the MCP delivery. The retired hooks and manifest libraries (validator, MCP delivery, MCP native, hook
+// rendering and gaps) are asserted against goldens recorded from their original text on Linux (spec 0266). A difference is a failing case, never papered over.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -68,7 +67,7 @@ describe("extension shell/TypeScript conformance", () => {
       cases.push({ label: f.label, file, manifest, shell: {} });
     });
     if (skipReason) return;
-    const outputs = runShellCases(cases.map((c) => c.file));
+    const outputs = runShellCases(cases);
     cases.forEach((c, i) => (c.shell = outputs[i] ?? {}));
   });
   after(() => fs.rmSync(dir, { recursive: true, force: true }));

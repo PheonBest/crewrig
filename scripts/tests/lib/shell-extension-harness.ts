@@ -1,94 +1,46 @@
-// shell-extension-harness.ts — drives the extension HOOKS shell library over manifest files, for
-// the conformance suite of its TypeScript twin (spec 0254 R22). The manifest library
-// (extension-manifest.sh) is retired: its legs are frozen goldens (see manifestGolden below).
-// Linux and macOS only: it spawns `bash` and needs `jq`; it retires with extension-hooks.sh.
-//
-// One `bash` runs every case. The driver sources the libraries from the repository (no shell text
-// is copied here), runs each case in a subshell and writes every output to a file of the case's
-// own directory; the harness reads them back as a `{ relative path: text }` map. A path ending
-// in `.out`/`.err`/`.status` is a captured stream or exit status; `render-<target>/...` holds the
-// tree `ext_hooks_render` wrote.
+// shell-extension-harness.ts — the recorded outputs of the retired extension hooks shell library, for
+// the conformance suite of its TypeScript twin (spec 0254 R22; the shell is gone, spec 0266). The manifest
+// library (extension-manifest.sh) is retired too: its legs are frozen goldens (see manifestGolden below).
 
-import { spawnSync } from "node:child_process";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { frozen } from "./component-resolve-golden.ts";
 
 export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 export const LIB_DIR = path.join(REPO, "scripts", "lib");
 export const PERCLI_KEYS_FILE = path.join(LIB_DIR, "extension-percli-keys.json");
 
-const probe = (cmd: string): boolean =>
-  spawnSync(cmd, ["--version"], { encoding: "utf8" }).error === undefined;
-
-/** Non-empty when the suite cannot run here: Windows, or `bash` or `jq` missing (`yq` too: common.sh). */
+/** Non-empty when the replay cannot run here: Windows. */
 export const skipReason: string =
   process.platform === "win32"
-    ? "skipped: the shell libraries need bash (Linux or macOS)"
-    : ["bash", "jq", "yq"].every(probe)
-      ? ""
-      : "skipped: needs bash, jq and yq on PATH";
-
-export interface ShellRun {
-  readonly stdout: string;
-  readonly stderr: string;
-  readonly status: number;
-}
-
-/** `bash -c script bash ...args` under `LC_ALL=C` (the locale the shell's `jq keys` sort assumes). */
-export function runShell(script: string, args: readonly string[]): ShellRun {
-  const r = spawnSync("bash", ["-c", script, "bash", ...args], {
-    encoding: "utf8",
-    env: { ...process.env, LC_ALL: "C" },
-    maxBuffer: 64 * 1024 * 1024,
-  });
-  return { stdout: r.stdout, stderr: r.stderr, status: r.status ?? -1 };
-}
-
-/** `%{` stands for the shell's dollar-brace, which a template literal would interpolate. */
-const sh = (s: TemplateStringsArray): string => s.raw.join("").replaceAll("%{", "${");
-
-const DRIVER = sh`
-REPO="$1"; OUT="$2"; shift 2
-. "$REPO/scripts/lib/extension-hooks.sh"
-i=0
-for f in "$@"; do
-  (
-    o="$OUT/$i"; mkdir -p "$o"
-    ext_hooks_known_events >"$o/known.out"
-    for t in gemini claude copilot antigravity; do
-      ext_hooks_render "$t" "$f" "$(dirname "$f")" "$o/render-$t" >/dev/null 2>"$o/render-$t.err"
-      ext_hooks_gaps "$t" "$f" >"$o/gaps-$t.out" 2>"$o/gaps-$t.err"
-    done
-  )
-  i=$((i+1))
-done
-`;
-
-function readTree(root: string, rel = ""): Record<string, string> {
-  const files: Record<string, string> = {};
-  for (const entry of fs.readdirSync(path.join(root, rel), { withFileTypes: true })) {
-    const at = path.join(rel, entry.name);
-    if (entry.isDirectory()) Object.assign(files, readTree(root, at));
-    else files[at] = fs.readFileSync(path.join(root, at), "utf8");
-  }
-  return files;
-}
+    ? "skipped: the recorded outputs key paths with POSIX separators"
+    : "";
 
 /** What one manifest produced: every output file of its case directory, by relative path. */
 export type CaseOutput = Readonly<Record<string, string>>;
 
-/** One `bash` over `manifests` (absolute paths); the outputs come back in the same order. */
-export function runShellCases(manifests: readonly string[]): CaseOutput[] {
-  const out = fs.mkdtempSync(path.join(os.tmpdir(), "ext-shell-"));
-  try {
-    const r = runShell(DRIVER, [REPO, out, ...manifests]);
-    if (r.status !== 0) throw new Error(`shell driver failed (status ${r.status}): ${r.stderr}`);
-    return manifests.map((_, i) => readTree(path.join(out, String(i))));
-  } finally {
-    fs.rmSync(out, { recursive: true, force: true });
-  }
+/**
+ * The outputs of the retired hooks library for one manifest, REPLAYED from
+ * fixtures/component-resolve-oracle/extension-hooks.json.golden by the fixture label (the manifest's
+ * directory reads `<DIR>`); only the Linux golden container (COMPONENT_RESOLVE_GOLDEN_REGEN=1) ran the shell.
+ */
+export function runShellCases(
+  cases: readonly { readonly label: string; readonly file: string }[],
+): CaseOutput[] {
+  return cases.map((c) =>
+    frozen<CaseOutput>(
+      "extension-hooks",
+      c.label,
+      { "<DIR>": path.dirname(c.file), "<REPO>": REPO },
+      () => {
+        throw new Error(
+          "the shell libraries are removed (spec 0266): the goldens can no longer be recorded here",
+        );
+      },
+    ),
+  );
 }
 
 /** What the retired `extension-manifest.sh` produced for one fixture, recorded on Linux. */

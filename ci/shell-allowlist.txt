@@ -13,8 +13,6 @@ scripts/check-model-mappings.sh
 scripts/check-spec-id-reserved.sh
 scripts/ci-cache-guard.sh
 scripts/ci-changeset-coverage.sh
-scripts/lib/extension-hooks.sh
-scripts/lib/extension-install.sh
 scripts/lib/tls-delegation.sh
 scripts/lib/tls-exec.sh
 scripts/reserve-spec-id.sh
