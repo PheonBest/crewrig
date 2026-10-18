@@ -22,9 +22,7 @@ scripts/lib/render-command.sh
 scripts/lib/tls-delegation.sh
 scripts/lib/tls-exec.sh
 scripts/lib/usage-capture-optin.sh
-scripts/merge-spec-pr.sh
 scripts/reserve-spec-id.sh
 scripts/status-chroma-server.sh
-scripts/sweep-en-us.sh
 scripts/usage-mirror.sh
 tests/e2e/lib/test-gemini-headless.sh

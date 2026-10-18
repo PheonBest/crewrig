@@ -81,6 +81,8 @@ their rows here.
 | `scripts/package-extensions.sh` | `node scripts/package-extensions.ts` | #1344 slice 3c |
 | `scripts/release-package-extension.sh` | `node scripts/release-package-extension.ts` | #1344 slice 3c |
 | `scripts/monorepo-release.sh` | `node scripts/monorepo-release.ts` | #1344 slice 3c |
+| `scripts/merge-spec-pr.sh` | `node scripts/merge-spec-pr.ts` | #1344 slice 3c |
+| `scripts/sweep-en-us.sh` | `node scripts/sweep-en-us.ts` | #1344 slice 3c |
 
 From a built skill directory the same commands read `node scripts/curate.ts`,
 `node scripts/schedule-curator.ts` and `node scripts/setup-labels.ts`; the

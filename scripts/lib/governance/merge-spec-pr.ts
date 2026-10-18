@@ -1,5 +1,5 @@
 // merge-spec-pr.ts — logic of scripts/merge-spec-pr.ts, the exclusive merge
-// mechanism for spec-PRs (spec 0262). Mirrors scripts/merge-spec-pr.sh byte for byte.
+// mechanism for spec-PRs (spec 0262). Mirrors scripts/merge-spec-pr.ts byte for byte.
 //
 // Standard library only, plus git and `gh` as the only spawned tools.
 //

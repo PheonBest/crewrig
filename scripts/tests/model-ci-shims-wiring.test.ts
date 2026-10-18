@@ -25,8 +25,6 @@ const SHIMS = [
   "ci-cache-guard",
   "ci-changeset-coverage",
   "reserve-spec-id",
-  "merge-spec-pr",
-  "sweep-en-us",
 ];
 // Shims whose TypeScript entry loads `js-yaml` (through the yq-accessors reader or the mapping loader).
 const NEEDS_DEPS = [
