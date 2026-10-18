@@ -21,7 +21,7 @@ import {
   USAGE_CAPTURE,
   WORKTREE_GIT_GUARD,
 } from "../lib/hook-descriptor.ts";
-import { parseHookCommand } from "../lib/hook-recognition.ts";
+import { orDirectSibling, parseHookCommand } from "../lib/hook-recognition.ts";
 import { classifyTranscript } from "../lib/transcript-recognition.ts";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -159,16 +159,26 @@ describe("legacy lines classify the same without the shim files", () => {
 });
 
 describe("the one stat-based legacy form", () => {
-  test("the spaced Gemini usage-capture line is recognised only while its .sh exists (documented)", () => {
+  test("the spaced Gemini usage-capture line is recognised on a tree with no .sh, not when neither file exists", () => {
     const command = (root: string): string =>
       `bash ${root}/hooks/usage-capture.sh gemini-cli AfterModel`;
-    const parse = (root: string, withStat: boolean) =>
-      parseHookCommand(command(root), USAGE_CAPTURE, withStat ? { pathExists: exists } : {});
-    // Without a stat the spaced form is never recognised, on either tree.
-    assert.equal(parse(spacedFull, false), null);
-    assert.equal(parse(spacedStripped, false), null);
-    // With the stat, deleting the shim is exactly what turns it unrecognised.
-    assert.notEqual(parse(spacedFull, true), null);
-    assert.equal(parse(spacedStripped, true), null);
+    const parse = (root: string, test: ((p: string) => boolean) | undefined) =>
+      parseHookCommand(
+        command(root),
+        USAGE_CAPTURE,
+        test === undefined ? {} : { pathExists: test },
+      );
+    // The default of the option stays "never recognised".
+    assert.equal(parse(spacedFull, undefined), null);
+    // The raw stat is what the deletion used to break.
+    assert.notEqual(parse(spacedFull, exists), null);
+    assert.equal(parse(spacedStripped, exists), null);
+    // The shared helper accepts the sibling .ts: same verdict on both trees.
+    assert.notEqual(parse(spacedFull, orDirectSibling(exists)), null);
+    assert.notEqual(parse(spacedStripped, orDirectSibling(exists)), null);
+    // Neither the .sh nor the .ts: not recognised.
+    const bare = path.join(base, "my projects", "bare");
+    fs.mkdirSync(path.join(bare, "hooks"), { recursive: true });
+    assert.equal(parse(bare, orDirectSibling(exists)), null);
   });
 });

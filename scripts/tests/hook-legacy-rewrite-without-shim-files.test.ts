@@ -97,6 +97,25 @@ describe("usage-capture and worktree-git-guard lines, rewritten by the library",
   }
 });
 
+describe("the legacy spaced Gemini usage-capture line", () => {
+  test("is recognised and rewritten with no .sh on disk; a second run is a no-op", () => {
+    const spaced = path.join(base, "my projects", "checkout");
+    fs.cpSync(path.join(repo, "hooks"), path.join(spaced, "hooks"), { recursive: true });
+    const legacy = `bash ${spaced}/hooks/usage-capture.sh gemini-cli AfterModel`;
+    const first = rewriteConfig(configOf("gemini", "AfterModel", [legacy]), {
+      descriptor: USAGE_CAPTURE,
+      cli: "gemini",
+    });
+    assert.equal(first.rewrote, 1, JSON.stringify(first.lines));
+    assert.deepEqual(commandsOf(first.config, "AfterModel"), [
+      `node "${spaced}/hooks/usage-capture.ts" gemini-cli AfterModel`,
+    ]);
+    const second = rewriteConfig(first.config, { descriptor: USAGE_CAPTURE, cli: "gemini" });
+    assert.equal(second.changed, false);
+    assert.deepEqual(second.config, first.config);
+  });
+});
+
 describe("setup's installed-hooks step: guard and transcript, per CLI, in a scratch HOME", () => {
   for (const cli of CLIS) {
     test(`${cli}: legacy lines move to the direct form; the second run leaves the tree byte-equal`, () => {

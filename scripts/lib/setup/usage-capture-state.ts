@@ -13,7 +13,12 @@ import fs from "node:fs";
 
 import { NotAJsonObjectError, readJsonObject, type JsonObject } from "../hook-config.ts";
 import { USAGE_CAPTURE } from "../hook-descriptor.ts";
-import { parseHandler, parseHookCommand, type HookCommandParse } from "../hook-recognition.ts";
+import {
+  orDirectSibling,
+  parseHandler,
+  parseHookCommand,
+  type HookCommandParse,
+} from "../hook-recognition.ts";
 import type { Cli } from "./context.ts";
 
 /** `grouped` for Claude and Gemini (`hooks[Event][] = {selectors, hooks:[handler]}`), `flat` for Copilot. */
@@ -103,13 +108,13 @@ export function legacyCandidates(shape: CaptureShape, config: JsonObject): strin
   return paths;
 }
 
-/** `_uc_legacy_ok`: the legacy candidates that name an existing file (`[ -f p ]`). */
+/** `_uc_legacy_ok`: the legacy candidates that name an existing file (`[ -f p ]`) or whose sibling `.ts` exists (spec 0266 R9). */
 export function legacyOk(
   shape: CaptureShape,
   config: JsonObject,
   isFile: (p: string) => boolean = defaultIsFile,
 ): string[] {
-  return legacyCandidates(shape, config).filter(isFile);
+  return legacyCandidates(shape, config).filter(orDirectSibling(isFile));
 }
 
 function defaultIsFile(p: string): boolean {

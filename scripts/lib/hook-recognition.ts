@@ -51,6 +51,15 @@ export interface RecognitionOptions {
   readonly pathExists?: (path: string) => boolean;
 }
 
+/**
+ * An existence test for `RecognitionOptions.pathExists` that also accepts the direct entry
+ * replacing a deleted shell script: true when `exists(path)` or, for a `.sh` path, when the
+ * sibling `.ts` of the same directory and basename exists (spec 0266 R9).
+ */
+export function orDirectSibling(exists: (path: string) => boolean): (path: string) => boolean {
+  return (p) => exists(p) || (p.endsWith(".sh") && exists(`${p.slice(0, -".sh".length)}.ts`));
+}
+
 const ESCAPE = /[.*+?^${}()|[\]\\]/g;
 const escapeRe = (text: string): string => text.replace(ESCAPE, "\\$&");
 
