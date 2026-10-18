@@ -91,7 +91,7 @@ Issues: 47 (open 4, closed 43, other 0); pull requests referenced: 187.
 | #1440 | 🔍 Reconcile usage-pricing paths with the scripts its suite executes                                                  | closed | @gfourny-sfeir          | #1231 reference                                         |
 | #1441 | 📝 Record the lifecycle status of spec 0243 and its deltas on the release branch                                      | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
 | #1445 | ⚡️ Stop running changed test suites twice for the stray scan in test-wiring                                           | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
-| #1503 | 🐛 Remove the /home/u/ machine-path tokens that turned release/1231-ts-migration red after row C3                     | closed | @hcross                 | search "1231 in:body"                                   |
+| #1503 | 🐛 Remove the machine-path tokens (a home-directory placeholder) that turned release/1231-ts-migration red after row C3                     | closed | @hcross                 | search "1231 in:body"                                   |
 | #1508 | 🐛 Run the repository-wide scans of the misc capability on every change, not only when their own script changes       | closed | @hcross                 | search "1231 in:body"                                   |
 | #1515 | 🐛 Remove the bash spawn of usage-mirror from the usage store (Windows parity gap, before J4)                         | closed | @gfourny-sfeir          | #1344 reference; search "1231 in:body"                  |
 | #1545 | 🔒 Decide whether the MCP switch should abort when an assistant configuration cannot be backed up                     | closed | @gfourny-sfeir          | #1231 reference                                         |
@@ -458,8 +458,8 @@ gh api repos/crewrig/crewrig/issues/1714
 gh api repos/crewrig/crewrig/issues/1601
 gh api repos/crewrig/crewrig/issues/1693
 git ls-files -z
-git clone --no-local --quiet /Users/guillaumefourny/orca/workspaces/crewrig/j4-1344-final-removal/.worktrees/s6 /private/var/folders/65/gv2_h9k15db6fh8y0pv46r4r0000gp/T/audit-termination-dkWdeo/clone
-git fetch --quiet /Users/guillaumefourny/orca/workspaces/crewrig/j4-1344-final-removal/.worktrees/s6 +refs/remotes/origin/*:refs/remotes/origin/*
+git clone --no-local --quiet <audited repository> <scratch dir>/clone
+git fetch --quiet <audited repository> +refs/remotes/origin/*:refs/remotes/origin/*
 git merge-base --is-ancestor cad08ac64d30dcd3ed96b4aadaf156ed7673abae origin/release/1231-ts-migration
 git merge-base --is-ancestor 3ef0e4d03c443736efe75a659a0751478ab377a8 origin/release/1231-ts-migration
 git cat-file -e cad08ac64d30dcd3ed96b4aadaf156ed7673abae:scripts/sync-from-upstream.sh
