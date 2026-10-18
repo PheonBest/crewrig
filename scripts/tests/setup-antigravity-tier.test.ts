@@ -139,7 +139,7 @@ describe("runAntigravityTiers", () => {
     assert.equal(out[1], `Installing library components to ${skills()} (automatic)...`);
     assert.match(
       out[2] ?? "",
-      /^Tier not built \(no .*\.agents\) — building automatically via 'bash scripts\/build-components\.sh --target antigravity'\.\.\.$/,
+      /^Tier not built \(no .*\.agents\) — building automatically via 'node scripts\/build-components\.ts --target antigravity'\.\.\.$/,
     );
     assert.deepEqual(out.slice(3), [
       `  Installed skill: library/l -> ${path.join(skills(), "l")}`,
