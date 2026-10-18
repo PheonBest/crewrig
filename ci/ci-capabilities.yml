@@ -3913,7 +3913,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "hooks/usage-capture.sh"
-          - "hooks/antigravity-statusline-shim.sh"
           - "hooks/claude-transcript-hooks.json"
           - "hooks/gemini-transcript-hooks.json"
           - "hooks/copilot-transcript-hooks.json"
@@ -3970,7 +3969,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "hooks/usage-capture.sh"
-          - "hooks/antigravity-statusline-shim.sh"
           - "hooks/claude-transcript-hooks.json"
           - "hooks/gemini-transcript-hooks.json"
           - "hooks/copilot-transcript-hooks.json"

@@ -297,7 +297,7 @@ The hook is **never copied** to `~/.claude/hooks/`, `~/.gemini/hooks/`, or `~/.c
 
 ### Forwarding shims
 
-`hooks/usage-capture.sh` and `hooks/antigravity-statusline-shim.sh` remain, each reduced to a shim that invokes its TypeScript counterpart with the arguments and standard input it received. An installation whose registered command still names the `.sh` path therefore keeps capturing until setup rewrites it. The capture shim exits zero with both streams empty on every failure, including a `node` missing from the search path, and does not `exec`, so that Node.js's own status never reaches the CLI. The status-line shim redirects nothing, because the prior status-line command's output must still reach Antigravity CLI.
+`hooks/usage-capture.sh` remains, reduced to a shim that invokes its TypeScript counterpart with the arguments and standard input it received. An installation whose registered command still names the `.sh` path therefore keeps capturing until setup rewrites it. The capture shim exits zero with both streams empty on every failure, including a `node` missing from the search path, and does not `exec`, so that Node.js's own status never reaches the CLI. The status-line shim redirects nothing, because the prior status-line command's output must still reach Antigravity CLI.
 
 ### Statusline wiring (Antigravity CLI)
 
