@@ -1,0 +1,29 @@
+{
+  "files": {
+    "remote.git/HEAD": {
+      "content": "ref: refs/heads/main\n",
+      "mode": "0644"
+    },
+    "remote.git/config": {
+      "content": "[core]\n\trepositoryformatversion = 0\n\tbare = true\n",
+      "mode": "0644"
+    },
+    "remote.git/objects/47/b322458e3068a3ca09819a9c841b08f85b14bc": {
+      "content": "xÌA\nÂ0\u0010\u0005P×9Åì\u0005\u0019Ã4$PÄ\u001ee&ùÅ@ÓJÅã\u000b^Àýãå­µÚéêÓ©ï\u0000E?\u001cÄg\u000b°¤\u001c\u0018Ø\u001cKH>ÆÙ\u0000I,Nßý±í4Ñ¨w|´=\u0017\\êzèRËÎÌÌ.ÿöÎ½â¾½Ê*p",
+      "mode": "0644"
+    },
+    "remote.git/objects/4b/825dc642cb6eb9a060e54bf8d69288fbee4904": {
+      "content": "x+)JMU0`\u0000\u0000\n,\u0002\u0001",
+      "mode": "0644"
+    },
+    "remote.git/refs/heads/main": {
+      "content": "47b322458e3068a3ca09819a9c841b08f85b14bc\n",
+      "mode": "0644"
+    }
+  },
+  "id": "assert/git-branch-pushed-present",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": ""
+}

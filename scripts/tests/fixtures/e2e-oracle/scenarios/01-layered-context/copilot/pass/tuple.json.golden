@@ -1,0 +1,39 @@
+{
+  "id": "01-layered-context/copilot/pass",
+  "exit": 0,
+  "scenarioTap": "ok 1 - side-effect: answer file present\nok 2 - structural: answer matches /[Nn]antes/\nok 3 - llm-judge: profile-awareness criterion met\n1..3\n",
+  "dockerCommands": [
+    [
+      "run",
+      "--rm",
+      "--name",
+      "<CONTAINER>",
+      "-v",
+      "<TMP>/reports/<RUN_ID>/copilot/01-layered-context/out:/out",
+      "-v",
+      "<E2E_HOME>/copilot:/home/agent/.copilot:rw",
+      "-e",
+      "COPILOT_GITHUB_TOKEN",
+      "-e",
+      "E2E_PROBE_PROMPT=What is the user's location according to the profile rule files loaded\ninto your context? Answer in exactly one word — the city name — and\nwrite your answer (and nothing else) to /out/answer.txt before exiting.",
+      "crewrig/e2e-copilot:latest",
+      "copilot",
+      "-p",
+      "What is the user's location according to the profile rule files loaded\ninto your context? Answer in exactly one word — the city name — and\nwrite your answer (and nothing else) to /out/answer.txt before exiting."
+    ]
+  ],
+  "files": {
+    "copilot/01-layered-context/exit": "0\n",
+    "copilot/01-layered-context/invocation.txt": "image: crewrig/e2e-copilot:latest\nargv: docker run --rm --name <CONTAINER> -v <TMP>/reports/<RUN_ID>/copilot/01-layered-context/out:/out -v <E2E_HOME>/copilot:/home/agent/.copilot:rw -e COPILOT_GITHUB_TOKEN -e $'E2E_PROBE_PROMPT=What is the user\\'s location according to the profile rule files loaded\\ninto your context? Answer in exactly one word \\342\\200\\224 the city name \\342\\200\\224 and\\nwrite your answer (and nothing else) to /out/answer.txt before exiting.' crewrig/e2e-copilot:latest copilot -p $'What is the user\\'s location according to the profile rule files loaded\\ninto your context? Answer in exactly one word \\342\\200\\224 the city name \\342\\200\\224 and\\nwrite your answer (and nothing else) to /out/answer.txt before exiting.'\n",
+    "copilot/01-layered-context/judge.log": "VERDICT=PASS confidence=0.95\n",
+    "copilot/01-layered-context/out/answer.txt": "Nantes\n",
+    "copilot/01-layered-context/probe.stderr": "",
+    "copilot/01-layered-context/probe.stdout": "",
+    "copilot/01-layered-context/scenario.tap": "ok 1 - side-effect: answer file present\nok 2 - structural: answer matches /[Nn]antes/\nok 3 - llm-judge: profile-awareness criterion met\n1..3\n",
+    "copilot/01-layered-context/stderr": "",
+    "copilot/01-layered-context/stdout": "3/3 OK — copilot/01-layered-context\n",
+    "run.tap": "TAP version 13\nok 1 - copilot/01-layered-context\n1..1\n# pass: 1  fail: 0  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - copilot/01-layered-context\n1..1\n# pass: 1  fail: 0  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[copilot] auth ready: COPILOT_GITHUB_TOKEN set in host shell\n"
+}

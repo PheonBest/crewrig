@@ -154,12 +154,16 @@ agent output trees are affected by an override.
 After editing an org channel file, re-run the component build:
 
 ```sh
-bash scripts/build-components.sh
+node scripts/lib/node-floor-guard.js
+node scripts/build-components.ts
 ```
+
+Run the two commands as separate steps, not chained with `&&`. The build needs
+Node.js 24 or newer; `js-yaml` comes from the setup dependency step.
 
 The compiled agent outputs for the affected target(s) are regenerated
 from the mapping in force. Continuous integration's drift check
-(`bash scripts/build-components.sh --target all --check`) fails a change
+(`node scripts/build-components.ts --target all --check`) fails a change
 that edits an org channel file without regenerating and committing the
 affected outputs in the same change.
 
@@ -167,10 +171,13 @@ affected outputs in the same change.
 
 Because the four compiled agent output trees carry the `regenerable` sync
 policy (not `strict`), an upstream synchronization no longer aborts when
-your regenerated outputs diverge from upstream's own. `bash
-scripts/sync-from-upstream.sh` restores each diverged agent output from
+your regenerated outputs diverge from upstream's own. `node
+scripts/sync-from-upstream.ts` restores each diverged agent output from
 upstream and reports which ones it restored over — re-run the build
-afterward to regenerate them from your override again. The compiled skill
+afterward to regenerate them from your override again. Run
+`node scripts/lib/node-floor-guard.js` first on an unverified Node.js: the command
+needs Node.js 24 or later; `node scripts/sync-from-upstream.ts` remains a
+forwarding shim. The compiled skill
 and command output trees are unaffected: no mapping ever reaches them, so
 they remain `strict` and a hand edit there still halts the sync.
 

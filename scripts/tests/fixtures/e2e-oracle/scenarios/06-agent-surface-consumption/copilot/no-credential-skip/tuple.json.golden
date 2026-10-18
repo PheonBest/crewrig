@@ -1,0 +1,11 @@
+{
+  "id": "06-agent-surface-consumption/copilot/no-credential-skip",
+  "exit": 0,
+  "scenarioTap": "",
+  "dockerCommands": [],
+  "files": {
+    "run.tap": "TAP version 13\nok 1 - copilot/06-agent-surface-consumption # SKIP unconfigured (run `task e2e:auth:copilot`)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - copilot/06-agent-surface-consumption # SKIP unconfigured (run `task e2e:auth:copilot`)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[copilot] auth NOT ready: no credential found. Start 'copilot' and run '/login' (or `task e2e:auth:copilot` to copy the workstation credential into the bundle), or set COPILOT_GITHUB_TOKEN / GH_TOKEN.\n"
+}

@@ -2,8 +2,8 @@
 // (spec 0246 R1, R5, R7 as amended by delta-01; plan v4 steps 2 and 8, v1-F2).
 //
 // scripts/lib/mempalace-registration.ts is imported directly. Wherever the
-// shell has an equivalent (the launcher endpoint, the configuration path), the
-// two are run on the same input in a scratch HOME and must agree.
+// shell had an equivalent (the launcher endpoint, the configuration path), the outcomes are
+// asserted as literals (the shell libraries are gone, spec 0266).
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -16,9 +16,9 @@ import {
   FIXTURES,
   REPO,
   assertNoCliInvoked,
-  bashLib,
   makeSandbox,
 } from "./lib/session-check-harness.ts";
+import { installedPaths, installLauncherProgram } from "../lib/service/program-install.ts";
 import {
   type ChannelSpec,
   type Classification,
@@ -35,49 +35,32 @@ const EXPECTED = "http://127.0.0.1:41000/mcp";
 const LONE_SURROGATE = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/;
 
 describe("the expected endpoint comes from the installed launcher only (R1)", () => {
-  test("the real template, materialised by install_mcp_launcher on a non-default port, reads the same in both readers (v1-F2)", () => {
+  test("the launcher installed on a non-default port reads as that endpoint (v1-F2)", () => {
     const sb = makeSandbox();
     const dst = path.join(sb.root, "installed-launcher.sh");
-    const env = {
-      CREWRIG_REPO_DIR: REPO,
-      MEMPALACE_PYTHON: "/usr/bin/python3",
-      MEMPALACE_MCP_LAUNCHER_PATH: dst,
-      MEMPALACE_MCP_PORT: "41000",
-    };
-
-    const install = bashLib(sb, "install_mcp_launcher", { env });
-    const shell = bashLib(sb, "mcp_installed_endpoint", { env });
-
-    assert.equal(install.status, 0, install.stdout + install.stderr);
+    const env = { MEMPALACE_MCP_LAUNCHER_PATH: dst };
+    installLauncherProgram({
+      paths: installedPaths(sb.home, env),
+      repoDir: REPO,
+      host: "127.0.0.1",
+      port: "41000",
+      chromaHost: "127.0.0.1",
+      chromaPort: "8001",
+      python: "/usr/bin/python3",
+      palacePath: "",
+    });
     assert.equal(launcherPath(env, sb.home), dst);
     assert.equal(parseLauncher(fs.readFileSync(dst, "utf8"))?.url, EXPECTED);
-    assert.equal(shell.stdout.trim(), EXPECTED);
     assertNoCliInvoked(sb);
   });
 
-  test("an unsubstituted template, or a launcher without a port, means no installed daemon in both readers", () => {
-    const sb = makeSandbox();
-    const template = fs.readFileSync(
-      path.join(REPO, "scripts", "lib", "mcp-daemon-launcher.sh"),
-      "utf8",
-    );
+  test("an unsubstituted template, or a launcher without a port, means no installed daemon", () => {
     const cases: Array<[string, string]> = [
-      ["placeholders", template],
+      ["placeholders", 'MCP_HOST="__MCP_HOST__"\nMCP_PORT="__MCP_PORT__"\n'],
       ["no MCP_PORT line", 'MCP_HOST="127.0.0.1"\n'],
       ["empty port", 'MCP_HOST="127.0.0.1"\nMCP_PORT=""\n'],
     ];
-    for (const [name, text] of cases) {
-      const file = path.join(sb.root, `launcher-${name.replace(/\W/g, "-")}.sh`);
-      fs.writeFileSync(file, text);
-
-      const shell = bashLib(sb, "mcp_installed_endpoint", {
-        env: { MEMPALACE_MCP_LAUNCHER_PATH: file },
-      });
-
-      assert.equal(parseLauncher(text), null, name);
-      assert.notEqual(shell.status, 0, name);
-      assert.equal(shell.stdout, "", name);
-    }
+    for (const [name, text] of cases) assert.equal(parseLauncher(text), null, name);
   });
 
   test("the default launcher path is ~/.crewrig/mcp-daemon-launcher.sh, an empty override is ignored", () => {
@@ -88,11 +71,15 @@ describe("the expected endpoint comes from the installed launcher only (R1)", ()
     );
   });
 
-  test("each CLI's configuration path is the one mcp_assistant_config_path names", () => {
-    const sb = makeSandbox();
+  test("each CLI's configuration path is the one the framework registers", () => {
+    const expected = {
+      claude: ".claude.json",
+      gemini: ".gemini/settings.json",
+      copilot: ".copilot/mcp-config.json",
+      antigravity: ".gemini/config/mcp_config.json",
+    } as const;
     for (const cli of CLIS) {
-      const shell = bashLib(sb, `mcp_assistant_config_path ${cli}`);
-      assert.equal(configPath(cli, sb.home), shell.stdout.trim(), cli);
+      assert.equal(configPath(cli, "/h"), path.join("/h", expected[cli]), cli);
     }
   });
 });
@@ -124,7 +111,7 @@ describe("warning texts (R5 as amended by delta-01)", () => {
       assert.equal(w({ class: "ok" }), null);
 
       const noFile = w({ class: "absent", reason: "no-file" }) ?? "";
-      assert.ok(noFile.includes(`scripts/setup-${cli}-interactive.sh`), noFile);
+      assert.ok(noFile.includes(`scripts/setup-${cli}-interactive.ts`), noFile);
       assert.ok(
         !noFile.includes("switch-http"),
         `a missing file must not point at switch-http: ${noFile}`,

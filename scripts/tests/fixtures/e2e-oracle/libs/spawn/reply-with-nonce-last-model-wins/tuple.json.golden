@@ -1,0 +1,13 @@
+{
+  "files": {
+    "t.txt": {
+      "content": "â Probe-router(m1) t\n  â Agent completed but produced no response.\nâ Probe-router(m2) t\n  â here is NONCE-1\n",
+      "mode": "0644"
+    }
+  },
+  "id": "spawn/reply-with-nonce-last-model-wins",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "true|true|true|m2\n"
+}

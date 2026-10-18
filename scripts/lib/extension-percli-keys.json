@@ -2,7 +2,7 @@
   {
     "key": "claude.author",
     "reason": "cli-only-concept",
-    "evidence": "scripts/build-claude-plugin.sh:86, scripts/install-claude-plugin.sh:88"
+    "evidence": "scripts/build-claude-plugin.sh:86, scripts/install-claude-plugin.sh:88 (the latter removed in #1344, see docs/shell-removal.md)"
   },
   {
     "key": "claude.defaultAllowedTools",
@@ -27,6 +27,6 @@
   {
     "key": "gemini.themes",
     "reason": "cli-only-concept",
-    "evidence": "consumed by scripts/build-extension.sh's render — no Claude/Copilot/Antigravity theme concept"
+    "evidence": "consumed by scripts/build-extension.ts's render — no Claude/Copilot/Antigravity theme concept"
   }
 ]

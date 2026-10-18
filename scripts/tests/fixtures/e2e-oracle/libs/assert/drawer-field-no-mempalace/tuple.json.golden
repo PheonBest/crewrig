@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "assert/drawer-field-no-mempalace",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_drawer_field wing room handoff-1 status done\n#   expected: mempalace on PATH\n#   actual:   mempalace binary not found â needs crewrig/e2e-mempalace image or pipx install\n",
+  "stdout": ""
+}

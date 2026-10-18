@@ -1,0 +1,13 @@
+{
+  "files": {
+    "empty.json": {
+      "content": "{}\n",
+      "mode": "0644"
+    }
+  },
+  "id": "structural/json-shape-empty-object",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": ""
+}

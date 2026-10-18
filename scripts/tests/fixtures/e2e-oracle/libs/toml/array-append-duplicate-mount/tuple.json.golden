@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nmounts = [\"a\"]\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\nmounts = [\"a\", \"b\"]\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/array-append-duplicate-mount",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"mounts\": [\n        \"a\",\n        \"a\",\n        \"b\"\n      ]\n    }\n  }\n}\n"
+}

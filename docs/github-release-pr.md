@@ -3,7 +3,7 @@
 <!-- crewrig-doc: section=reference nav_order=149 published=true title="GitHub release PR" -->
 
 On GitHub, the monorepo release (`.github/workflows/release-monorepo.yml`,
-driver `scripts/monorepo-release.sh`) never pushes to `main`. It proposes
+driver `scripts/monorepo-release.ts`) never pushes to `main`. It proposes
 each release in a **release PR**, and publishes it once that PR is merged
 (issue #1379).
 

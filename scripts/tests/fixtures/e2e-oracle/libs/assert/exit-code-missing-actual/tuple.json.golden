@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "assert/exit-code-missing-actual",
+  "rc": 127,
+  "stats": {},
+  "stderr": "<REPO>/tests/e2e/lib/assert.sh: line 116: 2: assert_exit_code: missing <actual>\n",
+  "stdout": ""
+}

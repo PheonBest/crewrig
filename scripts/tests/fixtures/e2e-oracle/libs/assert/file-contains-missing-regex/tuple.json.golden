@@ -1,0 +1,13 @@
+{
+  "files": {
+    "hay": {
+      "content": "alpha\nbeta\n",
+      "mode": "0644"
+    }
+  },
+  "id": "assert/file-contains-missing-regex",
+  "rc": 127,
+  "stats": {},
+  "stderr": "<REPO>/tests/e2e/lib/assert.sh: line 94: 2: assert_file_contains: missing <regex>\n",
+  "stdout": ""
+}

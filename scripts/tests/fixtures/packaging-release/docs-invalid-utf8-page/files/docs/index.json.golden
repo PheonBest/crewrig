@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "sections": [
+    {
+      "section": "concepts",
+      "title": "Concepts",
+      "pages": [
+        {
+          "title": "Real",
+          "path": "docs/real.md",
+          "nav_order": 1
+        },
+        {
+          "title": "bad � byte",
+          "path": "docs/bad.md",
+          "nav_order": 2
+        }
+      ]
+    }
+  ]
+}

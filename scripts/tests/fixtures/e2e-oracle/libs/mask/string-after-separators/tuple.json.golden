@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "mask/string-after-separators",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "a;K1=*** b&K2=*** c|K3=*** (K4=***"
+}

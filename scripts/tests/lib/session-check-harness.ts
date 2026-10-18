@@ -24,8 +24,6 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-export const COMMON_SH = path.join(REPO, "scripts", "lib", "common.sh");
-export const OPTIN_SH = path.join(REPO, "scripts", "lib", "usage-capture-optin.sh");
 export const CHECK_TS = path.join(REPO, "scripts", "mempalace-session-check.ts");
 export const WRITER_TS = path.join(REPO, "scripts", "session-check-hooks.ts");
 export const REGISTRATION_TS = path.join(REPO, "scripts", "lib", "mempalace-registration.ts");
@@ -39,13 +37,23 @@ export const STUB_CLIS = ["claude", "gemini", "copilot", "agy"] as const;
 /** The PID the stubbed supervisor and listener probes both report. */
 export const STATUS_PROBE_PID = 4242;
 
+/**
+ * The listener half of the status owner check, fixed on the listener seam
+ * (`MEMPALACE_MCP_LISTENER_PID`) instead of through `lsof` / `ss`. A set seam skips
+ * the lookup, so the `lsof` and `ss` stubs below are tripwires, never answers.
+ * Spread it into `sb.env({ ...STATUS_LISTENER_SEAM, ... })` of a status run.
+ */
+export const STATUS_LISTENER_SEAM: Readonly<Record<string, string>> = {
+  MEMPALACE_MCP_LISTENER_PID: String(STATUS_PROBE_PID),
+};
+
 /** The live daemon's port. No test may ever address it (R16). */
 export const LIVE_PORT = 41893;
 
 /** Planted in the token file and in every fixture header; must never surface (R10). */
 export const SENTINEL = "SENTINEL-0246-d2f7c1b9e4a8";
 
-/** User-level registration file of each CLI, relative to HOME (common.sh:1492-1500). */
+/** User-level registration file of each CLI, relative to HOME . */
 export const CONFIG_REL: Record<Cli, string> = {
   claude: ".claude.json",
   gemini: path.join(".gemini", "settings.json"),
@@ -55,10 +63,10 @@ export const CONFIG_REL: Record<Cli, string> = {
 
 /** The setup script each CLI's missing-file warning must name (R5). */
 export const SETUP_SCRIPT: Record<Cli, string> = {
-  claude: "scripts/setup-claude-interactive.sh",
-  gemini: "scripts/setup-gemini-interactive.sh",
-  copilot: "scripts/setup-copilot-interactive.sh",
-  antigravity: "scripts/setup-antigravity-interactive.sh",
+  claude: "scripts/setup-claude-interactive.ts",
+  gemini: "scripts/setup-gemini-interactive.ts",
+  copilot: "scripts/setup-copilot-interactive.ts",
+  antigravity: "scripts/setup-antigravity-interactive.ts",
 };
 
 /** Directory holding a binary found on the parent's PATH, or null. */
@@ -126,7 +134,7 @@ export interface Sandbox {
   claudeConfigDir: string;
   stubBin: string;
   stubLog: string;
-  /** Argv log of the stubbed launchctl / lsof / systemctl / ss probes. */
+  /** Argv log of the stubbed launchctl / systemctl probes and the lsof / ss tripwires. */
   probeLog: string;
   /** The child environment: built from nothing, plus `extra`. */
   env(extra?: Record<string, string>): Record<string, string>;
@@ -146,9 +154,11 @@ export function makeSandbox(prefix = "sc0246-"): Sandbox {
   const stubLog = path.join(root, "stub-cli.log");
   const probeLog = path.join(root, "status-probes.log");
   for (const dir of [home, claudeConfigDir, stubBin]) fs.mkdirSync(dir, { recursive: true });
-  // The supervisor and listener probes of mcp_supervisor_pid / mcp_listener_pid
-  // (common.sh), stubbed so no test reads the live machine's launchd, systemd or
-  // sockets. Each logs its argv and reports the one PID, STATUS_PROBE_PID.
+  // The supervisor probes of mcp_supervisor_pid (common.sh) answer through the
+  // launchctl / systemctl stubs; the listener side is fixed by STATUS_LISTENER_SEAM,
+  // so the lsof / ss stubs stay only as tripwires (assertStatusProbesStubbed asserts
+  // they are never called). No test reads the live machine's launchd, systemd or
+  // sockets. Each stub logs its argv and reports the one PID, STATUS_PROBE_PID.
   const probe = (body: string): string =>
     `#!/bin/sh\nprintf '%s %s\\n' "$(basename "$0")" "$*" >> ${JSON.stringify(probeLog)}\n${body}\n`;
   const probes: Record<string, string> = {
@@ -197,6 +207,11 @@ export function makeSandbox(prefix = "sc0246-"): Sandbox {
         CLAUDE_CONFIG_DIR: claudeConfigDir,
         XDG_CONFIG_HOME: path.join(home, ".config"),
         PATH: basePath,
+        // The launchctl / systemctl stubs reach the TypeScript tools through these test seams
+        // (scripts/lib/service/exec.ts): the shell found them on PATH, the TypeScript runs the
+        // absolute OS path unless told otherwise.
+        CREWRIG_TEST_SERVICE_PLATFORM: process.platform === "darwin" ? "darwin" : "linux",
+        CREWRIG_TEST_SERVICE_BIN_DIR: stubBin,
         TMPDIR: os.tmpdir(),
         LC_ALL: "C",
         ...extra,
@@ -358,12 +373,13 @@ export function writeConfig(sb: Sandbox, cli: Cli, content: unknown): string {
   return file;
 }
 
-/** Plants the sentinel in the token file mcp_token_path computes for this HOME. */
+/** Plants the sentinel in the token file the framework computes for this HOME. */
 export function plantToken(sb: Sandbox): string {
-  const r = spawnSync("bash", ["-c", `. ${shq(COMMON_SH)}; mcp_token_path`], {
-    env: sb.env(),
-    encoding: "utf8",
-  });
+  const r = spawnSync(
+    process.execPath,
+    ["-e", 'process.stdout.write(require("./scripts/lib/usage-store/mcp.js").tokenPath())'],
+    { env: sb.env(), encoding: "utf8", cwd: REPO },
+  );
   assert.equal(r.status, 0, r.stderr);
   const file = r.stdout.trim();
   assert.ok(file.startsWith(sb.home), `token path ${file} escapes the sandbox`);
@@ -474,22 +490,6 @@ export function mkfifo(file: string): void {
   assert.equal(r.status, 0, r.stderr);
 }
 
-/** Sources common.sh (and optionally the opt-in library) in a sandboxed bash. */
-export function bashLib(
-  sb: Sandbox,
-  script: string,
-  opts: { env?: Record<string, string>; optin?: boolean } = {},
-): ReturnType<typeof spawnSync> & { stdout: string; stderr: string } {
-  const prelude =
-    `INSTALL_MODE=copy; CREWRIG_REPO_DIR=${shq(REPO)}; . ${shq(COMMON_SH)}; ` +
-    (opts.optin ? `. ${shq(OPTIN_SH)}; ` : "");
-  return spawnSync("bash", ["-c", prelude + script], {
-    env: sb.env(opts.env),
-    encoding: "utf8",
-    cwd: sb.root,
-  }) as ReturnType<typeof spawnSync> & { stdout: string; stderr: string };
-}
-
 /**
  * The warning a check run emitted, read from whichever channel carries it
  * (plan v4 *Output per CLI*, `injectSteps` included), or null when stdout is empty (silence, R6).
@@ -530,12 +530,14 @@ export function filesUnder(dir: string): string[] {
 
 /**
  * status-mcp-server.sh ran against the stubbed probes only: the owner line is
- * VERIFIED for STATUS_PROBE_PID, and the listener lookup asked about `port`.
+ * VERIFIED for STATUS_PROBE_PID (the listener PID came from STATUS_LISTENER_SEAM),
+ * the supervisor lookup went through the launchctl / systemctl stub, and the
+ * listener lookup spawned neither `lsof` nor `ss` (the tripwire stubs stayed unused).
  */
-export function assertStatusProbesStubbed(sb: Sandbox, stdout: string, port: number): void {
+export function assertStatusProbesStubbed(sb: Sandbox, stdout: string): void {
   assert.match(stdout, new RegExp(`owner: +VERIFIED \\(listener PID ${STATUS_PROBE_PID} `), stdout);
   assert.ok(!stdout.includes("USURPED"), stdout);
   const calls = fs.existsSync(sb.probeLog) ? fs.readFileSync(sb.probeLog, "utf8") : "";
   assert.match(calls, /^(launchctl print gui\/\d+\/|systemctl --user show -p MainPID)/m, calls);
-  assert.match(calls, new RegExp(`^(lsof .*-iTCP:${port} |ss .*sport = :${port})`, "m"), calls);
+  assert.doesNotMatch(calls, /^(lsof|ss) /m, `a listener tripwire stub was called:\n${calls}`);
 }

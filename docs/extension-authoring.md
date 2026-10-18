@@ -23,7 +23,7 @@ command-line tool — `gemini-extension.json`, `claude-extension.json`,
 `copilot-extension.json`, `antigravity-extension.json`,
 `.github/copilot/extension.json`, and a per-CLI-designated file rendered
 from the `commands/` pivot — is always a build output, produced from the
-manifest by `scripts/build-extension.sh`, and never a hand-authored source.
+manifest by `scripts/build-extension.ts`, and never a hand-authored source.
 The exact list of generated-output file names and globs is committed data
 (`scripts/lib/extension-generated-class.json`). None of these files is
 committed on the primary branch, for any command-line tool (source:
@@ -60,8 +60,10 @@ supported paths:
    own root, with no wrapper directory, and serves Gemini CLI alone; see
    [`docs/runbooks/extension-release-install-probe.md`](runbooks/extension-release-install-probe.md)
    for the evidence pinning that form.
-2. **`bash scripts/install-extension.sh install <name>`** — this
-   repository's own install script.
+2. **`node scripts/lib/node-floor-guard.js`, then
+   `node scripts/install-extension.ts install <name>`** — this
+   repository's own install entry (Node.js 24 floor; run the two commands
+   as separate steps).
 3. **`task link-gemini-extension-build EXT=<name>`** — a documented
    **debugging** path, not an install path.
 

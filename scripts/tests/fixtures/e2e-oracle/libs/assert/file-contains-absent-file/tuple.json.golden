@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "assert/file-contains-absent-file",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_file_contains absent x\n#   expected: file readable + ERE match\n#   actual:   no such file: absent\n",
+  "stdout": ""
+}

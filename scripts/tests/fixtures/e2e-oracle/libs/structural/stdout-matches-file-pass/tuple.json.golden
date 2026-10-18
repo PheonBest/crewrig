@@ -1,0 +1,13 @@
+{
+  "files": {
+    "fx": {
+      "content": "gamma\n",
+      "mode": "0644"
+    }
+  },
+  "id": "structural/stdout-matches-file-pass",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": ""
+}

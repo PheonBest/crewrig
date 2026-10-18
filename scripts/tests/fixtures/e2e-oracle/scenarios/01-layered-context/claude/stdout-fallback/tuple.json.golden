@@ -1,0 +1,43 @@
+{
+  "id": "01-layered-context/claude/stdout-fallback",
+  "exit": 0,
+  "scenarioTap": "ok 1 - side-effect: answer file present\nok 2 - structural: answer matches /[Nn]antes/\nok 3 - llm-judge: profile-awareness criterion met\n1..3\n",
+  "dockerCommands": [
+    [
+      "run",
+      "--rm",
+      "--name",
+      "<CONTAINER>",
+      "-v",
+      "<TMP>/reports/<RUN_ID>/claude/01-layered-context/out:/out",
+      "-v",
+      "<E2E_HOME>/claude:/home/agent/.claude:ro",
+      "-v",
+      "<E2E_HOME>/claude:/home/agent/.claude:ro",
+      "-v",
+      "<E2E_HOME>/claude/.claude.json:/home/agent/.claude.json:ro",
+      "-e",
+      "ANTHROPIC_API_KEY",
+      "-e",
+      "E2E_PROBE_PROMPT=What is the user's location according to the profile rule files loaded\ninto your context? Answer in exactly one word — the city name — and\nwrite your answer (and nothing else) to /out/answer.txt before exiting.",
+      "crewrig/e2e-claude:latest",
+      "claude",
+      "-p",
+      "What is the user's location according to the profile rule files loaded\ninto your context? Answer in exactly one word — the city name — and\nwrite your answer (and nothing else) to /out/answer.txt before exiting."
+    ]
+  ],
+  "files": {
+    "claude/01-layered-context/exit": "0\n",
+    "claude/01-layered-context/invocation.txt": "image: crewrig/e2e-claude:latest\nargv: docker run --rm --name <CONTAINER> -v <TMP>/reports/<RUN_ID>/claude/01-layered-context/out:/out -v <E2E_HOME>/claude:/home/agent/.claude:ro -v <E2E_HOME>/claude:/home/agent/.claude:ro -v <E2E_HOME>/claude/.claude.json:/home/agent/.claude.json:ro -e ANTHROPIC_API_KEY -e $'E2E_PROBE_PROMPT=What is the user\\'s location according to the profile rule files loaded\\ninto your context? Answer in exactly one word \\342\\200\\224 the city name \\342\\200\\224 and\\nwrite your answer (and nothing else) to /out/answer.txt before exiting.' crewrig/e2e-claude:latest claude -p $'What is the user\\'s location according to the profile rule files loaded\\ninto your context? Answer in exactly one word \\342\\200\\224 the city name \\342\\200\\224 and\\nwrite your answer (and nothing else) to /out/answer.txt before exiting.'\n",
+    "claude/01-layered-context/judge.log": "VERDICT=PASS confidence=0.95\n",
+    "claude/01-layered-context/out/answer.txt": "Nantes\n",
+    "claude/01-layered-context/probe.stderr": "",
+    "claude/01-layered-context/probe.stdout": "Nantes\n",
+    "claude/01-layered-context/scenario.tap": "ok 1 - side-effect: answer file present\nok 2 - structural: answer matches /[Nn]antes/\nok 3 - llm-judge: profile-awareness criterion met\n1..3\n",
+    "claude/01-layered-context/stderr": "",
+    "claude/01-layered-context/stdout": "3/3 OK — claude/01-layered-context\n",
+    "run.tap": "TAP version 13\nok 1 - claude/01-layered-context\n1..1\n# pass: 1  fail: 0  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - claude/01-layered-context\n1..1\n# pass: 1  fail: 0  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[claude] auth ready: on-disk marker <E2E_HOME>/claude/.credentials.json\n"
+}

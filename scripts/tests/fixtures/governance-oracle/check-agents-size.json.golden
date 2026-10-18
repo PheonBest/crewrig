@@ -1,0 +1,37 @@
+{
+ "pass": {
+  "status": 0,
+  "stdout": "OK: AGENTS.md is 100 bytes (threshold: 22000 bytes)\n",
+  "stderr": ""
+ },
+ "fail": {
+  "status": 1,
+  "stdout": "",
+  "stderr": "ERROR: AGENTS.md is 30000 bytes — meets or exceeds the 22000-byte threshold.\nExtract more content to docs/ to bring AGENTS.md below 22 000 bytes.\n"
+ },
+ "b21999": {
+  "status": 0,
+  "stdout": "OK: AGENTS.md is 21999 bytes (threshold: 22000 bytes)\n",
+  "stderr": ""
+ },
+ "b22000": {
+  "status": 1,
+  "stdout": "",
+  "stderr": "ERROR: AGENTS.md is 22000 bytes — meets or exceeds the 22000-byte threshold.\nExtract more content to docs/ to bring AGENTS.md below 22 000 bytes.\n"
+ },
+ "b22001": {
+  "status": 1,
+  "stdout": "",
+  "stderr": "ERROR: AGENTS.md is 22001 bytes — meets or exceeds the 22000-byte threshold.\nExtract more content to docs/ to bring AGENTS.md below 22 000 bytes.\n"
+ },
+ "multi": {
+  "status": 1,
+  "stdout": "",
+  "stderr": "ERROR: AGENTS.md is 22000 bytes — meets or exceeds the 22000-byte threshold.\nExtract more content to docs/ to bring AGENTS.md below 22 000 bytes.\n"
+ },
+ "default": {
+  "status": 0,
+  "stdout": "OK: AGENTS.md is 42 bytes (threshold: 22000 bytes)\n",
+  "stderr": ""
+ }
+}

@@ -17,7 +17,7 @@
 // does not extend fake-mempalace-mcp.js, which is scoped to mirror.js's own
 // two tools (see that fixture's own header comment) — the same reasoning
 // extends to this suite: a dedicated fixture and a dedicated suite, never
-// entangled with test-usage-storage-mirror.sh's own fault-injection surface.
+// entangled with the usage-mirror-*.test.ts suites' own fault-injection surface.
 //
 // Deliberately does NOT create CREWRIG_USAGE_ROOT at all: spec 0239 R1
 // requires this command to produce a complete inventory when the local usage
@@ -35,13 +35,13 @@
 // preserving the exact end-to-end testing style the bash suite it replaces
 // already used (spawn the command, read its stdout/exit status).
 //
-// No ajv/node_modules preflight (unlike test-usage-storage-mirror.sh):
+// No ajv/node_modules preflight (unlike the usage-mirror-*.test.ts suites):
 // inventory.ts never runs the vendored validator or journal.js's write() path
 // — confirmation is the narrow schemaVersion/provenance.cli check spec 0239
 // R2 itself names, not full schema validation (see inventory.ts's own header
 // comment and PLAN v1's "Alternatives considered and rejected").
 //
-// No mutation-discipline cases: unlike test-usage-storage-mirror.sh, this
+// No mutation-discipline cases: unlike the usage-mirror-*.test.ts suites, this
 // suite makes no in-place edits to tracked source files.
 //
 // Covers, at minimum, spec 0239's ten named scenarios. Nine are asserted

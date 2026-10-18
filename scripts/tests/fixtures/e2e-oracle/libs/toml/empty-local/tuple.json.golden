@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\nmounts = [\"a\"]\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/empty-local",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"X\",\n      \"mounts\": [\n        \"a\"\n      ]\n    }\n  }\n}\n"
+}

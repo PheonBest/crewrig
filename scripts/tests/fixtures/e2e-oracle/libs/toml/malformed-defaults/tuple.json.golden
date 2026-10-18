@@ -1,0 +1,13 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude\nimage = \"X\"\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/malformed-defaults",
+  "rc": 1,
+  "stats": {},
+  "stderr": "Error: bad file 'defaults.toml': expected character ]\n",
+  "stdout": ""
+}

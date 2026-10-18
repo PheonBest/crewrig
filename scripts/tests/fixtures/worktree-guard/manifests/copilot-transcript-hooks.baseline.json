@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "disableAllHooks": false,
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "command": "bash \"${COPILOT_PROJECT_DIR:-$PWD}/hooks/worktree-git-guard.sh\""
+      }
+    ],
+    "sessionStart": [
+      {
+        "type": "command",
+        "command": "node \"${COPILOT_PROJECT_DIR:-$PWD}/hooks/mempalace-transcript.ts\" copilot-cli"
+      }
+    ],
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "command": "node \"${COPILOT_PROJECT_DIR:-$PWD}/hooks/mempalace-transcript.ts\" copilot-cli"
+      }
+    ],
+    "postToolUse": [
+      {
+        "type": "command",
+        "command": "node \"${COPILOT_PROJECT_DIR:-$PWD}/hooks/mempalace-transcript.ts\" copilot-cli"
+      }
+    ],
+    "agentStop": [
+      {
+        "type": "command",
+        "command": "node \"${COPILOT_PROJECT_DIR:-$PWD}/hooks/mempalace-transcript.ts\" copilot-cli"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "command": "node \"${COPILOT_PROJECT_DIR:-$PWD}/hooks/mempalace-transcript.ts\" copilot-cli"
+      }
+    ]
+  }
+}

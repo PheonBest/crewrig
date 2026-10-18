@@ -1,0 +1,36 @@
+# old-invocation-allowlist.txt — files that may still name a shim script of the install, manage
+# and link entry points (spec 0255 R30, R32). scripts/tests/install-references.test.ts fails on
+# any other tracked or untracked text file that names one of the thirteen shell scripts. The
+# scripts are forwarding shims now: the instruction is `node scripts/<name>.ts` (or the Taskfile).
+#
+# Format: one repo-relative path per line; an entry ending in `/` covers every file below that
+# directory. Every entry carries a reason as the `#` comment line directly above it. An entry
+# that no longer matches a file with a hit, or that appears twice, fails the suite.
+
+# The shell allowlist and the CI path filters name the shim FILE PATHS (a change to a shim must
+# select the jobs that run it); none runs one. The install-references suite checks separately
+# that no CI configuration or Taskfile line runs a shim through `bash`.
+
+# Descriptive data in scripts/lib JSON tables: a `_readme` text and per-key evidence citations
+# of the original shell lines (historical references, not instructions).
+scripts/lib/extension-percli-keys.json
+
+# node:test suites that run the shell oracle leg through the shim or cite the script they twin.
+scripts/tests/install-workspace.test.ts
+
+# Dated record of a manual verification (spec 0177 era): it quotes the commands as run then.
+tests/gemini-extension-path-form.md
+
+# Accepted ADRs and specs are historical records of decisions; they are never rewritten.
+docs/adr/
+specs/
+
+# Golden facts extracted from the four manage shell scripts before the switch (spec 0255 PR E):
+# they quote the shell's own warning and Types lines, which name the scripts' own invocation.
+scripts/tests/fixtures/manage-shell-facts/antigravity.facts.golden
+scripts/tests/fixtures/manage-shell-facts/claude.facts.golden
+scripts/tests/fixtures/manage-shell-facts/copilot.facts.golden
+scripts/tests/fixtures/manage-shell-facts/workspace.facts.golden
+
+# The migration table of the removal names every removed path next to its replacement.
+docs/shell-removal.md

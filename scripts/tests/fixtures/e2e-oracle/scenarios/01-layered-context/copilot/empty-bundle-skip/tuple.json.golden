@@ -1,0 +1,15 @@
+{
+  "id": "01-layered-context/copilot/empty-bundle-skip",
+  "exit": 0,
+  "scenarioTap": "1..0 # SKIP no auth/rules dir at <E2E_HOME>/copilot (run `task e2e:auth:copilot`)\n",
+  "dockerCommands": [],
+  "files": {
+    "copilot/01-layered-context/exit": "78\n",
+    "copilot/01-layered-context/scenario.tap": "1..0 # SKIP no auth/rules dir at <E2E_HOME>/copilot (run `task e2e:auth:copilot`)\n",
+    "copilot/01-layered-context/stderr": "",
+    "copilot/01-layered-context/stdout": "SKIP - copilot/01-layered-context: no auth/rules dir at <E2E_HOME>/copilot (run `task e2e:auth:copilot`)\n",
+    "run.tap": "TAP version 13\nok 1 - copilot/01-layered-context # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - copilot/01-layered-context # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[copilot] auth ready: COPILOT_GITHUB_TOKEN set in host shell\n"
+}

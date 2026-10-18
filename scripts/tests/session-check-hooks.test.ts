@@ -3,12 +3,13 @@
 //
 // Black box: scripts/session-check-hooks.ts runs as a child process against a
 // scratch HOME (session-check-harness.ts). The coexistence cases drive the REAL
-// session-recording and usage-capture writers of scripts/lib/usage-capture-optin.sh
-// and the Antigravity transcript deploy of scripts/lib/common.sh, in both orders.
+// session-recording and usage-capture writers of retired scripts/lib/usage-capture-optin.sh
+// and the Antigravity transcript deploy of retired scripts/lib/common.sh, in both orders.
 // The check's entry is recognised here by the plan's command template, written
 // independently of the writer's own matcher.
 
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { describe, test } from "node:test";
@@ -19,7 +20,6 @@ import {
   REPO,
   WRITER_TS,
   assertNoCliInvoked,
-  bashLib,
   hookCommand,
   makeSandbox,
   run,
@@ -416,22 +416,36 @@ function optinFile(sb: Sandbox, cli: Exclude<Cli, "antigravity">): string {
 const ANSWERS = ["sr-accept", "uc-yes", "uc-no", "uc-cancel", "uc-keep", "uc-remove"] as const;
 type Answer = (typeof ANSWERS)[number];
 
-/** One opt-in step exactly as the setup scripts call the library (usage-capture-optin.sh). */
+/** One opt-in step as the setup runs it, through the usage-capture entry. */
 function optin(sb: Sandbox, cli: Exclude<Cli, "antigravity">, answer: Answer): void {
-  const cfg = shq(optinFile(sb, cli));
-  const manifest = shq(path.join(REPO, "hooks", `${cli}-transcript-hooks.json`));
-  const apply = (ans: string): string =>
-    `st="$(usage_capture_state ${cli} ${cfg})" && usage_capture_apply ${cli} ${cfg} ${shq(REPO)} "$st" ${shq(ans)}`;
-  const script = {
-    "sr-accept": `mkdir -p "$(dirname ${cfg})" && merge_session_recording_hooks ${cli} ${cfg} ${manifest}`,
-    "uc-yes": apply("yes"),
-    "uc-no": apply("no"),
-    "uc-cancel": apply(""),
-    "uc-keep": `${apply("yes")} && ${apply("keep")}`,
-    "uc-remove": `${apply("yes")} && ${apply("remove")}`,
-  }[answer];
-  const r = bashLib(sb, `set -e; ${script}`, { optin: true });
-  assert.equal(r.status, 0, `${cli} ${answer}: ${r.stdout}${r.stderr}`);
+  const cfg = optinFile(sb, cli);
+  const entry = path.join(REPO, "scripts", "usage-capture-optin.ts");
+  const manifest = path.join(REPO, "hooks", `${cli}-transcript-hooks.json`);
+  const node = (...args: string[]): string => {
+    const r = spawnSync(
+      process.execPath,
+      ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", entry, ...args],
+      { env: sb.env(), encoding: "utf8", cwd: sb.root },
+    );
+    assert.equal(r.status, 0, `${cli} ${answer} ${args[0]}: ${r.stdout}${r.stderr}`);
+    return r.stdout.trim();
+  };
+  const apply = (ans: string): void => {
+    node("apply", cli, cfg, REPO, node("state", cli, cfg), ans);
+  };
+  if (answer === "sr-accept") {
+    fs.mkdirSync(path.dirname(cfg), { recursive: true });
+    node("merge-session-recording-hooks", cli, cfg, manifest);
+  } else if (answer === "uc-yes") apply("yes");
+  else if (answer === "uc-no") apply("no");
+  else if (answer === "uc-cancel") apply("");
+  else if (answer === "uc-keep") {
+    apply("yes");
+    apply("keep");
+  } else {
+    apply("yes");
+    apply("remove");
+  }
 }
 
 describe("session-check writer: coexistence with session recording and usage capture (R11)", () => {
@@ -469,36 +483,6 @@ describe("session-check writer: coexistence with session recording and usage cap
       });
     }
   }
-
-  test("antigravity: the transcript deploy keeps the check's named hook", () => {
-    const sb = makeSandbox();
-    const target = hookFile(sb, "antigravity");
-    const ours = {
-      [HOOK_NAME]: {
-        PreInvocation: [
-          { type: "command", command: expectedCommand(sb, "antigravity"), timeout: 5 },
-        ],
-      },
-    };
-    writeFileDeep(
-      target,
-      JSON.stringify({ ...ours, "operator-hook": { Stop: [{ command: "echo op" }] } }),
-    );
-
-    const r = bashLib(
-      sb,
-      `deploy_antigravity_transcript_hooks ${shq(path.join(REPO, "hooks", "antigravity-transcript-hooks.json"))} ` +
-        `${shq(path.join(REPO, "hooks", "mempalace-transcript.sh"))} ${shq(path.join(sb.home, ".gemini", "hooks"))} ` +
-        `${shq(target)} 'MEMPALACE_TRANSCRIPT_ENABLED=1' ${shq(path.join(REPO, "hooks", "worktree-git-guard.sh"))}`,
-    );
-
-    assert.equal(r.status, 0, r.stdout + r.stderr);
-    const doc = readJson(target);
-    assert.deepEqual(doc[HOOK_NAME], ours[HOOK_NAME]);
-    assert.ok("crewrig-mempalace-transcript" in doc);
-    assert.ok("operator-hook" in doc);
-    assertNoCliInvoked(sb);
-  });
 
   test(`antigravity: register ${registrable("antigravity") ? "keeps one entry" : "removes only the earlier entry (R8 fallback)"} beside the transcript hooks`, async () => {
     const sb = makeSandbox();

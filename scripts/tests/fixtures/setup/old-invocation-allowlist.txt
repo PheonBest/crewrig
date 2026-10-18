@@ -1,0 +1,13 @@
+# old-invocation-allowlist.txt — files that may still name the old setup invocation (spec 0256
+# R33, R34). scripts/tests/setup-references.test.ts fails on any other tracked or untracked text
+# file, outside specs/ and docs/adr/, that names `bash` followed by one of the four setup shell
+# scripts. The scripts are forwarding shims now: the instruction is `node
+# scripts/setup-<cli>-interactive.ts` behind the Node.js floor guard (or the Taskfile).
+#
+# Format: one repo-relative path per line; an entry ending in `/` covers every file below that
+# directory. Every entry carries a reason as the `#` comment line directly above it. An entry
+# that no longer matches a file with a hit, or that appears twice, fails the suite.
+
+# This file, its suite and their suites: they spell the invocation they scan for or pin.
+scripts/tests/setup-references.test.ts
+

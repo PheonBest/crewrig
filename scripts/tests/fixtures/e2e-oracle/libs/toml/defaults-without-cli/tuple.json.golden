@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[judge]\nstrict = false\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[judge]\nstrict = true\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/defaults-without-cli",
+  "rc": 5,
+  "stats": {},
+  "stderr": "jq: error (at <TMP>/tmp/tmp.<RAND>/merged.json:5): null (null) has no keys\n",
+  "stdout": ""
+}

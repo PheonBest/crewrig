@@ -1,4 +1,4 @@
-// ci-changeset-coverage.test.ts — black-box tests for scripts/ci-changeset-coverage.sh
+// ci-changeset-coverage.test.ts — black-box tests for scripts/ci-changeset-coverage.ts
 // as the EXHAUSTIVE RUN (spec 0147 delta-01 R21/R22/R23, issue #1405).
 //
 // The script used to be a pull-request fail-safe: it computed a diff against a
@@ -29,7 +29,8 @@ import { fileURLToPath } from "node:url";
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SCRIPT =
-  process.env["SCRIPT_UNDER_TEST"] ?? path.join(REPO, "scripts", "ci-changeset-coverage.sh");
+  process.env["SCRIPT_UNDER_TEST"] ?? path.join(REPO, "scripts", "ci-changeset-coverage.ts");
+const NODE_FLAG = "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON";
 const LOG = "ran.log";
 const ZEROS = "0".repeat(40);
 const MISSING_SHA = "1234567890abcdef1234567890abcdef12345678";
@@ -192,7 +193,7 @@ function readLog(dir: string): string[] {
  * `vars` as the only base-ref variables (REPO_DIR is how the script finds the fixture).
  */
 function run(dir: string, vars: Record<string, string> = {}): Run {
-  const res = spawnSync("bash", [SCRIPT], {
+  const res = spawnSync(process.execPath, [NODE_FLAG, SCRIPT], {
     cwd: os.tmpdir(),
     encoding: "utf8",
     env: cleanEnv({ REPO_DIR: dir, ...vars }),
@@ -200,11 +201,19 @@ function run(dir: string, vars: Record<string, string> = {}): Run {
   return { status: res.status, out: res.stdout, err: res.stderr, ran: readLog(dir) };
 }
 
-/** Run with no `yq` reachable: a PATH holding nothing, and an absolute bash. */
+/**
+ * Run with no `yq` reachable: a PATH holding only `node` and `dirname` (symlinks inside this test's own
+ * temp dir).
+ */
 function runWithoutYq(dir: string): Run {
   const empty = fs.mkdtempSync(path.join(os.tmpdir(), "ci-changeset-coverage-path-"));
   temps.push(empty);
-  const res = spawnSync("/bin/bash", [SCRIPT], {
+  const dirnameBin = spawnSync("sh", ["-c", "command -v dirname"], {
+    encoding: "utf8",
+  }).stdout.trim();
+  fs.symlinkSync(process.execPath, path.join(empty, "node"));
+  fs.symlinkSync(dirnameBin, path.join(empty, "dirname"));
+  const res = spawnSync(process.execPath, [NODE_FLAG, SCRIPT], {
     cwd: os.tmpdir(),
     encoding: "utf8",
     env: cleanEnv({ REPO_DIR: dir, PATH: empty }),
@@ -212,7 +221,7 @@ function runWithoutYq(dir: string): Run {
   return { status: res.status, out: res.stdout, err: res.stderr, ran: readLog(dir) };
 }
 
-describe("ci-changeset-coverage.sh (exhaustive run)", () => {
+describe("ci-changeset-coverage.ts (exhaustive run)", () => {
   test("(a) [discriminating] every changed file is covered: every gated command still runs", () => {
     const dir = repo();
     const base = git(dir, "rev-parse", "HEAD");
@@ -315,10 +324,12 @@ describe("ci-changeset-coverage.sh (exhaustive run)", () => {
   });
 
   test("(m) [discriminating] the script computes no diff and resolves no base ref (R21)", () => {
-    const code = fs
-      .readFileSync(SCRIPT, "utf8")
+    const lib = path.join(REPO, "scripts", "lib", "ci-changeset-coverage");
+    const code = [SCRIPT, ...fs.readdirSync(lib).map((f) => path.join(lib, f))]
+      .map((f) => fs.readFileSync(f, "utf8"))
+      .join("\n")
       .split("\n")
-      .filter((line) => !/^\s*#/.test(line))
+      .filter((line) => !/^\s*(\/\/|\/?\*)/.test(line))
       .join("\n");
     for (const forbidden of [
       /merge-base/,

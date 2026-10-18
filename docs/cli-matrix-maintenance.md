@@ -10,7 +10,7 @@ integration point. It MUST stay in lockstep with the code.
 **Trigger surface.** A change is CLI-specific when it touches any of:
 `.claude/**`, `.gemini/**`, `artifacts/**`, `extensions/**`,
 `hooks/*-transcript-hooks.json`, `config/claude/**`, `config/gemini/**`,
-`scripts/build-components.sh`, any `scripts/{build,install,setup,import,manage}-*.sh`,
+`scripts/build-components.ts`, `scripts/build-components.ts`, `scripts/lib/build-components/**`, any `scripts/{build,install,setup,import,manage}-*.{sh,ts}`, `scripts/lib/{link-or-copy*.ts,manage/**,install/**}`,
 `.github/workflows/claude.yml` or `.github/workflows/gemini.yml`,
 the top-level entry-point files (`CLAUDE.md`, `GEMINI.md`), or a
 CLI-prefixed entry in `Taskfile.yml` / `.gitignore`.
@@ -72,12 +72,12 @@ CLI. This is a direct extension of working code, not new research,
 and is therefore in-scope by default. The list of trigger scripts is
 authoritative:
 
-- `scripts/setup-<cli>-interactive.sh`
-- `scripts/import-<cli>-history.sh`
-- `scripts/manage-<cli>-component.sh` (or a new `--target <cli>`
-  branch in `scripts/manage-workspace-component.sh` if that script
+- `scripts/setup-<cli>-interactive.ts`
+- `scripts/import-<cli>-history.ts`
+- `scripts/manage-<cli>-component.ts` (or a new `--target <cli>`
+  branch in `scripts/manage-workspace-component.ts` if that script
   already serves multiple CLIs)
-- `scripts/build-components.sh` `--target <cli>` branch
+- `scripts/build-components.ts` `--target <cli>` branch (`scripts/build-components.ts` forwards to it)
 - Every `Taskfile.yml` entry whose name carries a CLI prefix
 
 Deferring any of the above to a follow-up ticket requires **explicit
@@ -87,23 +87,25 @@ issue. Agent-initiated deferral of a symmetric script is prohibited.
 **Extension render symmetric pair (spec 0042, as amended by
 `specs/0042-extension-pivot-render.delta-01.md` and spec 0173).** Extension
 components are rendered to their per-CLI consumed forms by a CLI-split pair
-that shares `scripts/lib/render-command.sh`, both dispatched from the single
-entry point `scripts/build-extension.sh`:
+that shares `scripts/lib/render-command.ts`, both dispatched from the single
+entry point `scripts/build-extension.ts` (run `node scripts/lib/node-floor-guard.js` first, then the
+`node scripts/*.ts` command; Node.js 24 or later, `js-yaml` from the setup
+dependency step):
 
-- `scripts/build-claude-plugin.sh` — Claude side. Renders the pivot
+- `scripts/build-claude-plugin.ts` — Claude side. Renders the pivot
   `commands/<name>.md` into an **ephemeral** plugin skill at install
   time (Claude builds a plugin).
-- `scripts/build-extension.sh --target gemini` — Gemini side, the
+- `scripts/build-extension.ts --target gemini` — Gemini side, the
   symmetric counterpart. Renders the pivot `.md` into
   `build/extensions/<name>/commands/<name>.toml`, an **ephemeral build
   output** — never a committed sibling — because Gemini loads an
   extension installed from that build tree, and the tree it loads has no
   install-time render hook of its own (cli-matrix row 13).
 
-A change to either renderer, or to the shared `render-command.sh`
-library, MUST keep this pair in sync in the same PR; the
-`bash scripts/build-extension.sh --check` guard and
-`scripts/check-extension-pivot.sh` (R1/R7 guard) enforce that no
+A change to either renderer, or to the shared `render-command.ts`
+module, MUST keep this pair in sync in the same PR; the
+`node scripts/build-extension.ts --check` guard and
+`scripts/check-extension-pivot.ts` (R1/R7 guard) enforce that no
 generated Gemini output is ever committed, that a fresh render matches
 the declared set, and that no extension component is authored CLI-native
 instead of pivot. Copilot has no extension command/agent surface (rows

@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nenv_keys = [\"Z\", \"A\"]\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\nenv_keys = [\"A\", \"M\"]\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/env-keys-dedup-order",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"env_keys\": [\n        \"Z\",\n        \"A\",\n        \"M\"\n      ]\n    }\n  }\n}\n"
+}

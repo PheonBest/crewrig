@@ -65,9 +65,10 @@ and the `docs/index.json` schema — lives in
 `docs/index.json` is the generated, **committed** manifest of the public
 documentation subset. It is classified **core / `strict`** (upstream-owned;
 a local modification halts the sync). The generator
-`scripts/build-docs-index.sh` (also core/`strict`) derives it from the
-per-page blocks; CI runs `bash scripts/build-docs-index.sh --check` to guard
-against drift. Org-overlay documentation under `docs/org/` is `excluded` from
+`scripts/build-docs-index.ts` and its TypeScript twin
+`scripts/build-docs-index.ts` (both core/`strict`) derive it from the
+per-page blocks; CI runs `node scripts/lib/node-floor-guard.js`, then
+`node scripts/build-docs-index.ts --check`, to guard against drift. Org-overlay documentation under `docs/org/` is `excluded` from
 sync and is unioned into the organization's own site build under the same
 contract — never flowing back upstream.
 
@@ -76,19 +77,19 @@ contract — never flowing back upstream.
 | Path | Description |
 |---|---|
 | `ci/` | Platform-neutral CI capability reference (`ci/ci-capabilities.yml`). One entry per CI job — the engine-agnostic source of truth that the per-engine pipelines (GitHub Actions today, GitLab CI and others later) are derived from and drift-checked against. Core/`strict`; its normative shape is `docs/ci-reference-format.md` (ADR-0012). Top-level rather than under `.github/` so the reference reads as engine-neutral, not GitHub-owned. Also holds the path-ownership exemption list, `ci/path-ownership-exemptions.txt` (spec 0147 delta-01 R14, R24): the reasoned list of tracked files that no check exercises, read by `scripts/check-path-ownership.ts`; registered explicitly in `.crewrig/core-paths.txt` as `strict`. The `ci/org/` subtree is carved out as overlay (spec 0020) — see *Org overlay carve-outs in core trees* below. |
-| `.gitlab-ci.yml` | Generated GitLab CI pipeline (spec 0048). The derived GitLab form of the portable subset of `ci/ci-capabilities.yml` — one job per portable capability, produced by `scripts/build-ci.sh`. Core/`strict` (engine-neutral generated output, upstream-owned). Never hand-edited: `bash scripts/build-ci.sh --check` guards it against drift from the reference in CI. The GitHub Actions workflows under `.github/workflows/` are NOT generated (spec 0048 R5); only GitLab is derived here. |
+| `.gitlab-ci.yml` | Generated GitLab CI pipeline (spec 0048). The derived GitLab form of the portable subset of `ci/ci-capabilities.yml` — one job per portable capability, produced by `scripts/build-ci.ts`. Core/`strict` (engine-neutral generated output, upstream-owned). Never hand-edited: `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts --check` guards it against drift from the reference in CI. The GitHub Actions workflows under `.github/workflows/` are NOT generated (spec 0048 R5); only GitLab is derived here. |
 
 ### Model mappings (spec 0197)
 
 | Path | Description |
 |---|---|
-| `model-mappings/` | Per-CLI model mapping artifacts (`model-mappings/<target>.yml`, one per supported target) declaring which models a target can reach, what each provides, and how the spec 0195 capability vocabulary turns into that target's native fields and prose. Core/`strict`; its normative shape is `docs/model-mapping-format.md`; its hermetic gate is `scripts/check-model-mappings.sh`. Top-level rather than under `artifacts/`: a mapping is a build input, not a component, and nothing deploys it to a CLI (spec 0197 Decision 1). Each core mapping is paired with an org-owned override channel, `model-mappings/<target>.org.yml` — see *Org overlay carve-outs in core trees* below (spec 0199). |
+| `model-mappings/` | Per-CLI model mapping artifacts (`model-mappings/<target>.yml`, one per supported target) declaring which models a target can reach, what each provides, and how the spec 0195 capability vocabulary turns into that target's native fields and prose. Core/`strict`; its normative shape is `docs/model-mapping-format.md`; its hermetic gate is `scripts/check-model-mappings.ts`. Top-level rather than under `artifacts/`: a mapping is a build input, not a component, and nothing deploys it to a CLI (spec 0197 Decision 1). Each core mapping is paired with an org-owned override channel, `model-mappings/<target>.org.yml` — see *Org overlay carve-outs in core trees* below (spec 0199). |
 
 ### Usage record schema (spec 0205)
 
 | Path | Description |
 |---|---|
-| `schemas/` | The CLI-agnostic, versioned contract for a unit of model-token consumption (`schemas/usage-record/v1.schema.json`, JSON Schema draft 2020-12) plus its per-CLI conforming samples (`schemas/usage-record/samples/`). Core/`strict`; its normative shape is `docs/usage-record-format.md`; its hermetic gate is `scripts/lib/usage-record-validator.js` run by `scripts/tests/test-usage-record-schema.sh`. Top-level rather than under `artifacts/`: the schema is a build input read by every downstream seam of the token-consumption epic, not a component, and nothing deploys it to a CLI — the same reasoning `model-mappings/` above rests on (spec 0197 Decision 1). |
+| `schemas/` | The CLI-agnostic, versioned contract for a unit of model-token consumption (`schemas/usage-record/v1.schema.json`, JSON Schema draft 2020-12) plus its per-CLI conforming samples (`schemas/usage-record/samples/`). Core/`strict`; its normative shape is `docs/usage-record-format.md`; its hermetic gate is `scripts/lib/usage-record-validator.js` run by `scripts/tests/usage-record-schema.test.ts`. Top-level rather than under `artifacts/`: the schema is a build input read by every downstream seam of the token-consumption epic, not a component, and nothing deploys it to a CLI — the same reasoning `model-mappings/` above rests on (spec 0197 Decision 1). |
 
 ### Build and install tooling
 
@@ -96,7 +97,7 @@ contract — never flowing back upstream.
 |---|---|
 | `scripts/` | All build, install, setup, and utility scripts. |
 | `tests/` | Automated test suite. |
-| `tests/fixtures/overlay/` | Fixture overlay components used by the assembly verification test (`scripts/tests/test-assembly-verification.sh`). Contains minimal skill and agent fixtures that are never deployed to production. |
+| `tests/fixtures/overlay/` | Fixture overlay components used by the assembly verification test (`scripts/tests/build-assembly-routing.test.ts`). Contains minimal skill and agent fixtures that are never deployed to production. |
 | `docker/` | Docker infrastructure for end-to-end tests. |
 | `config/.env.example` | Environment variable reference (gitignored `.env` is never committed). |
 | `config/release-monorepo.json` | Monorepo release tooling configuration. |
@@ -161,11 +162,11 @@ Core system-context store (installed to user home, read on demand):
 
 | Path | Description |
 |---|---|
-| `artifacts/core/system-context/` | Reference-heavy sections extracted from `60-tools.md` (spec 0068): Palace Structure Conventions, Long-Running Task Convention, MCP Tools Reference, Friction Reporting reference detail, Obsidian Protocol. Installed verbatim to `~/.crewrig/system-context/` by every `setup-*-interactive.sh` via `install_dir`, then read on demand — direct file read by default, MemPalace optional, explicit signal on failure (never silently omitted). NOT a template — upstream content. |
+| `artifacts/core/system-context/` | Reference-heavy sections extracted from `60-tools.md` (spec 0068): Palace Structure Conventions, Long-Running Task Convention, MCP Tools Reference, Friction Reporting reference detail, Obsidian Protocol. Installed verbatim to `~/.crewrig/system-context/` by every `setup-<cli>-interactive.ts` entry (its `install_dir` twin), then read on demand — direct file read by default, MemPalace optional, explicit signal on failure (never silently omitted). NOT a template — upstream content. |
 
 ### Built outputs
 
-Built by `scripts/build-components.sh` from `artifacts/`. These
+Built by `scripts/build-components.ts` from `artifacts/`. These
 directories are **assembly zones**: after a build they contain both
 core-provided harness components and the adopting organization's own compiled
 components. They are never edited directly; the source of truth is always
@@ -177,7 +178,7 @@ so a change to either regenerates the output. That is why the four compiled
 agent output trees carry the sync policy `regenerable` (spec 0199 R43)
 rather than `strict`: an organization-level override of the mapping in
 force (`docs/org-model-mapping-override.md`) makes those four outputs
-legitimately diverge from upstream, and `scripts/sync-from-upstream.sh`
+legitimately diverge from upstream, and `scripts/sync-from-upstream.ts`
 cannot run the build to tell that apart from a hand edit. The compiled
 skill and command trees reach no mapping, so they stay `strict` (R45).
 While governed by `strict`, their organization-owned compiled outputs
@@ -200,7 +201,7 @@ exist, how org artifacts integrate) is defined in spec 0012 sub-spec E2.
 | `.github/copilot-instructions.md` | Copilot system prompt built from `AGENTS.md`. |
 | `.github/workflows/` | CI/CD pipeline definitions. |
 | `.github/copilot/` | GitHub Copilot workspace configuration. |
-| `.github/copilot/settings.json` | Committed workspace settings, `strict` by default as a member of `.github/copilot/` above — except its `hooks` key, which the transcript-hooks opt-in in `setup-copilot-interactive.sh` deliberately rewrites locally with an absolute path (ADR-0001 Discovery finding #8). Reclassified `excluded`, nested under the strict `.github/copilot/` parent (spec 0097 / issue #605), so that designed-in local mutation no longer aborts `scripts/sync-from-upstream.sh`; sibling members such as `extension.json` remain `strict` and still abort on a local diff. |
+| `.github/copilot/settings.json` | Committed workspace settings, `strict` by default as a member of `.github/copilot/` above — except its `hooks` key, which the transcript-hooks opt-in in `setup-copilot-interactive.ts` deliberately rewrites locally with an absolute path (ADR-0001 Discovery finding #8). Reclassified `excluded`, nested under the strict `.github/copilot/` parent (spec 0097 / issue #605), so that designed-in local mutation no longer aborts `scripts/sync-from-upstream.ts`; sibling members such as `extension.json` remain `strict` and still abort on a local diff. |
 | `.agents/skills/` | Compiled Antigravity CLI skill definitions. |
 | `.agents/agents/` | Compiled Antigravity CLI agent definitions. Reclassified `regenerable` (spec 0199 R43 / spec 0121 delta-01 R9). |
 
@@ -209,7 +210,7 @@ exist, how org artifacts integrate) is defined in spec 0012 sub-spec E2.
 | Path | Description |
 |---|---|
 | `extension-skeleton/` | Scaffold templates for creating new CrewRig extensions. |
-| `hooks/` | Cross-CLI hook configuration files and the hook scripts they wire: the session-recording manifests (`claude-transcript-hooks.json`, `gemini-transcript-hooks.json`, `copilot-transcript-hooks.json`, `antigravity-transcript-hooks.json`), the usage-capture fragments of the spec 0211 opt-in (`claude-usage-capture-hooks.json`, `gemini-usage-capture-hooks.json`, `copilot-usage-capture-hooks.json`), and the scripts `mempalace-transcript.sh`, `usage-capture.sh`, `worktree-git-guard.sh` and `antigravity-statusline-shim.sh`. |
+| `hooks/` | Cross-CLI hook configuration files and the hook scripts they wire: the session-recording manifests (`claude-transcript-hooks.json`, `gemini-transcript-hooks.json`, `copilot-transcript-hooks.json`, `antigravity-transcript-hooks.json`), the usage-capture fragments of the spec 0211 opt-in (`claude-usage-capture-hooks.json`, `gemini-usage-capture-hooks.json`, `copilot-usage-capture-hooks.json`), and the scripts `mempalace-transcript.ts`, `worktree-git-guard.ts`, `usage-capture.ts` and `antigravity-statusline-shim.ts`; each TypeScript hook except `antigravity-statusline-shim.ts` keeps a forwarding shim at the `.sh` path of the same name until the library retirement of spec 0266 (spec 0243 for `usage-capture.ts`, spec 0248 for `worktree-git-guard.ts`, spec 0247 for `mempalace-transcript.ts`); the Antigravity statusline shim is already deleted, and its module tree lives under `scripts/lib/` (`scripts/lib/mempalace-transcript/` for the session-recording hook). Every hook is wired by in-repo absolute path as a direct `node` command line and needs Node.js 24 or later when it fires. |
 | `extensions/core/` | Upstream-shipped core extensions (e.g. the `hello-world` demo). Synced from upstream under the **strict** policy — a local modification halts the sync, consistent with `artifacts/core/`. |
 | `extensions/library/` | Upstream harness and shared extensions. Synced from upstream under the **strict** policy. Ships empty (populated upstream). |
 
@@ -223,6 +224,7 @@ to every deployment of CrewRig.
 |---|---|
 | `config/launchd/` | macOS launchd service definitions for CrewRig infrastructure services. |
 | `config/systemd/` | Linux systemd unit files for CrewRig infrastructure services. |
+| `config/windows/` | Windows Task Scheduler task definitions (XML templates) for CrewRig infrastructure services. |
 
 ### Public communications
 
@@ -234,7 +236,7 @@ to every deployment of CrewRig.
 
 | Path | Description |
 |---|---|
-| `.crewrig/` | Machine-readable sync manifest and related tooling. `.crewrig/core-paths.txt` enumerates core-layer paths and their sync policy consumed by `scripts/sync-from-upstream.sh`. Two members are carved out as adopter-owned (spec 0020) — see the Overlay layer: the `.crewrig/.synced-markers/` subtree (machine-managed sync state) and `.crewrig/spec-id-carrier` (the reservation-namespace setting, spec 0112). |
+| `.crewrig/` | Machine-readable sync manifest and related tooling. `.crewrig/core-paths.txt` enumerates core-layer paths and their sync policy consumed by `scripts/sync-from-upstream.ts`. Two members are carved out as adopter-owned (spec 0020) — see the Overlay layer: the `.crewrig/.synced-markers/` subtree (machine-managed sync state) and `.crewrig/spec-id-carrier` (the reservation-namespace setting, spec 0112). |
 
 ---
 
@@ -303,7 +305,7 @@ sync.
 
 | Path | Description |
 |---|---|
-| `.crewrig/.synced-markers/` | Per-path last-synced upstream blob SHAs backing the **adopt-on-edit** decision. Machine-managed by `scripts/sync-from-upstream.sh` (do not hand-edit); **committed** by the adopter so the customization verdict survives a fresh clone (R7), and **never synced** from upstream — carved out of the `.crewrig` guard and restore. |
+| `.crewrig/.synced-markers/` | Per-path last-synced upstream blob SHAs backing the **adopt-on-edit** decision. Machine-managed by `scripts/sync-from-upstream.ts` (do not hand-edit); **committed** by the adopter so the customization verdict survives a fresh clone (R7), and **never synced** from upstream — carved out of the `.crewrig` guard and restore. |
 
 The `README.md` core-governance entry carries the **adopt-on-edit** policy
 (spec 0020): upstream-owned until the adopter modifies it, then preserved
@@ -314,7 +316,7 @@ permanently. It remains a core path; only its sync policy differs from
 
 `config/expertise/`, `config/teams/`, and `config/level/` are **core paths**
 carrying the **adopt-on-edit** policy at **directory granularity**. Each is
-reconciled member-by-member by `scripts/sync-from-upstream.sh`
+reconciled member-by-member by `scripts/sync-from-upstream.ts`
 (`reconcile_dir`): an untouched file keeps updating from upstream, a newly
 published upstream example is added (if the path never existed in the org's
 own history), a file the org customizes or deletes freezes permanently
@@ -424,9 +426,9 @@ committed to the repository.
 | `.claude/settings.local.json` | Local-only Claude Code overrides. |
 | `.claude/worktrees/` | Claude Code worktree metadata. |
 | `.worktrees/` | Git worktrees created during agent team sessions. |
-| `dist/<tier>/` | Gitignored staging tree for non-`core` build outputs (ADR-0011, spec 0019). `scripts/build-components.sh` writes each non-`core` tier here (`library`, `community`, `org`); the interactive setup scripts install from it to the user home. Never committed. |
-| `build/extensions/<name>/` | The render-at-publication build tree for an extension (spec 0173, as amended by `specs/0173-extension-declaration-model.delta-01.md`). `scripts/build-extension.sh --target gemini` produces the complete installable tree Gemini CLI loads — every generated extension output (`gemini-extension.json`, `commands/*.toml`, `hooks/hooks.json` when the generic `hooks` section maps on Gemini — spec 0179, issue #1005, via `scripts/lib/extension-hooks.sh` —, `GEMINI.md` when a `context` source is declared — spec 0181, issue #1007, via `scripts/lib/render-context.sh` — …) is produced INTO this build directory and committed nowhere; `scripts/install-extension.sh` and `task link-gemini-extension-build` are what consume it for a local install; `scripts/release-package-extension.sh` (spec 0183, issue #1008) is the third consumer, archiving this tree's contents at the archive root (no wrapper directory — pinned live against the installed tool, `docs/runbooks/extension-release-install-probe.md`) as the published release artifact. |
-| `build/gaps/<name>/` | The observed, unmappable-declaration gap set the render actually saw for one extension (`observed-gaps.json`), a build output compared by `bash scripts/build-extension.sh --check` against the extension's hand-authored, committed `accepted-gaps.json`. Kept outside `build/extensions/<name>/` so the installable tree stays free of build metadata. Each entry carries `subject` and `target`; a `hooks`-subject entry (spec 0179 R14) additionally carries `hook`, `event` and `part` (`"event"` or `"matcher"`), so two hooks differing only in their neutral event produce distinguishable entries rather than colliding on one `subject`+`target` pair. |
+| `dist/<tier>/` | Gitignored staging tree for non-`core` build outputs (ADR-0011, spec 0019). `scripts/build-components.ts` writes each non-`core` tier here (`library`, `community`, `org`); the interactive setup scripts install from it to the user home. Never committed. |
+| `build/extensions/<name>/` | The render-at-publication build tree for an extension (spec 0173, as amended by `specs/0173-extension-declaration-model.delta-01.md`). `node scripts/build-extension.ts --target gemini` produces the complete installable tree Gemini CLI loads — every generated extension output (`gemini-extension.json`, `commands/*.toml`, `hooks/hooks.json` when the generic `hooks` section maps on Gemini — spec 0179, issue #1005, via `scripts/lib/extension/hooks-emit.ts` —, `GEMINI.md` when a `context` source is declared — spec 0181, issue #1007, via `scripts/lib/extension/context-render.ts` — …) is produced INTO this build directory and committed nowhere; `scripts/install-extension.ts` and `task link-gemini-extension-build` are what consume it for a local install; `scripts/release-package-extension.ts` (spec 0183, issue #1008) is the third consumer, archiving this tree's contents at the archive root (no wrapper directory — pinned live against the installed tool, `docs/runbooks/extension-release-install-probe.md`) as the published release artifact. |
+| `build/gaps/<name>/` | The observed, unmappable-declaration gap set the render actually saw for one extension (`observed-gaps.json`), a build output compared by `node scripts/build-extension.ts --check` against the extension's hand-authored, committed `accepted-gaps.json`. Kept outside `build/extensions/<name>/` so the installable tree stays free of build metadata. Each entry carries `subject` and `target`; a `hooks`-subject entry (spec 0179 R14) additionally carries `hook`, `event` and `part` (`"event"` or `"matcher"`), so two hooks differing only in their neutral event produce distinguishable entries rather than colliding on one `subject`+`target` pair. |
 | `.DS_Store` | macOS Finder metadata. |
 | `node_modules/` | Node.js dependencies installed locally — gitignored. |
 | `*.env` | Environment secrets — never committed. |
@@ -446,6 +448,7 @@ across multiple layers. This table provides a single-lookup view.
 | `config/release-monorepo.json` | core |
 | `config/launchd/` | core |
 | `config/systemd/` | core |
+| `config/windows/` | core |
 | `config/SOUL.md` | user-local (gitignored) |
 | `config/PROFILE.md` | user-local (gitignored) |
 | `config/ORGANIZATION.md` | overlay |

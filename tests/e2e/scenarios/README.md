@@ -11,7 +11,7 @@ metadata lives in `tests/e2e/defaults.toml`.
 |---|---|---|
 | 01 | `01-layered-context` | 00–60 rule files deployed to the CLI actually steer a profile-aware answer. |
 | 02 | `02-cross-tool-memory` | A drawer written by CLI A is read by CLI B via a shared MemPalace sidecar. |
-| 03 | `03-skill-build` | `scripts/build-components.sh` emits the per-CLI artifacts (skills, agents, commands). |
+| 03 | `03-skill-build` | `scripts/build-components.ts` emits the per-CLI artifacts (skills, agents, commands). |
 | 04 | `04-harness-loop` | `harness-report` → MemPalace → `harness-curator` round-trip. |
 | 05 | `05-copilot-model-routing` | Probe A (spec 0194 R8-R11) — differential verdict on `github/copilot-cli#4437`: does a `model:` hint break BYOK subagent routing? Copilot-only. |
 | 06 | `06-agent-surface-consumption` | Probe B (spec 0194 R12-R15) — which repository agent-declaration surfaces and per-file layouts does each covered CLI actually consume? Covers Copilot and Claude Code. |
@@ -19,8 +19,8 @@ metadata lives in `tests/e2e/defaults.toml`.
 
 ## Scenario contract
 
-Each `scenarios/<name>/run.sh` runs **on the host** and drives Docker
-itself. The runner (`tests/e2e/run.sh`) exports the following before
+Each `scenarios/<name>/run.ts` runs **on the host** and drives Docker
+itself. The runner (`node tests/e2e/run.ts`) exports the following before
 delegating:
 
 | Env var | Meaning |
@@ -37,7 +37,7 @@ delegating:
 Exit codes follow the runner's convention: `0` → ok, `78` → skip
 (diagnostic line on stdout), anything else → not ok.
 
-> **Run-ID format invariant.** The parity matrix report (`tests/e2e/lib/report.sh`)
+> **Run-ID format invariant.** The parity matrix report (`tests/e2e/lib/report.ts`, run as `node tests/e2e/lib/report.ts`)
 > uses lexicographic ordering of TAP file paths to decide which run wins when
 > the same `<cli>/<scenario>` cell appears in multiple files — the last file
 > wins. This relies on `E2E_RUN_ID` carrying a `<timestamp>-<rand>` prefix so
@@ -51,7 +51,7 @@ the scenario's stdout/stderr alongside.
 ## Adding another scenario
 
 1. Drop a new directory under `tests/e2e/scenarios/<name>/` with an
-   executable `run.sh` (start from any existing scenario as template).
+   `run.ts` entry (start from any existing scenario as template).
 2. Add a `[scenarios.<name>]` table to `tests/e2e/defaults.toml` with
    `description` and `applies_to`.
 3. Update `docs/cli-matrix.md` with one row per CLI × scenario.

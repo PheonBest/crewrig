@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\na = [[1], [2]]\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/unsupported-nested-array",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"X\",\n      \"a\": [\n        [\n          1\n        ],\n        [\n          2\n        ]\n      ]\n    }\n  }\n}\n"
+}

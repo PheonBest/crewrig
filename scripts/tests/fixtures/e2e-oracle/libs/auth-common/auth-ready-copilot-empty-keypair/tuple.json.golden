@@ -1,0 +1,13 @@
+{
+  "files": {
+    "h/.crewrig-e2e/ollama/id_ed25519": {
+      "content": "",
+      "mode": "0644"
+    }
+  },
+  "id": "auth-common/auth-ready-copilot-empty-keypair",
+  "rc": 78,
+  "stats": {},
+  "stderr": "[copilot] auth NOT ready: no credential found. Start 'copilot' and run '/login' (or `task e2e:auth:copilot` to copy the workstation credential into the bundle), or set COPILOT_GITHUB_TOKEN / GH_TOKEN.\n",
+  "stdout": "E2E_AUTH_READY_CREDENTIAL_PATH=\n"
+}

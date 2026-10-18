@@ -38,7 +38,7 @@ task mempalace:switch-http
 
 1. Provisions a bearer token if one does not already exist for this palace
    — this happens **first**: the daemon launcher refuses to start without
-   one, by design (`install_mcp_daemon`, `scripts/lib/common.sh:927`).
+   one, by design (`scripts/lib/service/daemon-install.ts`; formerly `install_mcp_daemon` in the retired `scripts/lib/common.sh`).
 2. Installs the daemon launcher and starts it under the supervisor (launchd
    on macOS, systemd user unit on Linux), which waits for the daemon to
    report healthy.
@@ -52,7 +52,7 @@ This is a separate, order-independent follow-up rather than a step in the
 sequence above, so it is not depicted in the diagram below.
 
 A single CLI can be converted on its own by re-running that CLI's own
-`setup-*-interactive.sh`; the machine-wide, all-four-CLIs-or-none obligation
+`setup-<cli>-interactive.ts` entry; the machine-wide, all-four-CLIs-or-none obligation
 belongs only to `task mempalace:switch-http`.
 
 ![Four ordered steps to convert a machine to the shared MemPalace MCP HTTP daemon: provision the bearer token, install and start the daemon, register every CLI with the token, then verify status and auth.](../assets/mempalace-mcp/convert-machine.png)
@@ -62,9 +62,25 @@ belongs only to `task mempalace:switch-http`.
 | Action | Command |
 |---|---|
 | Convert / (re)install and start | `task mempalace:switch-http` |
-| Check status | `task mempalace:status` (`bash scripts/status-mcp-server.sh`) |
-| Restart | `task mempalace:stop` (`bash scripts/stop-mcp-server.sh`) — see caveat below |
+| Check status | `task mempalace:status` (`node scripts/status-mcp-server.ts`) |
+| Restart | `task mempalace:stop` (`node scripts/stop-mcp-server.ts`) — see caveat below |
 | End the daemon | `task mempalace:uninstall-daemon` |
+
+### On Windows
+
+The daemon runs under a Task Scheduler per-user task, `\CrewRig\mempalace-mcp-server`
+([ADR 0019](../adr/0019-windows-per-user-service-task-scheduler.md), spec 0252).
+Run the commands above from PowerShell as `node scripts/<name>.ts` (or through
+`task`).
+
+- `status` adds a `task:` line giving whether the task is registered, its state
+  and its last result. It fails when the task is registered, not running and its
+  last result is a failure, which shows a task that has stopped for good.
+- The Task Scheduler restarts a task that has ended within about a minute, not
+  within seconds as launchd and systemd do.
+- A Group Policy that forbids per-user tasks refuses the switch: nothing is
+  switched, MemPalace keeps working in stdio mode, and the refusal is quoted
+  verbatim.
 
 ### Stopping is not uninstalling
 
@@ -94,7 +110,7 @@ forever once the unit is orphaned.
 
 ### Checking it is actually serving, and actually authenticated
 
-`bash scripts/status-mcp-server.sh` (`task mempalace:status`) is the
+`node scripts/status-mcp-server.ts` (`task mempalace:status`) is the
 operator's only window onto liveness, onto whether the bearer check is
 *actually* enforced, onto launcher drift, and onto which arrangement each of
 the four CLIs is registered under — nothing else surfaces these once
@@ -145,7 +161,7 @@ The first diagnostic step is running:
 task mempalace:status
 ```
 
-`scripts/status-mcp-server.sh` diagnoses which assistant configurations are locked out (reporting `stdio (LOCKED OUT by shared daemon)` and exiting with code 1).
+`scripts/status-mcp-server.ts` diagnoses which assistant configurations are locked out (reporting `stdio (LOCKED OUT by shared daemon)` and exiting with code 1).
 
 To resolve the misconfiguration across all installed assistants, run:
 
@@ -181,12 +197,12 @@ CLI channel (spec 0246 delta-02 R7).
 confirmation. If a warning you expected never reached you or the model on
 one of those CLIs, report it there.
 
-| CLI | Registration file | Setup script |
+| CLI | Registration file | Setup script (a forwarding shim to the `.ts` entry of the same name) |
 |---|---|---|
-| `claude` | `~/.claude.json` | `scripts/setup-claude-interactive.sh` |
-| `gemini` | `~/.gemini/settings.json` | `scripts/setup-gemini-interactive.sh` |
-| `copilot` | `~/.copilot/mcp-config.json` | `scripts/setup-copilot-interactive.sh` |
-| `antigravity` | `~/.gemini/config/mcp_config.json` | `scripts/setup-antigravity-interactive.sh` |
+| `claude` | `~/.claude.json` | `scripts/setup-claude-interactive.ts` |
+| `gemini` | `~/.gemini/settings.json` | `scripts/setup-gemini-interactive.ts` |
+| `copilot` | `~/.copilot/mcp-config.json` | `scripts/setup-copilot-interactive.ts` |
+| `antigravity` | `~/.gemini/config/mcp_config.json` | `scripts/setup-antigravity-interactive.ts` |
 
 ### What each warning means
 
@@ -196,17 +212,17 @@ the registration it started with.
 | The warning says | Meaning | Repair |
 |---|---|---|
 | no `mempalace` registration | The file exists but has no `mempalace` entry. This session has no memory tools. | `task mempalace:switch-http` |
-| no `mempalace` registration, naming a setup script | The registration file does not exist. `switch-http` would refuse this machine (see below). | Run the named `scripts/setup-<cli>-interactive.sh` |
+| no `mempalace` registration, naming a setup script | The registration file does not exist. `switch-http` would refuse this machine (see below). | Run the named setup script: `node scripts/lib/node-floor-guard.js`, then `node scripts/setup-<cli>-interactive.ts` |
 | registered on stdio | The CLI launches its own memory server, and the daemon's lease refuses its writes. | `task mempalace:switch-http` |
 | registered at another endpoint | The HTTP entry points elsewhere. The warning shows both endpoints, the registered one redacted (no user info, query, fragment, or control characters). | `task mempalace:switch-http` (read the launcher note below first) |
 | unrecognised entry, naming `task mempalace:repair` | The file is strict JSON, but the entry is neither the HTTP shape (`url`/`serverUrl`) nor the stdio shape (`command`). | `task mempalace:repair` to see the options, then `task mempalace:repair -- --restore-backup` or `-- --reset-none`, then `task mempalace:switch-http` |
 | not a single strict JSON document | The file fails the strictness test below. | Rewrite the file (next section), then `task mempalace:switch-http` if needed |
-| a Gemini file with comments, naming `scripts/setup-gemini-interactive.sh` | `~/.gemini/settings.json` holds comments and its registration is not `ok`. `switch-http` and `repair` read the file with `jq`, which rejects comments: `switch-http` would refuse, and `repair` could not write it. | Run `scripts/setup-gemini-interactive.sh`. It rewrites the file as plain JSON and keeps the comments in a timestamped backup |
+| a Gemini file with comments, naming `scripts/setup-gemini-interactive.ts` | `~/.gemini/settings.json` holds comments and its registration is not `ok`. `switch-http` and `repair` read the file with `jq`, which rejects comments: `switch-http` would refuse, and `repair` could not write it. | Run `node scripts/lib/node-floor-guard.js`, then `node scripts/setup-gemini-interactive.ts`. It rewrites the file as plain JSON and keeps the comments in a timestamped backup |
 | the shared memory daemon is not answering | The daemon is installed, but its MCP endpoint gave neither an authentication refusal nor an MCP answer within 1 s. | `task mempalace:status`, then [Daemon not starting after boot](#daemon-not-starting-after-boot) |
 
 When an entry carries both `url` and `serverUrl`, one value is compared:
 `url`, or `serverUrl` when `url` is `null` or `false` (`.url // .serverUrl`,
-the order `scripts/doctor-mempalace.sh` uses). An entry whose `url` is
+the order `scripts/doctor-mempalace.ts` uses). An entry whose `url` is
 correct is `ok` whatever its `serverUrl` says.
 
 A project-level or local-level `mempalace` entry is not read. A Claude Code
@@ -257,7 +273,7 @@ truncated file is the exception: status reports it `unknown`, so
 Gemini CLI accepts comments in `~/.gemini/settings.json`, and so does the
 check (spec 0246 delta-02). A commented file whose registration is `ok`
 starts silently. When the registration is anything else, the warning names
-`scripts/setup-gemini-interactive.sh` instead of `switch-http` or `repair`.
+`scripts/setup-gemini-interactive.ts` instead of `switch-http` or `repair`.
 That setup rewrites the file as plain JSON and keeps the commented original
 in a timestamped backup (spec 0214).
 
@@ -276,8 +292,9 @@ goes with them. The session starts with no warning.
 The backstop is the agent-side rule in `artifacts/core/rules/60-tools.md` →
 *Session Start* → *Memory unavailable — say so, never skip silently* (spec
 0246 R13). An agent with no `mempalace_*` tool tells you so before any work.
-To repair, run `scripts/setup-gemini-interactive.sh`, which restores both,
-then `task mempalace:switch-http` if status does not show `http`.
+To repair, run `node scripts/lib/node-floor-guard.js`, then
+`node scripts/setup-gemini-interactive.ts` as a separate step, which restores
+both, then `task mempalace:switch-http` if status does not show `http`.
 
 ### Removing the check by hand
 
@@ -312,7 +329,7 @@ and ends with *No assistant has been changed*. Fix that CLI, then run
 `switch-http` again.
 
 The refusals live in `switch_assistants_to_http`, in
-`scripts/lib/common.sh`:
+the retired `scripts/lib/common.sh`:
 
 | Refusal | Lines | Repair |
 |---|---|---|
@@ -349,14 +366,15 @@ script mints a fresh token, replaces the running daemon process so the new
 token takes effect immediately, and re-registers every assistant CLI with the
 new credential.
 
-![Four ordered steps to replace the shared MCP daemon's bearer token: delete the old token file, run switch-mempalace-http.sh to mint a new token and replace the daemon process, delete each CLI's stale backup config that still holds the old token, then restart every running session.](../assets/mempalace-mcp/rotate-token.png)
+![Four ordered steps to replace the shared MCP daemon's bearer token: delete the old token file, run switch-mempalace-http.ts to mint a new token and replace the daemon process, delete each CLI's stale backup config that still holds the old token, then restart every running session.](../assets/mempalace-mcp/rotate-token.png)
 
 1. **Delete the current token file.** Its path is derived from the palace
-   path the same way the daemon derives it (`scripts/lib/common.sh`,
-   `mcp_token_path`); from the repository root:
+   path the same way the daemon derives it (`tokenPath` in
+   `scripts/lib/usage-store/mcp.js`, which replaced `mcp_token_path` of the
+   retired `scripts/lib/common.sh`); from the repository root:
 
    ```sh
-   rm -f "$(source scripts/lib/common.sh && mcp_token_path)"
+   rm -f "$(node -e 'import("./scripts/lib/usage-store/mcp.js").then((m) => console.log(m.tokenPath()))')"
    ```
 
 2. **Re-run the conversion:**
@@ -398,4 +416,4 @@ new credential.
    using the value it started with.
 
 To decommission a palace's token entirely instead of rotating it, remove its
-whole server directory: `rm -rf "$(dirname "$(source scripts/lib/common.sh && mcp_token_path)")"`.
+whole server directory: `rm -rf "$(dirname "$(node -e 'import("./scripts/lib/usage-store/mcp.js").then((m) => console.log(m.tokenPath()))')")"`.

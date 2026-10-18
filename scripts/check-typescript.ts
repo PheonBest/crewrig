@@ -9,7 +9,8 @@
 //   erasable   no syntax Node's type stripping cannot erase (R5), via
 //              scripts/lib/erasable-syntax.ts;
 //   lint       Oxlint type-aware strict typing + non-blocking max-lines (R6, R7);
-//   format     Oxfmt check mode on *.ts only (R8).
+//   format     Oxfmt check mode on *.ts plus the JavaScript admitted by ci/js-exceptions.txt
+//              (R8; spec 0266 R16).
 // `lint` and `format` delegate to the pr-reviewer skill's lint-typescript.ts,
 // so CI and the independent reviewer pass run one implementation (R14).
 // Scope: tracked *.ts outside the four built-copy trees (R12).
@@ -21,7 +22,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { checkErasable, formatFinding, parseTs1294 } from "./lib/erasable-syntax.ts";
-import { WiringError, repoRoot, trackedTsFiles } from "./lib/ts-scope.ts";
+import { WiringError, repoRoot, trackedAdmittedJsFiles, trackedTsFiles } from "./lib/ts-scope.ts";
 
 const STEPS = ["typecheck", "erasable", "lint", "format"] as const;
 type Step = (typeof STEPS)[number];
@@ -106,6 +107,8 @@ function main(): number {
     try {
       if (step === "typecheck") status = typecheck(root);
       else if (step === "erasable") status = erasable(root, files);
+      else if (step === "format")
+        status = delegate(root, step, [...files, ...trackedAdmittedJsFiles()]);
       else status = delegate(root, step, files);
     } catch (err) {
       console.log(

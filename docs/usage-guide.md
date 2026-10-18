@@ -23,11 +23,15 @@ separately. No CLI needs MemPalace for it: records go to a local journal on
 your machine. On every CLI the switch is a question the CLI's interactive
 setup script asks; re-running the script is also how you switch capture off.
 
+Each setup is the TypeScript entry `scripts/setup-<cli>-interactive.ts`, which
+needs Node.js 24 or later. Run `node scripts/lib/node-floor-guard.js` first,
+then the entry, as two separate steps (not chained with `&&`). The old Bash setup scripts were removed (see `docs/shell-removal.md`).
+
 This section was verified against `main` at commit `c8baa79` on 2026-09-24.
 
 ### Claude Code
 
-- **On.** Run `scripts/setup-claude-interactive.sh`. After the session-recording
+- **On.** Run `node scripts/setup-claude-interactive.ts`. After the session-recording
   question, it asks *Capture token usage for Claude Code? (opt-in, MemPalace
   not required)*. The default is `no`; answer `yes`. Before writing, it tells
   you what it registers and that it changes `~/.claude/settings.json`.
@@ -39,7 +43,7 @@ This section was verified against `main` at commit `c8baa79` on 2026-09-24.
 
 ### Gemini CLI
 
-- **On.** Run `scripts/setup-gemini-interactive.sh` and answer `yes` to
+- **On.** Run `node scripts/setup-gemini-interactive.ts` and answer `yes` to
   *Capture token usage for Gemini CLI? (opt-in, MemPalace not required)*
   (default `no`). It changes `~/.gemini/settings.json`.
 - **Off.** Run it again and answer `remove` to *Usage capture is registered
@@ -55,7 +59,7 @@ This section was verified against `main` at commit `c8baa79` on 2026-09-24.
 
 ### Copilot CLI
 
-- **On.** Run `scripts/setup-copilot-interactive.sh` and answer `yes` to
+- **On.** Run `node scripts/setup-copilot-interactive.ts` and answer `yes` to
   *Capture token usage for Copilot CLI? (opt-in, MemPalace not required)*
   (default `no`). It changes `~/.copilot/hooks/copilot-transcript-hooks.json`,
   the file session recording also uses.
@@ -66,7 +70,7 @@ This section was verified against `main` at commit `c8baa79` on 2026-09-24.
 
 ### Antigravity CLI
 
-- **On.** Run `scripts/setup-antigravity-interactive.sh` and answer `yes` to
+- **On.** Run `node scripts/setup-antigravity-interactive.ts` and answer `yes` to
   *Enable Antigravity CLI usage capture (statusline channel, opt-in)?*
   (default `no`). It wires capture into the `statusLine.command` setting of
   `~/.gemini/antigravity-cli/settings.json`, and only when that setting is
@@ -97,7 +101,9 @@ Two writers do not depend on your answers above:
 - **Session-start declarations.** The deployed session-start rules tell an
   agent that establishes or resumes a task-handoff drawer in MemPalace to
   record the task it works on, with
-  `scripts/usage-task.sh set --channel protocol`. Each such session writes one
+  `node scripts/usage-task.ts set --channel protocol`. Run
+  `node scripts/lib/node-floor-guard.js` first on an unverified Node.js: the
+  commands need Node.js 24 or later. Each such session writes one
   declaration (a task key) under the usage root, even with capture off.
   `main` offers no switch that stops it. See
   [Session-start protocol recording](usage-attribution.md#session-start-protocol-recording).

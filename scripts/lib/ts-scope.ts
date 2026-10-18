@@ -7,7 +7,7 @@
 // four built-copy trees (spec 0238 R2, R12).
 
 import { spawnSync } from "node:child_process";
-import { closeSync, lstatSync, openSync, readSync } from "node:fs";
+import { closeSync, lstatSync, openSync, readFileSync, readSync } from "node:fs";
 import path from "node:path";
 
 /** Generated built-copy trees, excluded from every check (spec 0238 R2, R12). */
@@ -103,6 +103,26 @@ export function trackedTsFiles(): string[] {
     .sort();
 }
 
+/**
+ * Tracked JavaScript files admitted by `ci/js-exceptions.txt` (the Node.js floor guard and tool
+ * configuration), sorted. `oxfmt --check` covers them (spec 0266 R16): none is exempt, because no
+ * admitted file belongs to a third-party tool that defines its own formatting.
+ */
+export function trackedAdmittedJsFiles(): string[] {
+  let text = "";
+  try {
+    text = readFileSync(path.join(repoRoot(), "ci", "js-exceptions.txt"), "utf8");
+  } catch {
+    return [];
+  }
+  const listed = text
+    .split(/\r?\n/)
+    .filter((l) => l !== "" && !l.startsWith("#"))
+    .map((l) => l.split("\t")[0] ?? "");
+  const tracked = new Set(trackedFiles());
+  return listed.filter((p) => tracked.has(p) && isJsFile(p) && !inBuiltTree(p)).sort();
+}
+
 function verifies(ref: string): boolean {
   return git(["rev-parse", "--verify", "--quiet", `${ref}^{commit}`]).status === 0;
 }
@@ -135,7 +155,7 @@ function mergeBaseOf(ref: string): BaseRef {
 
 /**
  * The base the diff arms compare against, normalized as
- * scripts/lib/base-ref-resolve.sh does. An explicit `BASE_REF` that resolves
+ * the retired scripts/lib/base-ref-resolve.sh did. An explicit `BASE_REF` that resolves
  * nowhere, even after one `git fetch origin <x>`, is a wiring fault. With no
  * `BASE_REF`, the default `<remote>/main` (then `/develop`) is used when it
  * verifies; otherwise `null` — the diff arms are skipped, not failed.

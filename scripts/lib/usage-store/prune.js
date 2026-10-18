@@ -209,7 +209,7 @@ function unprune(cli, per) {
   console.log(
     `Unpruned ${cli}/${per}: writability restored. This does NOT restore deleted entries, sidecars, or ` +
       `drawers, and does NOT recover records rejected while the period was pruned — 0206's cursors have ` +
-      `already advanced past them. Recovery: bash scripts/usage-backfill.sh --reset-cursors.`
+      `already advanced past them. Recovery: node scripts/usage-backfill.ts --reset-cursors.`
   );
 }
 
@@ -226,7 +226,7 @@ not confirm the drawer's deletion.
 --unprune restores writability to a pruned period ONLY. It does not restore
 deleted entries, sidecars, or drawers, and does not recover records
 rejected while the period was pruned — recover those with:
-  bash scripts/usage-backfill.sh --reset-cursors
+  node scripts/usage-backfill.ts --reset-cursors
 
 To remove all usage data, follow one of the two procedures in
 docs/usage-organization.md → "Removing usage data": purge the data

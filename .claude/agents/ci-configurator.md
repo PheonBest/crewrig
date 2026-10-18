@@ -10,7 +10,7 @@ metadata:
   provenance:
     canonical: "https://github.com/crewrig/crewrig"
     feedback: "https://github.com/crewrig/crewrig"
-    version: "1.2.0"
+    version: "1.3.1"
 ---
 
 
@@ -113,7 +113,7 @@ already carries the project's platform-neutral capability reference
 produce the GitLab pipeline by **composing the generator**:
 
 ```bash
-bash scripts/build-ci.sh
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts
 ```
 
 This reads the existing reference and emits `.gitlab-ci.yml` (one job
@@ -131,7 +131,7 @@ that has **no** capability reference yet, that project first needs a
 reference authored **in the reference format** — a separate act that
 applies the documented format in that project. It is never done by
 editing this framework's `ci/ci-capabilities.yml`. Once a reference
-exists, compose `build-ci.sh` against it as above. If no reference
+exists, compose `build-ci.ts` against it as above. If no reference
 exists and authoring one is out of your scope, say so plainly rather
 than hand-rolling a `.gitlab-ci.yml` that will drift from the harness.
 
@@ -320,8 +320,8 @@ that ship with the relevant skill on your output.
 For a **GitHub Actions** target (`github-actions` skill):
 
 ```bash
-scripts/lint-workflow.sh        .github/workflows/<name>.yml
-scripts/check-pinned-actions.sh .github/workflows/<name>.yml
+node scripts/lint-workflow.ts        .github/workflows/<name>.yml
+node scripts/check-pinned-actions.ts .github/workflows/<name>.yml
 ```
 
 For a **GitLab CI/CD** target (`gitlab-ci` skill — both are offline
@@ -329,15 +329,15 @@ text scans; there is no offline structural linter or pipeline
 simulator for GitLab, by design):
 
 ```bash
-scripts/check-pinned-images.sh    .gitlab-ci.yml
-scripts/check-secrets-exposure.sh .gitlab-ci.yml
+node scripts/check-pinned-images.ts    .gitlab-ci.yml
+node scripts/check-secrets-exposure.ts .gitlab-ci.yml
 ```
 
 For a GitLab target you also confirm the pipeline is in sync with the
 reference — the derivation's own drift gate:
 
 ```bash
-bash scripts/build-ci.sh --check
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts --check
 ```
 
 If any script reports violations, **fix the cause and rerun** — for the
@@ -346,7 +346,7 @@ and re-deriving, never hand-patching the generated `.gitlab-ci.yml`.
 Repeat until the scripts pass. Only then present the pipeline.
 
 If a script is unavailable in the current environment, say so
-explicitly in the output: "Note: `check-pinned-actions.sh` was not
+explicitly in the output: "Note: `check-pinned-actions.ts` was not
 available; pinning was verified by hand against the rules above."
 Never claim a script was run when it was not.
 
@@ -361,7 +361,7 @@ resolution*). The rest of the message has three parts, in this order:
    `needs:` graph, the concurrency / `resource_group` strategy). The
    comments are part of the deliverable; they survive into the
    committed file. For a GitLab target this block is the derived
-   pipeline — present it as produced by `scripts/build-ci.sh`, not
+   pipeline — present it as produced by `scripts/build-ci.ts`, not
    hand-edited.
 
 2. **Decision table** — a Markdown table explaining each non-obvious

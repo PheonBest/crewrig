@@ -11,7 +11,7 @@ metadata:
   provenance:
     canonical: "${CANONICAL_REPO}"
     feedback: "${CANONICAL_REPO}"
-    version: "1.3.1"
+    version: "1.3.3"
 claude:
   allowed-tools:
     - Read
@@ -158,8 +158,8 @@ the same in-commit mechanic.
 
 Text-only tooling silently drops file metadata. Verify before pushing:
 
-- If the diff touches shell scripts, confirm executable bits survived
-  the round-trip: `git ls-files --stage -- '*.sh'` must show `100755`,
+- If the diff touches executable files, confirm executable bits survived
+  the round-trip: `git ls-files --stage -- <file>` must show `100755`,
   not `100644`. Any text-only file-write path can drop the exec bit,
   whereas native `git add`/`git push` preserve it. Restore a lost bit
   with `git update-index --chmod=+x <file>` and amend before pushing.
@@ -190,7 +190,7 @@ that applies to any PR you compose whose diff touches a
 `artifacts/core/skills/*/SKILL.md` or
 `artifacts/core/agents/*/AGENT.md` source. The PR MUST bump
 `provenance.version` in the same diff. The rule is enforced by
-`scripts/check-skill-versions.sh` in CI (and locally via
+`scripts/check-skill-versions.ts` in CI (and locally via
 `task check-skill-versions`).
 
 SemVer applies:

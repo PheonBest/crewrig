@@ -1,0 +1,482 @@
+{
+  "real: hello-world": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "subjects: every subject": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "subjects: empty object": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "subjects: name and version only": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: PreToolUse with matcher": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: PreToolUse without matcher": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: UserPromptSubmit without matcher": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: matcher on an event that accepts none": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: unknown event": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: unknown matcher class": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: empty matcher string": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: null matcher": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: numeric matcher": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: missing id": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: missing event": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: missing command": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: entry is empty object": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: id outside the pattern": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: id with allowed punctuation": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: numeric id": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: section is an object": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: section is a string": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: section is null": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: empty array": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: entry is a string": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: root token twice": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: bare root token at the end": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: command with a trailing line feed": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: two entries sharing an event": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: no name (antigravity id)": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: numeric name": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "hooks: unicode command": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: stdio": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: stdio explicit transport": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: stdio null transport": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: http": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: sse": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: stdio missing command": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: stdio empty command": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: http missing url": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: sse missing url": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: stdio inadmissible key": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: http inadmissible key": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: sse inadmissible key": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: unknown transport": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: reserved name mempalace": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: reserved name sequentialthinking": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: root token in command": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: root token in args and cwd": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: other token in command": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: other token in args": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: path token in env": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: gemini slash token in env": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: path token in headers": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: ordinary interpolation in env": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: root token in url": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: two servers, sorted by name": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: section is an array": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: section is a string": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: section is null": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: section is empty": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: entry is null": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: entry is a string": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: falsy optional members": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: args is not an array": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "mcp: no name, reserved name": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "percli: admissible keys": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "percli: inadmissible key per CLI": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "percli: sections null, false and string": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "percli: section is an array": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "percli: section is a number": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "percli: empty key": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "percli: unicode key order": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "legacy: components with subjects": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "legacy: components empty object": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "legacy: components null": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "legacy: components string": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "legacy: claude.skills": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "legacy: every retired per-CLI key": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  },
+  "legacy: components and claude.skills": {
+    "gemini": "true",
+    "claude": "true",
+    "copilot": "true",
+    "antigravity": "true"
+  }
+}

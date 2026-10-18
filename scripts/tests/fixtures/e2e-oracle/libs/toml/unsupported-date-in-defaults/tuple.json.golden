@@ -1,0 +1,13 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[a]\nd = 1979-05-27\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/unsupported-date-in-defaults",
+  "rc": 1,
+  "stats": {},
+  "stderr": "Error: bad file 'defaults.toml': unsupported type LocalDate\n",
+  "stdout": ""
+}

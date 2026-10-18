@@ -1,0 +1,1 @@
+Error: a fresh --target gemini render failed for 'hello-xtra' — refusing to publish a release artifact for a tree that does not build.

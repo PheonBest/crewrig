@@ -197,9 +197,15 @@ function stateDir(cli) {
   return path.join(usageRoot(), 'state', cli);
 }
 
+// A child's stderr must never reach the hook's own: execFileSync inherits it
+// by default, and hooks/usage-capture.ts is run by the CLI directly, with no
+// shell redirection around it (spec 0243 R5) — a `<bin> --version` that warns
+// (a Node.js-based CLI printing a DeprecationWarning) would otherwise leak.
+const QUIET_CHILD = ['ignore', 'pipe', 'ignore'];
+
 function resolveBinaryPath(binary) {
   try {
-    const out = execFileSync('/bin/sh', ['-c', `command -v -- ${binary}`], { encoding: 'utf8' }).trim();
+    const out = execFileSync('/bin/sh', ['-c', `command -v -- ${binary}`], { encoding: 'utf8', stdio: QUIET_CHILD }).trim();
     return out || null;
   } catch (err) {
     return null;
@@ -250,7 +256,7 @@ function cliVersionFor(cli, { binary, versionArgs = ['--version'], parse } = {})
 
   let raw;
   try {
-    raw = execFileSync(resolvedPath, versionArgs, { encoding: 'utf8', timeout: 5000 }).trim();
+    raw = execFileSync(resolvedPath, versionArgs, { encoding: 'utf8', timeout: 5000, stdio: QUIET_CHILD }).trim();
   } catch (err) {
     return cached ? cached.version : null;
   }
@@ -274,7 +280,7 @@ function isNonNegativeNumber(v) {
 // schemas/usage-record/v1.schema.json (ajv is a devDependency, unavailable
 // in a hook's own process) — but sink.js's own header states the invariant
 // this function MUST uphold regardless: it never passes a record the merged
-// schema rejects (scripts/tests/test-usage-capture.sh proves it against
+// schema rejects (scripts/tests/usage-capture-headless.test.ts proves it against
 // every scripts/tests/fixtures/usage-records/mutants/*.json and
 // derivation/recordid-mismatch.json). Returns { ok: true } or
 // { ok: false, reason }.

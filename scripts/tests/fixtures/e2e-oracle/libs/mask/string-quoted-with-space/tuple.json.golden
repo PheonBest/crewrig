@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "mask/string-quoted-with-space",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "OLLAMA_API_KEY=*** ollama serve"
+}

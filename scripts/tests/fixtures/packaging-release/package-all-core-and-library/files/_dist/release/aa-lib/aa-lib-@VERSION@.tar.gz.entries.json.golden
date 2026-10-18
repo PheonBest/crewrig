@@ -1,0 +1,149 @@
+{
+  "entries": [
+    {
+      "path": "CHANGELOG.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "b584f32c7923821c74719972aab8427fd6d7663c2ebf75c3409b711c0bf9781c"
+    },
+    {
+      "path": "CONTEXT.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "63581c2852b20bd71d426fcf333706a853e1b63baefe53dfdab6434eb73379ef"
+    },
+    {
+      "path": "GEMINI.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "774318c969afcf8446203ded340ed528b60cf92adaecf940d53c198e91e8b08b"
+    },
+    {
+      "path": "README.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "688839397412e1d4412b5da6964a8d27f8565b8240f5e31522837e8c7b056c5d"
+    },
+    {
+      "path": "accepted-gaps.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "1087904284a9566d124c6c8b499ce0eb1c68bb8aaeaddedb4cd3e404637b4026"
+    },
+    {
+      "path": "agents",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "agents/reference-guide",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "agents/reference-guide/AGENT.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "57ea1bc11609f8ad64945cb389cc6b7b595271392051e8ebed4af89fd2e06fa3"
+    },
+    {
+      "path": "commands",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "commands/hello.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "7118ec7d98d5b6b329c027dfc75dc7aa447ab646a03fef76e1ec3e77aca94727"
+    },
+    {
+      "path": "commands/hello.toml",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "240fbfd2ec0780633253e4bc8a019e39cd95cad5a6eb9d4e0a68a3b83c42ec81"
+    },
+    {
+      "path": "extension.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "4cd5d771298ad747f3ddc569c01dca58013fe3a66a5e05a46d06af848637a786"
+    },
+    {
+      "path": "gemini-extension.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "7ee5caafbc56f1a7d9c3dfcd9e0909296468efafdc77426e63bf8a0cd7d1aa37"
+    },
+    {
+      "path": "hooks",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "hooks/hooks.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "a043ab08045a30ac110d0dd24dce7befa94d74a0ade76b6c40b03749b9a7ed37"
+    },
+    {
+      "path": "hooks/prompt-logger.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "a6633c0b85b11d4d9e702191b7830d4eaaad176207b63bafd80ca686e83b9175"
+    },
+    {
+      "path": "hooks/shell-logger.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "c26b77e3a5e932981b9528b3aa92b70ab6465b3424cbe80a52c7e9a6727e1e8c"
+    },
+    {
+      "path": "package.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "8ad10385b06958b614f81de04652fc93b1ff308c188cfb021d307ef731c09137"
+    },
+    {
+      "path": "skills",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "skills/greeter",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "skills/greeter/SKILL.md",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "1d0dfb4bf6daaf991ad97f38c8dca8f6a318b6f8e6800332d4821299a14004b8"
+    },
+    {
+      "path": "src",
+      "type": "dir",
+      "modeClass": "dir",
+      "sha256": ""
+    },
+    {
+      "path": "src/index.ts",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "a2860c58cf222fb81487b1a55a7d8147f98a447026c0cf03ce7fdc7b2ac1f96b"
+    },
+    {
+      "path": "tsconfig.json",
+      "type": "file",
+      "modeClass": "file",
+      "sha256": "be00e63686a93f4aedb0af19b865a58f0c33d4831422da7a725f7d761b7b34c5"
+    }
+  ],
+  "stream": "5a6291516575b88b639a35c6eb73d5d093bc799cb67d8182a12b2143b43cd7dc"
+}

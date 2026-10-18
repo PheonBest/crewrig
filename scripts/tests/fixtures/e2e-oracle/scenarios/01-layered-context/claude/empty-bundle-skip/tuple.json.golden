@@ -1,0 +1,15 @@
+{
+  "id": "01-layered-context/claude/empty-bundle-skip",
+  "exit": 0,
+  "scenarioTap": "1..0 # SKIP no auth/rules dir at <E2E_HOME>/claude (run `task e2e:auth:claude`)\n",
+  "dockerCommands": [],
+  "files": {
+    "claude/01-layered-context/exit": "78\n",
+    "claude/01-layered-context/scenario.tap": "1..0 # SKIP no auth/rules dir at <E2E_HOME>/claude (run `task e2e:auth:claude`)\n",
+    "claude/01-layered-context/stderr": "",
+    "claude/01-layered-context/stdout": "SKIP - claude/01-layered-context: no auth/rules dir at <E2E_HOME>/claude (run `task e2e:auth:claude`)\n",
+    "run.tap": "TAP version 13\nok 1 - claude/01-layered-context # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - claude/01-layered-context # SKIP scenario reported skip (exit 78)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[claude] auth ready: ANTHROPIC_API_KEY set in host shell\n"
+}

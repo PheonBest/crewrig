@@ -1,0 +1,11 @@
+{
+  "files": {},
+  "id": "auth-common/ensure-bundle-dir-no-home-root",
+  "rc": 0,
+  "stats": {
+    "a/b/.crewrig-e2e": "0700",
+    "a/b/.crewrig-e2e/gemini": "0700"
+  },
+  "stderr": "",
+  "stdout": ""
+}

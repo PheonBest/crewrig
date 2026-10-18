@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "structural/json-shape-absent-file",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_json_shape missing.json . {}\n#   expected: file exists\n#   actual:   no such file: missing.json\n",
+  "stdout": ""
+}

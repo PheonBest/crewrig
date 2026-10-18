@@ -25,7 +25,8 @@
 //      BEFORE @semantic-release/git commits the file — a future template change
 //      can no longer break `lint-markdown` on `main` silently.
 //
-// scripts/lib/monorepo-release-lib.sh references this file by absolute path in
+// The release driver (scripts/lib/monorepo-release/, which replaced the shell
+// library monorepo-release-lib.sh) references this file by absolute path in
 // place of the bare "@semantic-release/changelog" package name.
 
 import { createRequire } from "node:module";

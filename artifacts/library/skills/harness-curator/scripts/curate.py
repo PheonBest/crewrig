@@ -9,7 +9,7 @@ JSON document on stdout.
 Read-only against MemPalace. Writes — if ever needed — flow through MCP on
 the agent side, not from this script.
 
-Output JSON schema (stable, depended on by ``scripts/harness-curate.sh``):
+Output JSON schema (stable, depended on by ``scripts/curate.ts``):
 
     {
       "stats": {
@@ -101,7 +101,7 @@ _DEEP_HEURISTICS: Dict[str, str] = {
     "try again":     r"try again",
 }
 
-# Keep the page size aligned with prune-transcripts.sh: 100 is the sweet spot
+# Keep the page size aligned with prune-transcripts.ts: 100 is the sweet spot
 # between MCP roundtrips and per-call payload size.
 PAGE_SIZE = 100
 MAX_TOTAL_DRAWERS = 50000  # safety cap, identical rationale to prune script

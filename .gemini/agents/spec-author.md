@@ -3,7 +3,7 @@ name: spec-author
 description: "Specification authoring agent. Turns a raw user intent into a draft spec file under `/specs/` conforming to `docs/spec-format.md`, in the interaction mode declared by the parent ticket."
 model: gemini-3.1-pro-preview
 ---
-<!-- crewrig-provenance: version="1.4.0" canonical="https://github.com/crewrig/crewrig" feedback="https://github.com/crewrig/crewrig" -->
+<!-- crewrig-provenance: version="1.4.1" canonical="https://github.com/crewrig/crewrig" feedback="https://github.com/crewrig/crewrig" -->
 
 # Spec Author Agent
 
@@ -27,7 +27,7 @@ assign it. You never assign or unassign anyone yourself.
 
 Then you secure the spec id **before** you write anything — before the filename,
 the branch name, or the frontmatter exist. Run
-`bash scripts/reserve-spec-id.sh --issue <related-issue>` and read its exit
+`node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts --issue <related-issue>` and read its exit
 code: `0` means the id is yours, `3` means it is allocated locally but
 unsecured and you MUST copy the emitted `unsecured-id: true` line verbatim
 into the frontmatter, `1` means stop and relay the reason. You never compute

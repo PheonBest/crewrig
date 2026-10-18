@@ -272,9 +272,10 @@ system-context store*.
    of the recovery itself, not as a chore to do "after the work".
 
    **Also record the session's usage declaration** before any task work
-   begins (spec 0208 R3): `bash scripts/usage-task.sh set --task-key
-   <handoff_key> --channel protocol`; `handoff_key` is the bare decimal
-   ticket number, identical across every CLI.
+   begins (spec 0208 R3): run the floor guard `node scripts/lib/node-floor-guard.js`,
+   then `node scripts/usage-task.ts set --task-key <handoff_key> --channel
+   protocol`;
+   `handoff_key` is the bare decimal ticket number, identical across every CLI.
 
 **Reviewer-seat exemption.** A seated pass — an agent instantiated per
 `docs/reviewer-seat.md` → *Instantiating a seated pass*, occupying the
@@ -513,7 +514,7 @@ rare or transient — it is permanent and total**, because the daemon holds the
 exclusive palace lease while the stdio process is refused on every mutating
 call. **Whenever an agent or operator encounters error `-32001` or a write-lock
 refusal, the first diagnostic step SHALL be running `task mempalace:status`
-(`bash scripts/status-mcp-server.sh`)** to identify whether the machine is in a
+(`node scripts/status-mcp-server.ts`)** to identify whether the machine is in a
 half-converted state or a peer collision. The `harness-report` procedure carries
 the operational fallback for this case regardless (file the friction directly as a
 `harness-feedback`-labeled issue on the offender's canonical repository,

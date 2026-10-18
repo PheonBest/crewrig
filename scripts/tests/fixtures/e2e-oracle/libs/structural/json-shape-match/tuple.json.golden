@@ -1,0 +1,13 @@
+{
+  "files": {
+    "one.json": {
+      "content": "{\"a\":1}\n",
+      "mode": "0644"
+    }
+  },
+  "id": "structural/json-shape-match",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": ""
+}

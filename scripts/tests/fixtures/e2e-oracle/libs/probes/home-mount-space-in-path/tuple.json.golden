@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "probes/home-mount-space-in-path",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "/tmp/a b/home:/home/agent/.copilot:rw\n"
+}

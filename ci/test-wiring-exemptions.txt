@@ -1,12 +1,15 @@
-# test-wiring-exemptions.txt — allowlist of scripts/tests/test-*.sh scripts that
-# are deliberately NOT executed by any CI workflow (spec 0076).
+# test-wiring-exemptions.txt — allowlist of legacy-format test scripts under
+# scripts/tests/ (named test-<name>, extension included) that are deliberately
+# NOT executed by any CI workflow (spec 0076). The migration to TypeScript
+# retired every such script, so no entry remains; the file stays because the
+# guard reads it.
 #
 # Format, one entry per line:
 #
-#   <test-name.sh><TAB><human-readable reason>
+#   <test-script-name><TAB><human-readable reason>
 #
 # Blank lines and lines starting with '#' are ignored. Enforced by
-# scripts/check-test-wiring.sh:
+# scripts/check-test-wiring.ts:
 #   - every entry MUST carry a reason (an empty reason fails the check, R3);
 #   - every entry MUST name a test that still exists under scripts/tests/
 #     (a stale entry fails the check, R5).
@@ -17,4 +20,3 @@
 # the fact that the underlying bug is resolved.
 
 # --- Environment-dependent (cannot run in the hermetic check-components job) ---
-test-e2e-auth-scripts.sh	exercises scripts/e2e/auth-copilot.sh, which e2e_die's when ~/.copilot/instructions/ is absent — a `task setup:copilot` side-effect present on a developer host but not in a clean CI HOME; cannot pass in the hermetic check-components job. See follow-up note from #534 on whether the guidance path should print before that precondition.

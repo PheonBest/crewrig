@@ -126,7 +126,7 @@ time of this proof — no commit had yet landed on this branch), then:
 
 **Conclusion: all four targets' outputs are unchanged relative to the
 pre-change render.** The permanent guard,
-`scripts/tests/test-extension-render-conformance.sh`, pins the produced FILE
+`scripts/tests/extension-render-conformance.test.ts`, pins the produced FILE
 SET for each target (a heredoc'd, human-readable expected-path list per
 target) rather than a content digest — this one-time proof is what
 establishes the content-level baseline the permanent guard does not itself
@@ -147,7 +147,8 @@ per the project's append-only convention:
   Gemini-specific token directly; `hello-world` now declares
   `${extensionRoot}/dist/index.js`, and the render rewrites it to
   `${extensionPath}/dist/index.js` for Gemini specifically (see
-  `ext_mcp_native` in `scripts/lib/extension-manifest.sh`) — the delivered
+  `ext_mcp_native`, formerly in the retired shell library
+  `scripts/lib/extension-manifest.sh`, now `scripts/lib/extension/mcp-delivery.ts`) — the delivered
   Gemini output is unchanged, only the AUTHORING vocabulary moved.
 - **"`scripts/build-extension.sh` passes a declared `args` value through to
   the built manifest verbatim — the render does not itself resolve or

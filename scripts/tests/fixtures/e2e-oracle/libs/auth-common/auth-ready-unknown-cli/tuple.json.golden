@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "auth-common/auth-ready-unknown-cli",
+  "rc": 1,
+  "stats": {},
+  "stderr": "ERROR: e2e_auth_ready: unknown CLI 'nonesuch' (expected: claude|gemini|copilot)\n",
+  "stdout": ""
+}

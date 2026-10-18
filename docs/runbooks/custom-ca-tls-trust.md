@@ -46,8 +46,9 @@ export UV_SYSTEM_CERTS=true
 `UV_NATIVE_TLS` (now deprecated), and a uv that predates both still honours
 `SSL_CERT_FILE`.
 
-`setup-*-interactive.sh` offers to write exactly these lines to
-`~/.crewrig/tls-env.sh` for you (see *Automated delegation* below).
+The `setup-<cli>-interactive.ts` entries offer to
+write exactly these lines to `~/.crewrig/tls-env.sh` for you (see *Automated
+delegation* below).
 
 ## Per-tool trust configuration
 
@@ -104,17 +105,39 @@ Two runtime paths are launched **later**, in a fresh process that is not a
 child of your interactive shell, so the framework wires trust into them
 explicitly (without editing your profile):
 
-- **MCP servers** are registered through `scripts/lib/tls-exec.sh`, a small
-  wrapper that sources `~/.crewrig/tls-env.sh` (if present) and then `exec`s the
-  real server command. A missing file makes the wrapper a transparent no-op.
+- **MCP servers** are registered through `node <repo>/scripts/tls-exec.ts`, a
+  small wrapper that reads `~/.crewrig/tls-env.sh` (if present, parsed and never
+  executed) and then runs the real server command with those variables added,
+  exiting with its status. A missing file makes the wrapper a transparent no-op.
+  Setup rewrites a legacy registration to this form on its next run.
+  The retired form was `bash <repo>/scripts/lib/tls-exec.sh ...`, formerly registered.
+  The opt-in Playwright MCP server (`task setup:playwright-mcp`, spec 0245) is
+  registered the same way on all four assistants; the task requires
+  Node.js >= 24. If you ran `task setup:playwright-mcp` before it routed
+  through the wrapper, re-run it from the checkout you keep: it converges the
+  old registration in place (with a timestamped backup) and leaves a
+  customised `playwright` entry untouched.
 - **The supervised ChromaDB daemon** (launchd on macOS, systemd-user on Linux)
   runs its `ProgramArguments` / `ExecStart` through the same wrapper, so its
   embedding-model fetch on first indexing inherits the trust.
 
-`scripts/start-chroma-server.sh`, `hooks/mempalace-transcript.sh`, and
-`scripts/prune-transcripts.sh` source the managed file at entry for the same
-reason. The standalone `task install-mempalace` runs its `pipx install` through
-`tls-exec.sh` too, so a MemPalace upgrade outside setup inherits the trust.
+`scripts/start-chroma-server.ts` applies the managed file to the daemon's environment at entry, and
+`scripts/prune-transcripts.ts` reads it without running it (`readTlsEnv`, spec
+0253 R18) and hands its variables to every child it spawns, for the same
+reason. The standalone
+`task install-mempalace` runs its `pipx install` through `tls-exec.ts` too, so
+a MemPalace upgrade outside setup inherits the trust.
+
+The session-recording hook, `hooks/mempalace-transcript.ts` (spec 0247),
+**reads** the managed file through `scripts/lib/tls-env.ts` and never
+executes or sources it. The reader accepts only the format setup writes:
+comment lines, blank lines and `export NAME=VALUE` lines whose value is a
+`printf %q` word, with LF or CRLF line endings. It applies the values to the
+environment of the one Git process the hook spawns. The hook's own request is
+plain HTTP to the local MemPalace daemon, so the trust never changes it. A
+malformed file, one holding any other line, is ignored as a whole: the hook
+writes one line on standard error naming the file and the first such line
+number, and records anyway.
 
 ## Impact analysis — framework-triggered network operations
 
@@ -124,7 +147,7 @@ require custom-CA trust behind an intercepting gateway:
 - **Package/dependency install:** `pipx install mempalace`,
   `pipx inject mempalace chromadb`, and any `npx -y <pkg>` MCP server (the first
   launch fetches the package from the npm registry).
-- **Build & CI phases** (`scripts/build-ci.sh` output): `wget` of the `yq`
+- **Build & CI phases** (`scripts/build-ci.ts` output): `wget` of the `yq`
   binary from GitHub, `curl https://taskfile.dev/install.sh`,
   `npm install -g markdownlint-cli`, and `apt-get … ca-certificates`.
 - **Runtime asset/model downloads:** the ChromaDB/MemPalace embedding model,
@@ -142,11 +165,11 @@ require custom-CA trust behind an intercepting gateway:
   Keychain).
 - **`npx` fails but `curl` works:** Node ignores the OS store — it needs
   `NODE_EXTRA_CA_CERTS` specifically. Confirm the variable is exported in the
-  process that launches the MCP server (the `tls-exec.sh` wrapper handles this
+  process that launches the MCP server (the `tls-exec.ts` wrapper handles this
   when `~/.crewrig/tls-env.sh` exists).
 - **The daemon's embedding fetch fails at runtime though setup succeeded:**
   re-run setup so the launchd/systemd unit is re-materialised through
-  `tls-exec.sh`, and confirm `~/.crewrig/tls-env.sh` exists.
+  `tls-exec.ts`, and confirm `~/.crewrig/tls-env.sh` exists.
 - **git rejects the private forge:** set `GIT_SSL_CAINFO` (env) or
   `git config --global http.sslCAInfo <CA>`; never `http.sslVerify false`.
 - **The CA path is right but still `UnknownIssuer`:** the bundle may be missing

@@ -680,7 +680,7 @@ deploy:prod:
 ## Edge cases and quirks
 
 - **GENERATED pipeline.** In this repository, `.gitlab-ci.yml` is
-  **derived** by `scripts/build-ci.sh` from `ci/ci-capabilities.yml` — it
+  **derived** by `scripts/build-ci.ts` from `ci/ci-capabilities.yml` — it
   is not hand-authored. Editing the generated `.gitlab-ci.yml` directly is
   pointless; the next build overwrites it. Change the capability reference
   and regenerate. See `docs/ci-reference-format.md` for the source-of-truth

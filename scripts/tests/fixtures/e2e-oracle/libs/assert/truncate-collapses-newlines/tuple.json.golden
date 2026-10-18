@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "assert/truncate-collapses-newlines",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "a b c"
+}

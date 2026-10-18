@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "probes/c-guidance-ignored-no-control",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "IGNORED|session-or-default-model-selected\n"
+}

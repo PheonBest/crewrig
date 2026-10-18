@@ -24,7 +24,7 @@ For an extension component the `version` lives in the provenance carrier
 (the first-body-line `<!-- crewrig-provenance: version="…" … -->` HTML
 comment per spec 0043), NOT in frontmatter — Gemini CLI 0.42.0+ rejects
 non-`name`/`description` frontmatter keys on the in-place source. The bump
-is enforced by `scripts/check-extension-version-bump.sh` (spec 0044), which
+is enforced by `scripts/check-extension-version-bump.ts` (spec 0044), which
 compares the carrier version against the base ref. `extensions/org` is
 adopter-owned and exempt.
 
@@ -43,7 +43,7 @@ An extension's `extension.json`/`package.json` `version` (the field spec
 to the published release artifact — the artifact's own rendered
 `gemini-extension.json` must declare the same version the release
 declares) is a SEPARATE, whole-extension version, written by
-`scripts/monorepo-release.sh` at release time via `@semantic-release/exec`,
-not hand-bumped and not covered by `check-extension-version-bump.sh`. See
+`scripts/monorepo-release.ts` at release time via `@semantic-release/exec`,
+not hand-bumped and not covered by `check-extension-version-bump.ts`. See
 `docs/cli-matrix.md` row 17 for the manifest lockstep and row 13/14 for
 where each version write happens.

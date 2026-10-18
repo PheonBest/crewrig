@@ -1,0 +1,13 @@
+{
+  "files": {
+    "hay": {
+      "content": "alpha\nbeta\n",
+      "mode": "0644"
+    }
+  },
+  "id": "assert/file-contains-pass",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": ""
+}

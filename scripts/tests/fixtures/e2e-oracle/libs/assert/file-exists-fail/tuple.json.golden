@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "assert/file-exists-fail",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_file_exists absent\n#   expected: path exists\n#   actual:   no such file or directory: absent\n",
+  "stdout": ""
+}

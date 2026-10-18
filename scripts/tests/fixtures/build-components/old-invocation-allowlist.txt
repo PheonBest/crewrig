@@ -1,0 +1,17 @@
+# old-invocation-allowlist.txt — files that may still name the old build invocation (spec 0250
+# R31, delta-01). scripts/tests/build-components-references.test.ts fails on any other tracked
+# or untracked text file that names it as an instruction.
+#
+# Format: one repo-relative path per line; an entry ending in `/` covers every file below that
+# directory. Every entry carries a reason as the `#` comment line directly above it. An entry
+# that no longer matches a file with a hit, or that appears twice, fails the suite.
+
+# Spec text and delta-specs record the invocation as it was specified; merged specs are history.
+specs/
+
+# Spec 0255 R5/R6 (row F2): a comment of the overlay twin still names the retired shim it was ported from.
+scripts/lib/component-overlay.ts
+
+# A recorded Copilot CLI integration-test log: it documents the commands as they were run and
+# is history, not an instruction.
+tests/copilot-cli-integration.md

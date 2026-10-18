@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // fake-mempalace-mcp.js — a hermetic stand-in for the MemPalace MCP HTTP
-// daemon, used ONLY by scripts/tests/test-usage-storage-mirror.sh (spec 0207
+// daemon, used ONLY by scripts/tests/usage-mirror-*.test.ts (spec 0207
 // R23, PLAN v3 step 11). Never the real daemon at 127.0.0.1:41893 — the test
 // suite always binds this fixture to a caller-supplied ephemeral port.
 //
 // Conforms to the readiness/teardown precedent of
-// scripts/tests/test-mcp-daemon.sh l. 775-811: a `/healthz` endpoint the
+// the readiness/teardown of the former test-mcp-daemon.sh (spec 0263) l. 775-811: a `/healthz` endpoint the
 // caller polls at 100ms up to 5s, and a clean process the caller kills on
 // exit. Answers exactly the two tools this ticket's mirror.js calls —
 // `mempalace_add_drawer` and `mempalace_delete_by_source` — over a single

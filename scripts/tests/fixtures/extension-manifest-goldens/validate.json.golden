@@ -1,0 +1,196 @@
+{
+  "real: hello-world": [],
+  "subjects: every subject": [],
+  "subjects: empty object": [],
+  "subjects: name and version only": [],
+  "hooks: PreToolUse with matcher": [],
+  "hooks: PreToolUse without matcher": [],
+  "hooks: UserPromptSubmit without matcher": [],
+  "hooks: matcher on an event that accepts none": [
+    "VALIDATION-ERROR: <M> — hooks[0] (id 'p') declares a matcher on event 'UserPromptSubmit', which accepts none"
+  ],
+  "hooks: unknown event": [
+    "VALIDATION-ERROR: <M> — hooks[0] (id 'a') declares event 'PostToolUse', outside the admissible set {PreToolUse, UserPromptSubmit}"
+  ],
+  "hooks: unknown matcher class": [
+    "VALIDATION-ERROR: <M> — hooks[0] (id 'a') declares matcher 'zsh', outside the admissible set {shell}"
+  ],
+  "hooks: empty matcher string": [
+    "VALIDATION-ERROR: <M> — hooks[0] (id 'a') declares matcher '', outside the admissible set {shell}"
+  ],
+  "hooks: null matcher": [],
+  "hooks: numeric matcher": [
+    "VALIDATION-ERROR: <M> — hooks[0] (id 'a') declares matcher '5', outside the admissible set {shell}"
+  ],
+  "hooks: missing id": [
+    "VALIDATION-ERROR: <M> — hooks[0] is missing required field 'id'"
+  ],
+  "hooks: missing event": [
+    "VALIDATION-ERROR: <M> — hooks[0] (id 'a') is missing required field 'event'"
+  ],
+  "hooks: missing command": [
+    "VALIDATION-ERROR: <M> — hooks[0] (id 'a') is missing required field 'command'"
+  ],
+  "hooks: entry is empty object": [
+    "VALIDATION-ERROR: <M> — hooks[0] is missing required field 'id'",
+    "VALIDATION-ERROR: <M> — hooks[0] (id '') is missing required field 'event'",
+    "VALIDATION-ERROR: <M> — hooks[0] (id '') is missing required field 'command'"
+  ],
+  "hooks: id outside the pattern": [
+    "VALIDATION-ERROR: <M> — hooks[0].id 'bad id' must match ^[A-Za-z0-9._-]+$"
+  ],
+  "hooks: id with allowed punctuation": [],
+  "hooks: numeric id": [],
+  "hooks: section is an object": [
+    "VALIDATION-ERROR: <M> — the generic 'hooks' section must be an array of hook entries"
+  ],
+  "hooks: section is a string": [
+    "VALIDATION-ERROR: <M> — the generic 'hooks' section must be an array of hook entries"
+  ],
+  "hooks: section is null": [],
+  "hooks: empty array": [],
+  "hooks: entry is a string": [
+    "VALIDATION-ERROR: <M> — hooks[0] is missing required field 'id'",
+    "VALIDATION-ERROR: <M> — hooks[0] (id '') is missing required field 'event'",
+    "VALIDATION-ERROR: <M> — hooks[0] (id '') is missing required field 'command'"
+  ],
+  "hooks: root token twice": [],
+  "hooks: bare root token at the end": [],
+  "hooks: command with a trailing line feed": [],
+  "hooks: two entries sharing an event": [],
+  "hooks: no name (antigravity id)": [],
+  "hooks: numeric name": [],
+  "hooks: unicode command": [],
+  "mcp: stdio": [],
+  "mcp: stdio explicit transport": [],
+  "mcp: stdio null transport": [],
+  "mcp: http": [],
+  "mcp: sse": [],
+  "mcp: stdio missing command": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv (transport stdio) is missing a non-empty 'command'"
+  ],
+  "mcp: stdio empty command": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv (transport stdio) is missing a non-empty 'command'"
+  ],
+  "mcp: http missing url": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv (transport http) is missing a non-empty 'url'"
+  ],
+  "mcp: sse missing url": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv (transport sse) is missing a non-empty 'url'"
+  ],
+  "mcp: stdio inadmissible key": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv (transport stdio) declares inadmissible key 'trust' (admissible: transport, command, args, env, cwd, timeout)",
+    "VALIDATION-ERROR: <M> — mcpServers.srv (transport stdio) declares inadmissible key 'url' (admissible: transport, command, args, env, cwd, timeout)"
+  ],
+  "mcp: http inadmissible key": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv (transport http) declares inadmissible key 'command' (admissible: transport, url, headers, timeout)"
+  ],
+  "mcp: sse inadmissible key": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv (transport sse) declares inadmissible key 'args' (admissible: transport, url, headers, timeout)"
+  ],
+  "mcp: unknown transport": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv declares transport 'ws', outside the admissible set {stdio, http, sse}"
+  ],
+  "mcp: reserved name mempalace": [
+    "VALIDATION-ERROR: <M> — extension 'ext' declares MCP server 'mempalace', a framework-reserved name; choose a name outside the reserved set"
+  ],
+  "mcp: reserved name sequentialthinking": [
+    "VALIDATION-ERROR: <M> — extension 'ext' declares MCP server 'sequentialthinking', a framework-reserved name; choose a name outside the reserved set"
+  ],
+  "mcp: root token in command": [],
+  "mcp: root token in args and cwd": [],
+  "mcp: other token in command": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv declares '${HOME}' inside command/args/cwd; the only admissible path token there is ${extensionRoot}"
+  ],
+  "mcp: other token in args": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv declares '${extensionPath}' inside command/args/cwd; the only admissible path token there is ${extensionRoot}",
+    "VALIDATION-ERROR: <M> — mcpServers.srv declares '${A}' inside command/args/cwd; the only admissible path token there is ${extensionRoot}",
+    "VALIDATION-ERROR: <M> — mcpServers.srv declares '${B}' inside command/args/cwd; the only admissible path token there is ${extensionRoot}"
+  ],
+  "mcp: path token in env": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv declares path token '${extensionRoot}' inside an env/headers value; a path token has no path to resolve against there",
+    "VALIDATION-ERROR: <M> — mcpServers.srv declares path token '${CLAUDE_PLUGIN_ROOT}' inside an env/headers value; a path token has no path to resolve against there"
+  ],
+  "mcp: gemini slash token in env": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv declares path token '${/}' inside an env/headers value; a path token has no path to resolve against there"
+  ],
+  "mcp: path token in headers": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv declares path token '${COPILOT_PLUGIN_ROOT}' inside an env/headers value; a path token has no path to resolve against there"
+  ],
+  "mcp: ordinary interpolation in env": [],
+  "mcp: root token in url": [],
+  "mcp: two servers, sorted by name": [],
+  "mcp: section is an array": [
+    "VALIDATION-ERROR: <M> — the generic 'mcpServers' section must be an object keyed by server name"
+  ],
+  "mcp: section is a string": [
+    "VALIDATION-ERROR: <M> — the generic 'mcpServers' section must be an object keyed by server name"
+  ],
+  "mcp: section is null": [],
+  "mcp: section is empty": [],
+  "mcp: entry is null": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv (transport stdio) is missing a non-empty 'command'"
+  ],
+  "mcp: entry is a string": [
+    "VALIDATION-ERROR: <M> — mcpServers.srv declares transport '', outside the admissible set {stdio, http, sse}"
+  ],
+  "mcp: falsy optional members": [],
+  "mcp: args is not an array": [],
+  "mcp: no name, reserved name": [
+    "VALIDATION-ERROR: <M> — extension '?' declares MCP server 'mempalace', a framework-reserved name; choose a name outside the reserved set"
+  ],
+  "percli: admissible keys": [],
+  "percli: inadmissible key per CLI": [
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'gemini.x' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.alpha' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.zeta' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'copilot.y' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'antigravity.z' (not in <K>)"
+  ],
+  "percli: sections null, false and string": [],
+  "percli: section is an array": [
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'copilot.0' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'copilot.1' (not in <K>)"
+  ],
+  "percli: section is a number": [],
+  "percli: empty key": [],
+  "percli: unicode key order": [
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'gemini.a' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'gemini.z' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'gemini.é' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'gemini.😀' (not in <K>)"
+  ],
+  "legacy: components with subjects": [
+    "VALIDATION-ERROR: <M> — declares the retired 'components' object  — run scripts/migrate-extension.ts, see docs/adoption-guide.md"
+  ],
+  "legacy: components empty object": [
+    "VALIDATION-ERROR: <M> — declares the retired 'components' object  — run scripts/migrate-extension.ts, see docs/adoption-guide.md"
+  ],
+  "legacy: components null": [],
+  "legacy: components string": [
+    "VALIDATION-ERROR: <M> — declares the retired 'components' object  — run scripts/migrate-extension.ts, see docs/adoption-guide.md"
+  ],
+  "legacy: claude.skills": [
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.skills' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.skills' (not in <K>)"
+  ],
+  "legacy: every retired per-CLI key": [
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.skills' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.agents' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.rules' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'copilot.pluginName' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'antigravity.pluginName' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.agents' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.rules' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.skills' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'copilot.pluginName' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'antigravity.pluginName' (not in <K>)"
+  ],
+  "legacy: components and claude.skills": [
+    "VALIDATION-ERROR: <M> — declares the retired 'components' object  — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.skills' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.agents' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.agents' (not in <K>)",
+    "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.skills' (not in <K>)"
+  ]
+}

@@ -11,7 +11,7 @@
 // every extension release shipped an empty note.
 //
 // This module loads the CJS package unchanged and re-exports every step it
-// provides as a named ESM export. scripts/monorepo-release.sh references it by
+// provides as a named ESM export. scripts/monorepo-release.ts references it by
 // absolute path in place of the bare package name; the plugin options
 // (releaseRules) are passed through untouched, so version computation is the
 // package's own.

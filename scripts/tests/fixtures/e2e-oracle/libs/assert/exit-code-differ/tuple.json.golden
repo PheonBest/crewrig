@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "assert/exit-code-differ",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_exit_code 0 1\n#   expected: 0\n#   actual:   1\n",
+  "stdout": ""
+}

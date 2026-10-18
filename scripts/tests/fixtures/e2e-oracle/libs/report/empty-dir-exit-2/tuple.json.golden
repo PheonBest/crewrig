@@ -1,0 +1,13 @@
+{
+  "files": {
+    "taps/.keep": {
+      "content": "",
+      "mode": "0644"
+    }
+  },
+  "id": "report/empty-dir-exit-2",
+  "rc": 2,
+  "stats": {},
+  "stderr": "report.sh: no .tap files found under taps\nRun `task e2e:test` first to produce TAP output.\n",
+  "stdout": ""
+}

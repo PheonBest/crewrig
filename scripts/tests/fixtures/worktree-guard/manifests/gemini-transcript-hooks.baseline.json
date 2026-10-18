@@ -1,0 +1,59 @@
+{
+  "hooks": {
+    "BeforeTool": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "name": "transcript-git-guard",
+            "command": "bash ${GEMINI_PROJECT_DIR}/hooks/worktree-git-guard.sh"
+          }
+        ]
+      }
+    ],
+    "BeforeAgent": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "name": "transcript-user-prompt",
+            "command": "node \"${GEMINI_PROJECT_DIR}/hooks/mempalace-transcript.ts\" gemini-cli"
+          }
+        ]
+      }
+    ],
+    "AfterTool": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "name": "transcript-tool-use",
+            "command": "node \"${GEMINI_PROJECT_DIR}/hooks/mempalace-transcript.ts\" gemini-cli"
+          }
+        ]
+      }
+    ],
+    "AfterModel": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "name": "transcript-agent-response",
+            "command": "node \"${GEMINI_PROJECT_DIR}/hooks/mempalace-transcript.ts\" gemini-cli"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "name": "transcript-session-end",
+            "command": "node \"${GEMINI_PROJECT_DIR}/hooks/mempalace-transcript.ts\" gemini-cli"
+          }
+        ]
+      }
+    ]
+  }
+}

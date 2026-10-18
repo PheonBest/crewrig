@@ -9,7 +9,7 @@ tool is delivered." R13 requires each target's own name-collision resolution
 to be recorded with evidence rather than assumed uniform across tools.
 
 This runbook is that procedure's documentation.
-`scripts/probe-extension-mcp-token.sh` is the procedure.
+`scripts/probe-extension-mcp-token.ts` is the procedure (the former `.sh` forwarding shim is removed).
 
 ## Why observation and not the vendor guide
 
@@ -27,7 +27,7 @@ unstated — the same lesson spec 0123 already drew for skill/agent discovery.
 ## Running it
 
 ```sh
-bash scripts/probe-extension-mcp-token.sh [q1|q2q3|q4|all]
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/probe-extension-mcp-token.ts [q1|q2q3|q4|all]
 ```
 
 Preconditions: `jq`, `copilot`, `agy`, `claude` on `PATH`; `gh` authenticated
@@ -35,7 +35,7 @@ Preconditions: `jq`, `copilot`, `agy`, `claude` on `PATH`; `gh` authenticated
 probed under an **isolated `HOME`** (their plugin/user config never touches
 the real `~/.copilot` or `~/.claude`). Antigravity is probed against the
 **real** `~/.gemini/config/plugins/` root, mirroring
-`scripts/probe-antigravity-discovery.sh`'s own precedent: Antigravity has no
+`scripts/probe-antigravity-discovery.ts`'s own precedent: Antigravity has no
 per-invocation `--plugin-dir` equivalent that also exercises `agy plugin
 install`'s copy/rewrite behaviour, so the only way to observe the real
 install-and-resolve path is to use it, under a uniquely-named artifact,
@@ -125,7 +125,7 @@ resolves; Option B (spec 0180 PLAN v5 step 8) is REFUTED by direct evidence.**
 Consequence recorded elsewhere: because Antigravity's MCP `cwd` behaviour
 (launch-directory-relative) DIFFERS from its hooks `cwd` behaviour (working
 directory is the plugin root when a hook fires — see
-`scripts/lib/extension-hooks.sh`'s antigravity token-stripping comment), the
+the retired `scripts/lib/extension-hooks.sh`'s antigravity token-stripping comment), the
 `rootToken: null` row in `scripts/lib/extension-targets.json` cannot mean the
 same thing for both subjects. For hooks it means "strip the token, the
 resulting relative command works." For MCP it must mean "no render-time
@@ -184,4 +184,4 @@ a hand-rolled variant) if this procedure is ever re-established.
 
 Append a dated section above rather than editing an existing one. Write
 locations as `~/.gemini/…`, not the machine's own `/Users/<login>/…` —
-`scripts/check-no-machine-paths.sh` rejects a pasted absolute path.
+`scripts/check-no-machine-paths.ts` rejects a pasted absolute path.

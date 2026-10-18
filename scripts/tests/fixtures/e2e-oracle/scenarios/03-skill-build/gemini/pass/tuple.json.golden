@@ -1,0 +1,36 @@
+{
+  "id": "03-skill-build/gemini/pass",
+  "exit": 0,
+  "scenarioTap": "ok 1 - build: scripts/build-components.ts exited 0\nok 2 - side-effect: build manifest written to /out\nok 3 - side-effect: .gemini/ populated by build\nok 4 - side-effect: skills or agents emitted\nok 5 - structural: first SKILL.md carries metadata: frontmatter\n1..5\n",
+  "dockerCommands": [
+    [
+      "run",
+      "--rm",
+      "--name",
+      "<CONTAINER>",
+      "-v",
+      "<TMP>/reports/<RUN_ID>/gemini/03-skill-build/build-work:/repo",
+      "-v",
+      "<TMP>/reports/<RUN_ID>/gemini/03-skill-build/out:/out",
+      "--entrypoint",
+      "bash",
+      "crewrig/e2e-gemini:latest",
+      "-lc",
+      "set -euo pipefail\ncd /repo\nnode scripts/build-components.ts --target gemini\nmanifest=/tmp/e2e-build-manifest.txt\nif [ -d \".gemini\" ]; then\n  find \".gemini\" -type f | sort > \"$manifest\"\nelse\n  printf 'MISSING: %s\\n' \".gemini\" > \"$manifest\"\nfi\ncp \"$manifest\" /out/manifest.txt\n\n# Locate the first SKILL.md for the structural assertion.\nfirst_skill=$(find \".gemini/skills\" -name 'SKILL.md' -type f 2>/dev/null | sort | head -n1 || true)\nif [ -n \"$first_skill\" ]; then\n  cp \"$first_skill\" /out/first-skill.md\nfi"
+    ]
+  ],
+  "files": {
+    "gemini/03-skill-build/build.stderr": "",
+    "gemini/03-skill-build/build.stdout": "",
+    "gemini/03-skill-build/exit": "0\n",
+    "gemini/03-skill-build/invocation.txt": "image: crewrig/e2e-gemini:latest\nargv: docker run --rm --name <CONTAINER> -v <TMP>/reports/<RUN_ID>/gemini/03-skill-build/build-work:/repo -v <TMP>/reports/<RUN_ID>/gemini/03-skill-build/out:/out --entrypoint bash crewrig/e2e-gemini:latest -lc $'set -euo pipefail\\ncd /repo\\nnode scripts/build-components.ts --target gemini\\nmanifest=/tmp/e2e-build-manifest.txt\\nif [ -d \".gemini\" ]; then\\n  find \".gemini\" -type f | sort > \"$manifest\"\\nelse\\n  printf \\'MISSING: %s\\\\n\\' \".gemini\" > \"$manifest\"\\nfi\\ncp \"$manifest\" /out/manifest.txt\\n\\n# Locate the first SKILL.md for the structural assertion.\\nfirst_skill=$(find \".gemini/skills\" -name \\'SKILL.md\\' -type f 2>/dev/null | sort | head -n1 || true)\\nif [ -n \"$first_skill\" ]; then\\n  cp \"$first_skill\" /out/first-skill.md\\nfi'\n",
+    "gemini/03-skill-build/out/first-skill.md": "---\nname: demo\nmetadata:\n  provenance:\n    version: 1.0.0\n---\nBody\n",
+    "gemini/03-skill-build/out/manifest.txt": ".gemini/skills/demo/SKILL.md\n",
+    "gemini/03-skill-build/scenario.tap": "ok 1 - build: scripts/build-components.ts exited 0\nok 2 - side-effect: build manifest written to /out\nok 3 - side-effect: .gemini/ populated by build\nok 4 - side-effect: skills or agents emitted\nok 5 - structural: first SKILL.md carries metadata: frontmatter\n1..5\n",
+    "gemini/03-skill-build/stderr": "",
+    "gemini/03-skill-build/stdout": "OK — gemini/03-skill-build (5 assertions)\n",
+    "run.tap": "TAP version 13\nok 1 - gemini/03-skill-build\n1..1\n# pass: 1  fail: 0  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - gemini/03-skill-build\n1..1\n# pass: 1  fail: 0  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[gemini] auth ready: GEMINI_API_KEY set in host shell\n"
+}

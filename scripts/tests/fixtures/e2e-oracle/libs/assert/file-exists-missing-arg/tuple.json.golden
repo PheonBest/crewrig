@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "assert/file-exists-missing-arg",
+  "rc": 127,
+  "stats": {},
+  "stderr": "<REPO>/tests/e2e/lib/assert.sh: line 69: 1: assert_file_exists: missing <path>\n",
+  "stdout": ""
+}

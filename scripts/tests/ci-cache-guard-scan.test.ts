@@ -1,11 +1,11 @@
 // ci-cache-guard-scan.test.ts — tests for the `--stray-scan` mode of
-// scripts/ci-cache-guard.sh (spec 0170 delta-01 R10-R14, issue #1445).
+// scripts/ci-cache-guard.ts (spec 0170 delta-01 R10-R14, issue #1445).
 //
 // The mode runs one suite command, passes its stdout and stderr through on their
 // own streams, preserves its exit status, and fails the job when the shell's
 // not-found phrase (`command not found`) appears on either stream:
 //
-//   bash scripts/ci-cache-guard.sh --stray-scan -- <command...>
+//   node scripts/ci-cache-guard.ts --stray-scan -- <command...>
 //
 // Contract pinned here:
 //   - clean run: streams and status untouched (R12);
@@ -35,7 +35,8 @@ import { after, describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-const GUARD = path.join(REPO, "scripts", "ci-cache-guard.sh");
+const GUARD = path.join(REPO, "scripts", "ci-cache-guard.ts");
+const NODE_FLAG = "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON";
 
 /** The absolute path of the bash the tests run the guard with (a fake `bash` may shadow `bash` on PATH). */
 const BASH = (() => {
@@ -108,19 +109,24 @@ function execute(f: Fx, file: string, args: string[], opts: RunOptions = {}): Ru
   env.TMPDIR = f.tmp;
   if (opts.fakePath === true) env.PATH = `${f.bin}${path.delimiter}${process.env.PATH ?? ""}`;
   Object.assign(env, opts.env);
-  const res = spawnSync(BASH, [file, ...args], {
-    cwd: f.work,
-    encoding: "utf8",
-    env,
-    input: opts.input ?? "",
-    timeout: 60_000,
-  });
+  const res = spawnSync(
+    ...(file.endsWith(".ts")
+      ? ([process.execPath, [NODE_FLAG, file, ...args]] as const)
+      : ([BASH, [file, ...args]] as const)),
+    {
+      cwd: f.work,
+      encoding: "utf8",
+      env,
+      input: opts.input ?? "",
+      timeout: 60_000,
+    },
+  );
   const stdout = res.stdout ?? "";
   const stderr = res.stderr ?? "";
   return { status: res.status, stdout, stderr, all: `--- stdout\n${stdout}--- stderr\n${stderr}` };
 }
 
-/** `bash ci-cache-guard.sh --stray-scan -- <command...>` */
+/** `ci-cache-guard.ts --stray-scan -- <command...>` */
 function scan(f: Fx, command: string[], opts: RunOptions = {}): Run {
   return execute(f, GUARD, ["--stray-scan", "--", ...command], opts);
 }
@@ -192,10 +198,10 @@ describe("stray-scan: a clean command is invisible", () => {
     const driver = script(
       f.suites,
       "driver-e.sh",
-      `#!/usr/bin/env bash\nset -eo pipefail\n"$BASH_REAL" "$GUARD" --stray-scan -- bash ${s}\necho AFTER\n`,
+      `#!/usr/bin/env bash\nset -eo pipefail\n"$NODE_REAL" --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$GUARD" --stray-scan -- bash ${s}\necho AFTER\n`,
     );
 
-    const r = execute(f, driver, [], { env: { BASH_REAL: BASH, GUARD } });
+    const r = execute(f, driver, [], { env: { NODE_REAL: process.execPath, GUARD } });
 
     assert.equal(r.status, 3, r.all);
     assert.ok(r.stdout.includes("before-fail"), r.all);
@@ -208,10 +214,10 @@ describe("stray-scan: a clean command is invisible", () => {
     const driver = script(
       f.suites,
       "driver.sh",
-      `#!/usr/bin/env bash\n"$BASH_REAL" "$GUARD" --stray-scan -- bash ${s}\necho "rc=$?"\n`,
+      `#!/usr/bin/env bash\n"$NODE_REAL" --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$GUARD" --stray-scan -- bash ${s}\necho "rc=$?"\n`,
     );
 
-    const r = execute(f, driver, [], { env: { BASH_REAL: BASH, GUARD } });
+    const r = execute(f, driver, [], { env: { NODE_REAL: process.execPath, GUARD } });
 
     assert.ok(r.stdout.includes("rc=3"), r.all);
   });
@@ -290,14 +296,14 @@ describe("stray-scan: a visible stray fails the command", () => {
       [
         "#!/usr/bin/env bash",
         "bash -c 'bogus-before'",
-        `"$BASH_REAL" "$GUARD" --stray-scan -- bash ${s}`,
+        `"$NODE_REAL" --disable-warning=MODULE_TYPELESS_PACKAGE_JSON "$GUARD" --stray-scan -- bash ${s}`,
         'echo "rc=$?"',
         "bash -c 'bogus-after'",
         "",
       ].join("\n"),
     );
 
-    const r = execute(f, driver, [], { env: { BASH_REAL: BASH, GUARD } });
+    const r = execute(f, driver, [], { env: { NODE_REAL: process.execPath, GUARD } });
 
     assert.ok(
       r.stdout.includes("rc=0"),
@@ -377,6 +383,32 @@ describe("stray-scan: exclusive with the cache options (exit 2)", () => {
 
 // --- Hygiene (R12) -----------------------------------------------------------------
 
+/**
+ * The TypeScript entry finds its modules next to itself: copy the git-tracked ones into a scratch
+ * directory (the entry copy is the guard copy; nothing else is touched).
+ */
+function copyShimSupport(dir: string): void {
+  const tracked = spawnSync(
+    "git",
+    [
+      "ls-files",
+      "--",
+      "scripts/ci-cache-guard.ts",
+      "scripts/lib/node-floor-guard.js",
+      "scripts/lib/ci-cache-guard",
+      "scripts/lib/governance",
+    ],
+    { cwd: REPO, encoding: "utf8" },
+  )
+    .stdout.split("\n")
+    .filter((x) => x !== "");
+  for (const rel of tracked) {
+    const to = path.join(dir, rel.replace(/^scripts\//, ""));
+    fs.mkdirSync(path.dirname(to), { recursive: true });
+    fs.copyFileSync(path.join(REPO, rel), to);
+  }
+}
+
 describe("stray-scan: leaves nothing behind", () => {
   const cases: ReadonlyArray<readonly [string, string, number]> = [
     ["a clean run", "echo ok", 0],
@@ -413,7 +445,7 @@ function markers(dir: string): string[] {
   return found;
 }
 
-/** `ci-cache-guard.sh --cache-dir cache --key-files <kf> --key-env "" -- <inner...>` */
+/** `ci-cache-guard.ts --cache-dir cache --key-files <kf> --key-env "" -- <inner...>` */
 function cached(f: Fx, keyFiles: string, inner: string[], opts: RunOptions = {}): Run {
   return execute(
     f,
@@ -428,7 +460,7 @@ describe("stray-scan: nested under the cache guard", () => {
     const f = fx();
     const s = suite(f, "stray.sh", "bash -c 'bogus-cached'\nexit 0");
 
-    const r = cached(f, "", [BASH, GUARD, "--stray-scan", "--", "bash", s]);
+    const r = cached(f, "", [process.execPath, NODE_FLAG, GUARD, "--stray-scan", "--", "bash", s]);
 
     assert.equal(r.status, 70, r.all);
     assert.deepEqual(markers(path.join(f.work, "cache")), []);
@@ -438,7 +470,7 @@ describe("stray-scan: nested under the cache guard", () => {
     const f = fx();
     const count = path.join(f.suites, "count");
     const s = suite(f, "clean.sh", `echo run >> ${count}`);
-    const inner = [BASH, GUARD, "--stray-scan", "--", "bash", s];
+    const inner = [process.execPath, NODE_FLAG, GUARD, "--stray-scan", "--", "bash", s];
 
     const first = cached(f, "", inner);
     const second = cached(f, "", inner);
@@ -454,7 +486,7 @@ describe("stray-scan: nested under the cache guard", () => {
   test("a hit pays nothing: the detector probe is not run, so an inert shell cannot fail it (R13)", () => {
     const f = fx();
     const s = suite(f, "clean.sh", "true");
-    const inner = [BASH, GUARD, "--stray-scan", "--", "bash", s];
+    const inner = [process.execPath, NODE_FLAG, GUARD, "--stray-scan", "--", "bash", s];
     assert.equal(cached(f, "", inner).status, 0);
     fakeTranslatedBash(f);
 
@@ -467,15 +499,15 @@ describe("stray-scan: nested under the cache guard", () => {
 
   test("a copy of the guard listed in --key-files invalidates the marker when it is edited", () => {
     const f = fx();
-    const copy = path.join(f.suites, "guard-copy.sh");
-    fs.copyFileSync(GUARD, copy);
+    copyShimSupport(f.suites);
+    const copy = path.join(f.suites, "ci-cache-guard.ts");
     const count = path.join(f.suites, "count");
     const s = suite(f, "clean.sh", `echo run >> ${count}`);
-    const inner = [BASH, copy, "--stray-scan", "--", "bash", s];
+    const inner = [process.execPath, NODE_FLAG, copy, "--stray-scan", "--", "bash", s];
 
     const first = cached(f, copy, inner);
     const second = cached(f, copy, inner);
-    fs.appendFileSync(copy, "\n# edited scan code\n");
+    fs.appendFileSync(copy, "\n// edited scan code\n");
     const third = cached(f, copy, inner);
 
     assert.match(first.stdout, /cache miss/, first.all);
@@ -495,7 +527,15 @@ describe("stray-scan: nested under the cache guard", () => {
 
     const bare = cached(f, "", ["bash", s]);
     const bareAgain = cached(f, "", ["bash", s]);
-    const scanned = cached(f, "", [BASH, GUARD, "--stray-scan", "--", "bash", s]);
+    const scanned = cached(f, "", [
+      process.execPath,
+      NODE_FLAG,
+      GUARD,
+      "--stray-scan",
+      "--",
+      "bash",
+      s,
+    ]);
 
     assert.match(bare.stdout, /cache miss/, bare.all);
     assert.match(bareAgain.stdout, /cache hit/, bareAgain.all);

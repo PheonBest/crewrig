@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "probes/c-guidance-nonce-missing-failed",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "DISTURBED|guidance-caused-failure\n"
+}

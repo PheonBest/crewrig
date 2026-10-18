@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "BeforeTool": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${extensionPath}/hooks/shell-logger.ts\""
+          }
+        ],
+        "matcher": "run_shell_command"
+      }
+    ],
+    "BeforeAgent": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${extensionPath}/hooks/prompt-logger.ts\""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -10,7 +10,7 @@
 //   - R17a: a command whose program is `bash scripts/tests/test-*.sh`, in a
 //     capability `command` of ci/ci-capabilities.yml or in a `run:` line of a
 //     hand-authored workflow, is a finding unless it is the scanned form
-//     `bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/<suite>`.
+//     `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- bash scripts/tests/<suite>`.
 //     One generated cache-guard layer (`--cache-dir ... --`) is removed first, so
 //     a suite wrapped only by the cache guard is still bare.
 //   - R17b: a tracked suite with an owner (a capability whose command names it)
@@ -122,14 +122,14 @@ const suitePath = (name: string): string => `scripts/tests/${name}`;
 
 /** The accepted form of a suite command. */
 const scanned = (name: string): string =>
-  `bash scripts/ci-cache-guard.sh --stray-scan -- bash ${suitePath(name)}`;
+  `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- bash ${suitePath(name)}`;
 
 /** A bare suite command. */
 const bare = (name: string): string => `bash ${suitePath(name)}`;
 
 /** One generated cache-guard layer, as build.yml writes it. */
 const CACHE_LAYER =
-  'bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files "scripts/a.sh,scripts/tests/test-a.sh" --key-env "" -- ';
+  'node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "scripts/a.sh,scripts/tests/test-a.sh" --key-env "" -- ';
 
 const SUITE_A = "test-a.sh";
 
@@ -279,7 +279,7 @@ describe("check-stray-scan-wiring: R17a, every suite command engages the scan", 
         command: [
           scanned(SUITE_A),
           "bash scripts/tests/lib/helper.sh",
-          "bash scripts/build-ci.sh --check",
+          "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts --check",
           "node --test scripts/tests/some.test.ts",
         ],
       },

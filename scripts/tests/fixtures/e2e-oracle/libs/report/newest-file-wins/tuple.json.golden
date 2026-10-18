@@ -1,0 +1,17 @@
+{
+  "files": {
+    "taps/20260101T000000Z-aaaa/run.tap": {
+      "content": "TAP version 13\nnot ok 1 - claude/s1\n",
+      "mode": "0644"
+    },
+    "taps/20260102T000000Z-bbbb/run.tap": {
+      "content": "TAP version 13\nok 1 - claude/s1\n",
+      "mode": "0644"
+    }
+  },
+  "id": "report/newest-file-wins",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "Scenario  claude    gemini    copilot \n--------  --------  --------  --------\ns1        â       â ï¸    â ï¸  \n"
+}

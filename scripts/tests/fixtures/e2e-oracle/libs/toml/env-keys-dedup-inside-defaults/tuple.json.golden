@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nenv_keys = [\"A\", \"A\", \"B\"]\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\nimage = \"Y\"\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/env-keys-dedup-inside-defaults",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"env_keys\": [\n        \"A\",\n        \"B\"\n      ],\n      \"image\": \"Y\"\n    }\n  }\n}\n"
+}

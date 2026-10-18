@@ -1,0 +1,2 @@
+Documentation publication contract violations:
+  - docs/index.json: entry path 'docs/gone.md' does not resolve to a file (orphan)

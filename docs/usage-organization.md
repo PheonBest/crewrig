@@ -74,15 +74,17 @@ Outside the usage root:
   `--out` to a chosen path, and terminal-report output redirected to a file
   (see [Personal-data note](usage-dashboard.md#personal-data-note)). Derived
   from recorded activity.
-- **A transient hook payload file.** Each capture hook stages the payload its
-  CLI hands it in a temporary file in the system temp directory, for the
-  length of one call, and a killed hook can leave the file behind. **That
-  file can hold conversation text**: Gemini CLI's payload carries the model
-  request and response, and Claude Code's carries the turn's last assistant
-  message (see [Personal-data note](usage-capture.md#personal-data-note)).
-  Derived from recorded activity.
+- **A transient hook payload file, test override only.** The capture hooks
+  read the payload their CLI hands them into memory and stage it in no file.
+  Only the test-only override (`CREWRIG_USAGE_CAPTURE_TEST` set together with
+  `CREWRIG_USAGE_CAPTURE_CLI`) writes it to an owner-only temporary file for
+  the length of one call and removes it when the call returns. Such a file
+  can hold conversation text: Gemini CLI's payload carries the model request
+  and response, and Claude Code's carries the turn's last assistant message
+  (see [Personal-data note](usage-capture.md#personal-data-note)). Derived
+  from recorded activity.
 - **The non-interactive wrapper's whole-output file.**
-  `usage_headless_run` in `scripts/lib/usage-headless.sh` stages the whole
+  The non-interactive wrapper in `scripts/lib/usage-headless.ts` stages the whole
   output of a run it wraps in a temporary file in the system temp directory.
   It deletes the file at the end of the call without a trap, so a killed run
   can leave it behind. **That file can hold conversation text**, the model's
@@ -100,8 +102,8 @@ contents. Every capture channel, the non-interactive `headless-envelope`
 channel included, copies only enumerated fields into a record's `raw` block.
 
 Conversation text can appear only in the transient files listed above: the
-hook payload file and the whole-output file of `usage_headless_run`, for the
-length of one call, or longer when a killed call leaves them behind.
+test-override payload file and the whole-output file of `usage_headless_run`,
+for the length of one call, or longer when a killed call leaves them behind.
 
 ## Retention
 
@@ -193,7 +195,8 @@ Procedure (a) below removes them, along with every other record.
 - **It can take time**, because the check makes one MemPalace call per
   mirrored record.
 - **Run the blocks in `bash` or `zsh`, from the checkout** that wired
-  capture, since they call its scripts.
+  capture, since they call its scripts. Run `node scripts/lib/node-floor-guard.js`
+  first on an unverified Node.js: the commands need Node.js 24 or later.
 
 ### The mirror check (both procedures)
 
@@ -219,7 +222,7 @@ usage_mirror_gate() {
     echo "MemPalace mirror: $USAGE_MIRROR_VERDICT"
     return 0
   fi
-  bash scripts/usage-mirror.sh
+  node scripts/usage-mirror.ts
   n=$(find "$ROOT/mirror/pending" -type f 2>/dev/null | wc -l | tr -d ' ')
   if [ "$n" != "0" ]; then
     USAGE_MIRROR_VERDICT="UNVERIFIED ($n pending marker(s): MemPalace unreachable or unable to serve, or a record failed to mirror)"
@@ -227,7 +230,7 @@ usage_mirror_gate() {
     return 1
   fi
   while IFS= read -r d; do
-    if ! bash scripts/usage-prune.sh "$(basename "$(dirname "$d")")" "$(basename "$d")" --force; then
+    if ! node scripts/usage-prune.ts "$(basename "$(dirname "$d")")" "$(basename "$d")" --force; then
       USAGE_MIRROR_VERDICT="UNVERIFIED (MemPalace unreachable or deletion not confirmed while pruning $d)"
       echo "MemPalace mirror: $USAGE_MIRROR_VERDICT"
       return 1
@@ -302,11 +305,11 @@ has removed nothing. When it stopped during the prunes, the months pruned
 before the stop are already gone, from the usage root and from MemPalace
 alike. Either way, fix the cause, then run the whole procedure again from
 the start; every step can be repeated safely. When the check stopped on a
-waiting record, `usage-mirror.sh` names the cause on stderr with a `failed:`
+waiting record, `usage-mirror.ts` names the cause on stderr with a `failed:`
 or `stopping this pass` line. When it printed neither, MemPalace was
 unreachable: the catch-up only wrote `unreachable.stamp`
 ([Unreachable backoff](usage-storage.md#unreachable-backoff)), so make
-MemPalace reachable. An operator run of `usage-mirror.sh` does not wait out
+MemPalace reachable. An operator run of `usage-mirror.ts` does not wait out
 that backoff. When the check stopped during the prunes, the prune's FATAL
 line names the cause: MemPalace unreachable, or MemPalace not confirming a
 deletion. When the check stopped on the third, inventory-based pass, either
@@ -388,7 +391,7 @@ still includes consumption from before the purge.
      echo "MemPalace mirror: ${USAGE_MIRROR_VERDICT:-UNVERIFIED (the mirror check has not run in this shell)}"
      for f in "$HOME/.claude/settings.json" "$HOME/.gemini/settings.json" \
        "$HOME/.copilot/hooks/copilot-transcript-hooks.json" "$HOME/.gemini/antigravity-cli/settings.json"; do
-       if [ -f "$f" ] && grep -qE 'usage-capture\.sh|antigravity-statusline-shim\.sh' "$f"; then
+       if [ -f "$f" ] && grep -qE 'usage-capture\.(sh|ts)|antigravity-statusline-shim\.(sh|ts)' "$f"; then
          hits="$hits $f"
        fi
      done

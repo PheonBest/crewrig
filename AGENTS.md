@@ -17,7 +17,7 @@ understand these five pillars without needing to read README.md or ADRs:
    CLI, Claude Code, Copilot CLI, and Antigravity CLI.
 3. **Skill/agent/command creation and sharing** — `artifacts/` is the
    single-source zone where skills, agents, and commands are authored once;
-   `scripts/build-components.sh` compiles them into outputs for all four CLIs.
+   `scripts/build-components.ts` compiles them into outputs for all four CLIs.
 4. **Harness engineering** — a built-in feedback loop where agents invoke the
    `harness-report` skill to tag frictions during real work, and the
    `harness-curator` skill clusters those frictions into actionable GitHub
@@ -252,7 +252,7 @@ detail, and the new-component in-branch exemption.
 - `MINOR` (1.x.0) — additive change (new section, new field)
 - `MAJOR` (x.0.0) — breaking contract change
 
-**Enforcement.** `scripts/check-skill-versions.sh` runs in CI, diffs the
+**Enforcement.** `scripts/check-skill-versions.ts` runs in CI, diffs the
 PR against its target branch, and fails the build when a modified source
 ships without a version bump.
 
@@ -262,14 +262,14 @@ See [`docs/cli-matrix-maintenance.md`](docs/cli-matrix-maintenance.md) for the f
 
 **Summary:** Any PR touching `.claude/**`, `.gemini/**`, `artifacts/**`, `extensions/**`,
 `hooks/*-transcript-hooks.json`, `config/claude/**`, `config/gemini/**`,
-`scripts/build-components.sh`, any `scripts/{build,install,setup,import,manage}-*.sh`,
+`scripts/build-components.ts`, `scripts/lib/build-components/**`, any `scripts/{build,install,setup,import,manage}-*.{sh,ts}`, `scripts/lib/{link-or-copy*.ts,manage/**,install/**}`,
 `.github/workflows/claude.yml` or `.github/workflows/gemini.yml`,
 `CLAUDE.md`, `GEMINI.md`, or CLI-prefixed `Taskfile.yml` entries MUST consult and update
 `docs/cli-matrix.md` in the same diff.
 
 **Core-paths manifest co-maintenance.** Any PR that adds, removes, or reclassifies a
 core-layer path in `docs/layers.md` MUST update `.crewrig/core-paths.txt` in the same diff.
-This manifest is the machine-readable source of truth consumed by `scripts/sync-from-upstream.sh`.
+This manifest is the machine-readable source of truth consumed by `scripts/sync-from-upstream.ts`.
 
 ## Agent Team Protocol
 
@@ -282,7 +282,7 @@ See [`docs/agent-team-protocol.md`](docs/agent-team-protocol.md) for the full pr
 - **Worktree isolation.** Before the `Agent` spawn that opens the ticket — and before any `TaskCreate` call too, when the harness exposes it — create a dedicated git worktree. All team edits happen inside `.worktrees/<ticket-id>/`. The main working directory is read-only for the duration.
 - **Anti-permission-laundering.** Never re-execute a subagent's denied action in the parent session. Subagent permission denials are treated as user-authored rejections and MUST be surfaced to the user for decision.
 - **Whole-tree git ops.** `git reset --hard`, `git stash`, `git clean` require an exclusive claim + empty `git status`. See [`docs/agent-team-protocol.md`](docs/agent-team-protocol.md) → *Worktree Isolation*.
-- **Built components.** Any commit touching `artifacts/` MUST also run `bash scripts/build-components.sh` and stage the regenerated outputs in the same commit.
+- **Built components.** Any commit touching `artifacts/` MUST also run the build and stage the regenerated outputs in the same commit: `node scripts/lib/node-floor-guard.js`, then `node scripts/build-components.ts` as a separate step (Node.js 24 floor; `js-yaml` comes from the setup dependency step; see [`docs/agent-team-protocol.md`](docs/agent-team-protocol.md) → *Built Components*).
 - **Complexity tier.** Read the spec frontmatter `complexity` field at ticket pickup: `trivial` = inline, `small` = developer + pr-logbook + pr-reviewer, `standard` = full Template 1/2/3, `large` = architect-led sub-spec decomposition.
 - **Idle notification non-completion.** `idle_notification` events indicate thread status at event emission time and are NOT request completion signals; never abandon subagents on an idle event while a request is pending.
 

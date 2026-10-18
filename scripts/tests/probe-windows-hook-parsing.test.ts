@@ -20,8 +20,14 @@ import {
   CONFIG_FILE,
   casesFor,
   mergeHooks,
+  mergeStatusLine,
+  markerPath,
+  parseExit,
   parseWmicList,
   redactEnv,
+  selectCases,
+  STATUSLINE_CASES,
+  x2Verdict,
   type Cli,
 } from "../probe-windows-hook-parsing.ts";
 
@@ -45,6 +51,10 @@ function run(
   return { status: r.status, out: r.stdout, err: r.stderr };
 }
 
+// The statusLine surface is a single slot: it is installed one case at a time
+// (see the "antigravity-statusline" suite), never as a whole table.
+const HOOK_CLIS = CLIS.filter((c) => c !== "antigravity-statusline");
+
 const kit = (): string => path.join(root, "kit", "probe.ts");
 const cfg = (cli: Cli): string => path.join(home, ...CONFIG_FILE[cli]);
 
@@ -64,7 +74,7 @@ afterEach(() => {
 });
 
 describe("install then restore", () => {
-  for (const cli of CLIS) {
+  for (const cli of HOOK_CLIS) {
     test(`${cli}: a pre-existing file is byte-identical after restore`, () => {
       fs.mkdirSync(path.dirname(cfg(cli)), { recursive: true });
       const original = Buffer.from('{\n  "theme": "dark",\r\n  "x": 1\n}');
@@ -252,6 +262,301 @@ describe("install --only", () => {
     assert.equal(i.status, 2);
     assert.match(i.err, /unknown case/);
     assert.equal(fs.existsSync(cfg("gemini")), false);
+  });
+});
+
+describe("antigravity-statusline", () => {
+  const settings = (): string => cfg("antigravity-statusline");
+
+  test("targets ~/.gemini/antigravity-cli/settings.json, not the hooks surface", () => {
+    assert.deepEqual(CONFIG_FILE["antigravity-statusline"], [
+      ".gemini",
+      "antigravity-cli",
+      "settings.json",
+    ]);
+    assert.notDeepEqual(CONFIG_FILE["antigravity-statusline"], CONFIG_FILE.antigravity);
+  });
+
+  test("the case table is exactly I Q0 Q1 Q4 P P2d", () => {
+    assert.deepEqual(
+      casesFor("antigravity-statusline", "C:/r").map((c) => c.id),
+      ["I", "Q0", "Q1", "Q4", "P", "P2d"],
+    );
+    assert.deepEqual([...STATUSLINE_CASES], ["I", "Q0", "Q1", "Q4", "P", "P2d"]);
+  });
+
+  test("mergeStatusLine sets exactly one statusLine.command and keeps the rest", () => {
+    const [one] = casesFor("antigravity-statusline", "C:/r");
+    assert.ok(one !== undefined);
+    const merged = mergeStatusLine(
+      { theme: "dark", statusLine: { type: "command", command: "echo old", padding: 1 } },
+      [one],
+    );
+    assert.deepEqual(merged, {
+      theme: "dark",
+      statusLine: { type: "command", command: one.command, padding: 1 },
+    });
+    assert.deepEqual(mergeStatusLine({}, [one]), { statusLine: { command: one.command } });
+    assert.deepEqual(mergeHooks("antigravity-statusline", {}, [one]), {
+      statusLine: { command: one.command },
+    });
+  });
+
+  test("mergeStatusLine refuses zero or several cases", () => {
+    const cases = casesFor("antigravity-statusline", "C:/r");
+    assert.throws(() => mergeStatusLine({}, []), /--only <id>/);
+    assert.throws(() => mergeStatusLine({}, cases), /--only <id>/);
+  });
+
+  test("install without --only, or with several ids, is a usage error that writes nothing", () => {
+    for (const args of [
+      ["install", "antigravity-statusline"],
+      ["install", "antigravity-statusline", "--only", "I,Q1"],
+    ]) {
+      const r = run(kit(), args);
+      assert.equal(r.status, 2);
+      assert.match(r.err, /holds one statusLine\.command/);
+    }
+    assert.equal(fs.existsSync(settings()), false);
+    assert.equal(run(kit(), ["verify-clean"]).status, 0);
+  });
+
+  test("install --only writes one command, restore is byte-identical, then the next case", () => {
+    fs.mkdirSync(path.dirname(settings()), { recursive: true });
+    const original = Buffer.from(
+      '{\n  "theme": "dark",\r\n  "statusLine": {"command": "echo hi"}\n}',
+    );
+    fs.writeFileSync(settings(), original);
+    for (const id of STATUSLINE_CASES) {
+      const i = run(kit(), ["install", "antigravity-statusline", "--only", id]);
+      assert.equal(i.status, 0, i.err);
+      const got = JSON.parse(fs.readFileSync(settings(), "utf8")) as {
+        theme: string;
+        statusLine: { command: string };
+      };
+      assert.equal(got.theme, "dark");
+      const expected = casesFor("antigravity-statusline", fs.realpathSync(root)).find(
+        (c) => c.id === id,
+      );
+      assert.equal(got.statusLine.command, expected?.command);
+      assert.match(got.statusLine.command, new RegExp(` record antigravity-statusline ${id}\\b`));
+      const r = run(kit(), ["restore", "antigravity-statusline"]);
+      assert.equal(r.status, 0, r.err);
+      assert.deepEqual(fs.readFileSync(settings()), original);
+    }
+    assert.equal(run(kit(), ["verify-clean"]).status, 0);
+  });
+
+  test("a record lands in out/antigravity-statusline and collect lists the whole table", () => {
+    const r = run(kit(), ["record", "antigravity-statusline", "Q1", "a b"], '{"cwd":"C:/p"}');
+    assert.equal(r.status, 0, r.err);
+    assert.equal(r.out, "");
+    assert.equal(fs.readdirSync(path.join(root, "out", "antigravity-statusline")).length, 1);
+    assert.equal(run(kit(), ["install", "antigravity-statusline", "--only", "I"]).status, 0);
+    const c = run(kit(), ["collect", "antigravity-statusline"]);
+    assert.match(c.out, /\[Q1\] launched=yes/);
+    assert.match(c.out, /\[P2d\] launched=no/);
+    assert.equal(run(kit(), ["restore", "antigravity-statusline"]).status, 0);
+  });
+});
+
+describe("record --exit (case X1, spec 0243 R12)", () => {
+  test("X1 is in the hook CLIs' tables with exactly `--exit 1`, and not on the statusLine surface", () => {
+    for (const cli of HOOK_CLIS) {
+      const x1 = casesFor(cli, "C:/r").find((c) => c.id === "X1");
+      assert.ok(x1 !== undefined, cli);
+      assert.match(x1.command, new RegExp(` record ${cli} X1 --exit 1$`));
+    }
+    assert.equal(
+      casesFor("antigravity-statusline", "C:/r").some((c) => c.id === "X1"),
+      false,
+    );
+  });
+
+  test("parseExit honours 0, 1 and 3-255, never emits 2, and strips the flag from args", () => {
+    assert.deepEqual(parseExit(["a", "--exit", "1"]), { args: ["a"], exit: 1, error: null });
+    assert.deepEqual(parseExit([]), { args: [], exit: 0, error: null });
+    assert.equal(parseExit(["--exit", "255"]).exit, 255);
+    assert.equal(parseExit(["--exit", "0"]).exit, 0);
+    for (const bad of ["2", "256", "-1", "x", "1.5", "0x1"]) {
+      const p = parseExit(["--exit", bad]);
+      assert.equal(p.exit, 0, bad);
+      assert.match(p.error ?? "", /refused/);
+    }
+    const missing = parseExit(["--exit"]);
+    assert.equal(missing.exit, 0);
+    assert.match(missing.error ?? "", /refused/);
+  });
+
+  test("record --exit 1 writes the complete record, prints nothing and exits 1", () => {
+    const r = run(kit(), ["record", "claude", "X1", "--exit", "1"], "{}");
+    assert.equal(r.status, 1);
+    assert.equal(r.out, "");
+    const dir = path.join(root, "out", "claude");
+    const rec = JSON.parse(
+      fs.readFileSync(path.join(dir, fs.readdirSync(dir)[0] ?? ""), "utf8"),
+    ) as { args: unknown; exitRequested: number; stdin: unknown; parentChain: unknown };
+    assert.deepEqual(rec.args, []);
+    assert.equal(rec.exitRequested, 1);
+    assert.deepEqual(rec.stdin, { keys: [], values: {} });
+    assert.match(run(kit(), ["collect", "claude"]).out, /exit status requested: 1/);
+  });
+
+  test("record --exit 2 is refused: exit 0 and the refusal is recorded", () => {
+    const r = run(kit(), ["record", "claude", "X1", "--exit", "2"], "");
+    assert.equal(r.status, 0);
+    assert.match(run(kit(), ["collect", "claude"]).out, /exitError: --exit 2 refused/);
+  });
+
+  test("without --exit the record still exits 0", () => {
+    assert.equal(run(kit(), ["record", "gemini", "I"], "").status, 0);
+  });
+});
+
+describe("guard-event case X2 (spec 0248 M1, M2)", () => {
+  type Hooks = Record<string, unknown>;
+  const installed = (cli: Cli): Hooks => JSON.parse(fs.readFileSync(cfg(cli), "utf8")) as Hooks;
+  const hooksOf = (cli: Cli): Hooks => installed(cli)["hooks"] as Hooks;
+
+  test("X2 is in the hook CLIs' tables as a guard case with `--exit 1`, and not on the statusLine surface", () => {
+    for (const cli of HOOK_CLIS) {
+      const x2 = casesFor(cli, "C:/r").find((c) => c.id === "X2");
+      assert.ok(x2 !== undefined, cli);
+      assert.equal(x2.guard, true);
+      assert.match(x2.command, new RegExp(` record ${cli} X2 --exit 1$`));
+    }
+    assert.equal(
+      casesFor("antigravity-statusline", "C:/r").some((c) => c.id === "X2"),
+      false,
+    );
+  });
+
+  test("it is opt-in: the default selection leaves it out and --only names it", () => {
+    for (const cli of HOOK_CLIS) {
+      assert.equal(
+        selectCases(cli, "C:/r", null).some((c) => c.id === "X2"),
+        false,
+        cli,
+      );
+      assert.deepEqual(
+        selectCases(cli, "C:/r", ["X2"]).map((c) => c.id),
+        ["X2"],
+      );
+    }
+    assert.equal(run(kit(), ["install", "claude"]).status, 0);
+    assert.equal(hooksOf("claude")["PreToolUse"], undefined, "a full install blocks nothing");
+  });
+
+  test("it is registered on each CLI's guard event, with that CLI's matcher", () => {
+    const only = (cli: Cli): ReturnType<typeof casesFor> => selectCases(cli, "C:/r", ["X2"]);
+    const claude = mergeHooks("claude", {}, only("claude")) as { hooks: Hooks };
+    assert.deepEqual(Object.keys(claude.hooks), ["PreToolUse"]);
+    assert.equal((claude.hooks["PreToolUse"] as { matcher: string }[])[0]?.matcher, "Bash");
+    const gemini = mergeHooks("gemini", {}, only("gemini")) as { hooks: Hooks };
+    assert.deepEqual(Object.keys(gemini.hooks), ["BeforeTool"]);
+    assert.equal(
+      (gemini.hooks["BeforeTool"] as { matcher: string }[])[0]?.matcher,
+      "run_shell_command",
+    );
+    const copilot = mergeHooks("copilot", {}, only("copilot")) as { hooks: Hooks };
+    assert.deepEqual(Object.keys(copilot.hooks), ["preToolUse"]);
+    assert.deepEqual(Object.keys((copilot.hooks["preToolUse"] as object[])[0] ?? {}).sort(), [
+      "command",
+      "type",
+    ]);
+    const agy = mergeHooks("antigravity", {}, only("antigravity")) as Record<string, Hooks>;
+    assert.deepEqual(Object.keys(agy["crewrig-probe"] ?? {}), ["PreToolUse"]);
+    assert.equal(
+      (agy["crewrig-probe"]?.["PreToolUse"] as { matcher: string }[])[0]?.matcher,
+      "run_command",
+    );
+  });
+
+  test("mixed with the default cases, both events are written", () => {
+    const both = selectCases("claude", "C:/r", ["I", "X2"]);
+    const merged = mergeHooks("claude", {}, both) as { hooks: Hooks };
+    assert.deepEqual(Object.keys(merged.hooks).sort(), ["PreToolUse", "UserPromptSubmit"]);
+  });
+
+  for (const cli of HOOK_CLIS) {
+    test(`${cli}: install --only X2 then restore leaves the file byte-identical`, () => {
+      fs.mkdirSync(path.dirname(cfg(cli)), { recursive: true });
+      const original = Buffer.from('{\n  "theme": "dark"\n}\n');
+      fs.writeFileSync(cfg(cli), original);
+      const i = run(kit(), ["install", cli, "--only", "X2"]);
+      assert.equal(i.status, 0, i.err);
+      assert.match(i.out, new RegExp(`X2: ask the ${cli} session to run this command`));
+      assert.match(i.out, new RegExp(`marker ${cli}`));
+      const r = run(kit(), ["restore", cli]);
+      assert.equal(r.status, 0, r.err);
+      assert.deepEqual(fs.readFileSync(cfg(cli)), original);
+      assert.equal(run(kit(), ["verify-clean"]).status, 0);
+    });
+  }
+
+  test("record X2 prints one stderr line, nothing on stdout, exits 1 and records its directory", () => {
+    const dir = fs.realpathSync(fs.mkdtempSync(path.join(tmp, "cwd-")));
+    const r = spawnSync(
+      process.execPath,
+      [
+        "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
+        kit(),
+        "record",
+        "claude",
+        "X2",
+        "--exit",
+        "1",
+      ],
+      { encoding: "utf8", input: "{}", cwd: dir },
+    );
+    assert.equal(r.status, 1);
+    assert.equal(r.stdout, "");
+    assert.equal(r.stderr.trimEnd().split("\n").length, 1);
+    assert.match(r.stderr, /^crewrig-probe X2: /);
+    const out = path.join(root, "out", "claude");
+    const rec = JSON.parse(
+      fs.readFileSync(path.join(out, fs.readdirSync(out)[0] ?? ""), "utf8"),
+    ) as { case: string; cwd: string; exitRequested: number };
+    assert.equal(rec.case, "X2");
+    assert.equal(rec.cwd, dir);
+    assert.equal(rec.exitRequested, 1);
+  });
+
+  test("another case stays silent on stderr, as X1 does", () => {
+    const r = run(kit(), ["record", "claude", "X1", "--exit", "1"], "{}");
+    assert.equal(r.err, "");
+  });
+
+  test("the marker command writes the file, and collect turns hook plus marker into a verdict", () => {
+    assert.equal(run(kit(), ["install", "gemini", "--only", "X2"]).status, 0);
+    const none = run(kit(), ["collect", "gemini"]).out;
+    assert.match(none, /\[X2\] launched=no/);
+    assert.match(none, /marker: absent/);
+    assert.match(none, /verdict: inconclusive/);
+    assert.equal(run(kit(), ["record", "gemini", "X2", "--exit", "1"], "{}").status, 1);
+    assert.match(run(kit(), ["collect", "gemini"]).out, /verdict: exit status 1 BLOCKED/);
+    const m = run(kit(), ["marker", "gemini"]);
+    assert.equal(m.status, 0, m.err);
+    assert.ok(fs.existsSync(markerPath(root, "gemini")));
+    const after = run(kit(), ["collect", "gemini"]).out;
+    assert.match(after, /marker: present/);
+    assert.match(after, /verdict: exit status 1 did NOT block/);
+    assert.equal(run(kit(), ["restore", "gemini"]).status, 0);
+  });
+
+  test("a new install --only X2 removes a marker left by an earlier run", () => {
+    assert.equal(run(kit(), ["marker", "claude"]).status, 0);
+    assert.ok(fs.existsSync(markerPath(root, "claude")));
+    assert.equal(run(kit(), ["install", "claude", "--only", "X2"]).status, 0);
+    assert.equal(fs.existsSync(markerPath(root, "claude")), false);
+    assert.equal(run(kit(), ["restore", "claude"]).status, 0);
+  });
+
+  test("x2Verdict covers the three outcomes", () => {
+    assert.match(x2Verdict(false, false), /inconclusive/);
+    assert.match(x2Verdict(false, true), /inconclusive/);
+    assert.match(x2Verdict(true, false), /BLOCKED/);
+    assert.match(x2Verdict(true, true), /did NOT block/);
   });
 });
 

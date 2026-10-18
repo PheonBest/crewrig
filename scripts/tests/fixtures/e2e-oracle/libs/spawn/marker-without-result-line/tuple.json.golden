@@ -1,0 +1,13 @@
+{
+  "files": {
+    "t.txt": {
+      "content": "â Probe-router(m1) t\nplain line\n  â orphan result NONCE-2\n",
+      "mode": "0644"
+    }
+  },
+  "id": "spawn/marker-without-result-line",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "true|false|false|m1\n"
+}

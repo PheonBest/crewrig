@@ -1,0 +1,154 @@
+// mempalace-pin-rig.ts — shared rig of the mempalace-pin-*.test.ts suites
+// (spec 0263, PR E). Drives scripts/lib/mempalace_pin.py through its CLI and through the
+// committed Python drivers under scripts/tests/fixtures/mempalace-pin/ (stored with a
+// `.golden` suffix so the Python ratchet does not count them, materialised as `.py`
+// into one scratch root). No pin literal is authored here: both bounds are read from
+// retired scripts/lib/common.sh with an independent two-line regex, never through the TypeScript
+// reader, so the guard test keeps its independence from it.
+
+import { spawnSync } from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+export const LIB_DIR = path.join(REPO, "scripts", "lib");
+export const PIN_MODULE = path.join(LIB_DIR, "mempalace_pin.py");
+export const PIN_FILE = path.join(LIB_DIR, "mempalace-pin.json");
+export const PYTHON_BIN = process.env.CREWRIG_TEST_PYTHON ?? "python3";
+const FIXTURES = path.join(REPO, "scripts", "tests", "fixtures", "mempalace-pin");
+
+export interface Pin {
+  readonly min: string;
+  readonly max: string;
+}
+
+/** Reads both bounds of the pin from a pin file, independently of the TS reader. */
+export function readPin(pinFile: string = PIN_FILE): Pin {
+  const doc = JSON.parse(fs.readFileSync(pinFile, "utf8")) as {
+    min?: string;
+    maxExclusive?: string;
+  };
+  const { min, maxExclusive: max } = doc;
+  if (min === undefined || max === undefined || min === "" || max === "")
+    throw new Error(`could not read the pin from ${pinFile}`);
+  return { min, max };
+}
+
+export interface Rig {
+  readonly root: string;
+  readonly shield: string;
+  readonly provider: string;
+  readonly home: string;
+  driver(name: string): string;
+  cleanup(): void;
+}
+
+/** Materialises the `.golden` fixtures as `.py` files under one scratch root. */
+export function makeRig(): Rig {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "mempalace-pin-")));
+  const materialise = (rel: string): void => {
+    const dest = path.join(root, rel);
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.copyFileSync(path.join(FIXTURES, `${rel}.golden`), dest);
+  };
+  for (const stub of ["shield", "provider"]) {
+    materialise(`${stub}/packaging/version.py`);
+    fs.writeFileSync(path.join(root, stub, "packaging", "__init__.py"), "");
+  }
+  for (const name of ["verdict_rows.py", "corpus_driver.py", "import_safety.py"]) materialise(name);
+  const home = path.join(root, "home");
+  fs.mkdirSync(home);
+  return {
+    root,
+    shield: path.join(root, "shield"),
+    provider: path.join(root, "provider"),
+    home,
+    driver: (name) => path.join(root, name),
+    cleanup: () => fs.rmSync(root, { recursive: true, force: true }),
+  };
+}
+
+export interface Result {
+  readonly rc: number;
+  /** stdout and stderr merged in that order. */
+  readonly out: string;
+}
+
+function scratchEnv(home: string, pythonpath: string | undefined): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = { ...process.env };
+  for (const key of ["PYTHONPATH", "PYTHONHOME", "PYTHONSTARTUP"]) delete env[key];
+  env.HOME = home;
+  env.USERPROFILE = home;
+  env.PYTHONDONTWRITEBYTECODE = "1";
+  if (pythonpath !== undefined) env.PYTHONPATH = pythonpath;
+  return env;
+}
+
+export function runPython(
+  rig: Rig,
+  python: string,
+  args: readonly string[],
+  pythonpath?: string,
+): Result {
+  const res = spawnSync(python, [...args], {
+    env: scratchEnv(rig.home, pythonpath),
+    encoding: "utf8",
+    timeout: 60_000,
+  });
+  return { rc: res.status ?? -1, out: `${res.stdout}${res.stderr}`.trimEnd() };
+}
+
+export interface CheckOptions {
+  readonly pythonpath?: string;
+  readonly python?: string;
+  readonly pinFile?: string;
+}
+
+/** `mempalace_pin.py --pin-file <path> --check <version>`. */
+export function checkVersion(rig: Rig, version: string, options: CheckOptions = {}): Result {
+  return runPython(
+    rig,
+    options.python ?? PYTHON_BIN,
+    [PIN_MODULE, "--pin-file", options.pinFile ?? PIN_FILE, "--check", version],
+    options.pythonpath,
+  );
+}
+
+/** `mempalace_pin.py --pin-file <path> --print-pin`. */
+export function printPin(rig: Rig, pinFile: string): Result {
+  return runPython(rig, PYTHON_BIN, [PIN_MODULE, "--pin-file", pinFile, "--print-pin"]);
+}
+
+/** Runs one committed driver; `args` are the driver's own argv after the script. */
+export function runDriver(
+  rig: Rig,
+  name: string,
+  args: readonly string[],
+  options: { readonly pythonpath?: string; readonly python?: string } = {},
+): Result {
+  return runPython(
+    rig,
+    options.python ?? PYTHON_BIN,
+    [rig.driver(name), ...args],
+    options.pythonpath,
+  );
+}
+
+function canImportPackaging(rig: Rig, python: string): boolean {
+  return runPython(rig, python, ["-c", "import packaging.version"]).rc === 0;
+}
+
+/**
+ * An interpreter that can import the REAL `packaging`: the primary interpreter first,
+ * Undefined when it cannot.
+ */
+export function findPackagingPython(rig: Rig): string | undefined {
+  if (canImportPackaging(rig, PYTHON_BIN)) return PYTHON_BIN;
+  return undefined;
+}
+
+export const PACKAGING_HINT =
+  "no interpreter here can import the real `packaging`, so the primary comparator was never exercised against the real library " +
+  "(install it: python3 -m pip install packaging, or make CREWRIG_TEST_PYTHON an interpreter that carries it)";

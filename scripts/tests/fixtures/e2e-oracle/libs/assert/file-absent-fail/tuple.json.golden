@@ -1,0 +1,13 @@
+{
+  "files": {
+    "present": {
+      "content": "",
+      "mode": "0644"
+    }
+  },
+  "id": "assert/file-absent-fail",
+  "rc": 1,
+  "stats": {},
+  "stderr": "# FAIL assert_file_absent present\n#   expected: path does not exist\n#   actual:   path exists: present\n",
+  "stdout": ""
+}

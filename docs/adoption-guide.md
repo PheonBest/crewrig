@@ -69,7 +69,7 @@ configuration home. The repository may be public or private.
    # upstream https://github.com/crewrig/crewrig.git (fetch)
    ```
 
-The sync script (`bash scripts/sync-from-upstream.sh`, Step 7) reads the
+The sync script (`node scripts/sync-from-upstream.ts`, Step 7) reads the
 upstream URL directly from `crewrig.config.toml → canonical_repo` — it does
 not rely on a named git remote. The `upstream` remote shown above is optional;
 retain it only if you want to run manual git operations such as `git log
@@ -122,7 +122,7 @@ Replace both values:
 > so overriding `feedback_repo` does **not** capture feedback on components you
 > did not author — that feedback keeps flowing upstream where the components are
 > maintained. This is by design (spec 0030) and enforced by
-> `scripts/check-feedback-routing.sh`. See
+> `scripts/check-feedback-routing.ts`. See
 > [`artifacts/FORMAT.md`](../artifacts/FORMAT.md) → *Provenance & Forks*.
 
 Commit the file:
@@ -217,8 +217,13 @@ git commit -m "⚙️ Initialise config/TOOLS.md for <YOUR-ORG>"
 Run the build script to compile all artifact sources into CLI-specific outputs.
 
 ```bash
-bash scripts/build-components.sh
+node scripts/lib/node-floor-guard.js
+node scripts/build-components.ts
 ```
+
+Run the two commands as separate steps, not chained with `&&`. The build needs
+Node.js 24 or newer; `js-yaml` comes from the setup dependency step.
+`node scripts/build-components.ts` still works and forwards to the same build.
 
 **Expected outcome:** The script exits zero and populates the following
 output directories:
@@ -269,10 +274,17 @@ the interactive setup script for each active CLI. These scripts are
 interactive: they will prompt for copy vs. symlink mode and confirm before
 modifying user-home directories.
 
+Each setup is a TypeScript entry that needs Node.js 24 or later. Run the floor
+guard first, then the entry, as two separate steps (not chained with `&&`):
+`node scripts/lib/node-floor-guard.js`, then
+`node scripts/setup-<cli>-interactive.ts`. The
+`task setup-<cli>-interactive` entry runs the same two steps. The old Bash setup scripts were removed (see `docs/shell-removal.md`).
+
 ### Claude Code
 
 ```bash
-bash scripts/setup-claude-interactive.sh
+node scripts/lib/node-floor-guard.js
+node scripts/setup-claude-interactive.ts
 ```
 
 Deploys to `~/.claude/rules/`. Each context file is installed with its
@@ -282,7 +294,8 @@ loads them in priority order.
 ### Gemini CLI
 
 ```bash
-bash scripts/setup-gemini-interactive.sh
+node scripts/lib/node-floor-guard.js
+node scripts/setup-gemini-interactive.ts
 ```
 
 Deploys to `~/.gemini/` directly — there is no `rules/` subdirectory for
@@ -294,7 +307,8 @@ difference automatically.
 ### GitHub Copilot CLI
 
 ```bash
-bash scripts/setup-copilot-interactive.sh
+node scripts/lib/node-floor-guard.js
+node scripts/setup-copilot-interactive.ts
 ```
 
 Deploys to `~/.copilot/instructions/` as `*.instructions.md` files
@@ -307,7 +321,8 @@ naming automatically.
 ### Antigravity CLI
 
 ```bash
-bash scripts/setup-antigravity-interactive.sh
+node scripts/lib/node-floor-guard.js
+node scripts/setup-antigravity-interactive.ts
 ```
 
 Deploys context to `~/.gemini/config/AGENTS.md` and MCP server configurations
@@ -332,8 +347,11 @@ After the organization's fork is in use, pull future upstream core-layer
 changes without touching overlay content.
 
 ```bash
-bash scripts/sync-from-upstream.sh
+node scripts/sync-from-upstream.ts
 ```
+
+Run `node scripts/lib/node-floor-guard.js` first on an unverified Node.js: the
+command needs Node.js 24 or later.
 
 **Expected outcome:** The script exits zero, updates the core-layer paths
 listed in `.crewrig/core-paths.txt` from the URL set in
@@ -348,7 +366,7 @@ the directory containing them — and exit 1 with a message similar to:
 
 ```text
 Error: the following core-layer paths have local modifications:
-  scripts/sync-from-upstream.sh
+  scripts/sync-from-upstream.ts
   artifacts/core/skills/developer/SKILL.md
 Revert these changes before running sync, or promote them to overlay overrides.
 
@@ -375,7 +393,7 @@ and `git bisect` surface the upstream lineage directly instead of losing it to
 a plain file restore.
 
 ```bash
-bash scripts/sync-from-upstream.sh --preserve-history
+node scripts/sync-from-upstream.ts --preserve-history
 ```
 
 This flag is opt-in and per-invocation only — it is never enabled implicitly
@@ -471,7 +489,7 @@ no dual-shape read and no fallback through a tool-specific manifest.
 
 **What breaks.** An extension whose `extension.json` still declares
 `components.<subject>.enabled`, or any of the five retired per-CLI keys,
-stops building, installing, and passing `bash scripts/build-extension.sh
+stops building, installing, and passing `node scripts/build-extension.ts
 --check` from the moment this change lands. The failure names the retired
 form it found and points here.
 
@@ -481,7 +499,9 @@ form it found and points here.
 task migrate-extension EXT=<your-extension-name>
 ```
 
-(equivalently, `bash scripts/migrate-extension.sh <path-or-name>`). The
+(equivalently, `node scripts/lib/node-floor-guard.js` then
+`node scripts/migrate-extension.ts <path-or-name>`, as two separate commands;
+Node.js 24 or later, with `js-yaml` from the setup dependency step). The
 tool converts an enabled `components.<subject>` entry into the equivalent
 generic top-level `<subject>` section, drops a disabled entry with nothing
 added, deletes the `components` object outright, drops the five retired
@@ -495,7 +515,7 @@ shape is reported as already migrated, and the tool writes nothing.
 **When the break lands.** This repository carries no framework version
 stream — there are no framework tags, no `VERSION` file, and the root
 `package.json` version has never moved since the initial commit — so the
-sync boundary an adopter running `scripts/sync-from-upstream.sh` should use
+sync boundary an adopter running `node scripts/sync-from-upstream.ts` should use
 is the change itself, not a framework version number: **2026-08-25, spec
 0183, the implementation pull request for issue #1008** (crewrig/crewrig).
 For anyone consuming the reference extension (`extensions/core/hello-world`)
@@ -530,7 +550,7 @@ the `canonical_repo` / `feedback_repo` fields still contain the literal
 placeholder strings `https://github.com/<YOUR-ORG>/<YOUR-REPO>` (or are
 empty strings).
 
-**Effect — `bash scripts/build-components.sh`:** Exits zero in both cases.
+**Effect — `node scripts/build-components.ts`:** Exits zero in both cases.
 When config is absent, the script warns on stderr that placeholders will be
 left literal. When config contains the placeholder URL, the script passes
 validation silently and emits no warning. In both cases the built outputs
@@ -538,7 +558,7 @@ contain unreplaced values (skills and agents reference the placeholder URL
 literally). The harness curator will open friction issues against the
 placeholder URL, which resolves to nothing.
 
-**Effect — `bash scripts/sync-from-upstream.sh`:** Exits 1 and prints
+**Effect — `node scripts/sync-from-upstream.ts`:** Exits 1 and prints
 an error when `canonical_repo` is absent or empty:
 
 ```text
@@ -553,7 +573,7 @@ re-running either script.
 
 ### Build output directories are empty or partially populated
 
-**Cause:** A source directory expected by `scripts/build-components.sh` is
+**Cause:** A source directory expected by `scripts/build-components.ts` is
 absent. Common causes: an incomplete migration from a pre-spec-0014 branch,
 a branch that predates the `artifacts/` directory restructuring, or a
 partially applied upstream sync that left a directory missing.
@@ -566,7 +586,7 @@ directories are silently skipped — no error message is emitted.
 branch. Run `git status` and `git diff origin/main` to identify missing
 files. If the branch predates spec 0014, rebase it onto `main` or re-apply
 the migration steps described in `specs/0014-*.md`. After restoring the
-missing directories, re-run `bash scripts/build-components.sh`.
+missing directories, re-run `node scripts/lib/node-floor-guard.js`, then `node scripts/build-components.ts` (two separate steps).
 
 ### Dirty-core refusal during sync {#dirty-core-refusal}
 
@@ -576,7 +596,7 @@ inside a directory that is. The sync script enforces a dirty-core guard to
 prevent upstream changes from silently overwriting local modifications to
 core-layer files.
 
-**Effect:** `bash scripts/sync-from-upstream.sh` exits 1 and lists the
+**Effect:** `node scripts/sync-from-upstream.ts` exits 1 and lists the
 offending **files**, each at its full path. A directory listed in the manifest
 is never itself reported: what you see is what you modified.
 
@@ -595,7 +615,7 @@ is never itself reported: what you see is what you modified.
    adopter loses a new upstream guard and discovers it later through unrelated
    test failures; it is why the guard lists files rather than directories.
 
-   Then re-run `bash scripts/sync-from-upstream.sh`.
+   Then re-run `node scripts/sync-from-upstream.ts`.
 
 2. **Promote to an overlay override** — if the change is intentional and
    must survive future upstream syncs, move it to the corresponding
@@ -622,7 +642,7 @@ repository, not the fork.
 
 **Resolution:** Choose one of two paths:
 
-1. **Sync to pick up the fix** — run `bash scripts/sync-from-upstream.sh`
+1. **Sync to pick up the fix** — run `node scripts/sync-from-upstream.ts`
    to pull in the canonical-repository guard and, on a stale fork, the
    removal of `release-extension.yml`; commit the result, and push. The
    next push leaves the workflow inert on the fork instead of failing.

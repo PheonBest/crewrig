@@ -2,7 +2,8 @@
 
 This document specifies the single-source format for community components
 in `artifacts/community/`. Components written in this format are compiled by
-`scripts/build-components.sh` into tool-specific outputs for Gemini CLI
+`scripts/build-components.ts` into
+tool-specific outputs for Gemini CLI
 and Claude Code.
 
 ## Principles
@@ -137,7 +138,7 @@ inheritance). Skills and commands do not carry this field.
 declares a model need — there is no other key, on any section, that
 states one. On the upstream-owned tiers (`artifacts/core/` and
 `artifacts/library/`), a source's `metadata:` block admits exactly two
-keys, `provenance` and `model`; `scripts/check-component-metadata-keys.sh`
+keys, `provenance` and `model`; `scripts/check-component-metadata-keys.ts`
 is the gate that rejects any other (spec 0200 requirement 8).
 
 | Key | Type | Domain | Unconstrained state |
@@ -162,7 +163,7 @@ is the gate that rejects any other (spec 0200 requirement 8).
 | `max-turns` | integer | at least `1` |
 
 A key outside these eight, or a `tuning:` key outside these five, is
-rejected at authoring time by `scripts/check-agent-profiles.sh` — a
+rejected at authoring time by `scripts/check-agent-profiles.ts` — a
 hermetic check over the source and these domains alone, consulting no
 mapping. A value outside a closed domain is rejected the same way; an
 unenumerated `specialization` value is not, because that axis is an open
@@ -174,7 +175,7 @@ The per-CLI mapping that turns a declared profile into a target's native
 fields or prose lives in `model-mappings/<target>.yml`, normatively
 described in [`docs/model-mapping-format.md`](../docs/model-mapping-format.md);
 the resolution that reads a mapping and a profile together is
-`scripts/lib/model-resolve.sh`, consumed by `scripts/build-components.sh`.
+`scripts/lib/model-resolve.ts` (its Bash predecessor was retired in row I2), consumed by `scripts/build-components.ts`.
 How an adopting organization changes what a mapping resolves to for its own
 fork is documented in
 [`docs/org-model-mapping-override.md`](../docs/org-model-mapping-override.md);
@@ -183,7 +184,7 @@ asks of that organization is documented in
 [`docs/agent-profile-migration.md`](../docs/agent-profile-migration.md).
 
 **Obligation:** a later delta of spec 0195 that changes one of the domains
-above SHALL update this section and `scripts/check-agent-profiles.sh` in
+above SHALL update this section and `scripts/check-agent-profiles.ts` in
 the same change — the same obligation
 [`docs/model-mapping-format.md`](../docs/model-mapping-format.md) → *Domains*
 already carries for the mapping side.
@@ -233,7 +234,7 @@ these subfolders are **propagated verbatim** to both build outputs
 (`.gemini/skills/<name>/<subfolder>/...` and
 `.claude/skills/<name>/<subfolder>/...`). Executable bits are
 preserved. Skill bodies should reference resources by path relative
-to the skill root (e.g. `scripts/curate.sh`), so the same invocation
+to the skill root (e.g. `scripts/curate.ts`), so the same invocation
 works regardless of whether the skill lives at project level
 (`.gemini/.claude/`) or user level (`~/.gemini/`, `~/.claude/`).
 
@@ -352,7 +353,7 @@ setting:
   `canonical` (`"${CANONICAL_REPO}"`). A fork never diverts feedback away from
   components it does not own — frictions on upstream components always reach the
   upstream repo, regardless of the fork's `feedback_repo`. The
-  `scripts/check-feedback-routing.sh` CI guard enforces this (see
+  `scripts/check-feedback-routing.ts` CI guard enforces this (see
   `task check-feedback-routing`).
 - **Adopter-owned tiers** (`artifacts/community`, `artifacts/org`,
   `extensions/org`) use `feedback: "${FEEDBACK_REPO}"`, so a fork's own
@@ -361,7 +362,7 @@ setting:
 ### Placeholder resolution
 
 `${SHELL_LIKE}` placeholders are resolved at **build time** by
-`scripts/build-components.sh` from `crewrig.config.toml` at the repo
+`scripts/build-components.ts` from `crewrig.config.toml` at the repo
 root. Each line in the config file maps an uppercased key to a value:
 
 ```toml
@@ -395,15 +396,15 @@ components (`artifacts/core`, `artifacts/library`, `extensions/core`,
 overriding `feedback_repo` does **not** capture feedback on components you did
 not author — that feedback keeps flowing to the upstream repository where the
 components are maintained. This is by design (spec 0030) and enforced by
-`scripts/check-feedback-routing.sh`.
+`scripts/check-feedback-routing.ts`.
 
 ### Extension skills & agents — carrier-in-source, literal origin
 
 The placeholder/build-strip model above applies to `artifacts/` components,
 which are *built* into per-CLI outputs. A skill or agent shipped inside an
 **extension** (`extensions/core`, `extensions/library`) is different: it is
-consumed **in place** — `install-extension.sh` does `ln -s` / `cp -rf` of the
-whole extension dir, and `build-claude-plugin.sh` does `cp -r` of the skill dir
+consumed **in place** — `install-extension.ts` does `ln -s` / `cp -rf` of the
+whole extension dir, and `scripts/build-claude-plugin.ts` does a recursive copy of the skill dir
 — so every CLI reads the same `SKILL.md` / `AGENT.md` source bytes with **no
 render seam** to strip a frontmatter block. Two consequences follow (spec 0043):
 
@@ -431,10 +432,10 @@ render seam** to strip a frontmatter block. Two consequences follow (spec 0043):
 
 For an upstream-owned extension tier, `feedback` MUST equal `canonical` exactly
 as for `artifacts/` (spec 0030). **Enforcement note:** because this block lives
-in a *comment*, the frontmatter/`yq`-based `check-feedback-routing.sh` cannot
+in a *comment*, the frontmatter/`yq`-based `check-feedback-routing.ts` cannot
 see it and permanently skips extension skills — so the presence and R5
 (feedback==canonical) enforcement for extension skills/agents lives **solely**
-in `scripts/check-extension-provenance.sh` (no defense-in-depth overlap with the
+in `scripts/check-extension-provenance.ts` (no defense-in-depth overlap with the
 spec-0030 guard). See [`docs/cli-matrix.md`](../docs/cli-matrix.md) row 5c.
 
 The `version:` field in `metadata.provenance:` is a literal
@@ -457,14 +458,14 @@ The `metadata.provenance.version` field follows
 `commands/*.md` source under any artifact tier — `artifacts/core/`,
 `artifacts/library/`, or `artifacts/community/` — MUST bump
 `metadata.provenance.version` in the same diff. CI enforces this via
-`scripts/check-skill-versions.sh` (see `task check-skill-versions` for
+`scripts/check-skill-versions.ts` (see `task check-skill-versions` for
 the local invocation). The same discipline extends to the upstream-owned extension tiers `extensions/core/` and
 `extensions/library/`, where the `version` instead rides on the
 provenance carrier (the first-body-line `<!-- crewrig-provenance:
 version="…" … -->` HTML comment per spec 0043, not frontmatter — Gemini
 CLI 0.42.0+ rejects non-`name`/`description` frontmatter keys on the
 in-place source); there the bump is enforced by
-`scripts/check-extension-version-bump.sh` (spec 0044). The
+`scripts/check-extension-version-bump.ts` (spec 0044). The
 rationale:
 
 - A friction tag captured `evidence: <path>:<line>` against an
@@ -488,17 +489,21 @@ backfill.
 
 ## Parser Requirements
 
-The build script (`scripts/build-components.sh`) requires:
+The build (`scripts/build-components.ts`) requires:
 
-- **`yq`** (preferred) for YAML frontmatter parsing, or a lightweight
-  Python helper as fallback.
-- **`jq`** for JSON merging (hooks, policies, MCP servers).
-- **Bash 3.2.57** — the stock macOS `/bin/bash`, and the enforced floor. The
-  forbidden constructs are declared in `ci/bash32-forbidden.txt` and rejected in
-  continuous integration by `scripts/check-bash32-portability.sh`: no
-  associative arrays (`declare -A`), no `mapfile`/`readarray`. This entry
-  previously read "Bash 4+ for associative arrays", which contradicted that
-  guard.
+- **Node.js 24** or later, checked by `scripts/lib/node-floor-guard.js` before
+  anything is written.
+- **`js-yaml`** for YAML frontmatter parsing, a production dependency installed
+  by the setup dependency step (`npm ci --omit=dev --workspaces=false`). The
+  build needs neither `yq` nor `jq`.
+
+The extension and plugin builders (`scripts/build-extension.ts` and its
+siblings, TypeScript since spec 0254; the shell shims were removed) need no `yq` or `jq`:
+they run on Node.js 24 or later with `js-yaml` from the setup dependency step.
+The Bash scripts that have not migrated still need:
+
+- **`yq`** for YAML frontmatter parsing, and **`jq`** for JSON merging (hooks,
+  policies, MCP servers), until row G1b of the TypeScript migration moves them.
 
 ## Validation Rules
 

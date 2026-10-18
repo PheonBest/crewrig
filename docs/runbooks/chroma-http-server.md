@@ -17,7 +17,7 @@ CLI session connects to it via `chromadb.HttpClient` through
   itself resolves it: `$PIPX_HOME` when set, else `~/.local/pipx` when that
   directory exists, else `~/Library/Application Support/pipx` on macOS and
   `${XDG_DATA_HOME:-~/.local/share}/pipx` elsewhere (`mempalace_pipx_home` in
-  `scripts/lib/common.sh`; `pipx environment --value PIPX_HOME` prints it).
+  the retired `scripts/lib/common.sh`; `pipx environment --value PIPX_HOME` prints it).
 - **`chroma` binary** available on `PATH`. The MemPalace pipx venv exposes
   it at `<pipx-home>/venvs/mempalace/bin/chroma`; symlink it into a
   directory on `PATH` if needed.
@@ -26,16 +26,16 @@ CLI session connects to it via `chromadb.HttpClient` through
   wrapper both honor the variable).
 - **Supervisor unit installed**: `~/Library/LaunchAgents/com.mempalace.chroma-server.plist`
   (macOS) or `~/.config/systemd/user/mempalace-chroma-server.service` (Linux).
-  `scripts/setup-claude-interactive.sh` and `scripts/setup-gemini-interactive.sh`
+  `scripts/setup-claude-interactive.ts` and `scripts/setup-gemini-interactive.ts`
   install these automatically when the user opts into MemPalace.
 
 ## Daily operations
 
 | Action | Command |
 |--------|---------|
-| Start  | `bash scripts/start-chroma-server.sh` |
-| Stop   | `bash scripts/stop-chroma-server.sh` |
-| Status | `bash scripts/status-chroma-server.sh` |
+| Start  | `node scripts/lib/node-floor-guard.js` then `node scripts/start-chroma-server.ts` |
+| Stop   | `node scripts/lib/node-floor-guard.js` then `node scripts/stop-chroma-server.ts` |
+| Status | `node scripts/lib/node-floor-guard.js` then `node scripts/status-chroma-server.ts` |
 | Health | `curl -sf http://127.0.0.1:8001/api/v2/heartbeat` |
 
 The supervisor (launchd `KeepAlive=true` / systemd `Restart=always`)
@@ -89,7 +89,7 @@ Both should report `65536` (or higher) once the reload completes.
 
 ### File-descriptor floor on the manual launch path
 
-`scripts/start-chroma-server.sh` — the ad-hoc path used to bring up the
+`scripts/start-chroma-server.ts` — the ad-hoc path used to bring up the
 daemon outside the installed supervisor — raises the daemon process's
 open-file soft limit to `10240` (`MEMPALACE_CHROMA_ULIMIT_FLOOR`
 overrides the default) immediately before launching it. This floor is
@@ -124,10 +124,11 @@ purely client-side, in-process bound — it complements, but is independent
 of, the daemon's own file-descriptor floor documented above (spec 0087 /
 issue #587): this ceiling keeps each session frugal so that floor is
 approached far more slowly as concurrent sessions accumulate.
-`hooks/mempalace-transcript.sh`'s per-invocation clients honor this exact
-same ceiling and the exact same two environment variables — not a
-separate pair — so tuning one env var affects both components (spec 0088
-delta-01 R9).
+The session-recording hook, `hooks/mempalace-transcript.ts` (spec 0247),
+opens no ChromaDB client of its own: it sends one HTTP request per firing
+to the shared MemPalace MCP daemon, whose process holds the client this
+ceiling bounds. Its earlier per-invocation clients (spec 0088 delta-01 R9)
+are gone, so the two variables above now only tune that process.
 
 ## Migrating from the legacy `PersistentClient` setup
 
@@ -139,10 +140,14 @@ If you upgraded a working CrewRig install across the #98 boundary:
 2. **Re-run the setup script for each CLI you use:**
 
    ```sh
-   bash scripts/setup-claude-interactive.sh
-   bash scripts/setup-gemini-interactive.sh
-   bash scripts/setup-copilot-interactive.sh   # if Copilot is configured
+   node scripts/lib/node-floor-guard.js
+   node scripts/setup-claude-interactive.ts
+   node scripts/setup-gemini-interactive.ts
+   node scripts/setup-copilot-interactive.ts   # if Copilot is configured
    ```
+
+   Run the guard once, as its own step; the setup entries need Node.js 24 or
+   later. The old Bash setup scripts were removed (see `docs/shell-removal.md`).
 
    The setup script installs the supervisor unit, starts the daemon,
    runs the health check, and rewrites the MCP entry to point at
@@ -150,7 +155,7 @@ If you upgraded a working CrewRig install across the #98 boundary:
    daemon comes up before any MCP entry is written (see ADR 0006 →
    *First-launch ordering*).
 
-3. **Verify** with `bash scripts/status-chroma-server.sh` and by starting
+3. **Verify** with `node scripts/lib/node-floor-guard.js` then `node scripts/status-chroma-server.ts` and by starting
    one CLI session — the first MemPalace MCP call should succeed without
    the wrapper printing a fail-loud error.
 
@@ -202,10 +207,11 @@ If a pre-#98 corruption is suspected (zombie locks in `acquire_write`,
 missing `index_metadata.pickle`, stuck `embeddings_queue`):
 
 ```sh
-bash scripts/stop-chroma-server.sh
+node scripts/lib/node-floor-guard.js
+node scripts/stop-chroma-server.ts
 mempalace rebuild-from-sqlite        # or the project's documented recovery cmd
-bash scripts/start-chroma-server.sh
-bash scripts/status-chroma-server.sh
+node scripts/start-chroma-server.ts
+node scripts/status-chroma-server.ts
 ```
 
 A successful rebuild + health check restores normal operation. Capture

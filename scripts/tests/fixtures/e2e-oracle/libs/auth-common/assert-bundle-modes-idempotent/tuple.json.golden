@@ -1,0 +1,16 @@
+{
+  "files": {
+    "h/.crewrig-e2e/gemini/oauth_creds.json": {
+      "content": "{}\n",
+      "mode": "0600"
+    }
+  },
+  "id": "auth-common/assert-bundle-modes-idempotent",
+  "rc": 0,
+  "stats": {
+    "h/.crewrig-e2e": "0755",
+    "h/.crewrig-e2e/gemini": "0700"
+  },
+  "stderr": "",
+  "stdout": ""
+}

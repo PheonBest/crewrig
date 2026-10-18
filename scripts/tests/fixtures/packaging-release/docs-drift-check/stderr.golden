@@ -1,0 +1,18 @@
+Drift: docs/index.json is stale. Re-run: bash scripts/build-docs-index.ts
+-{}
++{
++  "version": 1,
++  "sections": [
++    {
++      "section": "concepts",
++      "title": "Concepts",
++      "pages": [
++        {
++          "title": "Real",
++          "path": "docs/real.md",
++          "nav_order": 1
++        }
++      ]
++    }
++  ]
++}

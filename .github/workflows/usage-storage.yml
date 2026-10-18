@@ -5,17 +5,40 @@ on:
     branches: [main, "release/**"]
     paths:
       - "scripts/lib/usage-store/**"
-      - "scripts/usage-query.sh"
-      - "scripts/usage-prune.sh"
-      - "scripts/usage-mirror.sh"
+      - "scripts/usage-query.ts"
+      - "scripts/usage-prune.ts"
+      - "scripts/usage-mirror.ts"
       - "scripts/usage-inventory.ts"
-      - "scripts/usage-drain.sh"
-      - "scripts/usage-task.sh"
-      - "scripts/usage-attribute.sh"
-      - "scripts/usage-backfill.sh"
+      - "scripts/usage-drain.ts"
+      - "scripts/usage-task.ts"
+      - "scripts/usage-attribute.ts"
+      - "scripts/usage-backfill.ts"
       - "scripts/build-usage-validator.js"
-      - "scripts/tests/test-usage-storage*.sh"
+      - "scripts/tests/usage-mirror-catchup.test.ts"
+      - "scripts/tests/usage-mirror-prune.test.ts"
+      - "scripts/tests/usage-mirror-failures.test.ts"
+      - "scripts/tests/usage-mirror-mutants.test.ts"
+      - "scripts/tests/lib/usage-mirror-rig.ts"
+      - "scripts/tests/lib/usage-mirror-records.ts"
+      - "scripts/tests/lib/usage-mirror-backlog.ts"
+      - "scripts/tests/usage-storage-journal.test.ts"
+      - "scripts/tests/usage-storage-query.test.ts"
+      - "scripts/tests/usage-storage-gate.test.ts"
+      - "scripts/tests/usage-mirror-spawn.test.ts"
+      - "scripts/tests/usage-storage-wing.test.ts"
+      - "scripts/tests/usage-storage-drain.test.ts"
+      - "scripts/tests/usage-storage-prune.test.ts"
+      - "scripts/tests/lib/usage-storage-rig.ts"
+      - "scripts/tests/lib/usage-storage-driver.ts"
+      - "scripts/tests/lib/usage-mutants.ts"
+      - "scripts/tests/lib/mutation-copy.ts"
+      - "scripts/tests/lib/capability.ts"
       - "scripts/tests/usage-inventory.test.ts"
+      - "scripts/lib/usage-wrapper.ts"
+      - "scripts/tests/usage-wrappers-oracle.test.ts"
+      - "scripts/tests/usage-wrappers.test.ts"
+      - "scripts/tests/hermetic-env.test.ts"
+      - "scripts/tests/lib/hermetic-env.ts"
       - "scripts/tests/fixtures/usage-storage/**"
       - "schemas/**"
       - "package.json"
@@ -26,17 +49,40 @@ on:
     branches: [main, "release/**"]
     paths:
       - "scripts/lib/usage-store/**"
-      - "scripts/usage-query.sh"
-      - "scripts/usage-prune.sh"
-      - "scripts/usage-mirror.sh"
+      - "scripts/usage-query.ts"
+      - "scripts/usage-prune.ts"
+      - "scripts/usage-mirror.ts"
       - "scripts/usage-inventory.ts"
-      - "scripts/usage-drain.sh"
-      - "scripts/usage-task.sh"
-      - "scripts/usage-attribute.sh"
-      - "scripts/usage-backfill.sh"
+      - "scripts/usage-drain.ts"
+      - "scripts/usage-task.ts"
+      - "scripts/usage-attribute.ts"
+      - "scripts/usage-backfill.ts"
       - "scripts/build-usage-validator.js"
-      - "scripts/tests/test-usage-storage*.sh"
+      - "scripts/tests/usage-mirror-catchup.test.ts"
+      - "scripts/tests/usage-mirror-prune.test.ts"
+      - "scripts/tests/usage-mirror-failures.test.ts"
+      - "scripts/tests/usage-mirror-mutants.test.ts"
+      - "scripts/tests/lib/usage-mirror-rig.ts"
+      - "scripts/tests/lib/usage-mirror-records.ts"
+      - "scripts/tests/lib/usage-mirror-backlog.ts"
+      - "scripts/tests/usage-storage-journal.test.ts"
+      - "scripts/tests/usage-storage-query.test.ts"
+      - "scripts/tests/usage-storage-gate.test.ts"
+      - "scripts/tests/usage-mirror-spawn.test.ts"
+      - "scripts/tests/usage-storage-wing.test.ts"
+      - "scripts/tests/usage-storage-drain.test.ts"
+      - "scripts/tests/usage-storage-prune.test.ts"
+      - "scripts/tests/lib/usage-storage-rig.ts"
+      - "scripts/tests/lib/usage-storage-driver.ts"
+      - "scripts/tests/lib/usage-mutants.ts"
+      - "scripts/tests/lib/mutation-copy.ts"
+      - "scripts/tests/lib/capability.ts"
       - "scripts/tests/usage-inventory.test.ts"
+      - "scripts/lib/usage-wrapper.ts"
+      - "scripts/tests/usage-wrappers-oracle.test.ts"
+      - "scripts/tests/usage-wrappers.test.ts"
+      - "scripts/tests/hermetic-env.test.ts"
+      - "scripts/tests/lib/hermetic-env.ts"
       - "scripts/tests/fixtures/usage-storage/**"
       - "schemas/**"
       - "package.json"
@@ -71,13 +117,16 @@ jobs:
         run: npm install
 
       - name: Validate the usage-record storage contract (no daemon)
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-usage-storage.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-storage-journal.test.ts scripts/tests/usage-storage-query.test.ts scripts/tests/usage-storage-gate.test.ts scripts/tests/usage-mirror-spawn.test.ts scripts/tests/usage-storage-wing.test.ts scripts/tests/usage-storage-drain.test.ts scripts/tests/usage-storage-prune.test.ts
 
       - name: Validate the usage-record mirror against a fake daemon
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-usage-storage-mirror.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-mirror-catchup.test.ts scripts/tests/usage-mirror-prune.test.ts scripts/tests/usage-mirror-failures.test.ts scripts/tests/usage-mirror-mutants.test.ts
 
       - name: Validate the MemPalace drawer inventory against a fake daemon
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-inventory.test.ts
+
+      - name: Check the usage wrapper oracle and the hermetic environment helper (POSIX only)
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-wrappers-oracle.test.ts scripts/tests/usage-wrappers.test.ts scripts/tests/hermetic-env.test.ts
 
       - name: Verify the standalone validator matches the generator
         run: node scripts/build-usage-validator.js --check

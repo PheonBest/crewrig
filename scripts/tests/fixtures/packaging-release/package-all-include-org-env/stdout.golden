@@ -1,0 +1,55 @@
+Extension render — BUILD (--target gemini)
+Building extension: hello-world
+  Rendered: build/extensions/hello-world/gemini-extension.json
+  Rendered: build/extensions/hello-world/GEMINI.md
+  Rendered: build/extensions/hello-world/commands/hello.toml
+
+Done.
+  gemini CLI not on PATH — skipping the best-effort 'gemini extensions validate' check.
+Packaged: <ROOT>/dist/release/hello-world/hello-world-<VERSION>.tar.gz
+  Archive root: build/extensions/hello-world's CONTENTS, no wrapper directory (byte-for-byte — Ruling A, single-tool; see the R20 probe runbook for why no wrapper)
+  Version: <VERSION>
+Extension render — BUILD (--target gemini)
+Building extension: zz-core
+  Rendered: build/extensions/zz-core/gemini-extension.json
+  Rendered: build/extensions/zz-core/GEMINI.md
+  Rendered: build/extensions/zz-core/commands/hello.toml
+
+Done.
+  gemini CLI not on PATH — skipping the best-effort 'gemini extensions validate' check.
+Packaged: <ROOT>/dist/release/zz-core/zz-core-<VERSION>.tar.gz
+  Archive root: build/extensions/zz-core's CONTENTS, no wrapper directory (byte-for-byte — Ruling A, single-tool; see the R20 probe runbook for why no wrapper)
+  Version: <VERSION>
+Extension render — BUILD (--target gemini)
+Building extension: aa-lib
+  Rendered: build/extensions/aa-lib/gemini-extension.json
+  Rendered: build/extensions/aa-lib/GEMINI.md
+  Rendered: build/extensions/aa-lib/commands/hello.toml
+
+Done.
+  gemini CLI not on PATH — skipping the best-effort 'gemini extensions validate' check.
+Packaged: <ROOT>/dist/release/aa-lib/aa-lib-<VERSION>.tar.gz
+  Archive root: build/extensions/aa-lib's CONTENTS, no wrapper directory (byte-for-byte — Ruling A, single-tool; see the R20 probe runbook for why no wrapper)
+  Version: <VERSION>
+Extension render — BUILD (--target gemini)
+Building extension: ab-lib
+  Rendered: build/extensions/ab-lib/gemini-extension.json
+  Rendered: build/extensions/ab-lib/GEMINI.md
+  Rendered: build/extensions/ab-lib/commands/hello.toml
+
+Done.
+  gemini CLI not on PATH — skipping the best-effort 'gemini extensions validate' check.
+Packaged: <ROOT>/dist/release/ab-lib/ab-lib-<VERSION>.tar.gz
+  Archive root: build/extensions/ab-lib's CONTENTS, no wrapper directory (byte-for-byte — Ruling A, single-tool; see the R20 probe runbook for why no wrapper)
+  Version: <VERSION>
+Extension render — BUILD (--target gemini)
+Building extension: org-ext
+  Rendered: build/extensions/org-ext/gemini-extension.json
+  Rendered: build/extensions/org-ext/GEMINI.md
+  Rendered: build/extensions/org-ext/commands/hello.toml
+
+Done.
+  gemini CLI not on PATH — skipping the best-effort 'gemini extensions validate' check.
+Packaged: <ROOT>/dist/release/org-ext/org-ext-<VERSION>.tar.gz
+  Archive root: build/extensions/org-ext's CONTENTS, no wrapper directory (byte-for-byte — Ruling A, single-tool; see the R20 probe runbook for why no wrapper)
+  Version: <VERSION>

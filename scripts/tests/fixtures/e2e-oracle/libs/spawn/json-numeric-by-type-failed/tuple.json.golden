@@ -1,0 +1,13 @@
+{
+  "files": {
+    "t.txt": {
+      "content": "{\"subagent_stats\":{\"completed\":1,\"failed\":1,\"by_type\":{\"probe-consumer\":1}}}",
+      "mode": "0644"
+    }
+  },
+  "id": "spawn/json-numeric-by-type-failed",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "true|false|false|claude\n"
+}

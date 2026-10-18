@@ -12,7 +12,7 @@ extension is the extension's **only** hand-authored manifest: every
 declaration subject — commands, skills, agents, hooks, MCP servers,
 context — lives in a generic top-level section, declared exactly once, and
 every CLI-native file a specific command-line tool consumes is **produced
-from that single declaration** by `scripts/build-extension.sh`.
+from that single declaration** by `scripts/build-extension.ts`.
 
 ## Format
 
@@ -30,12 +30,14 @@ command-line tool is always a build output, never a hand-authored source**
 `scripts/lib/extension-generated-class.json`, `manifest_class`) — and a
 per-CLI-designated file rendered from a `commands/` pivot (`commands/*.toml`
 today) — **SHALL NOT be committed on the primary branch, for any
-command-line tool.** `bash scripts/build-extension.sh --check` fails the
+command-line tool.** `node scripts/build-extension.ts --check` fails the
 build the moment one is, naming the offending file, and points at the
 delivery paths below rather than at regenerating and committing it.
 
-**Where the rendered files actually go.** `bash scripts/build-extension.sh
-[--target {gemini,claude,copilot,antigravity,all}]` writes every output into
+**Where the rendered files actually go.** `node scripts/build-extension.ts
+[--target {gemini,claude,copilot,antigravity,all}]` (run
+`node scripts/lib/node-floor-guard.js` first, as a separate command; Node.js 24
+or later, `js-yaml` from the setup dependency step) writes every output into
 a build directory outside the committed source tree:
 
 - **Gemini CLI** (the tool that loads an extension in place) gets the
@@ -51,8 +53,9 @@ committed.
 
 **The rendered Gemini tree reaches an adopter through exactly one of three
 paths** (requirement 20 — see *Delivery paths* below): a versioned release
-artifact (default, S5/#1008), `bash scripts/install-extension.sh install
-<name>` (this repository's own script), or `task
+artifact (default, S5/#1008), `node scripts/install-extension.ts install
+<name>` after `node scripts/lib/node-floor-guard.js` (this repository's own
+entry, Node.js 24 floor), or `task
 link-gemini-extension-build EXT=<name>` (a documented **debugging** path,
 not an install path). A native `gemini extensions install` pointed directly
 at this repository's primary branch is a **documented-unsupported** path
@@ -96,7 +99,7 @@ other generated-output-class member.
   // MCP SERVERS (optional) — a generic declaration subject (spec 0180,
   // issue #1006). Declare each server ONCE, in the SAME neutral vocabulary
   // the org-level channel of spec 0091 already uses (spec 0180 requirement 2) — the
-  // shared translator (scripts/lib/common.sh's org_mcp_to_native) derives
+  // shared translator (`orgMcpToNative` of scripts/lib/org-mcp.ts) derives
   // every target's native shape from this one declaration (spec 0180
   // requirement 3). No per-CLI top-level section may carry an MCP server
   // key (spec 0180 requirement 3);
@@ -142,7 +145,7 @@ other generated-output-class member.
   //                 command/args does NOT resolve against the plugin
   //                 directory when Antigravity spawns a plugin's MCP server
   //                 (confirmed live: it silently fails, no error surfaced).
-  //                 scripts/install-antigravity-extension.sh's POST-INSTALL
+  //                 scripts/install-antigravity-extension.ts's POST-INSTALL
   //                 step rewrites it, once the real installed directory is
   //                 knowable — never a render-time absolute path
   //                 (spec 0180 requirement 8).
@@ -188,7 +191,7 @@ other generated-output-class member.
   // options live inside the subject's own section, never in a separate
   // "components" block: that shape is RETIRED (spec 0183 R12/R13, clean
   // break, no compatibility window) — a manifest declaring it fails every
-  // reader loudly, naming scripts/migrate-extension.sh and the migration
+  // reader loudly, naming scripts/migrate-extension.ts and the migration
   // note in docs/adoption-guide.md.
   // ============================================================
 
@@ -234,8 +237,8 @@ other generated-output-class member.
   // optionally a neutral tool-class `matcher`, a `timeLimit` (seconds —
   // the canonical unit; converted per target, or omitted where a target's
   // own unit is ungrounded), and a human `description`. Translated for
-  // every supported target by the shared render (scripts/build-extension.sh
-  // via scripts/lib/extension-hooks.sh) — no per-CLI hook key exists any
+  // every supported target by the shared render (scripts/build-extension.ts
+  // via scripts/lib/extension/hooks-emit.ts) — no per-CLI hook key exists any
   // more. A hook whose event has no counterpart on a declared target
   // produces a build warning and an entry in the observed gap set rather
   // than an approximation (see *Unmappable-declaration policy* below).
@@ -244,7 +247,7 @@ other generated-output-class member.
       "id": "logger",
       "event": "PreToolUse",
       "matcher": "shell",
-      "command": "bash ${extensionRoot}/hooks/logger.sh"
+      "command": "node \"${extensionRoot}/hooks/logger.ts\""
     }
   ],
 
@@ -400,9 +403,9 @@ leaving neither tool with an irreducible key to carry.
 An extension declares its agent-facing context exactly **once**, in one
 command-line-tool-neutral Markdown source named by `context.source` — never
 a per-CLI file, and never a per-CLI key naming one. The shared render
-(`scripts/lib/render-context.sh`, called by `scripts/build-extension.sh` and
+(`scripts/lib/extension/context-render.ts`, called by `scripts/build-extension.ts` and
 each of the three plugin builders — the three `install-*-plugin.sh` scripts
-invoke the builders directly, bypassing `build-extension.sh`) turns that one
+invoke the builders directly, bypassing `build-extension.ts`) turns that one
 source into one output per target, resolving a small render-variable
 vocabulary against `scripts/lib/extension-targets.json`'s own knowledge of
 each target and the extension's own declared commands/skills. An extension
@@ -471,7 +474,7 @@ but matches none **warns**, never fails — the accepted residual of spec 0181 R
 verbatim-passthrough guarantee (a hard error here would also claim a
 legitimate literal like `${extensionPath}`).
 
-**Two substitution layers.** `scripts/create-extension.sh` resolves
+**Two substitution layers.** `scripts/create-extension.ts` resolves
 `${SKELETON_NAME}` at **scaffold** time with a blind text substitution over
 every skeleton file, before `render_context` ever runs at **render** time
 on the already-substituted file — `${SKELETON_NAME}` is therefore the one
@@ -498,7 +501,7 @@ The durable side of the policy is a **hand-authored, committed declaration**
 of the gaps an extension's maintainers have accepted:
 `extensions/<tier>/<name>/accepted-gaps.json`, one entry per accepted gap.
 **Absence means the empty set** — an extension whose declarations all map
-cleanly ships no such file at all. `bash scripts/build-extension.sh --check`
+cleanly ships no such file at all. `node scripts/build-extension.ts --check`
 compares the observed set against the declared one and fails, naming the
 offender, on either mismatch: a gap observed but not declared
 (`GAP-UNDECLARED`), or a gap declared but no longer observed (`GAP-STALE`).
@@ -532,18 +535,20 @@ tree through exactly one of three paths:
    in-place tool (Gemini CLI) alone — the default operating mode for that
    tool's install (spec 0183 requirements 17-24, as amended by
    `specs/0183-extension-model-migration.delta-01.md`; maintainer
-   arbitration, 2026-08-25, issue #1008). `scripts/release-package-extension.sh`
-   is the ONE place the artifact's shape is decided: it asserts the current
+   arbitration, 2026-08-25, issue #1008). `scripts/release-package-extension.ts`
+   (the `.sh` name is a forwarding shim) is the ONE place the artifact's shape is decided: it asserts the current
    declaration shape, renders `--target gemini`, and archives
    `build/extensions/<name>`'s contents at the archive root with no wrapper
    directory — a form pinned live against the installed tool, evidence in
    `docs/runbooks/extension-release-install-probe.md`.
-   `scripts/monorepo-release.sh` is the release driver that calls it. The
+   `scripts/monorepo-release.ts` is the release driver that calls it. The
    other three supported tools (Claude Code, Copilot CLI, Antigravity CLI)
    are not served by this artifact; they reach an adopter through path 2
    below, on their own local render.
-2. **`bash scripts/install-extension.sh install <name>`** — this
-   repository's own script, which renders and then copies (or, in `link`
+2. **`node scripts/lib/node-floor-guard.js`, then
+   `node scripts/install-extension.ts install <name>`** — this
+   repository's own entry (Node.js 24 floor; run the two commands as
+   separate steps), which renders and then copies (or, in `link`
    mode, symlinks) the build directory into `$GEMINI_HOME/extensions/<name>`.
 3. **`task link-gemini-extension-build EXT=<name>`** — a dedicated,
    documented **debugging** path pointed at the build directory. It is not
@@ -596,7 +601,7 @@ extension.json ──render──> dist-{claude,copilot,antigravity}-plugin/<nam
                           │                                #   ${COPILOT_PLUGIN_ROOT} resolved
                           ├── mcp_config.json (Antigravity) # Generated, ${extensionRoot} LEFT
                           │                                #   UNRESOLVED — see
-                          │                                #   scripts/install-antigravity-extension.sh
+                          │                                #   scripts/install-antigravity-extension.ts
                           ├── dist/ (when mcpServers present)  # Copied — spec 0180 requirement 16, the
                           │                                    #   build output travels with
                           │                                    #   the declaration that names it
@@ -615,7 +620,7 @@ extension.json ──render──> dist-{claude,copilot,antigravity}-plugin/<nam
 This half of the render is unchanged by the render-at-publication model —
 these three targets already built an ephemeral plugin; only the Gemini
 in-place target moved off a committed sibling. Antigravity's MCP delivery
-needs one MORE step beyond the render: `scripts/install-antigravity-extension.sh`
+needs one MORE step beyond the render: `scripts/install-antigravity-extension.ts`
 rewrites `${extensionRoot}` to the real installed absolute path AFTER
 `agy plugin install` places the plugin (spec 0180 R7's "named resolver,
 named moment") — a `dist-antigravity-plugin/<name>/mcp_config.json` sitting
@@ -635,8 +640,8 @@ There is exactly one declaration site — no per-CLI `hooks` key exists on
 any of the four per-CLI sections, and declaring one is a manifest validation
 error.
 
-The shared translator (`scripts/lib/extension-hooks.sh`, invoked by
-`scripts/build-extension.sh`) renders every declared hook into each target's
+The shared translator (`scripts/lib/extension/hooks-emit.ts`, invoked by
+`scripts/build-extension.ts`) renders every declared hook into each target's
 own native shape. Where a declared event or matcher class has no counterpart
 on a target, the render emits a build warning and records the gap rather
 than approximating it — see *Unmappable-declaration policy* above. The full
@@ -644,11 +649,11 @@ per-target correspondence — which neutral event maps to which target event,
 the hook file, the matcher form, the time unit and the extension-root
 token — is the normative, evidence-backed
 [`docs/extension-hook-events.md`](../docs/extension-hook-events.md), kept
-honest against the translator by `scripts/check-extension-hook-map.sh`.
+honest against the translator by `scripts/check-extension-hook-map.ts`.
 
 ## Fragment Merging
 
-The scaffolding system (`create-extension.sh`) merges JSON fragments into
+The scaffolding system (`create-extension.ts`) merges JSON fragments into
 `extension.json` — the single generic root manifest, and the ONLY manifest
 the scaffolding tool writes — during extension creation. Every one of the
 six offered components merges its own fragment (spec 0183 R1/R4, PLAN v2
@@ -671,7 +676,7 @@ committed — so the merge now has exactly one manifest to update; the
 double-write was retargeted to the single manifest in the same change that
 removed the skeleton's committed `gemini-extension.json` (issue #1004).
 
-After every fragment is merged, `create-extension.sh` asserts unconditionally
+After every fragment is merged, `create-extension.ts` asserts unconditionally
 that no scaffold placeholder literal (`${SKELETON_*}`) survives anywhere in
 the produced tree (spec 0183 R3), then runs one full render to derive
 `accepted-gaps.json` from the render's own observed gap set — never a static,

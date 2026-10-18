@@ -1,0 +1,18 @@
+# old-invocation-allowlist.txt — files that may still carry the old extension-builder
+# invocation or name the deleted shared render library (spec 0254 R29).
+# scripts/tests/extension-references.test.ts fails on any other tracked or untracked text
+# file that tells a reader to run `bash scripts/<one of the five builders>.sh`, or names it.
+#
+# Format: one repo-relative path per line; an entry ending in `/` covers every file below that
+# directory. Every entry carries a reason as the `#` comment line directly above it. An entry
+# that no longer matches a file with a hit, or that appears twice, fails the suite.
+# The five shims: their header and usage text name the invocation they keep working.
+# The TypeScript check that replaced check-extension-manifest-version.sh keeps the shell script's
+# diagnostic verbatim, which tells a reader to run the old builder invocation.
+# Bash tests that have not migrated: each deliberately drives the shim or the shell oracle.
+# Negative assertions: these suites name the deleted library to prove it is gone and unlisted.
+# A frozen record of the original shell output (the shell quoted the old invocation in its diagnostics).
+# Specifications are dated records of the requirement, including the old invocation.
+specs/
+# A dated evidence record under tests/ quoting the invocation it ran.
+tests/gemini-extension-path-form.md

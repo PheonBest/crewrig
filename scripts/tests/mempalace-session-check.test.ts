@@ -504,7 +504,7 @@ const geminiEntry = (url: string): string => JSON.stringify(httpEntry("gemini", 
 function assertGeminiSetupWarning(w: string | null, label: string): void {
   assert.ok(w !== null, `${label}: no warning`);
   assert.ok(
-    w.includes("gemini") && w.includes("scripts/setup-gemini-interactive.sh"),
+    w.includes("gemini") && w.includes("scripts/setup-gemini-interactive.ts"),
     `${label}: ${w}`,
   );
   assert.match(w, /comment/i, `${label}: does not say the setup drops the comments`);

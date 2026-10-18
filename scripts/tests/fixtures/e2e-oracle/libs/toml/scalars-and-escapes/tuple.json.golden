@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[t]\ni = 42\nf = 1.50\nneg = -3\nexp = 1e3\nb = true\ns = \"q\\\"b\\\\n\\t\\u00e9\"\nl = 'C:\\x'\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[t]\nf = 2.0\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/scalars-and-escapes",
+  "rc": 5,
+  "stats": {},
+  "stderr": "jq: error (at <TMP>/tmp/tmp.<RAND>/merged.json:11): null (null) has no keys\n",
+  "stdout": ""
+}

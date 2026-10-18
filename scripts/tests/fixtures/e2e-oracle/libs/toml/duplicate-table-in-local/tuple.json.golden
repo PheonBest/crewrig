@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\nimage = \"A\"\n[cli.claude]\nimage = \"B\"\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/duplicate-table-in-local",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"B\"\n    }\n  }\n}\n"
+}

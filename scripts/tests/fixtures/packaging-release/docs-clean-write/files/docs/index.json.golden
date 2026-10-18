@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "sections": [
+    {
+      "section": "introduction",
+      "title": "Introduction",
+      "pages": [
+        {
+          "title": "Intro page",
+          "path": "docs/intro.md",
+          "nav_order": 1
+        }
+      ]
+    },
+    {
+      "section": "concepts",
+      "title": "Concepts",
+      "pages": [
+        {
+          "title": "Upper case first",
+          "path": "docs/Z.md",
+          "nav_order": 5
+        },
+        {
+          "title": "Dot sorts first",
+          "path": "docs/a.md",
+          "nav_order": 5
+        },
+        {
+          "title": "Slash sorts after",
+          "path": "docs/a/b.md",
+          "nav_order": 5
+        }
+      ]
+    },
+    {
+      "section": "adoption",
+      "title": "Adoption",
+      "pages": [
+        {
+          "title": "Nine",
+          "path": "docs/nine.md",
+          "nav_order": 9
+        },
+        {
+          "title": "Ten",
+          "path": "docs/ten.md",
+          "nav_order": 10
+        }
+      ]
+    },
+    {
+      "section": "lifecycle",
+      "title": "Lifecycle",
+      "pages": [
+        {
+          "title": "Back\\slash",
+          "path": "docs/slash\\back.md",
+          "nav_order": 3
+        }
+      ]
+    },
+    {
+      "section": "reference",
+      "title": "Reference",
+      "pages": [
+        {
+          "title": "Astral",
+          "path": "docs/😀.md",
+          "nav_order": 1
+        }
+      ]
+    },
+    {
+      "section": "architecture-adr",
+      "title": "Architecture & ADRs",
+      "pages": [
+        {
+          "title": "An ADR",
+          "path": "docs/adr/0001.md",
+          "nav_order": 0
+        }
+      ]
+    }
+  ]
+}

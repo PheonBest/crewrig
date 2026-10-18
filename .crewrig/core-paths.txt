@@ -1,4 +1,4 @@
-# Core-layer paths — machine-readable manifest for sync-from-upstream.sh
+# Core-layer paths — machine-readable manifest for sync-from-upstream.ts
 # Maintained by upstream CrewRig. Any PR that adds, removes, or reclassifies
 # a core-layer path in docs/layers.md MUST update this file in the same diff.
 #
@@ -67,11 +67,12 @@ config/.env.example
 config/release-monorepo.json
 config/launchd
 config/systemd
+config/windows
 
 # Persona, team, and seniority example catalogues (spec 0021). adopt-on-edit
 # at directory granularity: untouched files keep updating from upstream and
 # newly published examples arrive; a customised or deleted file freezes for
-# good. Reconciled member-by-member by sync-from-upstream.sh (reconcile_dir).
+# good. Reconciled member-by-member by sync-from-upstream.ts (reconcile_dir).
 config/expertise	adopt-on-edit
 config/teams	adopt-on-edit
 config/level	adopt-on-edit
@@ -100,7 +101,7 @@ artifacts/library
 .github/copilot
 # `.github/copilot/settings.json` is deliberately rewritten locally with an
 # absolute hook path by the transcript-hooks opt-in in
-# setup-copilot-interactive.sh (ADR-0001 Discovery finding #8) — that local
+# setup-copilot-interactive.ts (ADR-0001 Discovery finding #8) — that local
 # mutation is the intended behavior of the opt-in, not drift. Nested
 # exclusion under the strict `.github/copilot` parent (spec 0097 / issue
 # #605) keeps the rest of `.github/copilot/` (e.g. extension.json) guarded.
@@ -141,7 +142,7 @@ communication
 # upstream cannot know and has no business overriding — so it is `excluded`: an
 # adopter whose remote refuses the default changes it once and the sync never
 # guards, restores, or aborts on it. `adopt-on-edit` would NOT work here: the
-# only nesting mechanism this manifest defines and sync-from-upstream.sh
+# only nesting mechanism this manifest defines and sync-from-upstream.ts
 # implements is an `excluded` carve-out (see Nested exclusion above), nothing
 # performs most-specific resolution, so a nested `adopt-on-edit` member would be
 # governed by its `strict` parent and the adopter's own edit would halt the sync.
@@ -149,10 +150,9 @@ communication
 # afterwards either. Distribution is unaffected — the file is committed in the
 # tree a fork clones; `excluded` governs synchronisation only.
 .crewrig/spec-id-carrier	excluded
-scripts/sync-from-upstream.sh	strict
 
 # Documentation publication contract (spec 0027)
-scripts/build-docs-index.sh	strict
+scripts/build-docs-index.ts	strict
 
 # Continuous-integration reference (spec 0047)
 ci	strict
@@ -169,17 +169,17 @@ ci/path-ownership-exemptions.txt	strict
 ci/org	excluded
 
 # Generated GitLab CI pipeline (spec 0048). Derived from ci/ci-capabilities.yml
-# by scripts/build-ci.sh; drift-guarded by `bash scripts/build-ci.sh --check`.
+# by scripts/build-ci.ts; drift-guarded by `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts --check`.
 .gitlab-ci.yml	strict
 
 # Model mappings (spec 0197). A build input, not a component — nothing
 # deploys it to a CLI — so top-level rather than under artifacts/. Its
 # normative shape is docs/model-mapping-format.md; its hermetic gate is
-# scripts/check-model-mappings.sh.
+# scripts/check-model-mappings.ts.
 model-mappings	strict
 # Organization-level override channel (spec 0199 R1, R5). One `excluded`
 # line per target rather than a single `model-mappings/*.org.yml` wildcard:
-# the nested-exclusion test in sync-from-upstream.sh is a quoted `case`
+# the nested-exclusion test in sync-from-upstream.ts is a quoted `case`
 # match (`case "$member" in "$excl"/*|"$excl")`), so a wildcard entry would
 # be compared literally against each member path and carve out nothing.
 model-mappings/claude.org.yml	excluded

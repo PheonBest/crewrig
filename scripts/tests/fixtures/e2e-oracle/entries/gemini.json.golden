@@ -1,0 +1,248 @@
+{
+  "gemini/no-docker": {
+    "rc": 78,
+    "stdout": "1..0 # SKIP docker not found on PATH\n",
+    "stderr": "",
+    "files": {},
+    "dockerCalls": []
+  },
+  "gemini/no-image": {
+    "rc": 78,
+    "stdout": "1..0 # SKIP image crewrig/e2e-gemini:latest not present locally\n",
+    "stderr": "",
+    "files": {},
+    "dockerCalls": [
+      [
+        "image",
+        "inspect",
+        "crewrig/e2e-gemini:latest"
+      ]
+    ]
+  },
+  "gemini/custom-image": {
+    "rc": 78,
+    "stdout": "1..0 # SKIP image x/y:z not present locally\n",
+    "stderr": "",
+    "files": {},
+    "dockerCalls": [
+      [
+        "image",
+        "inspect",
+        "x/y:z"
+      ]
+    ]
+  },
+  "gemini/no-bundle": {
+    "rc": 78,
+    "stdout": "1..0 # SKIP gemini auth bundle not found at <E2E_HOME>/gemini (run `task e2e:auth:gemini`)\n",
+    "stderr": "",
+    "files": {},
+    "dockerCalls": [
+      [
+        "image",
+        "inspect",
+        "crewrig/e2e-gemini:latest"
+      ]
+    ]
+  },
+  "gemini/ok-stdout": {
+    "rc": 0,
+    "stdout": "ok 1 - headless: gemini -p exited 0 with non-empty answer from stdout (fallback â model did not honour the side-effect ask)\n1..1\n",
+    "stderr": "",
+    "files": {
+      "~/.crewrig-e2e/gemini/oauth_creds.json": {
+        "content": "{}",
+        "mode": "0644"
+      },
+      "~/.crewrig-e2e/gemini/settings.json": {
+        "content": "{}",
+        "mode": "0644"
+      }
+    },
+    "dockerCalls": [
+      [
+        "image",
+        "inspect",
+        "crewrig/e2e-gemini:latest"
+      ],
+      [
+        "run",
+        "--rm",
+        "--stop-timeout",
+        "5",
+        "-v",
+        "<E2E_HOME>/gemini:/run/gemini-creds:ro",
+        "-v",
+        "<WORK>:/out",
+        "--entrypoint",
+        "bash",
+        "crewrig/e2e-gemini:latest",
+        "-c",
+        "set -e; D=/home/agent/.gemini; mkdir -p $D && cp -a /run/gemini-creds/. $D/ && chown -R agent:agent $D 2>/dev/null || true; exec gemini \"$@\"",
+        "sh",
+        "-p",
+        "Write the single word READY to /out/answer.txt and print it."
+      ]
+    ]
+  },
+  "gemini/ok-answer": {
+    "rc": 0,
+    "stdout": "ok 1 - headless: gemini -p exited 0 with non-empty answer from /out/answer.txt\n1..1\n",
+    "stderr": "",
+    "files": {
+      "~/.crewrig-e2e/gemini/oauth_creds.json": {
+        "content": "{}",
+        "mode": "0644"
+      },
+      "~/.crewrig-e2e/gemini/settings.json": {
+        "content": "{}",
+        "mode": "0644"
+      }
+    },
+    "dockerCalls": [
+      [
+        "image",
+        "inspect",
+        "crewrig/e2e-gemini:latest"
+      ],
+      [
+        "run",
+        "--rm",
+        "--stop-timeout",
+        "5",
+        "-v",
+        "<E2E_HOME>/gemini:/run/gemini-creds:ro",
+        "-v",
+        "<WORK>:/out",
+        "--entrypoint",
+        "bash",
+        "crewrig/e2e-gemini:latest",
+        "-c",
+        "set -e; D=/home/agent/.gemini; mkdir -p $D && cp -a /run/gemini-creds/. $D/ && chown -R agent:agent $D 2>/dev/null || true; exec gemini \"$@\"",
+        "sh",
+        "-p",
+        "Write the single word READY to /out/answer.txt and print it."
+      ]
+    ]
+  },
+  "gemini/exit-124": {
+    "rc": 0,
+    "stdout": "ok 1 - headless: gemini -p exited 124 with non-empty answer from stdout (fallback â model did not honour the side-effect ask)\n1..1\n",
+    "stderr": "",
+    "files": {
+      "~/.crewrig-e2e/gemini/oauth_creds.json": {
+        "content": "{}",
+        "mode": "0644"
+      },
+      "~/.crewrig-e2e/gemini/settings.json": {
+        "content": "{}",
+        "mode": "0644"
+      }
+    },
+    "dockerCalls": [
+      [
+        "image",
+        "inspect",
+        "crewrig/e2e-gemini:latest"
+      ],
+      [
+        "run",
+        "--rm",
+        "--stop-timeout",
+        "5",
+        "-v",
+        "<E2E_HOME>/gemini:/run/gemini-creds:ro",
+        "-v",
+        "<WORK>:/out",
+        "--entrypoint",
+        "bash",
+        "crewrig/e2e-gemini:latest",
+        "-c",
+        "set -e; D=/home/agent/.gemini; mkdir -p $D && cp -a /run/gemini-creds/. $D/ && chown -R agent:agent $D 2>/dev/null || true; exec gemini \"$@\"",
+        "sh",
+        "-p",
+        "Write the single word READY to /out/answer.txt and print it."
+      ]
+    ]
+  },
+  "gemini/no-answer": {
+    "rc": 1,
+    "stdout": "not ok 1 - headless: exit=0 answer=none; stderr: boom\n1..1\n",
+    "stderr": "",
+    "files": {
+      "~/.crewrig-e2e/gemini/oauth_creds.json": {
+        "content": "{}",
+        "mode": "0644"
+      },
+      "~/.crewrig-e2e/gemini/settings.json": {
+        "content": "{}",
+        "mode": "0644"
+      }
+    },
+    "dockerCalls": [
+      [
+        "image",
+        "inspect",
+        "crewrig/e2e-gemini:latest"
+      ],
+      [
+        "run",
+        "--rm",
+        "--stop-timeout",
+        "5",
+        "-v",
+        "<E2E_HOME>/gemini:/run/gemini-creds:ro",
+        "-v",
+        "<WORK>:/out",
+        "--entrypoint",
+        "bash",
+        "crewrig/e2e-gemini:latest",
+        "-c",
+        "set -e; D=/home/agent/.gemini; mkdir -p $D && cp -a /run/gemini-creds/. $D/ && chown -R agent:agent $D 2>/dev/null || true; exec gemini \"$@\"",
+        "sh",
+        "-p",
+        "Write the single word READY to /out/answer.txt and print it."
+      ]
+    ]
+  },
+  "gemini/bad-exit": {
+    "rc": 1,
+    "stdout": "not ok 1 - headless: exit=5 answer=stdout (fallback â model did not honour the side-effect ask); stderr: denied\n1..1\n",
+    "stderr": "",
+    "files": {
+      "~/.crewrig-e2e/gemini/oauth_creds.json": {
+        "content": "{}",
+        "mode": "0644"
+      },
+      "~/.crewrig-e2e/gemini/settings.json": {
+        "content": "{}",
+        "mode": "0644"
+      }
+    },
+    "dockerCalls": [
+      [
+        "image",
+        "inspect",
+        "crewrig/e2e-gemini:latest"
+      ],
+      [
+        "run",
+        "--rm",
+        "--stop-timeout",
+        "5",
+        "-v",
+        "<E2E_HOME>/gemini:/run/gemini-creds:ro",
+        "-v",
+        "<WORK>:/out",
+        "--entrypoint",
+        "bash",
+        "crewrig/e2e-gemini:latest",
+        "-c",
+        "set -e; D=/home/agent/.gemini; mkdir -p $D && cp -a /run/gemini-creds/. $D/ && chown -R agent:agent $D 2>/dev/null || true; exec gemini \"$@\"",
+        "sh",
+        "-p",
+        "Write the single word READY to /out/answer.txt and print it."
+      ]
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+Usage: release-package-extension.ts <name> --version <v> --out <dir>

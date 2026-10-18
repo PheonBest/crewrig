@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "toml/missing-defaults",
+  "rc": 1,
+  "stats": {},
+  "stderr": "ERROR: defaults file not found: no-such-defaults.toml\n",
+  "stdout": ""
+}

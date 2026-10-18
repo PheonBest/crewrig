@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "expand/missing-bundle-home",
+  "rc": 127,
+  "stats": {},
+  "stderr": "<REPO>/tests/e2e/lib/expand.sh: line 32: E2E_CREWRIG_E2E_HOME: expand_mount: E2E_CREWRIG_E2E_HOME must be exported by the caller\n",
+  "stdout": ""
+}

@@ -6,12 +6,12 @@ description: "Implementation skill for writing, modifying, and refactoring
   loops, and minimal surface area per change."
 type: skill
 license: Apache-2.0
-compatibility: "Requires bash (used by scripts/build-components.sh) and git (used for staged-file inspection of executable bits)."
+compatibility: "Requires Node.js 24 or later and js-yaml from the setup dependency step (used by scripts/build-components.ts, no yq), and git (used for staged-file inspection of executable bits)."
 metadata:
   provenance:
     canonical: "${CANONICAL_REPO}"
     feedback: "${CANONICAL_REPO}"
-    version: "1.1.5"
+    version: "1.1.7"
 claude:
   allowed-tools:
     - Read
@@ -100,16 +100,18 @@ Before reporting a task as done, run:
   `artifacts/core/agents/<name>/scripts/`,
   `artifacts/library/agents/<name>/scripts/`, or
   `artifacts/community/agents/<name>/scripts/`): run
-  `bash scripts/build-components.sh` to regenerate the `.gemini/` and
+  `node scripts/lib/node-floor-guard.js`, then `node scripts/build-components.ts`
+  (two separate steps, not chained with `&&`; Node.js 24 or later, `js-yaml`
+  from the setup dependency step) to regenerate the `.gemini/` and
   `.claude/` mirrors, stage them in the same commit, then run
-  `bash scripts/build-components.sh --check` to confirm drift-free.
+  `node scripts/build-components.ts --check` to confirm drift-free.
   This is non-optional — the CI `check-components` job rejects PRs
   where source and bundles disagree.
-- For changes that include shell scripts: after any push via the MCP
+- For changes that include executable files: after any push via the MCP
   `push_files` tool (which strips file modes), verify the executable
-  bit survived. `git ls-files --stage -- '*.sh'` must show `100755`,
-  or `ls -la` show `755`. Restore with `git update-index --chmod=+x
-  <file>` before the next push.
+  bit survived with `git ls-files --stage -- <file>` (`100755`, not
+  `100644`). Restore with `git update-index --chmod=+x <file>` before the
+  next push.
 
 If the project has no test or type-check infrastructure, say so
 explicitly in the report — do not claim verification you did not do.

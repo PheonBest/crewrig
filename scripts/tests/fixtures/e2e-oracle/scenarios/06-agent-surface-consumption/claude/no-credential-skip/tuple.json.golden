@@ -1,0 +1,11 @@
+{
+  "id": "06-agent-surface-consumption/claude/no-credential-skip",
+  "exit": 0,
+  "scenarioTap": "",
+  "dockerCommands": [],
+  "files": {
+    "run.tap": "TAP version 13\nok 1 - claude/06-agent-surface-consumption # SKIP unconfigured (run `task e2e:auth:claude`)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n"
+  },
+  "stdout": "TAP version 13\nok 1 - claude/06-agent-surface-consumption # SKIP unconfigured (run `task e2e:auth:claude`)\n1..1\n# pass: 0  fail: 0  skip: 1\n# report dir: <TMP>/reports/<RUN_ID>\n",
+  "stderr": "[runner] using defaults.toml (no local.toml present) → <TMP>/reports/<RUN_ID>/effective.json\n[claude] auth NOT ready: no marker file, no ANTHROPIC_API_KEY\n"
+}

@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "auth-common/auth-ready-claude-api-key",
+  "rc": 0,
+  "stats": {},
+  "stderr": "[claude] auth ready: ANTHROPIC_API_KEY set in host shell\n",
+  "stdout": "E2E_AUTH_READY_CREDENTIAL_PATH=ANTHROPIC_API_KEY\n"
+}

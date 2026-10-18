@@ -64,7 +64,7 @@ function globSpecs(targetPath) {
 
 // loadCorePathsManifest() — reads .crewrig/core-paths.txt and returns its
 // entries as { path, policy } objects. Mirrors the parsing rules in
-// scripts/check-core-paths.sh:41-54: blank/`#` lines are skipped, the path is
+// scripts/check-core-paths.ts:41-54: blank/`#` lines are skipped, the path is
 // the first whitespace-delimited field, the policy is the next token
 // (defaulting to `strict`). A missing manifest resolves to an empty list
 // rather than throwing, so a checkout without the file still lints normally.
@@ -163,8 +163,8 @@ function gitCapture(args, cwd) {
 }
 
 // resolveBaseRef() — the base ref to compare against, resolved exactly as
-// scripts/lib/base-ref-resolve.sh does (sourced by check-skill-versions.sh and
-// check-extension-version-bump.sh) so the repository has one idiom rather than
+// the retired scripts/lib/base-ref-resolve.sh did (its TypeScript twin is
+// scripts/lib/governance/base-ref.ts) so the repository has one idiom rather than
 // two, mirrored here in JS rather than shared by sourcing: `BASE_REF` when
 // set, else the first remote matching `crewrig|origin` (falling back to the
 // first remote at all) with `/main` appended, falling back to `/develop` when

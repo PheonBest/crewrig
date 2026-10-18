@@ -169,17 +169,27 @@ This complements — does not replace — the cwd-verification check above: the 
 
 **Taking, inspecting, and releasing the claim.** Prefer `run` — it takes the claim, executes, and releases on exit, so *whole duration* is structural. `run` executes the wrapped command **at the worktree root**, the same tree its clean-tree gate certified, whatever directory you invoked it from — so a relative path in the wrapped command resolves against the root, and a cwd-scoped operation acts on the whole worktree.
 
+The tool is TypeScript and needs Node.js 24 or later. Check that once per session, as a separate step run before the first invocation (the way `docs/ticket-ownership.md` documents `ticket-pickup`):
+
 ```sh
-bash scripts/worktree-claim.sh run     --agent <name> -- <command…>
-bash scripts/worktree-claim.sh take    --agent <name>   # then release --agent <name>
-bash scripts/worktree-claim.sh status
+node scripts/lib/node-floor-guard.js
 ```
 
-Exit `4` names the current holder; `5` prints the uncommitted changes that closed the gate. `status` answers without asking any agent; it and `history` also run from the main checkout, given `--ticket <id>`.
+Below the floor it prints one diagnostic and exits non-zero; nothing has touched the filesystem. Then:
 
-**Who held the worktree, after the fact.** `worktree-claim.sh history --ticket <id>` prints the append-only ledger — every take, release, and takeover, with agent, timestamp, and operation. It lives inside the shared `.git`, as a sibling of the claim directory and never a child, so releasing a claim cannot take the history with it; being outside the worktree, it also survives the cleanup below.
+```sh
+node scripts/worktree-claim.ts run     --agent <name> -- <command…>
+node scripts/worktree-claim.ts take    --agent <name>   # then release --agent <name>
+node scripts/worktree-claim.ts status
+```
 
-**A claim whose holder has ended.** `worktree-claim.sh takeover --agent <name>` transfers a claim untouched for 30 minutes (`--stale-after <minutes>` overrides) and records both agents in the ledger. It rewrites the claim only — never a working-tree file — and grants **no** clean-tree waiver: the gate is re-evaluated on every `take` and `run`, whoever holds the claim.
+Exit `4` names the current holder; `5` prints the uncommitted changes that closed the gate. `status` answers without asking any agent; it and `history` also run from the main checkout, given `--ticket <id>`. `node scripts/worktree-claim.ts --help` prints the full contract. The former `scripts/worktree-claim.sh` shim was removed (see `docs/shell-removal.md`); the `node` form is the only form and also works on Windows.
+
+**The guard that enforces the claim needs Node.js 24 or later when it fires.** `hooks/worktree-git-guard.ts` is the pre-tool hook that refuses a prohibited whole-tree operation without a claim (`docs/cli-matrix.md` row 29). Setup checks the Node.js floor before it wires the hook and writes nothing below it, but it cannot check at the moment the hook fires. A Node.js downgraded after setup makes the hook fail with Node.js's own non-zero status until setup is re-run, and the CLI then reads that status according to its own rule: Copilot CLI documents `preToolUse` as fail-closed, so a failing guard stops every tool call there. An installation still wired to the old `bash …/worktree-git-guard.sh` path (shim retired in #1344) has no guard until setup is re-run, which re-points it.
+
+**Who held the worktree, after the fact.** `node scripts/worktree-claim.ts history --ticket <id>` prints the append-only ledger — every take, release, and takeover, with agent, timestamp, and operation. It lives inside the shared `.git`, as a sibling of the claim directory and never a child, so releasing a claim cannot take the history with it; being outside the worktree, it also survives the cleanup below.
+
+**A claim whose holder has ended.** `node scripts/worktree-claim.ts takeover --agent <name>` transfers a claim untouched for 30 minutes (`--stale-after <minutes>` overrides) and records both agents in the ledger. It rewrites the claim only — never a working-tree file — and grants **no** clean-tree waiver: the gate is re-evaluated on every `take` and `run`, whoever holds the claim.
 
 **Residue left by an agent that ended.** When a takeover finds the tree dirty, adjudicate on authorship, not convenience. Residue you authored: commit it — that is the route back to a clean tree. Residue you did not author is not yours: flag it to `team-lead` under *Stray-file discovery* above and stop — do not commit another agent's work, run a whole-tree operation, or remove the worktree. The orchestrator adjudicates: commit on the branch, respawn the role that owns it, or route to a human operator.
 
@@ -200,7 +210,7 @@ Tier 2, when a check must *execute* against a clean state, extracts it instead o
 scratch="$(mktemp -d)"
 git fetch crewrig <branch>
 git archive "crewrig/<branch>" | tar -x -C "$scratch"
-( cd "$scratch" && bash scripts/tests/<suite>.sh )
+( cd "$scratch" && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/<suite>.test.ts )
 rm -rf "$scratch"
 ```
 
@@ -255,15 +265,24 @@ A `state == MERGED` result is positive confirmation the branch has merged. A bra
 
 **Session end — confirmed-merge sweep.** When the session reaches its end, account for the worktrees under `.worktrees/` and, for every worktree whose pull request is positively confirmed `MERGED` by the command above, remove the worktree together with its local branch by following the ordered cleanup procedure documented earlier in this section (verify the merge landed → `git worktree remove` → `git branch -D` → close the logbook issue) — do not invent a new sequence. A worktree whose pull request is still open, whose branch carries unmerged or uncommitted work, or whose merge status cannot be positively confirmed SHALL be left in place and surfaced for later adjudication — never removed. This mirrors the *Stray-file discovery — no unilateral action* discipline above: a worktree's mere presence or apparent staleness never authorizes removal, and positive confirmation of a merged pull request is the sole precondition for removing any worktree.
 
-When an orchestrator pre-allocates a spec id for a sibling session at this kickoff moment, see `docs/spec-pr-workflow.md` → *Pre-allocating an id for a sibling session* for the obligation to actually secure it via `reserve-spec-id.sh --id <ID> --issue <N>` before asserting it "reserved."
+When an orchestrator pre-allocates a spec id for a sibling session at this kickoff moment, see `docs/spec-pr-workflow.md` → *Pre-allocating an id for a sibling session* for the obligation to actually secure it via `reserve-spec-id.ts --id <ID> --issue <N>` before asserting it "reserved."
 
 ## Built Components
 
-Source files under `artifacts/` are compiled into `.gemini/` and `.claude/` by `scripts/build-components.sh`. The CI `check-components` job fails if the built outputs drift from sources.
+Source files under `artifacts/` are compiled into `.gemini/` and `.claude/` by `scripts/build-components.ts` (`scripts/build-components.ts` forwards to it). The CI `check-components` job fails if the built outputs drift from sources.
 
-**Rule:** any commit that modifies a file under `artifacts/` MUST also run `bash scripts/build-components.sh` and stage the regenerated outputs in the same commit or an immediately following one — never deferred to a separate PR.
+**Rule:** any commit that modifies a file under `artifacts/` MUST also run the build (invocation below) and stage the regenerated outputs in the same commit or an immediately following one — never deferred to a separate PR.
 
-**Verify before push:** run `bash scripts/build-components.sh` after staging. A clean `git status --porcelain` means no drift.
+**Invocation:** two separate steps, never chained with `&&` (the PowerShell 5.1 rule of [`docs/ticket-ownership.md`](ticket-ownership.md)):
+
+```sh
+node scripts/lib/node-floor-guard.js
+node scripts/build-components.ts
+```
+
+The build needs Node.js 24 or newer (the first step refuses an older Node.js with a diagnostic) and `js-yaml`, which the setup dependency step installs; there is no `yq` requirement.
+
+**Verify before push:** run the same two steps after staging. A clean `git status --porcelain` means no drift.
 
 This rule applies to every role — doc-writer edits to `SKILL.md`, architect edits to `AGENT.md`, and pr-reviewer self-edits all count. The CI job is a backstop; this rule closes the loop before push.
 

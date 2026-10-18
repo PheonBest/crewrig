@@ -1,0 +1,10 @@
+{
+  "id": "gemini/oauth-missing-file",
+  "rc": 0,
+  "stdout": "VERDICT=UNCERTAIN confidence=0.00",
+  "stderr": "# WARN llm_judge UNCERTAIN reason=auth-missing backend=gemini\n",
+  "requests": [],
+  "files": {
+    "effective.json": "{\"judge\":{\"backend\":\"gemini\",\"model\":\"gemini-2.5-flash\",\"api_key_env\":\"GEMINI_API_KEY\",\"auth_mode\":\"oauth\",\"strict\":false,\"max_calls\":30,\"endpoint\":\"http://127.0.0.1:<PORT>/gemini/v1beta/models/judge:generateContent\",\"max_tokens\":256,\"temperature\":0}}\n"
+  }
+}

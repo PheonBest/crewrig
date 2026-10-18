@@ -8,10 +8,10 @@
 //         is `bash scripts/tests/test-*.sh` is a finding, in the capability reference
 //         (`command:` entries of ci/ci-capabilities.yml) and in the hand-authored GitHub
 //         Actions jobs (`run:` of every step under .github/workflows). The accepted form is
-//         `bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/<suite>`. Before
+//         `node scripts/ci-cache-guard.ts --stray-scan -- bash scripts/tests/<suite>`. Before
 //         the program is read, a command is split on newlines, its whitespace normalised, and
 //         at most ONE generated cache-guard layer
-//         (`bash scripts/ci-cache-guard.sh --cache-dir ... [--key-files ...] [--key-env ...] -- `)
+//         (`node scripts/ci-cache-guard.ts --cache-dir ... [--key-files ...] [--key-env ...] -- `)
 //         removed, so a suite wrapped only in the cache guard is still bare.
 //
 //   R17b  Every tracked suite that has an owner is triggered by a change to itself. Owners
@@ -32,11 +32,9 @@
 //   - Only the form `[VAR=value ...] bash [./]scripts/tests/test-*.sh` is a suite command. A
 //     suite started as `./scripts/tests/test-x.sh`, `sh scripts/tests/...` or through a
 //     variable is not recognised.
-//   - Suites outside the registered population are not covered: scripts/test-build-components.sh
-//     and artifacts/library/skills/harness-curator/scripts/test.sh do not live in
-//     scripts/tests/test-*.sh.
+//   - Suites outside the registered population (scripts/tests/test-*.sh) are not covered.
 //   - Only `.github/workflows/*.yml|yaml` jobs are read; the GitLab pipeline is derived from the
-//     reference by scripts/build-ci.sh and verified by scripts/check-ci-parity.sh, not here.
+//     reference by the retired scripts/build-ci.sh and verified by the retired scripts/check-ci-parity.sh, not here.
 //   - A trigger entry written once for the pull request is judged by its own `paths:` only;
 //     branch filters and GitLab `changes:` equivalence are out of scope.
 //
@@ -57,7 +55,7 @@ const PREFIX = "stray-scan-wiring";
 
 /** The generated cache layer: `--cache-dir` is mandatory, so the scan form is never unwrapped. */
 const CACHE_LAYER =
-  /^bash scripts\/ci-cache-guard\.sh((?: --(?:cache-dir|key-files|key-env)(?: "[^"]*"| '[^']*'| \S+))+) -- (.+)$/;
+  /^node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts\/ci-cache-guard\.ts((?: --(?:cache-dir|key-files|key-env)(?: "[^"]*"| '[^']*'| \S+))+) -- (.+)$/;
 /** A bare registered-suite command, optionally behind leading `VAR=value` assignments. */
 const BARE_SUITE =
   /^(?:[A-Za-z_][A-Za-z0-9_]*=\S* )*bash (?:\.\/)?(scripts\/tests\/test-[A-Za-z0-9._-]+\.sh)(?: |$)/;
@@ -90,7 +88,7 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 }
 
 function scanned(suite: string): string {
-  return `bash scripts/ci-cache-guard.sh --stray-scan -- bash ${suite}`;
+  return `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- bash ${suite}`;
 }
 
 /** Split a command into candidate lines: newline-split, whitespace-normalised, blanks dropped. */

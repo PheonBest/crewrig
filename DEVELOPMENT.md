@@ -13,14 +13,20 @@ for the complete manifest specification.
 
 ## Creating a New Extension
 
-Always use the interactive scaffolding task:
+Always use the scaffolding task. It runs the Node.js floor guard, then
+`node scripts/create-extension.ts` (the scaffolder is TypeScript since spec
+0258; `scripts/create-extension.ts` remains as a forwarding shim):
 
 ```bash
 task create-extension NAME=my-extension
+# non-interactive: name the components yourself
+task create-extension NAME=my-extension -- --components mcp-server,skill
 ```
 
-An fzf menu lets you select which components to include (use TAB to
-toggle, ENTER to confirm):
+No `fzf` is needed. On a terminal the scaffolder prints a numbered list and
+reads the components you want (numbers or names, separated by commas or
+spaces); with `--components <list>` or `CREWRIG_TEST_FZF_SELECTION` (one
+component per line) it asks nothing:
 
 - **mcp-server** — TypeScript MCP server with stdio transport
 - **command** — Sample `.toml` slash command
@@ -29,7 +35,7 @@ toggle, ENTER to confirm):
 - **hook** — Lifecycle hook (BeforeTool/AfterTool)
 - **theme** — UI theme JSON fragment
 
-The script will:
+The scaffolder will:
 
 1. Copy the base skeleton into `extensions/org/my-extension/`.
 2. Inject selected component directories.
@@ -47,8 +53,10 @@ The script will:
 
 The `extension-skeleton/` directory contains the template source. No file
 here is named for a specific command-line tool (spec 0183 R9 — enforced by
-`bash scripts/build-extension.sh --check` over this directory, not only
-over extension source trees):
+`node scripts/build-extension.ts --check` over this directory, not only
+over extension source trees; run `node scripts/lib/node-floor-guard.js` first, as a
+separate command, since the builders need Node.js 24 or later and `js-yaml` comes
+from the setup dependency step):
 
 ```text
 extension-skeleton/
@@ -73,7 +81,7 @@ extension-skeleton/
 │   ├── agents/sample-agent/PROMPT.md      # Same sub-agent, Gemini CLI pivot source (sibling files by design — see EXTENSION-FORMAT.md)
 │   └── agent.json.fragment                # Merged into the manifest's agents field on creation
 ├── hook/
-│   ├── hooks/logger.sh                    # Sample PreToolUse hook script (the maps-everywhere event — spec 0179)
+│   ├── hooks/logger.ts                    # Sample PreToolUse hook script (the maps-everywhere event — spec 0179)
 │   └── hooks.json.fragment                # Merged into the manifest's hooks field on creation
 └── theme/theme.json.fragment              # Merged into the manifest's gemini.themes field on creation
 ```
@@ -129,7 +137,7 @@ node dist/index.js
 
 ### Plugin Build Contract
 
-`build-claude-plugin.sh` propagates `dist/` and `package.json` into the plugin output directory because the declared MCP command typically points inside it (`${extensionRoot}/dist/index.js` — the one neutral path token, spec 0180), and Node requires both to load an ESM MCP server at runtime. The generated `.mcp.json` carries `${CLAUDE_PLUGIN_ROOT}` (the neutral token rewritten to Claude's own spelling), which Claude Code itself resolves when it LOADS the installed plugin — not a render-time (build-time) resolution baked into the file (spec 0180 R8).
+`scripts/build-claude-plugin.ts` (behind the forwarding shim `build-claude-plugin.ts`) propagates `dist/` and `package.json` into the plugin output directory because the declared MCP command typically points inside it (`${extensionRoot}/dist/index.js` — the one neutral path token, spec 0180), and Node requires both to load an ESM MCP server at runtime. The generated `.mcp.json` carries `${CLAUDE_PLUGIN_ROOT}` (the neutral token rewritten to Claude's own spelling), which Claude Code itself resolves when it LOADS the installed plugin — not a render-time (build-time) resolution baked into the file (spec 0180 R8).
 
 Implications for contributors:
 
@@ -149,9 +157,9 @@ task build-claude-plugin EXT=my-extension
 
 Claude Code does not auto-discover plugins placed under `~/.claude/plugins/`. Plugins must be declared in a marketplace and installed via the CLI before Claude Code can load them.
 
-`scripts/install-claude-plugin.sh` handles this in four steps:
+`scripts/install-claude-plugin.ts` handles this in four steps:
 
-1. Calls `build-claude-plugin.sh` → produces `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/local-marketplace/<name>/` (a shared home outside the working tree, so multiple extensions coexist and installs survive branch switches)
+1. Calls the Claude plugin builder (`scripts/build-claude-plugin.ts`, through the shim `build-claude-plugin.ts`) → produces `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/local-marketplace/<name>/` (a shared home outside the working tree, so multiple extensions coexist and installs survive branch switches)
 2. Generates `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/local-marketplace/.claude-plugin/marketplace.json` with a marketplace named `<repo-basename>-local` (e.g. `crewrig-local`). This is a SHARED manifest: each installed extension is upserted by name, so it accumulates every extension installed under that config root
 3. Runs `claude plugin marketplace add ${CLAUDE_CONFIG_DIR:-$HOME/.claude}/local-marketplace --scope user`
 4. Runs `claude plugin install <name>@<marketplace-name> --scope user`
@@ -186,12 +194,20 @@ The Taskfile runs exactly the commands CI runs:
 | `task typecheck-ts` | `tsc` strict type-check (`tsconfig.json`) |
 | `task erasable-ts` | no `enum`, runtime `namespace`, parameter property, decorator or `import =` |
 | `task oxlint-ts` | Oxlint type-aware: no `any`, no `@ts-ignore`/`@ts-nocheck`, justified `@ts-expect-error` only, no unsafe `any` flow; files over 300 lines warn without failing |
-| `task format-ts` | Oxfmt check mode on `*.ts` |
+| `task format-ts` | Oxfmt check mode on `*.ts` and on the JavaScript admitted by `ci/js-exceptions.txt` |
 | `task format-ts:fix` | rewrite every tracked `*.ts` with Oxfmt (local convenience) |
 
 Run `task lint-bootstrap` once to install the toolchain. The four built
 trees (`.claude/`, `.gemini/`, `.github/`, `.agents/`) are excluded from
 every check.
+
+**JavaScript formatting scope (spec 0266 R16).** `oxfmt --check` covers every
+tracked `*.js`, `*.mjs` or `*.cjs` file listed in `ci/js-exceptions.txt` (today
+the Node.js floor guard). The rule is: formatted unless the third-party tool
+that consumes the file defines its own formatting; no admitted file is
+excluded. The legacy files in `ci/js-baseline.txt` are not formatted, because
+each leaves the tree when its migration row lands. After editing an admitted
+file, run `node_modules/.bin/oxfmt --write <that file>` with the literal path.
 
 **The ratchet.** `ci/shell-allowlist.txt` and `ci/js-baseline.txt` list the
 shell and JavaScript files tracked when spec 0238 landed. They are
@@ -237,13 +253,16 @@ runtime foundations every migrated script builds on.
 naming the detected version, the floor and <https://nodejs.org/en/download>,
 and exits 1; otherwise it exits 0 silently. It is plain ES5 CommonJS so it
 runs on releases that cannot strip types, and it is the one JavaScript file
-admitted through `ci/js-exceptions.txt` as `node-floor-guard`. It ships
-unwired: sub-spec F1 (#1335) calls it from setup.
+admitted through `ci/js-exceptions.txt` as `node-floor-guard`. The four
+setup entries (`scripts/setup-<cli>-interactive.ts`, spec 0256) run on it: `task
+setup-<cli>-interactive` runs the guard as a separate step,
+then the entry, and fails closed below 24 before anything is written.
 
-**Production dependencies.** The four `scripts/setup-*-interactive.sh`
-scripts run `npm ci --omit=dev --workspaces=false` right after the spec 0084
-TLS offer, through `scripts/lib/tls-exec.sh`. The step is gated on the
-`package-lock.json` hash:
+**Production dependencies.** The four `scripts/setup-*-interactive.ts`
+entries (reached through their `.sh` shims) run
+`npm ci --omit=dev --workspaces=false` right after the spec 0084 TLS offer,
+with the CA variables of that offer in npm's environment. The step is gated on
+the `package-lock.json` hash:
 
 - It runs only when `package-lock.json` changed since the last successful
   run, or `node_modules/` is missing. Otherwise setup prints
@@ -275,7 +294,13 @@ and `require-dependency.ts`.
 
 **Checks.** `task test-runtime-foundations` runs the CI suites.
 `task timing-budget -- --runs <N> --budget-ms <M> -- <script>` times a
-script the way the `windows-node-floor-guard` job does.
+script the way the `windows-node-floor-guard` job does. The step fails when
+more than `--tolerate <K>` runs exceed the budget (default 1 from 5 runs up, 0
+below; `--tolerate 0` is strict), when any run exceeds 3 x the budget, or when an
+exit status differs from `--expect-exit`; tolerated runs print with the label
+`tolerated`. Recalibrate a budget from at least 5 green `windows-latest` runs as
+`max(3 x S, 300 ms)` rounded up to the next 50 ms, where S is the largest
+second-worst run, never above the carrier spec's cap (spec 0264).
 
 ## Branching Strategy
 
@@ -307,7 +332,8 @@ trigger a release.
 3. `semantic-release-monorepo` scopes the analysis to that extension only.
 4. `semantic-release-gitmoji` determines the version bump from the emoji.
 5. A tag `my-extension-vX.Y.Z` is created.
-6. `scripts/release-package-extension.sh` renders the extension
+6. `scripts/release-package-extension.ts` (reached through the forwarding
+   shim `scripts/release-package-extension.ts`) renders the extension
    (`--target gemini`), asserts the built manifest's version matches the
    release version, and archives the rendered tree — `package.json` and
    `extension.json` (never `gemini-extension.json`, a build output that is
@@ -332,7 +358,9 @@ task package-extension EXT=my-extension
 task package
 ```
 
-Both delegate to `scripts/release-package-extension.sh`, packaging the
+Both delegate to `scripts/release-package-extension.ts` (Node.js 24 floor,
+behind `node scripts/lib/node-floor-guard.js`; the `.sh` name is a forwarding
+shim), packaging the
 extension's own currently-committed version — the same artifact shape a
 real release publishes (a rendered, installable tree, not a source-only
 tarball). The archive is written to `dist/release/<name>/`.
@@ -359,13 +387,9 @@ Not all directories are required — include only what your extension needs.
 
 ## Session Transcript Activation
 
-Transcripts are disabled by default. To enable them, set the environment variable before starting Claude Code:
+Transcripts are disabled by default. Enable them by answering yes to the session-recording question of the CLI's setup script (for example `node scripts/setup-claude-interactive.ts`, after `node scripts/lib/node-floor-guard.js` as a separate step). Setup wires the hook `hooks/mempalace-transcript.ts` by the in-repo absolute path of the checkout that ran it, as `node "<abs>/hooks/mempalace-transcript.ts" claude-code`, from `hooks/claude-transcript-hooks.json` (events: `UserPromptSubmit`, `PostToolUse`, `Stop`, `SessionEnd`). The hook needs Node.js 24 or later when it fires, and no `jq` or `curl` (spec 0247).
 
-```bash
-export MEMPALACE_TRANSCRIPT_ENABLED=1
-```
-
-Once enabled, the hook `hooks/mempalace-transcript.sh` is triggered on every matching event via `hooks/claude-transcript-hooks.json` (events: `UserPromptSubmit`, `PostToolUse`, `Stop`, `SessionEnd`).
+That direct form records without any variable: the registration is the consent. Set `MEMPALACE_TRANSCRIPT_ENABLED` to a non-empty value other than `1` (for example `0`) to switch recording off without re-running setup. The legacy argument-less form, reached through the forwarding shim the retired `hooks/mempalace-transcript.sh`, still records only when `MEMPALACE_TRANSCRIPT_ENABLED=1`.
 
 What is recorded:
 

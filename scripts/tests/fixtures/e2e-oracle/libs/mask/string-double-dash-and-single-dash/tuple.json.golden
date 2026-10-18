@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "mask/string-double-dash-and-single-dash",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "-x=*** --y-z=*** ---w=3"
+}

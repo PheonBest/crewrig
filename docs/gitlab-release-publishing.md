@@ -19,7 +19,7 @@ release commit itself — see [GitHub release PR](github-release-pr.md).
 
 The generated `.gitlab-ci.yml` at the repository root already carries the
 `release` and `release-rehearsal` jobs once it is in sync with
-`ci/ci-capabilities.yml` (`bash scripts/build-ci.sh --check`). A fork that
+`ci/ci-capabilities.yml` (`node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts --check`). A fork that
 uses that file as its GitLab project's pipeline configuration as-is needs
 no pipeline-file change at all.
 
@@ -41,7 +41,7 @@ to cherry-pick a subset of an included file's jobs. If you want only
 pipeline, do not `include:` the generated file at all — copy those two job
 definitions out of `.gitlab-ci.yml` into your own pipeline file instead.
 That copy is then yours to keep in sync by hand: it stops tracking
-`bash scripts/build-ci.sh` regenerations, which is the trade-off for not
+`node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts` regenerations, which is the trade-off for not
 taking the other 43 jobs.
 
 The `release` job runs on push to `main` — the release branch, unchanged
@@ -100,8 +100,8 @@ No token is needed or read in this mode.
 
 **There is no local rehearsal path.** The driver detects the forge from
 CI-provided environment variables and refuses to run at all outside a
-GitHub Actions or GitLab CI job — `RELEASE_DRY_RUN=true bash
-scripts/monorepo-release.sh` on a workstation exits with "unsupported
+GitHub Actions or GitLab CI job — `RELEASE_DRY_RUN=true node
+scripts/monorepo-release.ts` (after `node scripts/lib/node-floor-guard.js`) on a workstation exits with "unsupported
 release forge: none (not a CI environment)" before anything else runs.
 To inspect a computed release, push (or trigger a manual pipeline) and
 read the `release-rehearsal` job's log, rather than trying to reproduce it
@@ -164,7 +164,8 @@ the failed run would have produced.
 
    ```sh
    git checkout <ext>-v<version>
-   bash scripts/release-package-extension.sh <ext> --version <version> --out dist/release/<ext>
+   node scripts/lib/node-floor-guard.js
+   node scripts/release-package-extension.ts <ext> --version <version> --out dist/release/<ext>
    ```
 
 3. Create the release with that archive attached:
@@ -225,8 +226,9 @@ exists; a follow-up ticket owns it.
 Until then, use one of the install paths already documented for any
 fork — see [Extension authoring](extension-authoring.md) → *Delivery
 paths*: download the release's archive and extract it locally, or run
-`bash scripts/install-extension.sh install <name>` from a checkout of the
-fork.
+`node scripts/lib/node-floor-guard.js`, then
+`node scripts/install-extension.ts install <name>` (Node.js 24 floor), from a
+checkout of the fork.
 
 ## Known limitation — a cross-project issue reference two or more groups deep gets no link
 

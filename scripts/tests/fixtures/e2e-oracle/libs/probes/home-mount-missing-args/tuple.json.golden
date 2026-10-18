@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "id": "probes/home-mount-missing-args",
+  "rc": 127,
+  "stats": {},
+  "stderr": "<REPO>/tests/e2e/lib/copilot_ephemeral_home.sh: line 75: $1: unbound variable\n",
+  "stdout": ""
+}

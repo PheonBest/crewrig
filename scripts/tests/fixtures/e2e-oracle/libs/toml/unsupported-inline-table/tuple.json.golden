@@ -1,0 +1,17 @@
+{
+  "files": {
+    "defaults.toml": {
+      "content": "[cli.claude]\nimage = \"X\"\n",
+      "mode": "0644"
+    },
+    "local.toml": {
+      "content": "[cli.claude]\nt = { a = 1, b = 2 }\n",
+      "mode": "0644"
+    }
+  },
+  "id": "toml/unsupported-inline-table",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "{\n  \"cli\": {\n    \"claude\": {\n      \"image\": \"X\",\n      \"t\": {\n        \"a\": 1,\n        \"b\": 2\n      }\n    }\n  }\n}\n"
+}

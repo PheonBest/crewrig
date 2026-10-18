@@ -1,0 +1,13 @@
+{
+  "files": {
+    "t.txt": {
+      "content": "{\"type\":\"result\",\"result\":\"crewrig-probe-b-NONCE\",\"modelUsage\":{\"claude-3-7-sonnet-20250219\":{\"inputTokens\":10}},\"subagent_stats\":{\"total_spawned\":1,\"total_completed\":1,\"total_errored\":0,\"by_type\":{\"probe-consumer\":1}}}\n",
+      "mode": "0644"
+    }
+  },
+  "id": "spawn/json-numeric-by-type-value",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "true|true|true|claude-3-7-sonnet-20250219\n"
+}

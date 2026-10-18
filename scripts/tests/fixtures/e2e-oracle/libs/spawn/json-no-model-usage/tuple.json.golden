@@ -1,0 +1,13 @@
+{
+  "files": {
+    "t.txt": {
+      "content": "{\"subagent_stats\":{\"by_type\":{}}}",
+      "mode": "0644"
+    }
+  },
+  "id": "spawn/json-no-model-usage",
+  "rc": 0,
+  "stats": {},
+  "stderr": "",
+  "stdout": "false|false|false|claude\n"
+}

@@ -8,7 +8,7 @@ kind. R14 requires that procedure to tell a component the assistant does not
 find apart from an assistant that failed to answer.
 
 This runbook is that procedure's documentation.
-`scripts/probe-antigravity-discovery.sh` is the procedure.
+`scripts/probe-antigravity-discovery.ts` is the procedure (the former `.sh` forwarding shim is removed).
 
 ## Why observation and not the vendor guide
 
@@ -24,7 +24,7 @@ re-run stays true.
 ## Running it
 
 ```sh
-bash scripts/probe-antigravity-discovery.sh
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/probe-antigravity-discovery.ts
 ```
 
 Preconditions: the `agy` binary on `PATH`, and a machine whose model calls
@@ -68,7 +68,7 @@ duplicate-name cell.
 |---|---|---|
 | skill | `<name>/SKILL.md` | the only shape the vendor documents, and the only one the build stages. |
 | agent | `<name>.md` (flat) | the shape the superseded installer copied. |
-| agent | `<name>/AGENT.md` (directory) | the shape `scripts/build-components.sh` **stages**. No probe had ever covered this cell, and R3 makes the installed shape a function of what the assistant accepts. |
+| agent | `<name>/AGENT.md` (directory) | the shape `scripts/build-components.ts` **stages**. No probe had ever covered this cell, and R3 makes the installed shape a function of what the assistant accepts. |
 
 The **duplicate-name cell** installs one agent name at two roots at once. Every
 sentinel in the first probe was uniquely named by design, so nothing observed
@@ -131,7 +131,7 @@ making a reader predict which symptom a given call site will show.
 The probe itself cannot run in CI — it needs the vendor binary, a model-driven
 session, and minutes of wall time, which spec 0123 → *Out of scope* rules out.
 Its **classifier** is hermetically tested, with `AGY_BIN` stubbed, by
-`scripts/tests/test-antigravity-discovery-probe.sh`.
+`scripts/tests/e2e-probes-antigravity-discovery.test.ts`.
 
 ## Results
 
@@ -165,7 +165,7 @@ under either reading.
 **Consequences recorded elsewhere:**
 
 - The installed agent shape is the **directory** shape, matching what
-  `scripts/build-components.sh` stages. `docs/cli-matrix.md` row 4 needs no
+  `scripts/build-components.ts` stages. `docs/cli-matrix.md` row 4 needs no
   `[GAP]`: staged shape and installed shape agree.
 - The duplicate-name outcome is benign for the real case. After this fix
   `harness-curator` exists at `~/.gemini/agents/harness-curator.md` (the Gemini
@@ -179,4 +179,4 @@ under either reading.
 Append a dated section above rather than editing an existing one — the point of
 a re-runnable procedure is the series, not the latest row. Write locations as
 `~/.gemini/…`: a pasted probe transcript carries `/Users/<login>/…`, which
-`scripts/check-no-machine-paths.sh` rejects.
+`scripts/check-no-machine-paths.ts` rejects.

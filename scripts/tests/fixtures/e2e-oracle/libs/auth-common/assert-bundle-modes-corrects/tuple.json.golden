@@ -1,0 +1,25 @@
+{
+  "files": {
+    "h/.crewrig-e2e/claude/.credentials.json": {
+      "content": "{}\n",
+      "mode": "0600"
+    },
+    "h/.crewrig-e2e/claude/sub/deep/notes.txt": {
+      "content": "n\n",
+      "mode": "0600"
+    },
+    "h/.crewrig-e2e/claude/sub/other.json": {
+      "content": "{}\n",
+      "mode": "0600"
+    }
+  },
+  "id": "auth-common/assert-bundle-modes-corrects",
+  "rc": 0,
+  "stats": {
+    "h/.crewrig-e2e": "0755",
+    "h/.crewrig-e2e/claude": "0700",
+    "h/.crewrig-e2e/claude/sub/deep": "0700"
+  },
+  "stderr": "",
+  "stdout": ""
+}

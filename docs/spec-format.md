@@ -31,7 +31,7 @@ be introduced without first amending this document.
 | `version` | semver | yes | Starts at `1.0.0` on the initial spec. Bumps follow the delta-spec convention below. |
 | `max-iterations` | integer | no | Overrides the ADR-0010 default of 5. Bounded `[1, 20]` inclusive. Omit to inherit the default. |
 | `superseded-by` | string | conditional | Required when `status: superseded`, prohibited otherwise. Value is the `id` of the spec that supersedes this one. |
-| `unsecured-id` | boolean | no | **Absent by default, and carries meaning only when present and `true`.** Marks a spec whose `id` was allocated locally but never secured on the reference repository — the fallback of `specs/0112-spec-id-reservation.md` requirement 9, reached when the author is offline or contributing from a fork. `scripts/reserve-spec-id.sh` emits this exact line on stdout on its exit-3 path, so the author pastes rather than composes it. `scripts/check-spec-id-reserved.sh` reports the condition at pull-request time: blocking for a pull request from the reference repository, non-blocking for one from a fork. The mark SHALL be removed in the same act that secures the id (requirement 10) — a merged spec never carries it. Never back-filled onto an existing spec. |
+| `unsecured-id` | boolean | no | **Absent by default, and carries meaning only when present and `true`.** Marks a spec whose `id` was allocated locally but never secured on the reference repository — the fallback of `specs/0112-spec-id-reservation.md` requirement 9, reached when the author is offline or contributing from a fork. `scripts/reserve-spec-id.ts` emits this exact line on stdout on its exit-3 path, so the author pastes rather than composes it. `scripts/check-spec-id-reserved.ts` reports the condition at pull-request time: blocking for a pull request from the reference repository, non-blocking for one from a fork. The mark SHALL be removed in the same act that secures the id (requirement 10) — a merged spec never carries it. Never back-filled onto an existing spec. |
 
 ### Worked frontmatter
 
@@ -237,7 +237,7 @@ and [`specs/0168-spec-status-transition-enforcement.md`](../specs/0168-spec-stat
   if an added or modified spec or delta-spec carries `status: draft`, naming
   the file. The spec must transition to `status: approved` (and declare
   `interaction-mode`) before merging to `main`. This is the CI counterpart of
-  the refusal `scripts/merge-spec-pr.sh` applies locally, so a spec-PR merged
+  the refusal `scripts/merge-spec-pr.ts` applies locally, so a spec-PR merged
   by a direct `gh pr merge` is still caught before the merge.
 - **Implementation PRs (`(feat|fix|refactor|perf|chore)/<NNNN>-*`):** CI fails
   (`[FAIL]`) on every spec and delta-spec the branch's ticket implements that
@@ -354,11 +354,11 @@ spec is never at once merged and still `draft` — and **no** separate,
 post-merge, metadata-only pull request is required to record the approval.
 
 *Merge mechanic.* Strictly **after** the approval event has been secured
-and strictly **before** running `bash scripts/merge-spec-pr.sh`, on the spec-PR branch
+and strictly **before** running `node scripts/merge-spec-pr.ts`, on the spec-PR branch
 (`spec/<NNNN>-<slug>`) edit the spec's frontmatter (`status: draft` →
 `status: approved`, adding `interaction-mode` if it was omitted during
 `draft`), create a **new commit** — not `git commit --amend` — then `git push`
-and only then `bash scripts/merge-spec-pr.sh`. A new commit rather than an amend
+and only then `node scripts/merge-spec-pr.ts`. A new commit rather than an amend
 because the spec-PR squash-merges, so both routes collapse to the same single
 commit on `main` carrying `status: approved`; a new commit needs only a plain
 `git push`, whereas an amend would force `git push --force-with-lease` and
@@ -367,7 +367,7 @@ risk clobbering a concurrent reviewer or CI push on the shared branch.
 A delta spec-PR follows the same mechanic unchanged. On
 `spec/<NNNN>-<slug>-delta-<NN>`, after the approval event, a new commit sets
 the delta-spec's own frontmatter to `status: approved`; then `git push`, then
-`bash scripts/merge-spec-pr.sh`, which resolves that branch name to the delta
+`node scripts/merge-spec-pr.ts`, which resolves that branch name to the delta
 file and refuses to merge it while it still reads `draft`. The parent spec's
 `status` is not touched.
 

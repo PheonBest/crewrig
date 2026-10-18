@@ -13,10 +13,10 @@
 # character is `#` are ignored; the first `carrier=` line wins.
 #
 # The value is constrained to a CLOSED PAIR. Anything else — including a near
-# miss such as `refs/spec-id/` — makes scripts/reserve-spec-id.sh exit 1 naming
+# miss such as `refs/spec-id/` — makes scripts/reserve-spec-id.ts exit 1 naming
 # the offending value, because a third namespace would be written by the push
 # and read by neither the allocation union nor
-# scripts/check-spec-id-reserved.sh:
+# scripts/check-spec-id-reserved.ts:
 #
 #   refs/spec-ids/        the default. Invisible in branch and tag listings.
 #   refs/tags/spec-id/    the alternative, for a remote that refuses a custom
@@ -30,7 +30,7 @@
 # leak into the upstream allocated set that spec 0112 delta-01 excludes them from.
 #
 # This entry is `excluded` in .crewrig/core-paths.txt: an adopter whose remote
-# refuses the default changes the value once and scripts/sync-from-upstream.sh
+# refuses the default changes the value once and scripts/sync-from-upstream.ts
 # never guards, restores, or aborts on it. The consequence is symmetric and
 # permanent — upstream can never update the value afterwards either.
 carrier=refs/spec-ids/
