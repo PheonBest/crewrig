@@ -9,7 +9,7 @@ JSON document on stdout.
 Read-only against MemPalace. Writes — if ever needed — flow through MCP on
 the agent side, not from this script.
 
-Output JSON schema (stable, depended on by ``scripts/harness-curate.sh``):
+Output JSON schema (stable, depended on by ``scripts/curate.ts``):
 
     {
       "stats": {

@@ -1,4 +1,4 @@
-// schedule-curator.ts — TypeScript entry of schedule-curator.sh (spec 0258 requirements 2, 3, 15).
+// schedule-curator.ts — TypeScript entry (spec 0258 requirements 2, 3, 15).
 // Registers (or removes) a recurring local job that runs `curate.ts --apply --dedup --max-issues 5`.
 // One self-contained file: the only file it loads is the CrewRig service layer, found by walking up
 // from its own real path to the first ancestor holding scripts/lib/service/schedule-backend.ts.
@@ -18,14 +18,14 @@ void (async () => {
 
   const HELP =
     [
-      "# schedule-curator.sh — Install (or remove) a recurring local schedule that",
-      "# runs `curate.sh --apply --dedup --max-issues 5` on the maintainer's",
+      "# schedule-curator.ts — Install (or remove) a recurring local schedule that",
+      "# runs `curate.ts --apply --dedup --max-issues 5` on the maintainer's",
       "# machine. Auto mode never runs on CI by design: MemPalace state is local.",
       "#",
       "# Usage:",
-      "#   bash schedule-curator.sh             # interactive install",
-      "#   bash schedule-curator.sh --dry-run   # print the plist / cron line, no install",
-      "#   bash schedule-curator.sh --uninstall # remove the managed schedule entry",
+      "#   node schedule-curator.ts             # interactive install",
+      "#   node schedule-curator.ts --dry-run   # print the plist / cron line, no install",
+      "#   node schedule-curator.ts --uninstall # remove the managed schedule entry",
       "#",
       "# Idempotency: re-running install replaces the previous entry, never",
       "# duplicates. On macOS the plist lives at",

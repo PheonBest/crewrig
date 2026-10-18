@@ -1,4 +1,4 @@
-// curate.ts — Harness Curator entry point (TypeScript port of curate.sh, spec 0258 R13).
+// curate.ts — Harness Curator entry point (spec 0258 R13).
 //
 // Run `node curate.ts --help` for the options. Self-contained on purpose: the
 // component build copies this file byte for byte into built trees and user
@@ -20,9 +20,9 @@ void (async () => {
     process.exitCode = code;
   };
 
-  // Constant help text: lines 2-44 of curate.sh, `# ` prefixes included.
+  // Constant help text: the usage header, `# ` prefixes included.
   const HELP = [
-    "# curate.sh — Harness Curator entry point",
+    "# curate.ts — Harness Curator entry point",
     "#",
     '# Reads friction reports from MemPalace `wing="harness-friction"` (or from',
     "# stdin in test mode), clusters them by subcategory/room, composes issue",
@@ -34,7 +34,7 @@ void (async () => {
     "# auto-fix mode tracked in #42, and closes the issue.",
     "#",
     "# Usage:",
-    "#   bash scripts/curate.sh [--dry-run | --apply]",
+    "#   node scripts/curate.ts [--dry-run | --apply]",
     "#                          [--from-stdin]",
     "#                          [--target-repo <url>]",
     "#                          [--threshold <n>]",

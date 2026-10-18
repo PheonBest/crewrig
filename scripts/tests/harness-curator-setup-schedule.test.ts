@@ -34,14 +34,14 @@ after(() => {
 });
 
 const run = (c: Omit<HcCase, "name" | "tools">, name: string) => {
-  const out = observe({ ...c, name, tools: ["node"] }, "shell");
+  const out = observe({ ...c, name, tools: ["node"] }, "entry");
   allCalls.push(out.calls);
   return out;
 };
 const golden = (c: string, f: string): string =>
   fs.readFileSync(path.join(GOLDENS, c, `${f}.golden`), "latin1");
 
-describe("G8 schedule-curator.sh", { skip }, () => {
+describe("G8 schedule-curator", { skip }, () => {
   const stubs = [
     unameStub(),
     crontabStub(),
@@ -51,11 +51,9 @@ describe("G8 schedule-curator.sh", { skip }, () => {
     stub("schtasks", "exit 0\n"),
   ];
 
-  test("G8 exists: schedule-curator.sh exists and is executable", () => {
-    const file = scriptFile("schedule-curator", "sh");
+  test("G8 exists: schedule-curator.ts exists", () => {
+    const file = scriptFile("schedule-curator", "ts");
     assert.ok(fs.existsSync(file), `missing: ${file}`);
-    if (process.platform !== "win32")
-      assert.ok((fs.statSync(file).mode & 0o111) !== 0, "no exec bit");
   });
 
   test("G8 uninstall: exit 0 and 'nothing to remove' or 'removed' on a clean machine", () => {
@@ -88,7 +86,7 @@ describe("G8 schedule-curator.sh", { skip }, () => {
   });
 });
 
-describe("G12 setup-labels.sh --dry-run", { skip }, () => {
+describe("G12 setup-labels --dry-run", { skip }, () => {
   const stubs = [ghStub()];
   let plan: ReturnType<typeof run>;
   const lines = (): string[] =>

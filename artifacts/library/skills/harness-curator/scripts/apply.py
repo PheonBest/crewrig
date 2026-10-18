@@ -9,7 +9,7 @@ prints the resolved forge argv as one JSON line per cluster without running
 anything. The GitHub argv path is kept byte-for-byte identical to the
 original single-forge behavior (spec 0105 R7).
 
-The script is invoked by ``curate.sh`` through ``$MEMPALACE_PYTHON``
+The script is invoked by ``curate.ts`` through ``$MEMPALACE_PYTHON``
 rather than via shebang exec, so that any future ``from mempalace …``
 import resolves against the same interpreter that ``curate.py`` uses.
 The ``#!/usr/bin/env python3`` shebang above is kept so a human can still

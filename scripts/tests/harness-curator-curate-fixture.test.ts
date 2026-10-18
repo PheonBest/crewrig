@@ -1,8 +1,8 @@
 // Replaces artifacts/library/skills/harness-curator/scripts/test.sh groups G1, G2, G3, G7, G14
-// (spec 0265, row J2): the curate.sh shim on the sample fixture (16 drawers) and on inline
+// (spec 0265, row J2): the curate.ts entry on the sample fixture (16 drawers) and on inline
 // fixtures built in memory. G1-G3 are also byte-pinned by the differential golden
 // (stdin-sample-dry-run); the field-level asserts below are what survive a golden regeneration.
-// POSIX only: `observe` runs the shim in a per-run sandbox with a stub-free PATH (python3 only).
+// POSIX only: `observe` runs the entry in a per-run sandbox with a stub-free PATH (python3 only).
 
 import assert from "node:assert/strict";
 import { before, describe, test } from "node:test";
@@ -55,7 +55,7 @@ function run(input: string, extra: string[] = []): Out {
       input: Buffer.from(input, "utf8").toString("latin1"),
       tools: ["python3", "node"],
     },
-    "shell",
+    "entry",
   );
   const stdout = utf8(o.stdout);
   let json = null as unknown as Report;
@@ -78,7 +78,7 @@ const cluster = (o: Out, key: string): Cluster =>
   o.json.clusters.find((c) => c.cluster_key === key) as Cluster;
 const keys = (o: Out): string[] => o.json.clusters.map((c) => c.cluster_key);
 
-describe("G1-G3 curate.sh --from-stdin --dry-run on the fixture", { skip }, () => {
+describe("G1-G3 curate.ts --from-stdin --dry-run on the fixture", { skip }, () => {
   let out: Out;
   before(() => {
     out = run(SAMPLE);

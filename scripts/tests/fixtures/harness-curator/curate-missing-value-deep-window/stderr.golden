@@ -1,1 +1,2 @@
-<SCRIPTS>/curate: line 77: $2: unbound variable
+Error: --deep-window requires a value
+Run '<SCRIPTS>/curate --help' for usage.
