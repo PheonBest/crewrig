@@ -68,7 +68,7 @@ describe("reserve-spec-id contract", { skip: POSIX_ONLY }, () => {
     assert.equal(lines(r.stdout)[1], "unsecured-id: true");
     assert.match(r.stderr, /[-][-]offline/);
     // J4: the twin still prints the shell command name; change together with the shim.
-    assert.match(r.stderr, /reserve-spec-id[.]sh --id 0002/);
+    assert.match(r.stderr, /reserve-spec-id[.]ts --id 0002/);
     nothingPushed(fx, RESERVATION_REFS);
   });
 

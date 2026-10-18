@@ -4,7 +4,7 @@
 # `strict` (.crewrig/core-paths.txt, docs/layers.md). This file DESCRIBES: it
 # emits nothing and builds nothing. The resolution that reads it is seam (d)
 # part 2 of epic #1100; the hermetic gate over it is
-# scripts/check-model-mappings.ts (spec 0197 R46-R51).
+# scripts/check-model-mappings.sh (spec 0197 R46-R51).
 #
 # Grounding is per declaration (docs/model-mapping-format.md, Decision B).
 # "RR" abbreviates the live-verification research report, issue #1111

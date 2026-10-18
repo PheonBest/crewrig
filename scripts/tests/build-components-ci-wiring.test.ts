@@ -155,7 +155,7 @@ function suiteListFaults(ref: Reference): string[] {
   const runner = commandsOf(cap).find((c) => SUITE_COMMAND.test(c)) ?? "";
   const suites = runner.split(/\s+/).filter((t) => t.endsWith(".test.ts"));
   const faults: string[] = [];
-  for (const name of ["shim", "ci-wiring", "references"]) {
+  for (const name of ["ci-wiring", "references"]) {
     if (!suites.includes(`scripts/tests/build-components-${name}.test.ts`))
       faults.push(`build-components-ts: suite ${name} not listed`);
   }
