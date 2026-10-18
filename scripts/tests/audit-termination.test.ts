@@ -144,6 +144,20 @@ describe("pure helpers", () => {
     assert.deepEqual(lineKinds("a.sh then sh -c"), ["bash/sh word", ".sh"]);
     assert.deepEqual(lineKinds("push the fish. shell"), []);
   });
+  it("classifies the historical-record and third-party families by rules H5 to H11", () => {
+    assert.equal(classify("docs/adr/0001-x.md", "bash run.sh").rule, "H5");
+    assert.equal(classify(".claude/skills/gitlab-ci/SKILL.md", "- ./scripts/deploy.sh").rule, "H6");
+    assert.equal(
+      classify("docs/runbooks/extension-mcp-token-probe.md", "x dist/stub.sh y").rule,
+      "H7",
+    );
+    assert.equal(classify("README.md", "curl -sL https://taskfile.dev/install.sh | sh").rule, "H8");
+    assert.equal(classify("docs/a.md", "reads ~/.crewrig/tls-env.sh").rule, "H9");
+    assert.equal(classify("docs/assets/mempalace-mcp/rotate-token.prompt.md", "x.sh").rule, "H10");
+    assert.equal(classify("docs/cli-matrix.md", "Git for Windows bash.exe").rule, "H11");
+    assert.equal(classify("README.md", "bash scripts/x.sh").label, "UNCLASSIFIED");
+  });
+
   it("classifies only by the listed rules", () => {
     assert.deepEqual(classify("docs/shell-removal.md", "bash x.sh"), {
       label: "historical",
