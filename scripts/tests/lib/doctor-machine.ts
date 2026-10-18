@@ -25,7 +25,7 @@
 //               writeRegBash / writeRegDirect(file, py, wrapper), writeRegUnguarded(file, py)
 //   Runners     runDoctor(home, pathDir, extra?)                PATH = pathDir:<real PATH>
 //               runDoctorIsolated(home, pathDir, toolbin, extra?)  PATH = pathDir:toolbin
-//               Both run `/bin/bash scripts/doctor-mempalace.sh` (the shim) with HOME and
+//               Both run `/bin/bash scripts/doctor-mempalace.ts` (the shim) with HOME and
 //               USERPROFILE = home, MEMPALACE_MCP_PORT = a free port,
 //               CREWRIG_TEST_SERVICE_BIN_DIR = an empty dir, PIPX_HOME / XDG_DATA_HOME /
 //               MEMPALACE_* / CI / proxies / NODE_TEST_CONTEXT deleted; `extra` overrides the
@@ -51,7 +51,7 @@ export const WRAPPER = path.join(REPO, "scripts", "lib", "mempalace-http-wrapper
 export const PIN_MODULE = path.join(REPO, "scripts", "lib", "mempalace_pin.py");
 export const COMMON_SH = path.join(REPO, "scripts", "lib", "common.sh");
 export const TLS_EXEC = path.join(REPO, "scripts", "lib", "tls-exec.sh");
-const DOCTOR = path.join(REPO, "scripts", "doctor-mempalace.sh");
+const DOCTOR = path.join(REPO, "scripts", "doctor-mempalace.ts");
 
 export const PIN = readMempalacePin(REPO);
 export const OLD_VERSION = "3.0.0";
@@ -226,7 +226,10 @@ function run(home: string, searchPath: string, extra: Record<string, string | un
   // Empty service-binary dir, outside HOME so the HOME manifest of the mutation test is stable.
   const emptyBin = fs.mkdtempSync(path.join(path.dirname(home), "service-bin-"));
   const env = childEnv(home, emptyBin, searchPath, extra);
-  const r = spawnSync("/bin/bash", [DOCTOR], { env: env as NodeJS.ProcessEnv, encoding: "utf8" });
+  const r = spawnSync(process.execPath, [DOCTOR], {
+    env: env as NodeJS.ProcessEnv,
+    encoding: "utf8",
+  });
   return { rc: r.status ?? -1, out: `${r.stdout}${r.stderr}` };
 }
 

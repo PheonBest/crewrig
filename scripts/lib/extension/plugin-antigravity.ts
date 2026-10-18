@@ -1,5 +1,5 @@
 // plugin-antigravity.ts — the Antigravity CLI plugin renderer (spec 0254 R11, R17, R18).
-// Twin of scripts/build-antigravity-extension.sh :92-247 (everything after the shared start,
+// Twin of scripts/build-antigravity-extension.ts :92-247 (everything after the shared start,
 // which lives in plugin-common.ts): manifest, MCP (the neutral `${extensionRoot}` stays
 // unresolved), raw context, skills, commands to skills, whole agent directories, hooks directory
 // and the two closing lines.

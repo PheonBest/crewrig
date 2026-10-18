@@ -1,4 +1,4 @@
-// claude-plugin.ts — twin of scripts/install-claude-plugin.sh (spec 0255 R10): build the plugin
+// claude-plugin.ts — twin of scripts/install-claude-plugin.ts (spec 0255 R10): build the plugin
 // into the shared local marketplace home `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/local-marketplace`,
 // upsert the marketplace manifest, then register it and install through the `claude` CLI.
 
@@ -14,7 +14,7 @@ import { runTool } from "./spawn.ts";
 export async function installClaudePlugin(input: EntryInput): Promise<number> {
   const ctx = createPluginCtx(input);
   const prepared = prepare(ctx, {
-    script: "install-claude-plugin.sh",
+    script: "install-claude-plugin.ts",
     binary: "claude",
     missing: "Error: 'claude' CLI is required. Install Claude Code first.",
   });

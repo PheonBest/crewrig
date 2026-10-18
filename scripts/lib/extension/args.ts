@@ -1,7 +1,7 @@
 // args.ts — argument parsing of the extension entries (spec 0254 R5).
 // Twins `build-extension.sh:60-106` (`--check`, `--target`), the `${1:?Usage: ...}` lines of the
-// three plugin builders (build-claude-plugin.sh:32, build-copilot-plugin.sh:38,
-// build-antigravity-extension.sh:35) and migrate-extension.sh:50. Pure: no output, no exit.
+// three plugin builders (build-claude-plugin.sh:32, build-copilot-plugin.ts:38,
+// build-antigravity-extension.ts:35) and migrate-extension.sh:50. Pure: no output, no exit.
 
 export type BuildArgs =
   | {

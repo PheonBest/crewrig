@@ -90,7 +90,7 @@ function warnStdio(home: string): void {
     `WARNING: MemPalace MCP HTTP daemon is starting, but assistant(s) [${stdio.join(", ")}] are still configured in stdio mode.`,
   );
   err(
-    `WARNING: stdio sessions will be locked out of writing by this daemon. Run: bash ${CREWRIG_REPO_DIR}/scripts/switch-mempalace-http.sh`,
+    `WARNING: stdio sessions will be locked out of writing by this daemon. Run: node ${CREWRIG_REPO_DIR}/scripts/switch-mempalace-http.ts`,
   );
 }
 

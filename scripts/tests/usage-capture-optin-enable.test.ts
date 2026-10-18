@@ -112,7 +112,7 @@ describe("G6 an empty or 'no' answer on state absent writes nothing (R4)", () =>
         assert.equal(r.status, 0, both(r));
         assert.ok(!fs.existsSync(path.dirname(cfg)), "nothing was created");
         assert.ok(both(r).includes("not enabled"));
-        assert.ok(both(r).includes(`setup-${cli}-interactive.sh`));
+        assert.ok(both(r).includes(`setup-${cli}-interactive.ts`));
         s.cleanup();
       });
       it(`${cli}: answer '${label}' on an existing file modifies nothing and backs up nothing`, () => {

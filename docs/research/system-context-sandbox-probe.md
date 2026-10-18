@@ -135,7 +135,7 @@ dir with no `--add-dir`/`--allow-all-paths`: still **denied**
 workspace-trust prompts for the current project cwd, **not** cross-project
 absolute-path reads. There is no persistent config surface to pre-authorize the
 store read; the per-invocation flags and interactive approval are the only
-grants. Consequence for setup: `setup-copilot-interactive.sh` installs the store
+grants. Consequence for setup: `setup-copilot-interactive.ts` installs the store
 but writes **no** ineffective durable config, and the store's explicit-signal
 fallback covers the headless-deny case.
 

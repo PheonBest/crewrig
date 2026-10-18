@@ -12,7 +12,6 @@ import { after, describe, test } from "node:test";
 
 import { claim, ledgerHas, ledgerLacks, sameBytes } from "./lib/worktree-claim-asserts.ts";
 import {
-  CLAIM_SH,
   CLAIM_TS,
   SKIP_POSIX,
   cleanEnv,
@@ -127,7 +126,11 @@ describe("worktree-claim bash port: guards", () => {
   test("case 14 (shim leg): the bash shim is re-entrant the same way", { skip: SKIP_POSIX }, () => {
     const fx = makeFixture();
     const sh = (args: string[]) =>
-      spawnSync("bash", [CLAIM_SH, ...args], { cwd: fx.wt, env: cleanEnv(), encoding: "utf8" });
+      spawnSync(process.execPath, [CLAIM_TS, ...args], {
+        cwd: fx.wt,
+        env: cleanEnv(),
+        encoding: "utf8",
+      });
     assert.equal(sh(["take", "--agent", "alice"]).status, 0);
     assert.equal(sh(["run", "--agent", "alice", "--", NODE, "-e", "0"]).status, 0);
     assert.ok(fs.statSync(fx.claimDir).isDirectory());

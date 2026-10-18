@@ -1,12 +1,12 @@
 // usage.ts — the `--help` block (spec 0248 R14, R19, R38(a)).
 //
 // Byte-identical to the shell tool's block except the invocation lines, which
-// name `node scripts/worktree-claim.ts` because `bash scripts/worktree-claim.sh`
+// name `node scripts/worktree-claim.ts` because a `bash` invocation
 // is not available on Windows. The block states the limit of the clean-tree
 // gate (ignored state) and the overlap of the exit codes; keep both.
 
 export const USAGE = `\
-worktree-claim.sh — exclusive, attributable claims on a shared ticket worktree
+worktree-claim.ts — exclusive, attributable claims on a shared ticket worktree
 (spec 0114).
 
   node scripts/worktree-claim.ts run --agent <name> [--ticket <id>] -- <command…>

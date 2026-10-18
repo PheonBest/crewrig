@@ -435,7 +435,7 @@ function geminiCommentsWarning(c: Classification, ctx: WarningContext): string {
     (reg) =>
       `MemPalace: the gemini "mempalace" registration in ${ctx.config} ${state(reg)}, so shared memory ` +
       `is unavailable to this session. The file holds comments, which the CrewRig task commands cannot ` +
-      `read. Repair: run "bash scripts/setup-gemini-interactive.sh" in the CrewRig checkout; it rewrites ` +
+      `read. Repair: run "node scripts/setup-gemini-interactive.ts" in the CrewRig checkout; it rewrites ` +
       `the file without its comments and keeps them in a timestamped backup. Then restart this gemini session.`,
     c.class === "wrong-endpoint" ? c.registered : "",
   );
@@ -470,7 +470,7 @@ export function warningFor(cli: Cli, c: Classification, ctx: WarningContext): st
           (cfg) =>
             `MemPalace: ${cli} has no "mempalace" registration: its configuration file ${cfg} does not exist, ` +
             `although ${serving}. Shared memory is unavailable to this session. ` +
-            run(`bash scripts/setup-${cli}-interactive.sh`),
+            run(`node scripts/setup-${cli}-interactive.ts`),
           ctx.config,
         );
       }

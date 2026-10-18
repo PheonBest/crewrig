@@ -1,5 +1,5 @@
 // mcp-agy-step.ts — the two MCP steps of the Antigravity setup (spec 0256 requirements 25-28,
-// delta-01; plan v2 step B3b.1). Twins the blocks of scripts/setup-antigravity-interactive.sh:
+// delta-01; plan v2 step B3b.1). Twins the blocks of scripts/setup-antigravity-interactive.ts:
 //   - `prepare` (step `mcp-prepare`, lines 159-161): prints `Configuring <mcp_config.json>...` and
 //     creates the directory; it runs BEFORE `tls-offer` and `deps-install`;
 //   - `run` (step `mcp`, lines 168-290): the backup and capture of the operator's servers, the

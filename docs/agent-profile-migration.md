@@ -238,6 +238,6 @@ assisted Claude Code setup — the setup's `install_tier_to_home` now installs
 each agent as a flat `<name>.md` file and removes any same-name directory
 already present. A synchronizing fork lands on the new layout without
 acting either: the compiled agent trees carry the `regenerable` policy
-(`.crewrig/core-paths.txt`), so the next `scripts/sync-from-upstream.sh` run
+(`.crewrig/core-paths.txt`), so the next `scripts/sync-from-upstream.ts` run
 restores the new flat files, removes the retired nested ones as orphans, and
 reports rather than aborts on any member a fork had locally diverged.

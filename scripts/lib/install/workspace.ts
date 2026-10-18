@@ -1,5 +1,5 @@
 // workspace.ts — install (or link) every Gemini CLI workspace component type in one run (spec 0255
-// R13, ported from scripts/install-workspace.sh, spec 0119 R15).
+// R13, ported from scripts/install-workspace.ts, spec 0119 R15).
 //
 // Every type runs, whatever any other type does: a failing status is collected, never fatal. Each
 // type is `node scripts/manage-workspace-component.ts <mode> <type>`, run with the umbrella's

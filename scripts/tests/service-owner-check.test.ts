@@ -56,7 +56,7 @@ describe("owner-check: verdict", () => {
       "            supervisor runs PID 100. A process that claimed",
       "            the port first may have received the bearer token.",
       "            Rotate the token: task mempalace:rotate-token",
-      "            (or: bash scripts/switch-mempalace-http.sh --rotate)",
+      "            (or: node scripts/switch-mempalace-http.ts --rotate)",
     ]);
   });
 

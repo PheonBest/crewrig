@@ -28,7 +28,7 @@
     {"path":"<HOME>/.gemini/antigravity-cli/60_TOOLS.md","kind":"file","mode":"0644","sha256":"repo:artifacts/core/rules/60-tools.md"},
     {"path":"<HOME>/.gemini/antigravity-cli/65_TOOLS.md","kind":"file","mode":"0644","sha256":"repo:config/TOOLS.md"},
     {"path":"<HOME>/.gemini/config","kind":"dir"},
-    {"path":"<HOME>/.gemini/config/AGENTS.md","kind":"file","mode":"0644","sha256":"85f0c9295224082b285ab9cb3f8f11dcde69be57645b170c5357701ae7ba5aa1"},
+    {"path":"<HOME>/.gemini/config/AGENTS.md","kind":"file","mode":"0644","sha256":"b964741a3d486d2d47d43d1c6ffa25720eb16733df2675f8a9a2b0af9c68f002"},
     {"path":"<HOME>/.gemini/config/hooks.json","kind":"file","mode":"0600","sha256":"ed6689a62093bbb3810f4698a9552d14d79cca9c62e00ddb0d8efbde75cb4fbe"},
     {"path":"<HOME>/.gemini/config/mcp_config.json","kind":"file","mode":"0600","sha256":"ff1304f0440f975a052da31f0aa95cdd0747574e57fc2cb6e5c69ce5fec10e8f"},
     {"path":"<HOME>/.local","kind":"dir"},

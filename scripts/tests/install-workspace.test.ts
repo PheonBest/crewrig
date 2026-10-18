@@ -1,6 +1,6 @@
 // install-workspace.test.ts — black-box contract of scripts/install-workspace.sh (spec 0255 R26;
 // ticket #1334): the shell leg today, the TypeScript leg as soon as scripts/install-workspace.ts
-// exists. `scripts/manage-workspace-component.sh` and `.ts` (the TypeScript entry spawns the latter)
+// exists. `scripts/manage-workspace-component.ts` and `.ts` (the TypeScript entry spawns the latter)
 // are both replaced in the sandbox by stubs that record their arguments and fail for the types named
 // in FAIL_TYPES. The `.ts` stub is written at test time into the sandbox only, never tracked.
 
@@ -15,21 +15,6 @@ import type { Leg } from "./lib/install-sandbox.ts";
 const TYPES = ["commands", "skills", "hooks", "agents", "policies", "mcp-servers", "themes"];
 const sandbox = createInstallSandbox({ deps: "none" });
 const log = path.join(sandbox.hermetic.root, "manage-calls");
-
-sandbox.tree.write(
-  "scripts/manage-workspace-component.sh",
-  [
-    "#!/bin/bash",
-    `printf '%s %s\\n' "$1" "$2" >> '${log}'`,
-    'echo "ran $2"',
-    'case " ${FAIL_TYPES:-} " in',
-    '  *" $2 "*) echo "stub failure in $2" >&2; exit 3 ;;',
-    "esac",
-    "exit 0",
-    "",
-  ].join("\n"),
-  0o755,
-);
 
 sandbox.tree.write(
   "scripts/manage-workspace-component.ts",
@@ -69,8 +54,8 @@ const FAILURE_TAIL =
   "complete. Their own reports appear above.\n";
 
 describe("install-workspace", () => {
-  it("has at least the shell leg", () => {
-    assert.ok(legs().includes("shell"));
+  it("has at least the node leg", () => {
+    assert.ok(legs().includes("node"));
   });
 
   it("runs the seven types in order in the default mode install", () => {

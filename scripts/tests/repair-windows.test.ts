@@ -69,7 +69,7 @@ describe("repair-mempalace-http — every platform", () => {
     assert.match(r.err, /^ERROR: unknown option: --bogus\n/);
     assert.ok(
       r.err.includes(
-        "Usage: bash scripts/repair-mempalace-http.sh [--restore-backup | --reset-none]\n",
+        "Usage: node scripts/repair-mempalace-http.ts [--restore-backup | --reset-none]\n",
       ),
     );
     assert.ok(
@@ -85,7 +85,7 @@ describe("repair-mempalace-http — every platform", () => {
     assert.match(both.err, /--restore-backup and --reset-none are mutually exclusive\./);
     const help = run(box, ["--help"]);
     assert.equal(help.status, 0);
-    assert.match(help.out, /^Usage: bash scripts\/repair-mempalace-http\.sh /);
+    assert.match(help.out, /^Usage: node scripts\/repair-mempalace-http\.ts /);
   });
 
   test("no supported assistant on PATH: nothing to repair, exit 0", () => {

@@ -1,4 +1,4 @@
-// unlink-extensions.test.ts — black-box contract of scripts/unlink-extensions.sh (spec 0255 R26;
+// unlink-extensions.test.ts — black-box contract of scripts/unlink-extensions.ts (spec 0255 R26;
 // ticket #1334): the shell leg today, the TypeScript leg once scripts/unlink-extensions.ts exists.
 // The sandbox tree holds `extensions/<tier>/<name>/` fixtures; the removal target is
 // `$HOME/.gemini/extensions/<name>`, keyed on the bare name (the tier never appears in it).
@@ -41,8 +41,8 @@ const run = (leg: Leg, args: string[] = [], env: Record<string, string> = {}) =>
   runEntry(sandbox, "unlink-extensions", args, { leg, env });
 
 describe("unlink-extensions", () => {
-  it("has at least the shell leg", () => {
-    assert.ok(legs().includes("shell"));
+  it("has at least the node leg", () => {
+    assert.ok(legs().includes("node"));
   });
 
   it("removes core then library, in that tier order, each with a two-space indent", () => {

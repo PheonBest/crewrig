@@ -1,6 +1,6 @@
 // cli-claude.ts — the descriptor of the Claude Code setup (spec 0256 requirements 3 and 6, plan v2
 // step B3b.1). Pure data: the order of the run, the homes, the rule files and the strategy keys of
-// scripts/setup-claude-interactive.sh, which the step files in this directory read. Every string is
+// scripts/setup-claude-interactive.ts, which the step files in this directory read. Every string is
 // copied from that script (the labels are the third argument of its `install_file` calls); the
 // differential test compares the bytes later. Paths follow the contract in descriptor.ts: homes
 // relative to the user home, `src` relative to the repository, `dest` relative to `homes.rulesDir`

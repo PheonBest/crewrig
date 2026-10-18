@@ -29,7 +29,7 @@ canonical_repo = "https://github.com/<YOUR-ORG>/<YOUR-REPO>"
 # to canonical_repo, regardless of this value — frictions on components you did
 # not author keep flowing to the repo that maintains them. See
 # artifacts/FORMAT.md (Provenance & Forks); enforced by
-# scripts/check-feedback-routing.sh.
+# scripts/check-feedback-routing.ts.
 feedback_repo  = "https://github.com/<YOUR-ORG>/<YOUR-REPO>"
 
 # ticket_nudge_days / ticket_grace_days — the stale-lock delays of the

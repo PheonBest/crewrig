@@ -1,4 +1,4 @@
-// antigravity-manage-sandbox.test.ts — scripts/manage-antigravity-component.sh run in a sandbox
+// antigravity-manage-sandbox.test.ts — scripts/manage-antigravity-component.ts run in a sandbox
 // repository (G19-G21 of test-antigravity-component-install.sh, spec 0263): the per-component
 // migration sweeps only the names the run placed, and a placement-less install migrates nothing.
 // G17/G18 (declarations) are asserted by print-manage-declarations.test.ts. POSIX-only: the entry

@@ -33,7 +33,6 @@ const SKIP_SPAWN = canSpawn ? false : "needs a POSIX host with python3 on PATH";
 
 const ENTRIES: Array<[string, Entry, boolean]> = [
   ["TypeScript entries", (n) => [process.execPath, [`scripts/${n}.ts`]], false],
-  ["bash shims", (n) => ["bash", [`scripts/${n}.sh`]], !posix],
 ];
 
 for (const [label, entry, skipBlock] of ENTRIES) {

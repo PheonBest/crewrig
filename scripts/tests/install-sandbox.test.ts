@@ -43,7 +43,7 @@ describe("install sandbox", () => {
     assert.deepEqual(cliCalls(sandbox, "gemini"), []);
   });
 
-  it("runs the shell leg of scripts/unlink-component.sh against the sandbox HOME", () => {
+  it("runs the shell leg of scripts/unlink-component.ts against the sandbox HOME", () => {
     const target = path.join(sandbox.home, ".gemini", "skills", "demo");
     fs.mkdirSync(target, { recursive: true });
     const removed = runEntry(sandbox, "unlink-component", ["skill", "demo"]);
@@ -58,11 +58,11 @@ describe("install sandbox", () => {
   });
 
   it("offers only the legs whose entry exists", () => {
-    assert.deepEqual(IMPL, ["shell", "node"]);
+    assert.deepEqual(IMPL, ["node"]);
     const legs = runLegs(sandbox, "unlink-component", ["skills", "demo"]);
     assert.deepEqual(
       legs.map((l) => l.leg),
-      sandbox.tree.exists("scripts/unlink-component.ts") ? ["shell", "node"] : ["shell"],
+      sandbox.tree.exists("scripts/unlink-component.ts") ? ["node"] : [],
     );
   });
 

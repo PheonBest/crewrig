@@ -1,5 +1,5 @@
 // install-antigravity-extension.test.ts — the black-box contract of
-// scripts/install-antigravity-extension.sh (spec 0255 R10, R26; ticket #1334). Written against
+// scripts/install-antigravity-extension.ts (spec 0255 R10, R26; ticket #1334). Written against
 // the shell, which is now a forwarding shim: the "shell" leg is `bash scripts/<name>.sh` (shim ->
 // TypeScript) and the "node" leg is the entry itself; both are real user paths. No `jq` anywhere
 // on the sandbox PATH (R22(a)).
@@ -60,7 +60,7 @@ for (const leg of LEGS) {
       const res = run(sb, []);
       assert.equal(res.status, 1);
       assert.equal(res.stdout, "");
-      assert.equal(res.stderr, "Usage: install-antigravity-extension.sh <extension-name>\n");
+      assert.equal(res.stderr, "Usage: install-antigravity-extension.ts <extension-name>\n");
       assert.deepEqual(cliCalls(sb, "agy"), []);
     });
 

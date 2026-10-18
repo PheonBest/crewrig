@@ -33,7 +33,7 @@ describe("chroma wrapper, live", { skip: SKIP }, () => {
   let port = 0;
 
   const sh = (script: string, extra: NodeJS.ProcessEnv = env) =>
-    spawnSync("bash", [path.join(REPO, "scripts", script)], {
+    spawnSync(process.execPath, [path.join(REPO, "scripts", script)], {
       cwd: REPO,
       env: extra,
       encoding: "utf8",
@@ -56,7 +56,7 @@ describe("chroma wrapper, live", { skip: SKIP }, () => {
     };
   });
   after(() => {
-    if (SKIP === false) sh("stop-chroma-server.sh");
+    if (SKIP === false) sh("stop-chroma-server.ts");
     fs.rmSync(home, { recursive: true, force: true });
   });
 
@@ -76,7 +76,7 @@ describe("chroma wrapper, live", { skip: SKIP }, () => {
   });
 
   test("a real HttpClient is a ClientAPI and the pool ceilings bound it", () => {
-    const start = sh("start-chroma-server.sh");
+    const start = sh("start-chroma-server.ts");
     assert.equal(start.status, 0, start.stdout + start.stderr);
     assert.ok(fs.existsSync(path.join(home, ".mempalace", "chroma-server.pid")), "no PID file");
 

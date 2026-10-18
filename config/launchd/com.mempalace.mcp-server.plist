@@ -10,7 +10,7 @@
       (~/.crewrig/, spec 0113) so a `git revert` of this ticket cannot delete
       the program this agent points at. It runs in the FOREGROUND and execs the
       MemPalace wrapper — launchd supervises the server itself, so the launcher
-      must never background the way start-chroma-server.sh does with nohup, or
+      must never background the way start-chroma-server.ts does with nohup, or
       launchd would observe an immediate exit and restart it forever.
 
       The bearer token is deliberately absent from this file: a plist is

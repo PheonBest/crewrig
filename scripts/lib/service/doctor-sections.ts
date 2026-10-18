@@ -87,7 +87,7 @@ async function inspectRegistration(c: SectionContext, cli: Cli): Promise<void> {
         ? "bearer header present (value not shown)"
         : "*** NO Authorization HEADER — this CLI would reach the daemon unauthenticated ***",
     );
-    field(write, "version:", "served by the daemon — run: bash scripts/status-mcp-server.sh");
+    field(write, "version:", "served by the daemon — run: node scripts/status-mcp-server.ts");
     write("");
     return;
   }
@@ -103,7 +103,7 @@ async function inspectRegistration(c: SectionContext, cli: Cli): Promise<void> {
       `*** LOCKED OUT BY RUNNING DAEMON *** (daemon at http://${daemon.host}:${daemon.port}/mcp holds exclusive write lease)`,
     );
     state.noteFailure(
-      `${label}: registered as stdio while shared MCP daemon is running; locked out of writes (run: bash scripts/switch-mempalace-http.sh)`,
+      `${label}: registered as stdio while shared MCP daemon is running; locked out of writes (run: node scripts/switch-mempalace-http.ts)`,
     );
   }
 

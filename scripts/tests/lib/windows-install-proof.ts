@@ -202,7 +202,7 @@ function pluginsStep(): void {
     assert.match(all.out, /\[INSTALLED\]/, why(all, "expected INSTALLED"));
     assert.match(all.out, /\[SKIPPED\]/, why(all, "expected SKIPPED"));
     const usage = run("install-extension-all", [], "pwsh");
-    assert.match(usage.out, /^Usage: install-extension-all\.sh/m, why(usage, "expected usage"));
+    assert.match(usage.out, /^Usage: install-extension-all\.ts/m, why(usage, "expected usage"));
   });
 }
 
@@ -211,7 +211,7 @@ function manageStep(): void {
     attempt(`manage-${entry}-component without arguments`, () => {
       const res = run(`manage-${entry}-component`, [], "pwsh");
       expectStatus(res, 1);
-      const usage = new RegExp(`Usage: manage-${entry}-component\\.sh`);
+      const usage = new RegExp(`Usage: manage-${entry}-component\\.ts`);
       assert.match(res.out + res.err, usage, why(res, "expected usage"));
     });
   attempt("install-workspace", () => {

@@ -127,7 +127,7 @@ pair:
 | `refs/tags/spec-id/` | For a remote that refuses a custom top-level namespace. Visible in the tag listing. |
 
 An adopter whose remote refuses the default changes that one line, by pull
-request, and `scripts/sync-from-upstream.sh` never touches it again (the entry
+request, and `scripts/sync-from-upstream.ts` never touches it again (the entry
 is `excluded`). Anything outside the pair — including the near miss
 `refs/spec-id/` — exits `1` naming the offending value, because a third
 namespace would be written by the push and read by neither the allocation

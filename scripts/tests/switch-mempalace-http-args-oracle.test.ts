@@ -1,5 +1,5 @@
 // switch-mempalace-http-args-oracle.test.ts — the argument-parsing oracle of
-// `scripts/switch-mempalace-http.sh` (spec 0252 R21, PLAN step A3). It fills
+// `scripts/switch-mempalace-http.ts` (spec 0252 R21, PLAN step A3). It fills
 // the gap R21 names: `-h` / `--help` and unknown arguments, characterised from
 // the shell's observed output and exit status. Every case exits during
 // argument parsing, so the daemon is never reached; the temp HOME's token file
@@ -15,15 +15,15 @@ import { describe, test } from "node:test";
 
 import {
   createHermeticEnv,
-  runBash,
+  runNodeScript,
   type HermeticEnv,
   type RunResult,
 } from "./lib/hermetic-env.ts";
 
-const SWITCH_SCRIPT = path.resolve(import.meta.dirname, "..", "switch-mempalace-http.sh");
+const SWITCH_SCRIPT = path.resolve(import.meta.dirname, "..", "switch-mempalace-http.ts");
 
-// Expected text, read from the usage block of scripts/switch-mempalace-http.sh.
-const USAGE_LINE = "Usage: switch-mempalace-http.sh [--rotate|-r]";
+// Expected text, read from the usage block of scripts/switch-mempalace-http.ts.
+const USAGE_LINE = "Usage: switch-mempalace-http.ts [--rotate|-r]";
 const TOKEN = "token_args_CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
 
 interface Fixture {
@@ -48,7 +48,7 @@ function withToken(fn: (fx: Fixture) => void): void {
 }
 
 function run(fx: Fixture, ...args: string[]): RunResult {
-  return runBash(fx.h, SWITCH_SCRIPT, args);
+  return runNodeScript(fx.h, SWITCH_SCRIPT, args);
 }
 
 function assertTokenIntact(fx: Fixture): void {
@@ -56,7 +56,7 @@ function assertTokenIntact(fx: Fixture): void {
 }
 
 describe(
-  "switch-mempalace-http.sh argument-parsing oracle",
+  "switch-mempalace-http.ts argument-parsing oracle",
   { skip: process.platform === "win32" },
   () => {
     test("-h and --help print the usage on standard output, exit 0 and touch nothing", () => {

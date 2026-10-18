@@ -14,15 +14,15 @@ import { describe, test } from "node:test";
 
 import {
   createHermeticEnv,
-  runBash,
+  runNodeScript,
   type HermeticEnv,
   type RunResult,
 } from "./lib/hermetic-env.ts";
 
 const SCRIPTS = path.resolve(import.meta.dirname, "..");
-const DRAIN = path.join(SCRIPTS, "usage-drain.sh");
-const TASK = path.join(SCRIPTS, "usage-task.sh");
-const BACKFILL = path.join(SCRIPTS, "usage-backfill.sh");
+const DRAIN = path.join(SCRIPTS, "usage-drain.ts");
+const TASK = path.join(SCRIPTS, "usage-task.ts");
+const BACKFILL = path.join(SCRIPTS, "usage-backfill.ts");
 const JOURNAL = path.join(SCRIPTS, "lib", "usage-store", "journal.js");
 const SESSION = "oracle-session-1";
 
@@ -54,11 +54,11 @@ function asRecord(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
-describe("usage-task.sh oracle", { skip: process.platform === "win32" }, () => {
+describe("usage-task.ts oracle", { skip: process.platform === "win32" }, () => {
   test("set, show and clear a session declaration: exit 0, file written then removed, streams recorded", () => {
     withUsage((h, usage) => {
       const env = { CREWRIG_USAGE_ROOT: usage };
-      const task = (...args: string[]): RunResult => runBash(h, TASK, args, { env });
+      const task = (...args: string[]): RunResult => runNodeScript(h, TASK, args, { env });
 
       const set = task("set", "--task-key", "7", "--channel", "protocol", "--session", SESSION);
       assert.equal(set.status, 0);
@@ -89,12 +89,12 @@ describe("usage-task.sh oracle", { skip: process.platform === "win32" }, () => {
 
   test("an unknown subcommand prints the usage on stdout and exits 2, writing nothing", () => {
     withUsage((h, usage) => {
-      const res = runBash(h, TASK, ["bogus"], { env: { CREWRIG_USAGE_ROOT: usage } });
+      const res = runNodeScript(h, TASK, ["bogus"], { env: { CREWRIG_USAGE_ROOT: usage } });
       assert.equal(res.status, 2);
       assert.equal(res.stderr, "");
       assert.match(
         res.stdout,
-        /^Usage: bash scripts\/usage-task\.sh set --channel explicit\|protocol /,
+        /^Usage: node scripts\/usage-task\.ts set --channel explicit\|protocol /,
       );
       assert.deepEqual(filesUnder(usage), []);
     });
@@ -102,7 +102,9 @@ describe("usage-task.sh oracle", { skip: process.platform === "win32" }, () => {
 
   test("a bad option is a FATAL line on stderr and exit 2", () => {
     withUsage((h, usage) => {
-      const res = runBash(h, TASK, ["show", "--nope"], { env: { CREWRIG_USAGE_ROOT: usage } });
+      const res = runNodeScript(h, TASK, ["show", "--nope"], {
+        env: { CREWRIG_USAGE_ROOT: usage },
+      });
       assert.equal(res.status, 2);
       assert.equal(res.stdout, "");
       assert.equal(res.stderr, "FATAL: unrecognized argument: --nope\n");
@@ -110,7 +112,7 @@ describe("usage-task.sh oracle", { skip: process.platform === "win32" }, () => {
   });
 });
 
-describe("usage-drain.sh oracle", { skip: process.platform === "win32" }, () => {
+describe("usage-drain.ts oracle", { skip: process.platform === "win32" }, () => {
   /** Run the wrapper with a NODE_OPTIONS recorder; return what it recorded for journal.js. */
   function record(
     h: HermeticEnv,
@@ -129,7 +131,7 @@ describe("usage-drain.sh oracle", { skip: process.platform === "win32" }, () => 
         "}",
       ].join("\n"),
     );
-    const run = runBash(h, DRAIN, args, {
+    const run = runNodeScript(h, DRAIN, args, {
       env: {
         CREWRIG_USAGE_ROOT: path.join(h.root, "usage"),
         NODE_OPTIONS: `--require ${rec}`,
@@ -167,7 +169,7 @@ describe("usage-drain.sh oracle", { skip: process.platform === "win32" }, () => 
 
   test("smoke: a real drain on an empty root exits 0 with the completion line", () => {
     withUsage((h, usage) => {
-      const res = runBash(h, DRAIN, [], { env: { CREWRIG_USAGE_ROOT: usage } });
+      const res = runNodeScript(h, DRAIN, [], { env: { CREWRIG_USAGE_ROOT: usage } });
       assert.equal(res.status, 0);
       assert.equal(res.stdout, "usage-store: drain and sweep complete.\n");
       assert.equal(res.stderr, "");
@@ -175,7 +177,7 @@ describe("usage-drain.sh oracle", { skip: process.platform === "win32" }, () => 
   });
 });
 
-describe("usage-backfill.sh oracle", { skip: process.platform === "win32" }, () => {
+describe("usage-backfill.ts oracle", { skip: process.platform === "win32" }, () => {
   const EMPTY_SUMMARY =
     "claude-code: 0 stored, 0 duplicate, 0 rejected — from 0 source(s)\n" +
     "gemini-cli: 0 stored, 0 duplicate, 0 rejected — from 0 source(s)\n" +
@@ -194,7 +196,9 @@ describe("usage-backfill.sh oracle", { skip: process.platform === "win32" }, () 
   test("--reset-cursors removes the seeded cursor state of the covered CLIs", () => {
     withUsage((h, usage) => {
       const seeded = seed(usage);
-      const res = runBash(h, BACKFILL, ["--reset-cursors"], { env: { CREWRIG_USAGE_ROOT: usage } });
+      const res = runNodeScript(h, BACKFILL, ["--reset-cursors"], {
+        env: { CREWRIG_USAGE_ROOT: usage },
+      });
       assert.equal(res.status, 0);
       assert.equal(res.stdout, EMPTY_SUMMARY);
       for (const file of seeded) assert.equal(fs.existsSync(file), false, file);
@@ -204,7 +208,7 @@ describe("usage-backfill.sh oracle", { skip: process.platform === "win32" }, () 
   test("without the flag the seeded cursor state is kept (control)", () => {
     withUsage((h, usage) => {
       const seeded = seed(usage);
-      const res = runBash(h, BACKFILL, [], { env: { CREWRIG_USAGE_ROOT: usage } });
+      const res = runNodeScript(h, BACKFILL, [], { env: { CREWRIG_USAGE_ROOT: usage } });
       assert.equal(res.status, 0);
       assert.equal(res.stdout, EMPTY_SUMMARY);
       for (const file of seeded) assert.equal(fs.existsSync(file), true, file);
@@ -213,7 +217,7 @@ describe("usage-backfill.sh oracle", { skip: process.platform === "win32" }, () 
 
   test("a no-argument run on an empty home exits 0 and reports zero sources", () => {
     withUsage((h) => {
-      const res = runBash(h, BACKFILL, [], {});
+      const res = runNodeScript(h, BACKFILL, [], {});
       assert.equal(res.status, 0);
       assert.equal(res.stdout, EMPTY_SUMMARY);
       assert.equal(res.stderr, "");

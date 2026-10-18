@@ -1,5 +1,5 @@
 // stop-mcp-server-oracle.test.ts — the black-box oracle of
-// `scripts/stop-mcp-server.sh` (spec 0252 R21, PLAN step A1). It drives the
+// `scripts/stop-mcp-server.ts` (spec 0252 R21, PLAN step A1). It drives the
 // script through `bash` under the hermetic harness and observes only what must
 // survive the migration: exit status, stdout, stderr and the argv of the
 // service-manager calls (launchctl / systemctl stubs). The script is "stop is
@@ -12,11 +12,16 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, test } from "node:test";
 
-import { createHermeticEnv, runBash, writeStub, type HermeticEnv } from "./lib/hermetic-env.ts";
+import {
+  createHermeticEnv,
+  runNodeScript,
+  writeStub,
+  type HermeticEnv,
+} from "./lib/hermetic-env.ts";
 
-const STOP_SCRIPT = path.resolve(import.meta.dirname, "..", "stop-mcp-server.sh");
+const STOP_SCRIPT = path.resolve(import.meta.dirname, "..", "stop-mcp-server.ts");
 
-// Expected strings, read from scripts/stop-mcp-server.sh and scripts/lib/common.sh.
+// Expected strings, read from scripts/stop-mcp-server.ts and scripts/lib/common.sh.
 const DEFAULT_LABEL = "com.mempalace.mcp-server";
 const DEFAULT_UNIT = "mempalace-mcp-server";
 
@@ -61,7 +66,7 @@ function withStubs(fn: (fx: Fixture) => void): void {
 
 function stop(fx: Fixture, os: string, env: Record<string, string> = {}) {
   fs.writeFileSync(fx.calls, "");
-  return runBash(fx.h, STOP_SCRIPT, [], {
+  return runNodeScript(fx.h, STOP_SCRIPT, [], {
     env: {
       FAKE_UNAME: os,
       CREWRIG_TEST_SERVICE_PLATFORM: os.toLowerCase(),
@@ -85,7 +90,7 @@ function callsLack(fx: Fixture, ...needles: string[]): void {
   }
 }
 
-describe("stop-mcp-server.sh oracle", { skip: process.platform === "win32" }, () => {
+describe("stop-mcp-server.ts oracle", { skip: process.platform === "win32" }, () => {
   test("Darwin with the supervisor unit loaded: requests a restart, never unloads or removes", () => {
     withStubs((fx) => {
       fs.writeFileSync(path.join(fx.state, "launchctl-list"), `123\t0\t${DEFAULT_LABEL}\n`);
@@ -99,7 +104,7 @@ describe("stop-mcp-server.sh oracle", { skip: process.platform === "win32" }, ()
         res.stdout.includes("Under KeepAlive the supervisor brings it straight back."),
         res.stdout,
       );
-      assert.ok(res.stdout.includes("To end it: bash scripts/uninstall-mcp-daemon.sh"), res.stdout);
+      assert.ok(res.stdout.includes("To end it: node scripts/uninstall-mcp-daemon.ts"), res.stdout);
       assert.ok(
         callLines(fx).includes(`launchctl stop ${DEFAULT_LABEL}`),
         callLines(fx).join("\n"),
@@ -132,7 +137,7 @@ describe("stop-mcp-server.sh oracle", { skip: process.platform === "win32" }, ()
         res.stdout.includes("Under Restart=always the supervisor brings it straight back."),
         res.stdout,
       );
-      assert.ok(res.stdout.includes("To end it: bash scripts/uninstall-mcp-daemon.sh"), res.stdout);
+      assert.ok(res.stdout.includes("To end it: node scripts/uninstall-mcp-daemon.ts"), res.stdout);
       assert.ok(
         callLines(fx).includes(`systemctl --user restart ${DEFAULT_UNIT}`),
         callLines(fx).join("\n"),

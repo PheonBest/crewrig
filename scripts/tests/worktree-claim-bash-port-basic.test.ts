@@ -12,7 +12,7 @@ import { after, describe, test } from "node:test";
 
 import { claim, ledgerHas, ledgerLacks, sameBytes } from "./lib/worktree-claim-asserts.ts";
 import {
-  CLAIM_SH,
+  CLAIM_TS,
   SKIP_POSIX,
   cleanEnv,
   cleanupAll,
@@ -45,7 +45,11 @@ describe("worktree-claim bash port: basic", () => {
     () => {
       const fx = makeFixture();
       const run = (args: string[]) =>
-        spawnSync("bash", [CLAIM_SH, ...args], { cwd: fx.wt, env: cleanEnv(), encoding: "utf8" });
+        spawnSync(process.execPath, [CLAIM_TS, ...args], {
+          cwd: fx.wt,
+          env: cleanEnv(),
+          encoding: "utf8",
+        });
       const take = run(["take", "--agent", "alice"]);
       assert.equal(take.status, 0, take.stderr);
       assert.match(take.stdout, /Claimed '736' for 'alice'\./);

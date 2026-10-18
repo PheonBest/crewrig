@@ -1,6 +1,6 @@
 // plugin-common.ts — the steps the three plugin installers share (spec 0255 R10): the binary
 // requirement, the usage line, the tier lookup and the in-process build. Twins of the common
-// head of scripts/install-{claude,copilot}-plugin.sh and install-antigravity-extension.sh, in
+// head of scripts/install-{claude,copilot}-plugin.sh and install-antigravity-extension.ts, in
 // the shell's order: the binary check comes first, then the usage line, then the lookup.
 // Messages keep the shell's stream: the diagnostics go to standard output (`echo`), the usage
 // line to standard error; the `jq` prerequisite is gone (spec 0255 R22(a)).

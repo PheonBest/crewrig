@@ -136,7 +136,7 @@ describe("tier resolution: install", { skip }, () => {
     seedPolicy(t, "community", "com-policy");
     seedJson(t, "community", "mcp-servers", "acme-mcp");
     seedJson(t, "community", "themes", "acme-theme");
-    const o = run(t, "scripts/install-workspace.sh", ["install"]);
+    const o = run(t, "scripts/install-workspace.ts", ["install"]);
     assert.notEqual(o.status, 0, "the wrapper must report the failed type");
     assert.equal(t.exists("cli-home/.gemini/skills/acme-review"), false);
     assert.ok(t.exists("cli-home/.gemini/hooks/lib-hook.sh"), "hooks (position 3)");

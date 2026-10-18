@@ -29,7 +29,7 @@ function mcp(name: string, mcpKey?: string): TypeDescriptor {
 
 export const CLAUDE: CliDescriptor = {
   cli: "claude",
-  script: "manage-claude-component.sh",
+  script: "manage-claude-component.ts",
   home: ".claude",
   defaultMode: "install",
   typesLine: "claude-skills, policies, mcp-servers",
@@ -53,7 +53,7 @@ export const CLAUDE: CliDescriptor = {
 
 export const COPILOT: CliDescriptor = {
   cli: "copilot",
-  script: "manage-copilot-component.sh",
+  script: "manage-copilot-component.ts",
   home: ".copilot",
   defaultMode: "install",
   typesLine: "skills, commands, mcp-servers",
@@ -78,7 +78,7 @@ export const COPILOT: CliDescriptor = {
 
 export const ANTIGRAVITY: CliDescriptor = {
   cli: "antigravity",
-  script: "manage-antigravity-component.sh",
+  script: "manage-antigravity-component.ts",
   // ANTIGRAVITY_HOME serves policies (rules/) and the MCP settings; spec 0123 moved only skills.
   home: ".gemini/antigravity-cli",
   customizationRoot: ".gemini/config",
@@ -109,10 +109,10 @@ export const ANTIGRAVITY: CliDescriptor = {
   mcp: { kind: "json", file: ".gemini/antigravity-cli/settings.json", initial: INITIAL_MCP_CONFIG },
 };
 
-/** The Gemini CLI command: manage-workspace-component.sh. It prints the warning and never prompts. */
+/** The Gemini CLI command: manage-workspace-component.ts. It prints the warning and never prompts. */
 export const GEMINI: CliDescriptor = {
   cli: "gemini",
-  script: "manage-workspace-component.sh",
+  script: "manage-workspace-component.ts",
   home: ".gemini",
   defaultMode: "install",
   typesLine: "commands, skills, hooks, agents, policies, mcp-servers, themes",

@@ -11,8 +11,8 @@ type Builder = (ctx: ExtCtx, extArg: string, outArg: string | undefined) => numb
 
 const SCRIPTS: Readonly<Record<PluginTarget, string>> = {
   claude: "build-claude-plugin.sh",
-  copilot: "build-copilot-plugin.sh",
-  antigravity: "build-antigravity-extension.sh",
+  copilot: "build-copilot-plugin.ts",
+  antigravity: "build-antigravity-extension.ts",
 };
 
 async function loadBuilder(target: PluginTarget): Promise<Builder> {

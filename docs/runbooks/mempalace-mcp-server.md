@@ -62,8 +62,8 @@ belongs only to `task mempalace:switch-http`.
 | Action | Command |
 |---|---|
 | Convert / (re)install and start | `task mempalace:switch-http` |
-| Check status | `task mempalace:status` (`node scripts/status-mcp-server.ts`; `bash scripts/status-mcp-server.sh` forwards to it) |
-| Restart | `task mempalace:stop` (`node scripts/stop-mcp-server.ts`; `bash scripts/stop-mcp-server.sh` forwards to it) — see caveat below |
+| Check status | `task mempalace:status` (`node scripts/status-mcp-server.ts`) |
+| Restart | `task mempalace:stop` (`node scripts/stop-mcp-server.ts`) — see caveat below |
 | End the daemon | `task mempalace:uninstall-daemon` |
 
 ### On Windows
@@ -110,7 +110,7 @@ forever once the unit is orphaned.
 
 ### Checking it is actually serving, and actually authenticated
 
-`node scripts/status-mcp-server.ts` (`task mempalace:status`; `bash scripts/status-mcp-server.sh` forwards to it) is the
+`node scripts/status-mcp-server.ts` (`task mempalace:status`) is the
 operator's only window onto liveness, onto whether the bearer check is
 *actually* enforced, onto launcher drift, and onto which arrangement each of
 the four CLIs is registered under — nothing else surfaces these once
@@ -199,10 +199,10 @@ one of those CLIs, report it there.
 
 | CLI | Registration file | Setup script (a forwarding shim to the `.ts` entry of the same name) |
 |---|---|---|
-| `claude` | `~/.claude.json` | `scripts/setup-claude-interactive.sh` |
-| `gemini` | `~/.gemini/settings.json` | `scripts/setup-gemini-interactive.sh` |
-| `copilot` | `~/.copilot/mcp-config.json` | `scripts/setup-copilot-interactive.sh` |
-| `antigravity` | `~/.gemini/config/mcp_config.json` | `scripts/setup-antigravity-interactive.sh` |
+| `claude` | `~/.claude.json` | `scripts/setup-claude-interactive.ts` |
+| `gemini` | `~/.gemini/settings.json` | `scripts/setup-gemini-interactive.ts` |
+| `copilot` | `~/.copilot/mcp-config.json` | `scripts/setup-copilot-interactive.ts` |
+| `antigravity` | `~/.gemini/config/mcp_config.json` | `scripts/setup-antigravity-interactive.ts` |
 
 ### What each warning means
 
@@ -217,7 +217,7 @@ the registration it started with.
 | registered at another endpoint | The HTTP entry points elsewhere. The warning shows both endpoints, the registered one redacted (no user info, query, fragment, or control characters). | `task mempalace:switch-http` (read the launcher note below first) |
 | unrecognised entry, naming `task mempalace:repair` | The file is strict JSON, but the entry is neither the HTTP shape (`url`/`serverUrl`) nor the stdio shape (`command`). | `task mempalace:repair` to see the options, then `task mempalace:repair -- --restore-backup` or `-- --reset-none`, then `task mempalace:switch-http` |
 | not a single strict JSON document | The file fails the strictness test below. | Rewrite the file (next section), then `task mempalace:switch-http` if needed |
-| a Gemini file with comments, naming `scripts/setup-gemini-interactive.sh` | `~/.gemini/settings.json` holds comments and its registration is not `ok`. `switch-http` and `repair` read the file with `jq`, which rejects comments: `switch-http` would refuse, and `repair` could not write it. | Run `node scripts/lib/node-floor-guard.js`, then `node scripts/setup-gemini-interactive.ts`. It rewrites the file as plain JSON and keeps the comments in a timestamped backup |
+| a Gemini file with comments, naming `scripts/setup-gemini-interactive.ts` | `~/.gemini/settings.json` holds comments and its registration is not `ok`. `switch-http` and `repair` read the file with `jq`, which rejects comments: `switch-http` would refuse, and `repair` could not write it. | Run `node scripts/lib/node-floor-guard.js`, then `node scripts/setup-gemini-interactive.ts`. It rewrites the file as plain JSON and keeps the comments in a timestamped backup |
 | the shared memory daemon is not answering | The daemon is installed, but its MCP endpoint gave neither an authentication refusal nor an MCP answer within 1 s. | `task mempalace:status`, then [Daemon not starting after boot](#daemon-not-starting-after-boot) |
 
 When an entry carries both `url` and `serverUrl`, one value is compared:
@@ -273,7 +273,7 @@ truncated file is the exception: status reports it `unknown`, so
 Gemini CLI accepts comments in `~/.gemini/settings.json`, and so does the
 check (spec 0246 delta-02). A commented file whose registration is `ok`
 starts silently. When the registration is anything else, the warning names
-`scripts/setup-gemini-interactive.sh` instead of `switch-http` or `repair`.
+`scripts/setup-gemini-interactive.ts` instead of `switch-http` or `repair`.
 That setup rewrites the file as plain JSON and keeps the commented original
 in a timestamped backup (spec 0214).
 
@@ -366,7 +366,7 @@ script mints a fresh token, replaces the running daemon process so the new
 token takes effect immediately, and re-registers every assistant CLI with the
 new credential.
 
-![Four ordered steps to replace the shared MCP daemon's bearer token: delete the old token file, run switch-mempalace-http.sh to mint a new token and replace the daemon process, delete each CLI's stale backup config that still holds the old token, then restart every running session.](../assets/mempalace-mcp/rotate-token.png)
+![Four ordered steps to replace the shared MCP daemon's bearer token: delete the old token file, run switch-mempalace-http.ts to mint a new token and replace the daemon process, delete each CLI's stale backup config that still holds the old token, then restart every running session.](../assets/mempalace-mcp/rotate-token.png)
 
 1. **Delete the current token file.** Its path is derived from the palace
    path the same way the daemon derives it (`scripts/lib/common.sh`,

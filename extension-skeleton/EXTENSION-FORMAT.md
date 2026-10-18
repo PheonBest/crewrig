@@ -55,7 +55,7 @@ committed.
 paths** (requirement 20 — see *Delivery paths* below): a versioned release
 artifact (default, S5/#1008), `node scripts/install-extension.ts install
 <name>` after `node scripts/lib/node-floor-guard.js` (this repository's own
-entry, Node.js 24 floor; `scripts/install-extension.sh` forwards to it), or `task
+entry, Node.js 24 floor), or `task
 link-gemini-extension-build EXT=<name>` (a documented **debugging** path,
 not an install path). A native `gemini extensions install` pointed directly
 at this repository's primary branch is a **documented-unsupported** path
@@ -145,7 +145,7 @@ other generated-output-class member.
   //                 command/args does NOT resolve against the plugin
   //                 directory when Antigravity spawns a plugin's MCP server
   //                 (confirmed live: it silently fails, no error surfaced).
-  //                 scripts/install-antigravity-extension.sh's POST-INSTALL
+  //                 scripts/install-antigravity-extension.ts's POST-INSTALL
   //                 step rewrites it, once the real installed directory is
   //                 knowable — never a render-time absolute path
   //                 (spec 0180 requirement 8).
@@ -548,7 +548,7 @@ tree through exactly one of three paths:
 2. **`node scripts/lib/node-floor-guard.js`, then
    `node scripts/install-extension.ts install <name>`** — this
    repository's own entry (Node.js 24 floor; run the two commands as
-   separate steps; `scripts/install-extension.sh` forwards to it), which renders and then copies (or, in `link`
+   separate steps), which renders and then copies (or, in `link`
    mode, symlinks) the build directory into `$GEMINI_HOME/extensions/<name>`.
 3. **`task link-gemini-extension-build EXT=<name>`** — a dedicated,
    documented **debugging** path pointed at the build directory. It is not
@@ -601,7 +601,7 @@ extension.json ──render──> dist-{claude,copilot,antigravity}-plugin/<nam
                           │                                #   ${COPILOT_PLUGIN_ROOT} resolved
                           ├── mcp_config.json (Antigravity) # Generated, ${extensionRoot} LEFT
                           │                                #   UNRESOLVED — see
-                          │                                #   scripts/install-antigravity-extension.sh
+                          │                                #   scripts/install-antigravity-extension.ts
                           ├── dist/ (when mcpServers present)  # Copied — spec 0180 requirement 16, the
                           │                                    #   build output travels with
                           │                                    #   the declaration that names it
@@ -620,7 +620,7 @@ extension.json ──render──> dist-{claude,copilot,antigravity}-plugin/<nam
 This half of the render is unchanged by the render-at-publication model —
 these three targets already built an ephemeral plugin; only the Gemini
 in-place target moved off a committed sibling. Antigravity's MCP delivery
-needs one MORE step beyond the render: `scripts/install-antigravity-extension.sh`
+needs one MORE step beyond the render: `scripts/install-antigravity-extension.ts`
 rewrites `${extensionRoot}` to the real installed absolute path AFTER
 `agy plugin install` places the plugin (spec 0180 R7's "named resolver,
 named moment") — a `dist-antigravity-plugin/<name>/mcp_config.json` sitting

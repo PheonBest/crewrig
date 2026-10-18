@@ -5,7 +5,7 @@
 Generated for spec 0136 (issue #751), figure step of PLAN v5 (satisfies R13,
 R14, R15). Depicts the ordered procedure for converting a machine to the
 shared MemPalace MCP HTTP daemon, run via `task mempalace:switch-http`
-(`scripts/switch-mempalace-http.ts`; `scripts/switch-mempalace-http.sh` forwards to it).
+(`scripts/switch-mempalace-http.ts`).
 
 **Corrected during REVIEW (cold `architect` pass on #877): the original
 version of this figure showed the daemon starting before the token was

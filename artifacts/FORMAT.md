@@ -353,7 +353,7 @@ setting:
   `canonical` (`"${CANONICAL_REPO}"`). A fork never diverts feedback away from
   components it does not own — frictions on upstream components always reach the
   upstream repo, regardless of the fork's `feedback_repo`. The
-  `scripts/check-feedback-routing.sh` CI guard enforces this (see
+  `scripts/check-feedback-routing.ts` CI guard enforces this (see
   `task check-feedback-routing`).
 - **Adopter-owned tiers** (`artifacts/community`, `artifacts/org`,
   `extensions/org`) use `feedback: "${FEEDBACK_REPO}"`, so a fork's own
@@ -396,14 +396,14 @@ components (`artifacts/core`, `artifacts/library`, `extensions/core`,
 overriding `feedback_repo` does **not** capture feedback on components you did
 not author — that feedback keeps flowing to the upstream repository where the
 components are maintained. This is by design (spec 0030) and enforced by
-`scripts/check-feedback-routing.sh`.
+`scripts/check-feedback-routing.ts`.
 
 ### Extension skills & agents — carrier-in-source, literal origin
 
 The placeholder/build-strip model above applies to `artifacts/` components,
 which are *built* into per-CLI outputs. A skill or agent shipped inside an
 **extension** (`extensions/core`, `extensions/library`) is different: it is
-consumed **in place** — `install-extension.sh` (a forwarding shim to `scripts/install-extension.ts`) does `ln -s` / `cp -rf` of the
+consumed **in place** — `install-extension.ts` does `ln -s` / `cp -rf` of the
 whole extension dir, and `scripts/build-claude-plugin.ts` does a recursive copy of the skill dir
 — so every CLI reads the same `SKILL.md` / `AGENT.md` source bytes with **no
 render seam** to strip a frontmatter block. Two consequences follow (spec 0043):
@@ -432,10 +432,10 @@ render seam** to strip a frontmatter block. Two consequences follow (spec 0043):
 
 For an upstream-owned extension tier, `feedback` MUST equal `canonical` exactly
 as for `artifacts/` (spec 0030). **Enforcement note:** because this block lives
-in a *comment*, the frontmatter/`yq`-based `check-feedback-routing.sh` cannot
+in a *comment*, the frontmatter/`yq`-based `check-feedback-routing.ts` cannot
 see it and permanently skips extension skills — so the presence and R5
 (feedback==canonical) enforcement for extension skills/agents lives **solely**
-in `scripts/check-extension-provenance.sh` (no defense-in-depth overlap with the
+in `scripts/check-extension-provenance.ts` (no defense-in-depth overlap with the
 spec-0030 guard). See [`docs/cli-matrix.md`](../docs/cli-matrix.md) row 5c.
 
 The `version:` field in `metadata.provenance:` is a literal
@@ -458,14 +458,14 @@ The `metadata.provenance.version` field follows
 `commands/*.md` source under any artifact tier — `artifacts/core/`,
 `artifacts/library/`, or `artifacts/community/` — MUST bump
 `metadata.provenance.version` in the same diff. CI enforces this via
-`scripts/check-skill-versions.sh` (see `task check-skill-versions` for
+`scripts/check-skill-versions.ts` (see `task check-skill-versions` for
 the local invocation). The same discipline extends to the upstream-owned extension tiers `extensions/core/` and
 `extensions/library/`, where the `version` instead rides on the
 provenance carrier (the first-body-line `<!-- crewrig-provenance:
 version="…" … -->` HTML comment per spec 0043, not frontmatter — Gemini
 CLI 0.42.0+ rejects non-`name`/`description` frontmatter keys on the
 in-place source); there the bump is enforced by
-`scripts/check-extension-version-bump.sh` (spec 0044). The
+`scripts/check-extension-version-bump.ts` (spec 0044). The
 rationale:
 
 - A friction tag captured `evidence: <path>:<line>` against an

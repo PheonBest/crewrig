@@ -1,7 +1,7 @@
 // core-paths-manifest.ts — the `.crewrig/core-paths.txt` grammar and the
 // `dir_is_governed` rule of scripts/check-core-paths.sh (spec 0259 req 12).
 //
-// Grammar (identical to the shell and to sync-from-upstream.sh): one entry per line,
+// Grammar (identical to the shell and to sync-from-upstream.ts): one entry per line,
 // first whitespace field = path, second token = policy (default `strict`), blank and
 // `#` lines skipped, one trailing carriage return tolerated. Whitespace is the C-locale
 // set (space, \t, \n, \v, \f, \r), never the wider JavaScript `\s`.

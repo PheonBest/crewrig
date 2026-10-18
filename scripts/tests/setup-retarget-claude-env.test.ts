@@ -1,5 +1,5 @@
 // setup-retarget-claude-env.test.ts - the Claude Code env patch that scripts/tests/hook-transcript-floor.test.ts
-// used to read from the TEXT of scripts/setup-claude-interactive.sh (a regex on `ENV_PATCH=...` under
+// used to read from the TEXT of scripts/setup-claude-interactive.ts (a regex on `ENV_PATCH=...` under
 // `if [ "$SR_TRANSCRIPT_WIRED" = "1" ]`), now observed by RUNNING the TypeScript entry
 // (scripts/setup-claude-interactive.ts) in the golden sandbox and reading the patched
 // `~/.claude/settings.json` env block (spec 0256 requirement 9, PR D2).

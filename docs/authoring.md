@@ -159,7 +159,7 @@ Nothing is lost: the next successful run rebuilds `dist/<tier>/<cli-root>`.
 Each component carries a `metadata.provenance` block recording its canonical
 repository, its feedback target, and its version. The `version` field follows
 Semantic Versioning, and any change to a shipped source must bump it in the same
-diff — a CI gate (`scripts/check-skill-versions.sh`) enforces this. The
+diff — a CI gate (`scripts/check-skill-versions.ts`) enforces this. The
 provenance block is what lets feedback flow back to the right repository after a
 fork and what lets the harness loop pin the contract observed when a friction
 was reported. The feedback target is resolved **per tier**: components in

@@ -179,4 +179,4 @@ under either reading.
 Append a dated section above rather than editing an existing one — the point of
 a re-runnable procedure is the series, not the latest row. Write locations as
 `~/.gemini/…`: a pasted probe transcript carries `/Users/<login>/…`, which
-`scripts/check-no-machine-paths.sh` rejects.
+`scripts/check-no-machine-paths.ts` rejects.

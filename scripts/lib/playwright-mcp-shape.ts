@@ -6,7 +6,7 @@
 // can drive directly. The shapes mirror each assistant's `sequentialthinking`
 // registration, which spec 0084 already routes through the trust wrapper:
 //   - Gemini CLI (scripts/lib/gemini-settings.sh `gemini_framework_mcp`) and
-//     Antigravity CLI (scripts/setup-antigravity-interactive.sh): `command` +
+//     Antigravity CLI (scripts/setup-antigravity-interactive.ts): `command` +
 //     `args`, no other field;
 //   - GitHub Copilot CLI (config/copilot/mcp-config.json.template): the same
 //     object plus `type: "stdio"`;

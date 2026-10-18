@@ -1,5 +1,5 @@
 // mcp-copilot-step.ts — the `mcp` step of the Copilot setup (spec 0256 requirements 25-28, delta-01;
-// plan v2 step B3b.1). Twins the block of scripts/setup-copilot-interactive.sh that goes from
+// plan v2 step B3b.1). Twins the block of scripts/setup-copilot-interactive.ts that goes from
 // `Configuring ~/.copilot/mcp-config.json...` to the blank line before the tiers: the backup and the
 // capture of the operator's servers BEFORE the overwrite, the MemPalace detection (offer, version),
 // the Chroma daemon, the template write with the stdio entries, the organisation fold, then the HTTP

@@ -1,5 +1,5 @@
 // marketplace.ts — the shared local marketplace of the Claude installer (spec 0045; spec 0255 R10).
-// Twin of the manifest and `jq` steps of scripts/install-claude-plugin.sh: `loadManifest` is the
+// Twin of the manifest and `jq` steps of scripts/install-claude-plugin.ts: `loadManifest` is the
 // missing-manifest line and the shape guard (which run before ANY write), `upsertMarketplace`
 // writes `<home>/.claude-plugin/marketplace.json` as the shell's `jq -n` did: name `<repo>-local`,
 // owner, the prior plugin list minus the same name, the new entry last. The reader and the writer

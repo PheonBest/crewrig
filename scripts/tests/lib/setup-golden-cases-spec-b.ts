@@ -53,7 +53,7 @@ const copilotCases: readonly GoldenCase[] = [
   {
     id: "link-mode",
     cli: "copilot",
-    note: "--link installs by symlink; the Copilot shell has NO --link warning and NO one-key question (unlike the other three setups: setup-copilot-interactive.sh only sets INSTALL_MODE), so the key y on stdin is never read and the run exits 0 (R7 row --link, requirement 16).",
+    note: "--link installs by symlink; the Copilot shell has NO --link warning and NO one-key question (unlike the other three setups: setup-copilot-interactive.ts only sets INSTALL_MODE), so the key y on stdin is never read and the run exits 0 (R7 row --link, requirement 16).",
     args: ["--link"],
     stdin: "y",
   },

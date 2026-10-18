@@ -10,11 +10,11 @@
   - Claude Code   — natively. AGENTS.md ends with an `@AGENTS.org.md` import
                     directive; Claude resolves `@file` includes recursively
                     (CLAUDE.md -> @AGENTS.md -> @AGENTS.org.md).
-  - Gemini CLI    — via setup. `scripts/setup-gemini-interactive.sh` deploys
+  - Gemini CLI    — via setup. `scripts/setup-gemini-interactive.ts` deploys
                     this file to `~/.gemini/66_ORG_RULES.md` (priority 66,
                     after 65 org-tools). Gemini resolves `@file` imports only
                     in GEMINI.md, which this repo has no root copy of.
-  - Copilot CLI   — via setup. `scripts/setup-copilot-interactive.sh` deploys
+  - Copilot CLI   — via setup. `scripts/setup-copilot-interactive.ts` deploys
                     this file to `~/.copilot/instructions/66-org-rules.instructions.md`.
                     Copilot does not resolve `@file` includes in instruction
                     files and auto-reads only the standard `AGENTS.md` name.

@@ -1,4 +1,4 @@
-// antigravity-plugin.ts — twin of scripts/install-antigravity-extension.sh (spec 0255 R10): build
+// antigravity-plugin.ts — twin of scripts/install-antigravity-extension.ts (spec 0255 R10): build
 // into dist-antigravity-plugin/<name>, `agy plugin install <dir>`, then resolve `${extensionRoot}`.
 
 import type { EntryInput } from "../extension/entry-ctx.ts";
@@ -11,7 +11,7 @@ import { runTool } from "./spawn.ts";
 export async function installAntigravityExtension(input: EntryInput): Promise<number> {
   const ctx = createPluginCtx(input);
   const prepared = prepare(ctx, {
-    script: "install-antigravity-extension.sh",
+    script: "install-antigravity-extension.ts",
     binary: "agy",
     missing: "Error: 'agy' CLI is required. Install Antigravity CLI first.",
   });

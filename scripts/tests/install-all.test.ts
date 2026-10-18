@@ -122,8 +122,8 @@ describe("install-extension-all (TypeScript leg)", () => {
     assert.equal(res.status, 1);
     assert.equal(
       res.stderr,
-      "  [FAILED]    Gemini CLI (install-extension.sh failed)\n" +
-        "  [FAILED]    Claude Code (install-claude-plugin.sh failed)\n" +
+      "  [FAILED]    Gemini CLI (install-extension.ts failed)\n" +
+        "  [FAILED]    Claude Code (install-claude-plugin.ts failed)\n" +
         "Error: Installation failed for 2 target(s) (2 installed, 0 skipped, 2 failed).\n",
     );
     assert.ok(res.stdout.includes("  [INSTALLED] GitHub Copilot CLI\n"));
@@ -133,7 +133,7 @@ describe("install-extension-all (TypeScript leg)", () => {
   it("prints the usage on stdout: exit 1 without a name, 0 for -h and --help", () => {
     const { sandbox } = makeSandbox([]);
     const usage =
-      "Usage: install-extension-all.sh <extension-name>\n\nInstalls an extension across";
+      "Usage: install-extension-all.ts <extension-name>\n\nInstalls an extension across";
     const none = run(sandbox, []);
     assert.equal(none.status, 1);
     assert.ok(none.stdout.startsWith(usage));

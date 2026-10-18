@@ -1,4 +1,4 @@
-// install-extension.test.ts — black-box contract of scripts/install-extension.sh (spec 0255 R9, R13,
+// install-extension.test.ts — black-box contract of scripts/install-extension.ts (spec 0255 R9, R13,
 // R26; ticket #1334): render to the build directory, then copy or link it to the flat destination
 // $HOME/.gemini/extensions/<name>. Each test runs once per leg of IMPL whose entry file exists
 // (today the shell; the TypeScript leg joins automatically). Every leg gets a fresh sandbox.

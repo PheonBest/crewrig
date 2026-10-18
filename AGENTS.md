@@ -252,7 +252,7 @@ detail, and the new-component in-branch exemption.
 - `MINOR` (1.x.0) — additive change (new section, new field)
 - `MAJOR` (x.0.0) — breaking contract change
 
-**Enforcement.** `scripts/check-skill-versions.sh` runs in CI, diffs the
+**Enforcement.** `scripts/check-skill-versions.ts` runs in CI, diffs the
 PR against its target branch, and fails the build when a modified source
 ships without a version bump.
 
@@ -269,7 +269,7 @@ See [`docs/cli-matrix-maintenance.md`](docs/cli-matrix-maintenance.md) for the f
 
 **Core-paths manifest co-maintenance.** Any PR that adds, removes, or reclassifies a
 core-layer path in `docs/layers.md` MUST update `.crewrig/core-paths.txt` in the same diff.
-This manifest is the machine-readable source of truth consumed by `scripts/sync-from-upstream.sh`.
+This manifest is the machine-readable source of truth consumed by `scripts/sync-from-upstream.ts`.
 
 ## Agent Team Protocol
 

@@ -80,7 +80,7 @@ export const R12: readonly Row[] = [
     "rules not kept and the catalogue is not empty",
   ),
   // Deviation from R12 ("all four", spec delta-02): the Copilot shell installs its profile unconditionally
-  // (setup-copilot-interactive.sh:145), so it never asks.
+  // (setup-copilot-interactive.ts:145), so it never asks.
   row(
     "profile-method",
     ["keep-local", "overwrite"],

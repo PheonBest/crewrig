@@ -1,4 +1,4 @@
-// install-extension-all-real.test.ts — what test-install-extension-all.sh pinned beyond the
+// install-extension-all-real.test.ts — what test-install-extension-all.ts pinned beyond the
 // stubbed contract of install-all.test.ts (spec 0263, row C): the REAL shim with the REAL
 // children under a restricted PATH, and the Taskfile declarations the umbrella installer relies
 // on. Help, missing argument and unknown extension stay in install-all.test.ts.
@@ -28,8 +28,8 @@ function runShim(geminiHome: (root: string) => string) {
   fs.symlinkSync(process.execPath, path.join(fakeBin, "node"));
   const gemini = geminiHome(root);
   const res = spawnSync(
-    "/bin/bash",
-    [path.join(REPO, "scripts", "install-extension-all.sh"), "hello-world"],
+    process.execPath,
+    [path.join(REPO, "scripts", "install-extension-all.ts"), "hello-world"],
     {
       encoding: "utf8",
       cwd: REPO,

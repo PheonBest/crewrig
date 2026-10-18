@@ -28,7 +28,6 @@ const TOKEN_CFG = `{"mcpServers":{"mempalace":{"type":"http","url":"http://127.0
 type Entry = (args: string[]) => [string, string[]];
 const ENTRIES: Array<[string, Entry]> = [
   ["TypeScript entry", (a) => [process.execPath, ["scripts/repair-mempalace-http.ts", ...a]]],
-  ["bash shim", (a) => ["bash", ["scripts/repair-mempalace-http.sh", ...a]]],
 ];
 
 interface Box {
@@ -195,7 +194,7 @@ for (const [label, entry] of ENTRIES) {
       assert.equal(help.status, 0);
       assert.match(
         help.out,
-        /^Usage: bash scripts\/repair-mempalace-http\.sh \[--restore-backup \| --reset-none\]/,
+        /^Usage: node scripts\/repair-mempalace-http\.ts \[--restore-backup \| --reset-none\]/,
       );
       const bogus = run(entry, box, ["--bogus"]);
       assert.equal(bogus.status, 2);

@@ -40,7 +40,7 @@ export interface ManageCtx {
   readonly linkOptions?: LinkOrCopyOptions;
 }
 
-/** `Usage: manage-claude-component.sh <install|link> <type> [name]`, then the `Types:` line. */
+/** `Usage: manage-claude-component.ts <install|link> <type> [name]`, then the `Types:` line. */
 export function usageLines(descriptor: CliDescriptor): readonly string[] {
   return [
     `Usage: ${descriptor.script} <install|link> <type> [name]`,

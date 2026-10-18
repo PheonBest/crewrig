@@ -1,5 +1,5 @@
 // mcp-gemini-step.ts — the `mcp` step of the Gemini setup (spec 0256 requirements 26-28 and 31;
-// shell lines 167-266 of scripts/setup-gemini-interactive.sh). The `~/.gemini/settings.json` merge
+// shell lines 167-266 of scripts/setup-gemini-interactive.ts). The `~/.gemini/settings.json` merge
 // (`geminiSettingsWrite`) writes the stdio-shaped reserved entries and folds the org servers; the
 // shared-daemon registration runs AFTER it and never touches the entry just written. No Sequential
 // Thinking question: the merge writes that reserved entry itself.

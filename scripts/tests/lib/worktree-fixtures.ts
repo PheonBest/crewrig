@@ -24,7 +24,6 @@ export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 export const GUARD_TS = path.join(REPO, "hooks", "worktree-git-guard.ts");
 export const GUARD_SH = path.join(REPO, "hooks", "worktree-git-guard.sh");
 export const CLAIM_TS = path.join(REPO, "scripts", "worktree-claim.ts");
-export const CLAIM_SH = path.join(REPO, "scripts", "worktree-claim.sh");
 export const FLOOR_GUARD = path.join(REPO, "scripts", "lib", "node-floor-guard.js");
 export const WINDOWS = process.platform === "win32";
 /** The reason string of a leg that needs a POSIX host; node:test prints it as a SKIP line. */

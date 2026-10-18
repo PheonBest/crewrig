@@ -1,5 +1,5 @@
 // manage-mcp-claude.test.ts — tests of scripts/lib/manage/mcp-claude.ts, the twin of
-// `register_mcp_server` of manage-claude-component.sh (spec 0255 R8, R24). `claude` is a
+// `register_mcp_server` of manage-claude-component.ts (spec 0255 R8, R24). `claude` is a
 // stand-in behind the spawn seam; the file on PATH only has to exist.
 
 import assert from "node:assert/strict";

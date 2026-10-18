@@ -225,7 +225,7 @@ describe("entry form and mapping (R1, R7)", () => {
 });
 
 describe("separation from the history importers (R9)", () => {
-  for (const file of ["usage-backfill.ts", "usage-backfill.sh"]) {
+  for (const file of ["usage-backfill.ts"]) {
     test(`${file} names neither MemPalace nor an import-*-history script`, () => {
       const text = fs.readFileSync(path.join(SCRIPTS, file), "utf8");
       assert.doesNotMatch(text, /mempalace|import-(claude|gemini|copilot|antigravity)-history/i);

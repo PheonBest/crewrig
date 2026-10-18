@@ -65,10 +65,10 @@ export const CONFIG_REL: Record<Cli, string> = {
 
 /** The setup script each CLI's missing-file warning must name (R5). */
 export const SETUP_SCRIPT: Record<Cli, string> = {
-  claude: "scripts/setup-claude-interactive.sh",
-  gemini: "scripts/setup-gemini-interactive.sh",
-  copilot: "scripts/setup-copilot-interactive.sh",
-  antigravity: "scripts/setup-antigravity-interactive.sh",
+  claude: "scripts/setup-claude-interactive.ts",
+  gemini: "scripts/setup-gemini-interactive.ts",
+  copilot: "scripts/setup-copilot-interactive.ts",
+  antigravity: "scripts/setup-antigravity-interactive.ts",
 };
 
 /** Directory holding a binary found on the parent's PATH, or null. */

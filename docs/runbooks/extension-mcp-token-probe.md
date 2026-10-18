@@ -184,4 +184,4 @@ a hand-rolled variant) if this procedure is ever re-established.
 
 Append a dated section above rather than editing an existing one. Write
 locations as `~/.gemini/…`, not the machine's own `/Users/<login>/…` —
-`scripts/check-no-machine-paths.sh` rejects a pasted absolute path.
+`scripts/check-no-machine-paths.ts` rejects a pasted absolute path.

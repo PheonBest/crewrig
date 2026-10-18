@@ -175,9 +175,9 @@ function parseArgs(argv) {
 }
 
 function printHelp() {
-  console.log(`Usage: bash scripts/usage-task.sh set --channel explicit|protocol [--task-key <key>] [--asset <kind>:<ref>] [--session <id>]
-       bash scripts/usage-task.sh show [--session <id>]
-       bash scripts/usage-task.sh clear [--session <id>]
+  console.log(`Usage: node scripts/usage-task.ts set --channel explicit|protocol [--task-key <key>] [--asset <kind>:<ref>] [--session <id>]
+       node scripts/usage-task.ts show [--session <id>]
+       node scripts/usage-task.ts clear [--session <id>]
 
 Writes, reads, or clears the current session's usage-attribution declaration
 record (spec 0208 R2/R3). A --session id, else $CREWRIG_SESSION_ID, selects

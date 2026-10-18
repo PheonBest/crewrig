@@ -62,7 +62,7 @@ export interface SwitchOptions {
 }
 
 export const USAGE = [
-  "Usage: switch-mempalace-http.sh [--rotate|-r]",
+  "Usage: switch-mempalace-http.ts [--rotate|-r]",
   "",
   "Switch assistants to the shared MemPalace MCP HTTP daemon.",
   "  --rotate, -r  Rotate the bearer token, replace the daemon process,",

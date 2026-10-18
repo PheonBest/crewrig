@@ -124,7 +124,7 @@ describe("warning texts (R5 as amended by delta-01)", () => {
       assert.equal(w({ class: "ok" }), null);
 
       const noFile = w({ class: "absent", reason: "no-file" }) ?? "";
-      assert.ok(noFile.includes(`scripts/setup-${cli}-interactive.sh`), noFile);
+      assert.ok(noFile.includes(`scripts/setup-${cli}-interactive.ts`), noFile);
       assert.ok(
         !noFile.includes("switch-http"),
         `a missing file must not point at switch-http: ${noFile}`,

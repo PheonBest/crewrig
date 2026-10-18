@@ -1,5 +1,5 @@
 // mcp-claude-step.ts — the `mcp` step of the Claude setup (spec 0256 requirements 26-28; shell lines
-// 164-307 of scripts/setup-claude-interactive.sh). MCP servers are registered through the
+// 164-307 of scripts/setup-claude-interactive.ts). MCP servers are registered through the
 // `claude mcp` CLI (the `Spawner`), never by editing `~/.claude.json`, except for the guarded
 // restore of an operator entry an org declaration replaced.
 //

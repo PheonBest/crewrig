@@ -1,5 +1,5 @@
 // all.ts — the cross-CLI umbrella extension installer (spec 0255 R11, ported from
-// scripts/install-extension-all.sh, spec 0177).
+// scripts/install-extension-all.ts, spec 0177).
 //
 // `installAll` is written against narrow injected pieces: an `InstallTarget` list (one row per CLI,
 // in report order) and the context the entry builds. `childTargets` is the default wiring: each
@@ -77,7 +77,7 @@ export function childTargets(ctx: AllCtx, geminiHome: string): InstallTarget[] {
     {
       label: "Gemini CLI",
       installed: (name) => `Gemini CLI (${geminiHome}/extensions/${name})`,
-      script: "install-extension.sh",
+      script: "install-extension.ts",
       available: (env) =>
         isDirectory(geminiHome) ||
         findOnPath("gemini", env, undefined) !== undefined ||
@@ -87,21 +87,21 @@ export function childTargets(ctx: AllCtx, geminiHome: string): InstallTarget[] {
     {
       label: "Claude Code",
       installed: () => "Claude Code",
-      script: "install-claude-plugin.sh",
+      script: "install-claude-plugin.ts",
       available: binary("claude"),
       install: (name) => run("install-claude-plugin", [name]),
     },
     {
       label: "GitHub Copilot CLI",
       installed: () => "GitHub Copilot CLI",
-      script: "install-copilot-plugin.sh",
+      script: "install-copilot-plugin.ts",
       available: binary("copilot"),
       install: (name) => run("install-copilot-plugin", [name]),
     },
     {
       label: "Antigravity CLI",
       installed: () => "Antigravity CLI",
-      script: "install-antigravity-extension.sh",
+      script: "install-antigravity-extension.ts",
       available: binary("agy"),
       install: (name) => run("install-antigravity-extension", [name]),
     },
@@ -126,7 +126,7 @@ function resolveExtension(repoDir: string, name: string): { dir: string } | { er
 }
 
 const USAGE = [
-  "Usage: install-extension-all.sh <extension-name>",
+  "Usage: install-extension-all.ts <extension-name>",
   "",
   "Installs an extension across all supported CLIs present on the host machine",
   "(Gemini CLI, Claude Code, GitHub Copilot CLI, Antigravity CLI).",

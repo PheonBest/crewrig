@@ -4,7 +4,7 @@
 # spec-0108 launch guard. When it is unimportable the guard falls back to the
 # closed whitelist grammar in scripts/lib/mempalace_pin.py, which is never more
 # permissive than `packaging`. Which comparator decided is named in every
-# refusal diagnostic and reported by scripts/doctor-mempalace.sh.
+# refusal diagnostic and reported by scripts/doctor-mempalace.ts.
 """MemPalace MCP server wrapper — routes ``chromadb.PersistentClient`` to the
 shared ChromaDB HTTP daemon.
 
@@ -49,7 +49,7 @@ refuses to serve when that version lies outside the range pinned in
   with the Phase A value: ``mempalace/version.py`` is a hand-maintained literal,
   structurally independent of the dist-info field, so a ``.postN`` rebuild
   legitimately disagrees with both values in range. Such disagreement is
-  reported by ``scripts/doctor-mempalace.sh``, never refused here.
+  reported by ``scripts/doctor-mempalace.ts``, never refused here.
 """
 import os
 import sys
@@ -149,7 +149,7 @@ def _refuse(found, source, bounds, comparator, extra="", remedy=None):
         supported_range = "not determined (see the cause below)"
         default_remedy = (
             "re-run the framework setup from a complete checkout "
-            "(scripts/setup-<cli>-interactive.sh), so the pin and the guard "
+            "(scripts/setup-<cli>-interactive.ts), so the pin and the guard "
             "module are both present under scripts/lib/"
         )
     else:
@@ -319,7 +319,7 @@ try:
 except Exception as _e:  # acknowledged-exception: broad except intentional — any HttpClient failure (connection refused, DNS, auth, protocol) MUST block startup; silent fallback re-introduces the corruption bug ADR-0006 eliminates
     print(
         f"ERROR: ChromaDB HTTP daemon unreachable at {_host}:{_port} — {_e}\n"
-        f"Start it first:  bash scripts/start-chroma-server.sh\n",
+        f"Start it first:  node scripts/start-chroma-server.ts\n",
         file=sys.stderr,
     )
     sys.exit(1)

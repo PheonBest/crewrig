@@ -1,4 +1,4 @@
-// link-extensions.test.ts — black-box contract of scripts/link-extensions.sh (spec 0255 R9, R13, R26;
+// link-extensions.test.ts — black-box contract of scripts/link-extensions.ts (spec 0255 R9, R13, R26;
 // ticket #1334): link every extension (core, library, then org when opted in) by running
 // install-extension in link mode. Each test runs once per leg of IMPL whose entry file exists.
 

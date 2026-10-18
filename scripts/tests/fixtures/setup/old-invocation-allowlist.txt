@@ -8,31 +8,6 @@
 # directory. Every entry carries a reason as the `#` comment line directly above it. An entry
 # that no longer matches a file with a hit, or that appears twice, fails the suite.
 
-# This file, its suite and the hint-string suite: they spell the invocation they scan for or pin.
-scripts/tests/fixtures/setup/old-invocation-allowlist.txt
+# This file, its suite and their suites: they spell the invocation they scan for or pin.
 scripts/tests/setup-references.test.ts
-scripts/tests/setup-hint-strings.test.ts
 
-# The four shims themselves: each header names the invocation it keeps working.
-scripts/setup-claude-interactive.sh
-scripts/setup-gemini-interactive.sh
-scripts/setup-copilot-interactive.sh
-scripts/setup-antigravity-interactive.sh
-
-# The shim path is part of the user-visible repair hint of the MemPalace session-start check
-# ("run bash scripts/setup-<cli>-interactive.sh"); the shim keeps the name, and
-# scripts/tests/setup-hint-strings.test.ts pins it.
-scripts/lib/mempalace-registration.ts
-
-# The shim suite names the invocation it proves: a caller of the old path reaches the entry.
-scripts/tests/setup-shim.test.ts
-
-# The adoption guide says the old `bash scripts/setup-<cli>-interactive.sh` form still works: it
-# documents that the shim forwards to the TypeScript entry.
-docs/adoption-guide.md
-
-# The ChromaDB runbook says each old invocation still works: it is a forwarding shim.
-docs/runbooks/chroma-http-server.md
-
-# The usage guide says the old invocation form still works: it is a forwarding shim.
-docs/usage-guide.md

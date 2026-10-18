@@ -1,6 +1,6 @@
 // plugin-common.ts — the part shared by the three plugin renderers (spec 0254 R11, R17, R18).
 // Twins the identical sections of scripts/build-claude-plugin.sh :32-160, :162-217, :259-262,
-// scripts/build-copilot-plugin.sh and scripts/build-antigravity-extension.sh.
+// scripts/build-copilot-plugin.ts and scripts/build-antigravity-extension.ts.
 //
 // API (kept small and stable; every printed line goes to `plan.ctx.io`):
 //   startPlugin(ctx, target, extArg, outArg) -> PluginPlan | null

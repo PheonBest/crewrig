@@ -63,7 +63,7 @@ supported paths:
 2. **`node scripts/lib/node-floor-guard.js`, then
    `node scripts/install-extension.ts install <name>`** — this
    repository's own install entry (Node.js 24 floor; run the two commands
-   as separate steps; `scripts/install-extension.sh` forwards to it).
+   as separate steps).
 3. **`task link-gemini-extension-build EXT=<name>`** — a documented
    **debugging** path, not an install path.
 

@@ -1,5 +1,5 @@
 // steps-copilot.ts — the Copilot-only `copilot-workspace-files` step (spec 0256 requirement 3,
-// plan v2 step B3b.1). Shell: scripts/setup-copilot-interactive.sh 87-107. It installs the
+// plan v2 step B3b.1). Shell: scripts/setup-copilot-interactive.ts 87-107. It installs the
 // workspace settings file from its template when missing, then reports the entry-point file the
 // Copilot CLI needs to load AGENTS.md. Everything prints on stdout; a failed bare `cp` (which
 // `set -e` aborted) goes through `failClosed`.

@@ -1,5 +1,5 @@
 // mcp-claude-flow.ts — the Claude setup's MCP section (spec 0256 requirements 27 and 28, delta-01
-// deviation (m); plan v2 step B2b.2). Twins the block of scripts/setup-claude-interactive.sh that
+// deviation (m); plan v2 step B2b.2). Twins the block of scripts/setup-claude-interactive.ts that
 // goes from `mcp_is_registered` to the settings question: `claude mcp list` / `add --scope user` /
 // `remove` through the `Spawner` (which finds `claude` on PATH, and `claude.cmd` through
 // `planWindowsLaunch` on win32), the Sequential Thinking opt-in, the legacy `~/.claude/mcp.json`

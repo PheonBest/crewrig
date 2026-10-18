@@ -1,4 +1,4 @@
-// Contract of the 18 governance forwarding shims (spec 0259 requirement 21): each scripts/check-<name>.sh
+// Contract of the remaining governance forwarding shims (7 after slice 3c) (spec 0259 requirement 21): each scripts/check-<name>.sh
 // forwards arguments, stdin and the exit status to its TypeScript twin, and fails closed without node.
 import { spawnSync } from "node:child_process";
 import {
@@ -20,24 +20,13 @@ import { fileURLToPath } from "node:url";
 const SCRIPTS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const NAMES = [
-  "skill-versions",
-  "extension-version-bump",
-  "extension-provenance",
   "extension-manifest-version",
   "extension-hook-map",
   "extension-hook-tokens",
   "extension-pivot",
   "component-metadata-keys",
   "core-paths",
-  "feedback-routing",
-  "gemini-overlay-enrollment",
   "claude-agent-layout",
-  "agents-size",
-  "no-machine-paths",
-  "markdown-links",
-  "figure-labels",
-  "test-wiring",
-  "test-strays",
 ];
 
 function which(cmd: string): string | undefined {

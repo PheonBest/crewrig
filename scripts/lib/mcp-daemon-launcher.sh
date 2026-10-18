@@ -199,7 +199,7 @@ if [ -f "${CREWRIG_REPO_DIR}/scripts/lib/common.sh" ]; then
     if [ -n "${stdio_clis}" ]; then
       printf '%s WARNING: MemPalace MCP HTTP daemon is starting, but assistant(s) [%s] are still configured in stdio mode.\n' \
         "$(date '+%Y-%m-%dT%H:%M:%S%z')" "${stdio_clis}" >&2
-      printf '%s WARNING: stdio sessions will be locked out of writing by this daemon. Run: bash %s/scripts/switch-mempalace-http.sh\n' \
+      printf '%s WARNING: stdio sessions will be locked out of writing by this daemon. Run: node %s/scripts/switch-mempalace-http.ts\n' \
         "$(date '+%Y-%m-%dT%H:%M:%S%z')" "${CREWRIG_REPO_DIR}" >&2
     fi
   fi

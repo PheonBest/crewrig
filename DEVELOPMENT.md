@@ -157,7 +157,7 @@ task build-claude-plugin EXT=my-extension
 
 Claude Code does not auto-discover plugins placed under `~/.claude/plugins/`. Plugins must be declared in a marketplace and installed via the CLI before Claude Code can load them.
 
-`scripts/install-claude-plugin.ts` (reached through the forwarding shim `scripts/install-claude-plugin.sh`) handles this in four steps:
+`scripts/install-claude-plugin.ts` handles this in four steps:
 
 1. Calls the Claude plugin builder (`scripts/build-claude-plugin.ts`, through the shim `build-claude-plugin.sh`) → produces `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/local-marketplace/<name>/` (a shared home outside the working tree, so multiple extensions coexist and installs survive branch switches)
 2. Generates `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/local-marketplace/.claude-plugin/marketplace.json` with a marketplace named `<repo-basename>-local` (e.g. `crewrig-local`). This is a SHARED manifest: each installed extension is upserted by name, so it accumulates every extension installed under that config root
@@ -254,8 +254,8 @@ naming the detected version, the floor and <https://nodejs.org/en/download>,
 and exits 1; otherwise it exits 0 silently. It is plain ES5 CommonJS so it
 runs on releases that cannot strip types, and it is the one JavaScript file
 admitted through `ci/js-exceptions.txt` as `node-floor-guard`. The four
-setup entries (`scripts/setup-<cli>-interactive.ts`, spec 0256) run on it: each
-`scripts/setup-<cli>-interactive.sh` shim runs the guard as a separate step,
+setup entries (`scripts/setup-<cli>-interactive.ts`, spec 0256) run on it: `task
+setup-<cli>-interactive` runs the guard as a separate step,
 then the entry, and fails closed below 24 before anything is written.
 
 **Production dependencies.** The four `scripts/setup-*-interactive.ts`

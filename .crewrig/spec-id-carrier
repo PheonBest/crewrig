@@ -30,7 +30,7 @@
 # leak into the upstream allocated set that spec 0112 delta-01 excludes them from.
 #
 # This entry is `excluded` in .crewrig/core-paths.txt: an adopter whose remote
-# refuses the default changes the value once and scripts/sync-from-upstream.sh
+# refuses the default changes the value once and scripts/sync-from-upstream.ts
 # never guards, restores, or aborts on it. The consequence is symmetric and
 # permanent — upstream can never update the value afterwards either.
 carrier=refs/spec-ids/

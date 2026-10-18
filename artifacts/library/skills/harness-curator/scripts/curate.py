@@ -101,7 +101,7 @@ _DEEP_HEURISTICS: Dict[str, str] = {
     "try again":     r"try again",
 }
 
-# Keep the page size aligned with prune-transcripts.sh: 100 is the sweet spot
+# Keep the page size aligned with prune-transcripts.ts: 100 is the sweet spot
 # between MCP roundtrips and per-call payload size.
 PAGE_SIZE = 100
 MAX_TOTAL_DRAWERS = 50000  # safety cap, identical rationale to prune script

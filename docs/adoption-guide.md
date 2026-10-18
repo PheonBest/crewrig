@@ -122,7 +122,7 @@ Replace both values:
 > so overriding `feedback_repo` does **not** capture feedback on components you
 > did not author — that feedback keeps flowing upstream where the components are
 > maintained. This is by design (spec 0030) and enforced by
-> `scripts/check-feedback-routing.sh`. See
+> `scripts/check-feedback-routing.ts`. See
 > [`artifacts/FORMAT.md`](../artifacts/FORMAT.md) → *Provenance & Forks*.
 
 Commit the file:
@@ -277,11 +277,8 @@ modifying user-home directories.
 Each setup is a TypeScript entry that needs Node.js 24 or later. Run the floor
 guard first, then the entry, as two separate steps (not chained with `&&`):
 `node scripts/lib/node-floor-guard.js`, then
-`node scripts/setup-<cli>-interactive.ts`. The older
-`bash scripts/setup-<cli>-interactive.sh` form and the
-`task setup-<cli>-interactive` entry still work: the shell script is a
-forwarding shim that runs the same two steps and hands over its arguments and
-standard input unchanged.
+`node scripts/setup-<cli>-interactive.ts`. The
+`task setup-<cli>-interactive` entry runs the same two steps. The old Bash setup scripts were removed (see `docs/shell-removal.md`).
 
 ### Claude Code
 
@@ -354,8 +351,7 @@ node scripts/sync-from-upstream.ts
 ```
 
 Run `node scripts/lib/node-floor-guard.js` first on an unverified Node.js: the
-command needs Node.js 24 or later; `bash scripts/sync-from-upstream.sh` remains
-a forwarding shim.
+command needs Node.js 24 or later.
 
 **Expected outcome:** The script exits zero, updates the core-layer paths
 listed in `.crewrig/core-paths.txt` from the URL set in
@@ -370,7 +366,7 @@ the directory containing them — and exit 1 with a message similar to:
 
 ```text
 Error: the following core-layer paths have local modifications:
-  scripts/sync-from-upstream.sh
+  scripts/sync-from-upstream.ts
   artifacts/core/skills/developer/SKILL.md
 Revert these changes before running sync, or promote them to overlay overrides.
 

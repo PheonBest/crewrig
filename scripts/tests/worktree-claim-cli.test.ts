@@ -66,7 +66,7 @@ describe("usage and help (R14, R38(a))", () => {
     assert.match(stdout, /A non-negative integer of at most 9 digits/);
   });
 
-  test("no output line carries the text `worktree-claim.sh:` (the Bash oracle's want_no_shell_error)", () => {
+  test("no output line carries the text `worktree-claim.ts:` (the Bash oracle's want_no_shell_error)", () => {
     for (const args of [[], ["--help"], ["frobnicate"], ["take"], ["take", "--agent"]]) {
       const res = runClaim(args, { cwd: fx.wt });
       assert.doesNotMatch(res.stdout + res.stderr, /worktree-claim\.sh:/, args.join(" "));

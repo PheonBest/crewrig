@@ -1,7 +1,7 @@
 // repair-rig.ts — the scratch HOME shared by the repair and token-rotation
 // tests (spec 0263): a real-path HOME and USERPROFILE, the four assistant stubs
 // on PATH (`command -v` is the "present" gate), CLAUDE_CONFIG_DIR pointed at the
-// scratch directory, and a runner for `bash scripts/repair-mempalace-http.sh`.
+// scratch directory, and a runner for `node scripts/repair-mempalace-http.ts`.
 
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
@@ -52,13 +52,13 @@ export function makeRig(root: string, name: string, stubs: string[]): Rig {
 export const scratchRoot = (prefix: string): string =>
   fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), prefix)));
 
-/** `bash scripts/repair-mempalace-http.sh <args>` under an optional umask. */
+/** `node scripts/repair-mempalace-http.ts <args>` under an optional umask. */
 export function runRepair(rig: Rig, args: string[] = [], umask = "022"): Run {
   const r = spawnSync(
     "bash",
     [
       "-c",
-      'umask "$1"; shift; exec bash scripts/repair-mempalace-http.sh "$@"',
+      'umask "$1"; shift; exec node scripts/repair-mempalace-http.ts "$@"',
       "repair",
       umask,
       ...args,
