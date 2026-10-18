@@ -4126,6 +4126,7 @@ capabilities:
           - "scripts/tests/usage-storage-journal.test.ts"
           - "scripts/tests/usage-storage-query.test.ts"
           - "scripts/tests/usage-storage-gate.test.ts"
+          - "scripts/tests/usage-mirror-spawn.test.ts"
           - "scripts/tests/usage-storage-wing.test.ts"
           - "scripts/tests/usage-storage-drain.test.ts"
           - "scripts/tests/usage-storage-prune.test.ts"
@@ -4176,6 +4177,7 @@ capabilities:
           - "scripts/tests/usage-storage-journal.test.ts"
           - "scripts/tests/usage-storage-query.test.ts"
           - "scripts/tests/usage-storage-gate.test.ts"
+          - "scripts/tests/usage-mirror-spawn.test.ts"
           - "scripts/tests/usage-storage-wing.test.ts"
           - "scripts/tests/usage-storage-drain.test.ts"
           - "scripts/tests/usage-storage-prune.test.ts"
@@ -4210,7 +4212,7 @@ capabilities:
       runtime: node@24
     command:
       - npm install
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-storage-journal.test.ts scripts/tests/usage-storage-query.test.ts scripts/tests/usage-storage-gate.test.ts scripts/tests/usage-storage-wing.test.ts scripts/tests/usage-storage-drain.test.ts scripts/tests/usage-storage-prune.test.ts
+      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-storage-journal.test.ts scripts/tests/usage-storage-query.test.ts scripts/tests/usage-storage-gate.test.ts scripts/tests/usage-mirror-spawn.test.ts scripts/tests/usage-storage-wing.test.ts scripts/tests/usage-storage-drain.test.ts scripts/tests/usage-storage-prune.test.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-mirror-catchup.test.ts scripts/tests/usage-mirror-prune.test.ts scripts/tests/usage-mirror-failures.test.ts scripts/tests/usage-mirror-mutants.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-inventory.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-wrappers-oracle.test.ts scripts/tests/usage-wrappers.test.ts scripts/tests/hermetic-env.test.ts

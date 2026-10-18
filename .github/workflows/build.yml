@@ -2767,7 +2767,7 @@ jobs:
           node-version: 24
 
       - name: Nine usage entries run offline, flag-free entry form keeps stderr free of warnings
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-wrappers-windows.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-wrappers-windows.test.ts scripts/tests/usage-mirror-spawn.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure

@@ -1,7 +1,7 @@
 ---
 id: "0253"
 slug: history-import-operational-commands-typescript
-status: approved
+status: implemented
 complexity: small
 interaction-mode: MINIMAL
 related-issue: 1515
