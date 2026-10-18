@@ -178,7 +178,7 @@ describe("reportUnresolved", () => {
   test("an empty root list still reports, with the build hint", () => {
     assert.match(
       report("n", "t", []),
-      /^Error: .*\nLocations examined.*\nNo served tier .*\n {2}bash /,
+      /^Error: .*\nLocations examined.*\nNo served tier .*\n {2}node /,
     );
   });
 
