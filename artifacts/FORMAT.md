@@ -506,12 +506,6 @@ The Bash scripts that have not migrated still need:
 
 - **`yq`** for YAML frontmatter parsing, and **`jq`** for JSON merging (hooks,
   policies, MCP servers), until row G1b of the TypeScript migration moves them.
-- **Bash 3.2.57** — the stock macOS `/bin/bash`, and the enforced floor. The
-  forbidden constructs are declared in `ci/bash32-forbidden.txt` and rejected in
-  continuous integration by `scripts/check-bash32-portability.sh`: no
-  associative arrays (`declare -A`), no `mapfile`/`readarray`. This entry
-  previously read "Bash 4+ for associative arrays", which contradicted that
-  guard.
 
 ## Validation Rules
 

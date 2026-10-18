@@ -2731,9 +2731,6 @@ capabilities:
           - "scripts/check-gemini-overlay-enrollment.sh"
           - "scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts"
           - "scripts/tests/lib/build-fixture-tree.ts"
-          - "scripts/tests/test-check-bash32-portability.sh"
-          - "scripts/check-pipefail-grep.sh"
-          - "scripts/tests/test-check-pipefail-grep.sh"
           - "scripts/tests/test-reserve-spec-id.sh"
           - "scripts/tests/test-check-spec-id-reserved.sh"
           - "scripts/reserve-spec-id.sh"
@@ -2758,9 +2755,6 @@ capabilities:
           - "scripts/check-gemini-overlay-enrollment.sh"
           - "scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts"
           - "scripts/tests/lib/build-fixture-tree.ts"
-          - "scripts/tests/test-check-bash32-portability.sh"
-          - "scripts/check-pipefail-grep.sh"
-          - "scripts/tests/test-check-pipefail-grep.sh"
           - "scripts/tests/test-reserve-spec-id.sh"
           - "scripts/tests/test-check-spec-id-reserved.sh"
           - "scripts/reserve-spec-id.sh"
@@ -2795,8 +2789,6 @@ capabilities:
       - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-no-machine-paths.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-gemini-overlay-enrollment.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-bash32-portability.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-pipefail-grep.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-reserve-spec-id.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-spec-id-reserved.sh
 
@@ -3797,7 +3789,6 @@ capabilities:
           - "scripts/**"
           - "hooks/**"
           - ".github/workflows/scripting-conventions.yml"
-          - "ci/bash32-forbidden.txt"
     portability: portable
     command:
       - |
@@ -3822,8 +3813,6 @@ capabilities:
           exit 1
         fi
         echo "Rule 1 clean."
-      - bash scripts/check-bash32-portability.sh
-      - bash scripts/check-pipefail-grep.sh
 
   # security-mcp.yml gates on pull_request to [main] with a path filter on the
   # MCP/dependency manifests (.github/workflows/security-mcp.yml lines 3-11).

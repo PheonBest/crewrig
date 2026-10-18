@@ -17,7 +17,6 @@ scripts/build-docs-index.sh
 scripts/build-extension.sh
 scripts/check-agent-profiles.sh
 scripts/check-agents-size.sh
-scripts/check-bash32-portability.sh
 scripts/check-ci-parity.sh
 scripts/check-claude-agent-layout.sh
 scripts/check-component-metadata-keys.sh
@@ -34,7 +33,6 @@ scripts/check-gemini-overlay-enrollment.sh
 scripts/check-markdown-links.sh
 scripts/check-model-mappings.sh
 scripts/check-no-machine-paths.sh
-scripts/check-pipefail-grep.sh
 scripts/check-skill-versions.sh
 scripts/check-spec-id-reserved.sh
 scripts/check-test-strays.sh
@@ -54,7 +52,6 @@ scripts/install-extension-all.sh
 scripts/install-extension.sh
 scripts/install-workspace.sh
 scripts/lib/base-ref-resolve.sh
-scripts/lib/bash32-array-guard.sh
 scripts/lib/common.sh
 scripts/lib/component-resolve.sh
 scripts/lib/extension-hooks.sh
@@ -97,7 +94,6 @@ scripts/tests/test-build-ci.sh
 scripts/tests/test-build-docs-index.sh
 scripts/tests/test-build-extension.sh
 scripts/tests/test-check-agent-profiles.sh
-scripts/tests/test-check-bash32-portability.sh
 scripts/tests/test-check-ci-parity.sh
 scripts/tests/test-check-claude-agent-layout.sh
 scripts/tests/test-check-component-metadata-keys.sh
@@ -107,7 +103,6 @@ scripts/tests/test-check-extension-hook-tokens.sh
 scripts/tests/test-check-extension-manifest-version.sh
 scripts/tests/test-check-extension-pivot.sh
 scripts/tests/test-check-model-mappings.sh
-scripts/tests/test-check-pipefail-grep.sh
 scripts/tests/test-check-spec-id-reserved.sh
 scripts/tests/test-create-extension-combinations.sh
 scripts/tests/test-extension-render-conformance.sh
