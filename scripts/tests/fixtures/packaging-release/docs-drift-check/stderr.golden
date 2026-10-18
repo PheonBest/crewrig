@@ -1,4 +1,4 @@
-Drift: docs/index.json is stale. Re-run: bash scripts/build-docs-index.sh
+Drift: docs/index.json is stale. Re-run: bash scripts/build-docs-index.ts
 -{}
 +{
 +  "version": 1,

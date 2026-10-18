@@ -1,5 +1,5 @@
 // ext-manifest-version.ts — logic of check-extension-manifest-version (spec 0259; replaces
-// scripts/check-extension-manifest-version.sh, spec 0044 R5/R6 as amended by delta-01).
+// scripts/check-extension-manifest-version.ts, spec 0044 R5/R6 as amended by delta-01).
 //
 // Usage: evaluateVersions(cwd, libDir) -> { code, stdout, stderr }
 // Walks `extensions/{core,library}/*/package.json` under `cwd` (the shell's relative roots; the

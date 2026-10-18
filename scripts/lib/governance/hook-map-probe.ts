@@ -1,5 +1,5 @@
 // hook-map-probe.ts — the translator's side of the hook-map agreement check (spec 0259).
-// Twin of the probe half of scripts/check-extension-hook-map.sh: one hook per event of the
+// Twin of the probe half of scripts/check-extension-hook-map.ts: one hook per event of the
 // translator's closed set, rendered per target IN PROCESS (no temp directory, no jq), and the
 // event keys the rendered file carries, in jq `keys` order (sorted).
 //

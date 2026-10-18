@@ -152,7 +152,6 @@ communication
 .crewrig/spec-id-carrier	excluded
 
 # Documentation publication contract (spec 0027)
-scripts/build-docs-index.sh	strict
 scripts/build-docs-index.ts	strict
 
 # Continuous-integration reference (spec 0047)

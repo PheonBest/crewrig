@@ -9,7 +9,7 @@ names. Every cell states either the target's own event name or an explicit
 vocabulary is never presented as expressible on every target (R5).
 
 This artifact is one of **two independent representations** the R6 agreement
-check (`scripts/check-extension-hook-map.sh`) compares: this table, parsed as
+check (`scripts/check-extension-hook-map.ts`) compares: this table, parsed as
 data, against `scripts/lib/extension-hooks.sh`'s translation, derived by
 actually executing it against a synthetic probe extension. Editing either
 side alone turns the check red — see that script's own header for why a
@@ -50,7 +50,7 @@ Each column below records the hook file the target reads for an extension,
 the tool version the column was grounded against, the probe method, the time
 unit, and the extension-root token form — reconciled against
 `scripts/lib/extension-targets.json`, the render's own copy of the same
-facts (`scripts/check-extension-hook-map.sh` asserts the two agree; see that
+facts (`scripts/check-extension-hook-map.ts` asserts the two agree; see that
 script's header for why two places holding one fact need a check).
 
 ### Claude Code

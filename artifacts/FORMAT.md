@@ -138,7 +138,7 @@ inheritance). Skills and commands do not carry this field.
 declares a model need — there is no other key, on any section, that
 states one. On the upstream-owned tiers (`artifacts/core/` and
 `artifacts/library/`), a source's `metadata:` block admits exactly two
-keys, `provenance` and `model`; `scripts/check-component-metadata-keys.sh`
+keys, `provenance` and `model`; `scripts/check-component-metadata-keys.ts`
 is the gate that rejects any other (spec 0200 requirement 8).
 
 | Key | Type | Domain | Unconstrained state |

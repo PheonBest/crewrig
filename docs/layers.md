@@ -65,7 +65,7 @@ and the `docs/index.json` schema — lives in
 `docs/index.json` is the generated, **committed** manifest of the public
 documentation subset. It is classified **core / `strict`** (upstream-owned;
 a local modification halts the sync). The generator
-`scripts/build-docs-index.sh` and its TypeScript twin
+`scripts/build-docs-index.ts` and its TypeScript twin
 `scripts/build-docs-index.ts` (both core/`strict`) derive it from the
 per-page blocks; CI runs `node scripts/lib/node-floor-guard.js`, then
 `node scripts/build-docs-index.ts --check`, to guard against drift. Org-overlay documentation under `docs/org/` is `excluded` from

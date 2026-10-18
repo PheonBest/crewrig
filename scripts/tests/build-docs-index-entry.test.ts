@@ -112,21 +112,4 @@ describe("build-docs-index entry", () => {
     assert.equal(section, "reference", "Case 9b — real block after H1 wins over pre-H1 decoy");
     assert.equal(text.includes("DECOY"), false, "Case 9c — pre-H1 decoy absent from index");
   });
-  test(
-    "the forwarding shim reaches the entry with the same exit status",
-    { skip: SKIP_POSIX },
-    () => {
-      const root = entryTree({ "docs/a.md": PUB("10", "Alpha") });
-      const run = (...args: string[]) =>
-        spawnSync("bash", ["scripts/build-docs-index.sh", ...args], {
-          cwd: root,
-          env: childEnv(),
-          encoding: "utf8",
-        });
-      assert.equal(run().status, 0);
-      assert.equal(run("--check").status, 0);
-      fs.appendFileSync(indexOf(root), "drift\n");
-      assert.equal(run("--check").status, 1);
-    },
-  );
 });

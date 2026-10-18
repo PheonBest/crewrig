@@ -10,11 +10,7 @@ import path from "node:path";
 import { cleanEnv, realTmp, REPO, runNode } from "./worktree-fixtures.ts";
 import type { Result } from "./worktree-fixtures.ts";
 
-const ENTRY_FILES = [
-  "scripts/build-docs-index.ts",
-  "scripts/build-docs-index.sh",
-  "scripts/lib/node-floor-guard.js",
-];
+const ENTRY_FILES = ["scripts/build-docs-index.ts", "scripts/lib/node-floor-guard.js"];
 
 function trackedFiles(): string[] {
   const listed = spawnSync(

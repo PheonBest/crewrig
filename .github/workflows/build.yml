@@ -889,7 +889,6 @@ jobs:
             packaging-modules-ts:
               - 'scripts/lib/packaging/**'
               - 'scripts/lib/docs-index/**'
-              - 'scripts/build-docs-index.sh'
               - 'scripts/lib/paths.ts'
               - 'scripts/lib/line-endings.ts'
               - 'scripts/lib/tmp-file.ts'
@@ -999,7 +998,6 @@ jobs:
         with:
           filters: |
             extension-render:
-              - 'scripts/check-extension-pivot.sh'
               - 'scripts/build-extension.sh'
               - 'scripts/build-extension.ts'
               - 'scripts/lib/extension/**'
@@ -1025,8 +1023,6 @@ jobs:
               - 'artifacts/**'
               - 'scripts/lib/extension-hooks.sh'
               - 'scripts/lib/extension-targets.json'
-              - 'scripts/check-extension-hook-tokens.sh'
-              - 'scripts/check-extension-hook-map.sh'
               - 'docs/extension-hook-events.md'
               - 'extension-skeleton/**'
               - 'scripts/create-extension.sh'
@@ -1137,7 +1133,6 @@ jobs:
         with:
           filters: |
             extension-manifest:
-              - 'scripts/check-extension-manifest-version.sh'
               - 'scripts/lib/common.sh'
               - 'scripts/lib/extension-hooks.sh'
               - 'scripts/tests/governance-suite-extension-version-bump.test.ts'
@@ -1246,7 +1241,6 @@ jobs:
         with:
           filters: |
             core-paths:
-              - 'scripts/check-core-paths.sh'
               - 'scripts/sync-from-upstream.ts'
               - 'scripts/lib/sync-from-upstream/**'
               - 'scripts/tests/sync-from-upstream-policies.test.ts'
@@ -1353,7 +1347,6 @@ jobs:
         with:
           filters: |
             docs-index:
-              - 'scripts/build-docs-index.sh'
               - 'scripts/build-docs-index.ts'
               - 'scripts/lib/docs-index/**'
               - 'scripts/lib/paths.ts'
@@ -1376,10 +1369,10 @@ jobs:
         if: steps.filter.outputs.docs-index == 'true'
         with:
           path: .ci-cache
-          key: ${{ hashFiles('scripts/build-docs-index.sh', 'scripts/build-docs-index.ts', 'scripts/lib/docs-index/**', 'scripts/lib/paths.ts', 'scripts/lib/line-endings.ts', 'scripts/lib/node-floor-guard.js', 'scripts/tests/build-docs-index-entry.test.ts', 'scripts/tests/lib/docs-index-entry-tree.ts', 'docs/**', 'scripts/ci-cache-guard.sh') }}
+          key: ${{ hashFiles('scripts/build-docs-index.ts', 'scripts/lib/docs-index/**', 'scripts/lib/paths.ts', 'scripts/lib/line-endings.ts', 'scripts/lib/node-floor-guard.js', 'scripts/tests/build-docs-index-entry.test.ts', 'scripts/tests/lib/docs-index-entry-tree.ts', 'docs/**', 'scripts/ci-cache-guard.sh') }}
       - name: Test Build Docs Index
         if: steps.filter.outputs.docs-index == 'true'
-        run: bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files "scripts/build-docs-index.sh,scripts/build-docs-index.ts,scripts/lib/docs-index/**,scripts/lib/paths.ts,scripts/lib/line-endings.ts,scripts/lib/node-floor-guard.js,scripts/tests/build-docs-index-entry.test.ts,scripts/tests/lib/docs-index-entry-tree.ts,docs/**,scripts/ci-cache-guard.sh" --key-env "" -- bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-docs-index-entry.test.ts
+        run: bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files "scripts/build-docs-index.ts,scripts/lib/docs-index/**,scripts/lib/paths.ts,scripts/lib/line-endings.ts,scripts/lib/node-floor-guard.js,scripts/tests/build-docs-index-entry.test.ts,scripts/tests/lib/docs-index-entry-tree.ts,docs/**,scripts/ci-cache-guard.sh" --key-env "" -- bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-docs-index-entry.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -1807,7 +1800,6 @@ jobs:
           filters: |
             check-metadata-keys:
               - 'artifacts/**'
-              - 'scripts/check-component-metadata-keys.sh'
               - 'scripts/check-component-metadata-keys.ts'
               - 'scripts/lib/governance/**'
               - 'scripts/lib/build-components/**'
@@ -1841,7 +1833,6 @@ jobs:
           filters: |
             check-claude-agent-layout:
               - '.claude/agents/**'
-              - 'scripts/check-claude-agent-layout.sh'
               - 'scripts/build-components.sh'
               - 'scripts/build-components.ts'
               - 'scripts/lib/build-components/**'

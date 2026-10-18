@@ -1119,7 +1119,6 @@ capabilities:
         paths:
           - "scripts/lib/packaging/**"
           - "scripts/lib/docs-index/**"
-          - "scripts/build-docs-index.sh"
           - "scripts/lib/paths.ts"
           - "scripts/lib/line-endings.ts"
           - "scripts/lib/tmp-file.ts"
@@ -1170,7 +1169,6 @@ capabilities:
         paths:
           - "scripts/lib/packaging/**"
           - "scripts/lib/docs-index/**"
-          - "scripts/build-docs-index.sh"
           - "scripts/lib/paths.ts"
           - "scripts/lib/line-endings.ts"
           - "scripts/lib/tmp-file.ts"
@@ -1622,7 +1620,6 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-extension-pivot.sh"
           - "scripts/build-extension.sh"
           - "scripts/build-extension.ts"
           - "scripts/lib/extension/**"
@@ -1648,8 +1645,6 @@ capabilities:
           - "artifacts/**"
           - "scripts/lib/extension-hooks.sh"
           - "scripts/lib/extension-targets.json"
-          - "scripts/check-extension-hook-tokens.sh"
-          - "scripts/check-extension-hook-map.sh"
           - "docs/extension-hook-events.md"
           - "extension-skeleton/**"
           - "scripts/create-extension.sh"
@@ -1686,7 +1681,6 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-extension-pivot.sh"
           - "scripts/build-extension.sh"
           - "scripts/build-extension.ts"
           - "scripts/lib/extension/**"
@@ -1712,8 +1706,6 @@ capabilities:
           - "artifacts/**"
           - "scripts/lib/extension-hooks.sh"
           - "scripts/lib/extension-targets.json"
-          - "scripts/check-extension-hook-tokens.sh"
-          - "scripts/check-extension-hook-map.sh"
           - "docs/extension-hook-events.md"
           - "extension-skeleton/**"
           - "scripts/create-extension.sh"
@@ -1801,7 +1793,6 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-extension-manifest-version.sh"
           - "scripts/lib/common.sh"
           - "scripts/lib/extension-hooks.sh"
           - "scripts/tests/governance-suite-extension-version-bump.test.ts"
@@ -1816,7 +1807,6 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-extension-manifest-version.sh"
           - "scripts/lib/common.sh"
           - "scripts/lib/extension-hooks.sh"
           - "scripts/tests/governance-suite-extension-version-bump.test.ts"
@@ -1947,7 +1937,6 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-core-paths.sh"
           - "scripts/sync-from-upstream.ts"
           - "scripts/lib/sync-from-upstream/**"
           - "scripts/tests/sync-from-upstream-policies.test.ts"
@@ -1968,7 +1957,6 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-core-paths.sh"
           - "scripts/sync-from-upstream.ts"
           - "scripts/lib/sync-from-upstream/**"
           - "scripts/tests/sync-from-upstream-policies.test.ts"
@@ -2087,7 +2075,6 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/build-docs-index.sh"
           - "scripts/build-docs-index.ts"
           - "scripts/lib/docs-index/**"
           - "scripts/lib/paths.ts"
@@ -2099,7 +2086,6 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/build-docs-index.sh"
           - "scripts/build-docs-index.ts"
           - "scripts/lib/docs-index/**"
           - "scripts/lib/paths.ts"
@@ -2114,7 +2100,6 @@ capabilities:
       runtime: node@24
     cache:
       files:
-        - "scripts/build-docs-index.sh"
         - "scripts/build-docs-index.ts"
         - "scripts/lib/docs-index/**"
         - "scripts/lib/paths.ts"
@@ -2890,7 +2875,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "artifacts/**"
-          - "scripts/check-component-metadata-keys.sh"
           - "scripts/check-component-metadata-keys.ts"
           - "scripts/lib/governance/**"
           - "scripts/lib/build-components/**"
@@ -2901,7 +2885,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "artifacts/**"
-          - "scripts/check-component-metadata-keys.sh"
           - "scripts/check-component-metadata-keys.ts"
           - "scripts/lib/governance/**"
           - "scripts/lib/build-components/**"
@@ -2924,7 +2907,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - ".claude/agents/**"
-          - "scripts/check-claude-agent-layout.sh"
           - "scripts/build-components.sh"
           - "scripts/build-components.ts"
           - "scripts/lib/build-components/**"
@@ -2934,7 +2916,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - ".claude/agents/**"
-          - "scripts/check-claude-agent-layout.sh"
           - "scripts/build-components.sh"
           - "scripts/build-components.ts"
           - "scripts/lib/build-components/**"

@@ -8,17 +8,9 @@ hooks/worktree-git-guard.sh
 scripts/build-ci.sh
 scripts/build-claude-plugin.sh
 scripts/build-components.sh
-scripts/build-docs-index.sh
 scripts/build-extension.sh
 scripts/check-agent-profiles.sh
 scripts/check-ci-parity.sh
-scripts/check-claude-agent-layout.sh
-scripts/check-component-metadata-keys.sh
-scripts/check-core-paths.sh
-scripts/check-extension-hook-map.sh
-scripts/check-extension-hook-tokens.sh
-scripts/check-extension-manifest-version.sh
-scripts/check-extension-pivot.sh
 scripts/check-model-mappings.sh
 scripts/check-spec-id-reserved.sh
 scripts/ci-cache-guard.sh

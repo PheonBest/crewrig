@@ -65,6 +65,14 @@ their rows here.
 | `scripts/setup-gemini-interactive.sh` | `node scripts/setup-gemini-interactive.ts` | #1344 slice 3c |
 | `scripts/unlink-component.sh` | `node scripts/unlink-component.ts` | #1344 slice 3c |
 | `scripts/unlink-extensions.sh` | `node scripts/unlink-extensions.ts` | #1344 slice 3c |
+| `scripts/check-core-paths.sh` | `node scripts/check-core-paths.ts` | #1344 slice 3c |
+| `scripts/check-claude-agent-layout.sh` | `node scripts/check-claude-agent-layout.ts` | #1344 slice 3c |
+| `scripts/check-component-metadata-keys.sh` | `node scripts/check-component-metadata-keys.ts` | #1344 slice 3c |
+| `scripts/check-extension-hook-map.sh` | `node scripts/check-extension-hook-map.ts` | #1344 slice 3c |
+| `scripts/check-extension-hook-tokens.sh` | `node scripts/check-extension-hook-tokens.ts` | #1344 slice 3c |
+| `scripts/check-extension-manifest-version.sh` | `node scripts/check-extension-manifest-version.ts` | #1344 slice 3c |
+| `scripts/check-extension-pivot.sh` | `node scripts/check-extension-pivot.ts` | #1344 slice 3c |
+| `scripts/build-docs-index.sh` | `node scripts/build-docs-index.ts` | #1344 slice 3c |
 
 From a built skill directory the same commands read `node scripts/curate.ts`,
 `node scripts/schedule-curator.ts` and `node scripts/setup-labels.ts`; the

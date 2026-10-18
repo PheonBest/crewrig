@@ -125,7 +125,7 @@ contradicting the conclusion above:
   deliberate alias mentions**, in the same spirit as class 6 above: the
   refreshed `C2(b)` literal of the since-retired `test-model-resolution.sh` now pins
   `architect`'s compiled description verbatim, which itself contains
-  `opus`; the new `test-check-component-metadata-keys.sh` declares
+  `opus`; the new `test-check-component-metadata-keys.ts` declares
   `metadata.claude.model: sonnet` in four fixtures to exercise the legacy-key
   rejection. The migration test suite this change set also adds
   (`scripts/tests/agent-profile-committed.test.ts`, `agent-profile-build.test.ts`) asserts the compiled

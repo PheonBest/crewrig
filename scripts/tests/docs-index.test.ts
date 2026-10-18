@@ -273,7 +273,7 @@ describe("arguments and check mode", () => {
     const r = await runIn(root, ["--check"]);
     assert.equal(r.code, 1);
     assert.deepEqual(r.err, [
-      "Drift: docs/index.json is stale. Re-run: bash scripts/build-docs-index.sh",
+      "Drift: docs/index.json is stale. Re-run: node scripts/build-docs-index.ts",
       '-          "title": "Old",',
       '+          "title": "One",',
     ]);
@@ -283,7 +283,7 @@ describe("arguments and check mode", () => {
     const r = await run({ "docs/a.md": published("concepts", "1", "One") }, ["--check"]);
     assert.equal(r.code, 1);
     assert.deepEqual(r.err, [
-      "Drift: docs/index.json is missing. Run: bash scripts/build-docs-index.sh",
+      "Drift: docs/index.json is missing. Run: node scripts/build-docs-index.ts",
     ]);
   });
 

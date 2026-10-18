@@ -649,7 +649,7 @@ per-target correspondence — which neutral event maps to which target event,
 the hook file, the matcher form, the time unit and the extension-root
 token — is the normative, evidence-backed
 [`docs/extension-hook-events.md`](../docs/extension-hook-events.md), kept
-honest against the translator by `scripts/check-extension-hook-map.sh`.
+honest against the translator by `scripts/check-extension-hook-map.ts`.
 
 ## Fragment Merging
 

@@ -1,5 +1,5 @@
 // main.ts — the order of operations and the exit codes of build-docs-index (the body of
-// the former build-docs-index.sh, now a forwarding shim): 0 on success or no drift, 1 on a lint failure or drift, 2 on a usage
+// the former build-docs-index.ts, now a forwarding shim): 0 on success or no drift, 1 on a lint failure or drift, 2 on a usage
 // error or a missing docs directory. Nothing here exits the process: the entry sets the code.
 //
 //   build-docs-index            regenerate docs/index.json
@@ -74,12 +74,12 @@ export async function main(input: MainInput): Promise<number> {
 
   if (check) {
     if (!isFile(indexFile)) {
-      io.err("Drift: docs/index.json is missing. Run: bash scripts/build-docs-index.sh");
+      io.err("Drift: docs/index.json is missing. Run: node scripts/build-docs-index.ts");
       return 1;
     }
     const committed = fs.readFileSync(indexFile);
     if (isStale(committed, generated)) {
-      io.err("Drift: docs/index.json is stale. Re-run: bash scripts/build-docs-index.sh");
+      io.err("Drift: docs/index.json is stale. Re-run: node scripts/build-docs-index.ts");
       for (const line of lineDiff(committed.toString("utf8"), generated)) io.err(line);
       return 1;
     }

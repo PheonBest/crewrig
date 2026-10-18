@@ -1,5 +1,5 @@
 // agent-layout.ts — flat `.claude/agents` layout logic (spec 0259; replaces the logic of
-// scripts/check-claude-agent-layout.sh, spec 0201 requirements 6-7).
+// scripts/check-claude-agent-layout.ts, spec 0201 requirements 6-7).
 //
 // Usage: checkLayout(repoDir, io) -> exit code
 // Inspects the WORKING TREE (not git). An entry directly inside `.claude/agents` is legal iff it

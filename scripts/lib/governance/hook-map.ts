@@ -1,5 +1,5 @@
 // hook-map.ts — the R6 agreement check between docs/extension-hook-events.md and the
-// translator (spec 0179, spec 0259). Twin of scripts/check-extension-hook-map.sh: three
+// translator (spec 0179, spec 0259). Twin of scripts/check-extension-hook-map.ts: three
 // finding families, in the shell's order, each line byte for byte.
 //   1. every event of the translator's closed set has a table row that agrees with the
 //      translator's mapping and with the event keys its rendered probe carries;

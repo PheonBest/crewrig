@@ -107,7 +107,7 @@ dependency step):
 A change to either renderer, or to the shared `render-command.sh`
 library, MUST keep this pair in sync in the same PR; the
 `node scripts/build-extension.ts --check` guard and
-`scripts/check-extension-pivot.sh` (R1/R7 guard) enforce that no
+`scripts/check-extension-pivot.ts` (R1/R7 guard) enforce that no
 generated Gemini output is ever committed, that a fresh render matches
 the declared set, and that no extension component is authored CLI-native
 instead of pivot. Copilot has no extension command/agent surface (rows
