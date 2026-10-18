@@ -1334,7 +1334,7 @@ capabilities:
   # Spec 0258 R23-R27 (ticket #1337): the extension scaffolder entry from a non-POSIX interpreter.
   # The production dependencies are installed first, the floor guard runs, then
   # scripts/tests/windows-create-extension.test.ts runs the entry through pwsh and cmd.exe against a
-  # hermetic sandbox repository with no bash and no fzf on PATH. The dev toolchain is absent, so no
+  # hermetic sandbox repository with no POSIX shell and no fzf on PATH. The dev toolchain is absent, so no
   # `check-typescript` here. No timing budget and no `paths:` filter, like the Windows jobs above:
   # the proof must not skip silently on a change it does not list.
   - id: windows-create-extension

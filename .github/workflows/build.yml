@@ -2968,7 +2968,7 @@ jobs:
       - name: Floor guard accepts Node.js 24
         run: node scripts/lib/node-floor-guard.js
 
-      - name: Hooks from PowerShell and cmd.exe, bash absent, four package layouts
+      - name: Hooks from PowerShell and cmd.exe, no POSIX shell, four package layouts
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/windows-extension-hooks.test.ts
 
       - name: No deprecation reaches the hooks

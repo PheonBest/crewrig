@@ -109,8 +109,8 @@ explicitly (without editing your profile):
   small wrapper that reads `~/.crewrig/tls-env.sh` (if present, parsed and never
   executed) and then runs the real server command with those variables added,
   exiting with its status. A missing file makes the wrapper a transparent no-op.
-  Setup rewrites a legacy registration (formerly
-  `bash <repo>/scripts/lib/tls-exec.sh ...`) to this form on its next run.
+  Setup rewrites a legacy registration to this form on its next run.
+  The retired form was `bash <repo>/scripts/lib/tls-exec.sh ...`, formerly registered.
   The opt-in Playwright MCP server (`task setup:playwright-mcp`, spec 0245) is
   registered the same way on all four assistants; the task requires
   Node.js >= 24. If you ran `task setup:playwright-mcp` before it routed
