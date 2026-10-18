@@ -26,7 +26,7 @@ import path from "node:path";
 import type { HookDescriptor, WiredCli } from "./hook-descriptor.ts";
 import { hookCommandLine } from "./hook-command.ts";
 import type { JsonObject } from "./hook-config.ts";
-import { parseHandler, type HookCommandParse } from "./hook-recognition.ts";
+import { orDirectSibling, parseHandler, type HookCommandParse } from "./hook-recognition.ts";
 import { resolveReal } from "./paths.ts";
 import { rewriteTranscriptEvent, type TranscriptRewrite } from "./transcript-hook-rewrite.ts";
 
@@ -100,7 +100,9 @@ function collect(
   const add = (holder: unknown[], group: Record<string, unknown> | null): void => {
     for (const handler of holder) {
       if (!isRecord(handler)) continue;
-      const parse = parseHandler(handler, options.descriptor, { pathExists: exists });
+      const parse = parseHandler(handler, options.descriptor, {
+        pathExists: orDirectSibling(exists),
+      });
       if (parse !== null) refs.push({ handler, parse, holder, group });
     }
   };

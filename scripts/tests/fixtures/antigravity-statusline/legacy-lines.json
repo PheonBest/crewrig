@@ -1,0 +1,58 @@
+[
+  {
+    "command": "/srv/co/crewrig/hooks/antigravity-statusline-shim.sh",
+    "recognised": true,
+    "note": "bare script path, unquoted"
+  },
+  {
+    "command": "\"/srv/co/crewrig/hooks/antigravity-statusline-shim.sh\"",
+    "recognised": true,
+    "note": "bare script path, double-quoted"
+  },
+  {
+    "command": "'/srv/co/crewrig/hooks/antigravity-statusline-shim.sh'",
+    "recognised": true,
+    "note": "bare script path, single-quoted"
+  },
+  {
+    "command": "bash /srv/co/crewrig/hooks/antigravity-statusline-shim.sh",
+    "recognised": true,
+    "note": "bash prefix"
+  },
+  {
+    "command": "bash \"/srv/co/crewrig/hooks/antigravity-statusline-shim.sh\"",
+    "recognised": true,
+    "note": "bash prefix, quoted"
+  },
+  {
+    "command": "sh \"/srv/co/crewrig/hooks/antigravity-statusline-shim.sh\"",
+    "recognised": true,
+    "note": "sh prefix, quoted"
+  },
+  {
+    "command": "FOO=1 bash \"/srv/co/crewrig/hooks/antigravity-statusline-shim.sh\"",
+    "recognised": true,
+    "note": "env assignment prefix"
+  },
+  {
+    "command": "node \"/srv/co/crewrig/hooks/antigravity-statusline-shim.ts\"",
+    "recognised": true,
+    "note": "direct form"
+  },
+  {
+    "command": "/srv/co/crewrig/hooks/antigravity-statusline-shim.sh --verbose",
+    "recognised": false,
+    "note": "operator argument"
+  },
+  {
+    "command": "bash /opt/tools/antigravity-statusline-shim.sh",
+    "recognised": false,
+    "note": "no hooks directory"
+  },
+  {
+    "command": "bash /opt/prep.sh && bash /srv/co/crewrig/hooks/antigravity-statusline-shim.sh",
+    "recognised": false,
+    "note": "chained operator command"
+  },
+  { "command": "my-own-statusline", "recognised": false, "note": "unrelated command" }
+]

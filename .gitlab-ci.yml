@@ -3087,7 +3087,6 @@ usage-capture:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
         - "hooks/usage-capture.sh"
-        - "hooks/antigravity-statusline-shim.sh"
         - "hooks/claude-transcript-hooks.json"
         - "hooks/gemini-transcript-hooks.json"
         - "hooks/copilot-transcript-hooks.json"
@@ -3143,7 +3142,6 @@ usage-capture:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "hooks/usage-capture.sh"
-        - "hooks/antigravity-statusline-shim.sh"
         - "hooks/claude-transcript-hooks.json"
         - "hooks/gemini-transcript-hooks.json"
         - "hooks/copilot-transcript-hooks.json"

@@ -6,7 +6,7 @@
 import fs from "node:fs";
 
 import { USAGE_CAPTURE, WORKTREE_GIT_GUARD, type WiredCli } from "../hook-descriptor.ts";
-import { parseHandler } from "../hook-recognition.ts";
+import { orDirectSibling, parseHandler } from "../hook-recognition.ts";
 import { classifyHandler, foreignReason, OWN_CLASSES } from "../transcript-recognition.ts";
 
 export type Json = Record<string, unknown>;
@@ -42,7 +42,7 @@ export const isGuard: Pred = (h) => {
 export const isTranscript: Pred = (h) => OWN_CLASSES.includes(classifyHandler(h));
 export const isTranscriptAny: Pred = (h) => classifyHandler(h) !== "no";
 export const isCapture: Pred = (h) =>
-  parseHandler(h, USAGE_CAPTURE, { pathExists: isFile }) !== null;
+  parseHandler(h, USAGE_CAPTURE, { pathExists: orDirectSibling(isFile) }) !== null;
 
 /** `uc_all_handlers`: every handler as {event, selector, handler}, selector being the group minus `hooks`. */
 export function allHandlers(doc: Json, flat: boolean): Located[] {
