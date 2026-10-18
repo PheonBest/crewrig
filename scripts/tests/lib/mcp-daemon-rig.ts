@@ -1,7 +1,6 @@
-// mcp-daemon-rig.ts — shared rig of the mcp-daemon-*.test.ts suites (spec 0263,
-// port of scripts/tests/test-mcp-daemon.sh). POSIX use only: it drives the Bash
-// library `scripts/lib/common.sh` and the Bash launcher.
-// Retires with scripts/lib/common.sh (row J4).
+// mcp-daemon-rig.ts — shared rig of the mcp-daemon status suite (spec 0263, spec 0266 slice 5).
+// The Bash library and launcher it once drove are gone; the launcher is installed through the
+// TypeScript installer (`installLauncherProgram`).
 //
 // ISOLATION CONTRACT (inherited from the Bash suite): every test that touches
 // supervisor or daemon state isolates on label/unit, PORT and HOME, and refuses
@@ -16,15 +15,7 @@
 //     MEMPALACE_MCP_CHROMA_WAIT=2, MEMPALACE_CHROMA_PORT=1 (a dead port),
 //     CREWRIG_TEST_SERVICE_BIN_DIR=stubDir).
 //   rig.assertIsolated()         throws when an axis is a production value.
-//   rig.runCommon(body, extra?)  `bash -c 'source common.sh; <body>'`, returns
-//     Result {status, signal, stdout, stderr}; `extra` overrides env entries
-//     (undefined deletes one). CREWRIG_REPO_DIR is set to the repository.
-//   rig.runLauncherBounded(script, boundMs?, extra?)  runs `bash <script>`,
-//     stdout+stderr combined into `output`, killed (SIGKILL) at the bound;
-//     returns {status, signal, output, elapsedMs, timedOut}. Default 20 000 ms.
-//   rig.tokenPath()              `mcp_token_path` for the current env.
-//   rig.writeToken(text)         write the token file (parents created), 0600.
-//   rig.installLauncher()        `install_mcp_launcher`, returns the installed path.
+//   rig.installLauncher()        installs the TypeScript launcher program and record; returns the record path.
 //   startFakeMcp(port, code)     in-process node:http fake MCP server; resolves
 //     once listening: GET /healthz 200 "ok", other GET 404, POST answers `code`
 //     with `{}`. Returns {close(), port}.
@@ -32,27 +23,18 @@
 //   modeOf(file)                 permission bits, e.g. 0o600.
 //   freePort()                   a free loopback port.
 
-import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import http from "node:http";
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 
-import { cleanEnv, realTmp, REPO, type Result, which } from "./worktree-fixtures.ts";
+import { installedPaths, installLauncherProgram } from "../../lib/service/program-install.ts";
+import { cleanEnv, realTmp, REPO, which } from "./worktree-fixtures.ts";
 
 export const PROD_LABEL = "com.mempalace.mcp-server";
 export const PROD_UNIT = "mempalace-mcp-server";
 export const PROD_PORTS: readonly string[] = ["8021", "41893"];
-const BASH = which("bash") ?? "/bin/bash";
-
-export interface LauncherRun {
-  readonly status: number | null;
-  readonly signal: NodeJS.Signals | null;
-  readonly output: string;
-  readonly elapsedMs: number;
-  readonly timedOut: boolean;
-}
 
 export interface FakeMcp {
   readonly port: number;
@@ -71,14 +53,6 @@ export interface Rig {
   readonly realPort: string;
   readonly env: NodeJS.ProcessEnv;
   assertIsolated(): void;
-  runCommon(body: string, extra?: Record<string, string | undefined>): Result;
-  runLauncherBounded(
-    script: string,
-    boundMs?: number,
-    extra?: Record<string, string | undefined>,
-  ): Promise<LauncherRun>;
-  tokenPath(extra?: Record<string, string | undefined>): string;
-  writeToken(text: string): string;
   installLauncher(): string;
   cleanup(): void;
 }
@@ -141,18 +115,6 @@ export function startFakeMcp(port: number, code: number): Promise<FakeMcp> {
   });
 }
 
-function withExtra(
-  base: NodeJS.ProcessEnv,
-  extra: Record<string, string | undefined>,
-): NodeJS.ProcessEnv {
-  const env = { ...base };
-  for (const [key, value] of Object.entries(extra)) {
-    if (value === undefined) delete env[key];
-    else env[key] = value;
-  }
-  return env;
-}
-
 export async function makeRig(): Promise<Rig> {
   const realHome = process.env["HOME"] ?? "";
   const realPort = process.env["MEMPALACE_MCP_PORT"] ?? "";
@@ -182,21 +144,6 @@ export async function makeRig(): Promise<Rig> {
     MEMPALACE_PALACE_PATH: undefined,
   });
 
-  const runCommon = (body: string, extra: Record<string, string | undefined> = {}): Result => {
-    const script = [
-      "set +e",
-      `source ${JSON.stringify(path.join(REPO, "scripts", "lib", "common.sh"))}`,
-      `CREWRIG_REPO_DIR=${JSON.stringify(REPO)}`,
-      body,
-    ].join("\n");
-    const res = spawnSync(BASH, ["-c", script], {
-      encoding: "utf8",
-      cwd: home,
-      env: withExtra(env, extra),
-    });
-    return { status: res.status, signal: res.signal, stdout: res.stdout, stderr: res.stderr };
-  };
-
   const rig: Rig = {
     home,
     claudeConfigDir,
@@ -224,41 +171,19 @@ export async function makeRig(): Promise<Rig> {
           `REFUSING TO RUN: an isolation axis is a production value (label=${label} unit=${unit} port=${port} home=${home})`,
         );
     },
-    runCommon,
-    runLauncherBounded(script, boundMs = 20_000, extra = {}): Promise<LauncherRun> {
-      return new Promise((resolve) => {
-        const started = Date.now();
-        const child = spawn(BASH, [script], {
-          env: withExtra(env, extra),
-          cwd: home,
-          stdio: ["ignore", "pipe", "pipe"],
-        });
-        let output = "";
-        let timedOut = false;
-        child.stdout.on("data", (chunk: Buffer) => (output += chunk.toString()));
-        child.stderr.on("data", (chunk: Buffer) => (output += chunk.toString()));
-        const timer = setTimeout(() => {
-          timedOut = true;
-          child.kill("SIGKILL");
-        }, boundMs);
-        child.on("close", (status, signal) => {
-          clearTimeout(timer);
-          resolve({ status, signal, output, elapsedMs: Date.now() - started, timedOut });
-        });
-      });
-    },
-    tokenPath(extra = {}): string {
-      return runCommon("mcp_token_path", extra).stdout.trim();
-    },
-    writeToken(text: string): string {
-      const file = rig.tokenPath();
-      fs.mkdirSync(path.dirname(file), { recursive: true });
-      fs.writeFileSync(file, text, { mode: 0o600 });
-      return file;
-    },
     installLauncher(): string {
-      const res = runCommon("install_mcp_launcher >/dev/null 2>&1; mcp_launcher_installed_path");
-      return res.stdout.trim();
+      const paths = installedPaths(home, env);
+      installLauncherProgram({
+        paths,
+        repoDir: REPO,
+        host: "127.0.0.1",
+        port: String(port),
+        chromaHost: "127.0.0.1",
+        chromaPort: "1",
+        python,
+        palacePath: "",
+      });
+      return paths.record;
     },
     cleanup(): void {
       fs.rmSync(home, { recursive: true, force: true });
