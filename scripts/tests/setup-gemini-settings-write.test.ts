@@ -1,6 +1,6 @@
 // Tests of `geminiSettingsWrite` and `explainGeminiRc` (spec 0256 requirements 27 and 31): the file
 // side of the Gemini settings merge, over temporary homes, and one differential leg against the real
-// `gemini_settings_write` of scripts/lib/gemini-settings.sh (needs bash and jq).
+// `gemini_settings_write` of retired scripts/lib/gemini-settings.sh (needs bash and jq).
 
 import assert from "node:assert/strict";
 import fs from "node:fs";

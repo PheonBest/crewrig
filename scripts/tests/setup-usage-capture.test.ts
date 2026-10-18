@@ -1,6 +1,6 @@
 // setup-usage-capture.test.ts — the fragment, disclosure, writers and apply of
 // scripts/lib/setup/usage-capture.ts (spec 0256 requirement 30, plan v2 step B3a.2b). The shell-versus-twin
-// differential legs went with scripts/lib/usage-capture-optin.sh (spec 0266); each case now runs the TypeScript
+// differential legs went with retired scripts/lib/usage-capture-optin.sh (spec 0266); each case now runs the TypeScript
 // leg and asserts its outcome.
 
 import assert from "node:assert/strict";

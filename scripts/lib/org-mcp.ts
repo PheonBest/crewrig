@@ -1,8 +1,8 @@
 // org-mcp.ts — the neutral MCP server translator (spec 0254 R3).
 //
-// Twins `org_mcp_to_native` (scripts/lib/common.sh:263) and `MCP_RESERVED_NAMES`
-// (scripts/lib/common.sh:85), the two pieces of common.sh that the extension builders
-// need and that the setup scripts (rows F1 and F2) and scripts/lib/gemini-settings.sh
+// Twins `org_mcp_to_native` (retired scripts/lib/common.sh:263) and `MCP_RESERVED_NAMES`
+// (retired scripts/lib/common.sh:85), the two pieces of common.sh that the extension builders
+// need and that the setup scripts (rows F1 and F2) and retired scripts/lib/gemini-settings.sh
 // import later. Pure functions: no input, no output, no environment.
 //
 // Maps the neutral `mcpServers` object (a transport of `stdio`, `http` or `sse`, absent

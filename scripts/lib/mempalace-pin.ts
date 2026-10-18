@@ -7,7 +7,7 @@
 //     {"min": "<version>", "maxExclusive": "<version>"}
 //
 // of scripts/lib/mempalace-pin.json, the single declaration (spec 0266 moved it
-// out of scripts/lib/common.sh). This module SHALL NOT declare either value a
+// out of retired scripts/lib/common.sh). This module SHALL NOT declare either value a
 // second time: it reads them, by the same rules as `read_pin` - both bounds must
 // be non-empty strings of one JSON object; anything else is a refusal, never a
 // guess. No shell is spawned to obtain the values.

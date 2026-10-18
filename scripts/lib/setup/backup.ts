@@ -1,4 +1,4 @@
-// backup.ts — `backup_file` of scripts/lib/common.sh (spec 0256 requirements 22 and 31): the file
+// backup.ts — `backup_file` of retired scripts/lib/common.sh (spec 0256 requirements 22 and 31): the file
 // is copied to `<file>.bak.<YYYYMMDD-HHMMSS>` (`.NN` after a same-second collision), owner-only
 // (0600), after every earlier `<file>.bak.*` regular file the user owns was narrowed to 0600 too.
 // Its own implementation rather than hook-config.ts's `backupFile`, whose messages differ from

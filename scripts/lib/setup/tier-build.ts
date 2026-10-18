@@ -1,4 +1,4 @@
-// tier-build.ts — `ensure_tier_built` of scripts/lib/common.sh (spec 0256 requirement 24, plan v2
+// tier-build.ts — `ensure_tier_built` of retired scripts/lib/common.sh (spec 0256 requirement 24, plan v2
 // step B2b.5): build a tier's staging tree on the fly when it is absent. Twin of that function:
 // the shell ran `bash scripts/build-components.sh --target <cli>`; here the build is the in-process
 // `main` of scripts/lib/build-components/main.ts, never a shell (parent requirement 23). The

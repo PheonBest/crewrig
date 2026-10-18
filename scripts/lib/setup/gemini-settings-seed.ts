@@ -1,6 +1,6 @@
 // gemini-settings-seed.ts — the template side of the Gemini settings merge (spec 0256 requirements
 // 27 and 31): the seed document, the reserved MCP entries of one run (`gemini_framework_mcp` of
-// scripts/lib/gemini-settings.sh) and the few object helpers `gemini-settings-merge.ts` shares.
+// retired scripts/lib/gemini-settings.sh) and the few object helpers `gemini-settings-merge.ts` shares.
 // Pure functions: no input, no output, no environment.
 
 import type { JsonValue } from "../extension/types.ts";

@@ -1,5 +1,5 @@
 // validate-hooks.ts — the generic `hooks` section validator (spec 0254 R9).
-// Twin of `ext_hooks_validate` (scripts/lib/extension-hooks.sh:133-187).
+// Twin of `ext_hooks_validate` (retired scripts/lib/extension-hooks.sh:133-187).
 // Pure: returns the VALIDATION-ERROR lines the shell prints to stderr.
 
 import {

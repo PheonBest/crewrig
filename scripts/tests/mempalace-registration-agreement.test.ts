@@ -2,7 +2,7 @@
 // delta-01, R16 (issue #1410; plan v4 step 8; seat findings v4-F5, v4-F6).
 //
 // Two readers classify a CLI's `mempalace` registration:
-//   - the shell `mcp_assistant_arrangement` (scripts/lib/common.sh), which
+//   - the shell `mcp_assistant_arrangement` (retired scripts/lib/common.sh), which
 //     `task mempalace:status` runs under the operator's `jq`;
 //   - the check's `parseStrict` + `classifyStrict`
 //     (scripts/lib/mempalace-registration.ts), which never runs `jq`.

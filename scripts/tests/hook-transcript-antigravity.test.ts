@@ -4,7 +4,7 @@
 // seat finding v1-F2).
 //
 // Enable path, through both routes the setup can take: the whole
-// `deploy_antigravity_transcript_hooks` (scripts/lib/common.sh) and its
+// `deploy_antigravity_transcript_hooks` (retired scripts/lib/common.sh) and its
 // `hook-wiring.ts transcript antigravity-merge` step alone. Per event: an event
 // holding a foreign-prefix command keeps it and every other element, loses the
 // own transcript commands and gets nothing added; every other event takes the

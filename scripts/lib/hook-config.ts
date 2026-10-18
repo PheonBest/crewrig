@@ -1,7 +1,7 @@
 // hook-config.ts — JSON configuration I/O for the hook wiring (spec 0243 R23).
 //
 // The TypeScript counterpart of `backup_file` and `write_json_config_secure`
-// in scripts/lib/common.sh. A configuration file can hold the MemPalace bearer
+// in retired scripts/lib/common.sh. A configuration file can hold the MemPalace bearer
 // token, so:
 //   - a non-object file is refused, never rewritten;
 //   - the backup is owner-only whatever the target's mode, every earlier

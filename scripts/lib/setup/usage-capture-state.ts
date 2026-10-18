@@ -1,6 +1,6 @@
 // usage-capture-state.ts — the pure readers of the usage-capture opt-in (spec 0256 requirement 30,
 // plan v2 step B3a.2a): the TypeScript twin of `usage_capture_footprint`, `usage_capture_paths` and
-// `usage_capture_state` of scripts/lib/usage-capture-optin.sh, and of its `_uc_shape`,
+// `usage_capture_state` of retired scripts/lib/usage-capture-optin.sh, and of its `_uc_shape`,
 // `_uc_unsafe_path`, `_uc_unresolvable_path` and `_uc_legacy_ok` internals. Recognition is the
 // existing hook-recognition.ts (USAGE_CAPTURE descriptor, which carries no guarded prefix, so it
 // accepts exactly what `uc_sig_re` and `uc_legacy_re` accept); both twins run over

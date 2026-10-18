@@ -9,7 +9,7 @@
 // not used — its bound and failure classes differ. No process is spawned, so
 // neither the token nor the content is ever on an argument list.
 //
-// Outcome, with the shell's status codes (hooks/mempalace-transcript.sh:242-359):
+// Outcome, with the shell's status codes (retired hooks/mempalace-transcript.sh:242-359):
 //   ok   a 2xx answer whose body is JSON, with no `error.message` and no
 //        `result.isError` equal to `true`;
 //   3    `ADD_FAILED: <message>` — a JSON-RPC error, or `result.isError`;

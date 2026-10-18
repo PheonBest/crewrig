@@ -1,4 +1,4 @@
-// ensure-http.ts — `ensure_mempalace_http` of scripts/lib/common.sh (spec 0256 requirement 26 and
+// ensure-http.ts — `ensure_mempalace_http` of retired scripts/lib/common.sh (spec 0256 requirement 26 and
 // deviation (o) of delta-01): make the shared MemPalace MCP HTTP daemon the outcome of a setup run
 // and return the status the four setups route on.
 //

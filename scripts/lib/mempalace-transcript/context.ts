@@ -1,5 +1,5 @@
 // context.ts — session, project and room of a transcript record (spec 0247
-// R9), exactly as hooks/mempalace-transcript.sh:94-126 derived them.
+// R9), exactly as retired hooks/mempalace-transcript.sh:94-126 derived them.
 //
 // The Git top level is asked of Git itself (issue #92), and only when neither
 // the environment nor the payload names a project directory — the one process

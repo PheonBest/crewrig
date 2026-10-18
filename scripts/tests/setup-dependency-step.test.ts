@@ -1,6 +1,6 @@
 // setup-dependency-step.test.ts — the wiring of the production-dependency step in the four setup
 // declarations (spec 0240 R4-R6, delta-01 R5; plan v3 Step 10). The shell helper
-// `install_production_dependencies` went with scripts/lib/common.sh (spec 0266); its TypeScript twin
+// `install_production_dependencies` went with retired scripts/lib/common.sh (spec 0266); its TypeScript twin
 // is tested by setup-deps.test.ts.
 
 import assert from "node:assert/strict";

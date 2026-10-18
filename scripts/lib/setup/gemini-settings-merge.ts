@@ -1,6 +1,6 @@
 // gemini-settings-merge.ts — the in-place merge of ~/.gemini/settings.json (spec 0256 requirements
-// 27 and 31; twins scripts/lib/gemini-settings.sh, spec 0214, and the spec 0089 / 0091 folds of
-// scripts/lib/common.sh that `gemini_settings_write` runs after it).
+// 27 and 31; twins retired scripts/lib/gemini-settings.sh, spec 0214, and the spec 0089 / 0091 folds of
+// retired scripts/lib/common.sh that `gemini_settings_write` runs after it).
 //
 // `mergeGeminiSettings` is pure: the text of the existing file (or `undefined` when absent), the
 // template, and what the run knows go in; the merged text and the warning lines the shell prints

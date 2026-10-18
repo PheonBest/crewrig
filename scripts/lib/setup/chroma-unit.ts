@@ -1,5 +1,5 @@
 // chroma-unit.ts — the unit materialisation of `install_chroma_daemon` (`_materialise_chroma_unit`,
-// `install_tls_exec_wrapper` of scripts/lib/common.sh; spec 0256 requirement 25, delta-01 deviation
+// `install_tls_exec_wrapper` of retired scripts/lib/common.sh; spec 0256 requirement 25, delta-01 deviation
 // (q)). It renders the shipped launchd plist or systemd unit with the interpreter, the chroma binary
 // and the palace path, refuses a rendering that keeps a `__X__` placeholder, and copies the `.sh`
 // trust wrapper to `~/.crewrig/tls-exec.sh`. Messages are the shell's, byte for byte.

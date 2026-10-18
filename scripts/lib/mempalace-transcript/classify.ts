@@ -1,6 +1,6 @@
 // classify.ts — the entry a hook event becomes (spec 0247 R10), with the
 // entry types, content templates and precedence of
-// hooks/mempalace-transcript.sh:161-240, its two unguarded overrides
+// retired hooks/mempalace-transcript.sh:161-240, its two unguarded overrides
 // included:
 //   - a non-empty `prompt` replaces an Antigravity entry (`:180-190`);
 //   - a `SessionStart` or `SessionEnd` event replaces any entry (`:215-220`).
@@ -42,7 +42,7 @@ const HARNESS_LITERALS = [
 const HARNESS_LINE =
   /^[ \t\n\v\f\r]*<([a-zA-Z0-9_-]+-(notification|reminder|message|status)|system-[a-zA-Z0-9_-]+|task-[a-zA-Z0-9_-]+|harness-[a-zA-Z0-9_-]+|SYSTEM_MESSAGE|system-reminder|task-notification)[^>]*>/;
 
-/** `_is_harness_injection` of hooks/mempalace-transcript.sh:148-159. */
+/** `_is_harness_injection` of retired hooks/mempalace-transcript.sh:148-159. */
 export function isHarnessInjection(text: string): boolean {
   if (HARNESS_LITERALS.some((literal) => text.includes(literal))) return true;
   return text.split("\n").some((line) => HARNESS_LINE.test(line));

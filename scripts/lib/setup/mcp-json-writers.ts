@@ -2,7 +2,7 @@
 // 0256 requirement 27, delta-01): `~/.copilot/mcp-config.json` and `~/.gemini/config/mcp_config.json`.
 // Both setups overwrite the file from the framework's own content, so the operator's servers are
 // captured BEFORE the overwrite (`backupAndCapture`) and folded back afterwards, as
-// `merge_preexisting_mcp_servers` of scripts/lib/common.sh does (spec 0089): every non-reserved
+// `merge_preexisting_mcp_servers` of retired scripts/lib/common.sh does (spec 0089): every non-reserved
 // pre-existing server wins, verbatim, over a same-named framework entry; a reserved name
 // (`mempalace`, `sequentialthinking`) keeps the framework's entry, with a warning that names the
 // backup. The organisation MCP fold and the MemPalace HTTP registration stay with the caller; the

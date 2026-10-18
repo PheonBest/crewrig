@@ -1,5 +1,5 @@
 // antigravity-migrate.ts — TypeScript twin of `migrate_antigravity_superseded_components`
-// and its readers in scripts/lib/common.sh (spec 0255, 0215 F2).
+// and its readers in retired scripts/lib/common.sh (spec 0255, 0215 F2).
 //
 // Removes framework-installed components left at the superseded Antigravity
 // placement. The predicate is a CONJUNCTION: a served name AND leading-frontmatter

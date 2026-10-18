@@ -329,7 +329,7 @@ and ends with *No assistant has been changed*. Fix that CLI, then run
 `switch-http` again.
 
 The refusals live in `switch_assistants_to_http`, in
-`scripts/lib/common.sh`:
+the retired `scripts/lib/common.sh`:
 
 | Refusal | Lines | Repair |
 |---|---|---|
@@ -369,7 +369,7 @@ new credential.
 ![Four ordered steps to replace the shared MCP daemon's bearer token: delete the old token file, run switch-mempalace-http.ts to mint a new token and replace the daemon process, delete each CLI's stale backup config that still holds the old token, then restart every running session.](../assets/mempalace-mcp/rotate-token.png)
 
 1. **Delete the current token file.** Its path is derived from the palace
-   path the same way the daemon derives it (`scripts/lib/common.sh`,
+   path the same way the daemon derives it (the retired `scripts/lib/common.sh`,
    `mcp_token_path`); from the repository root:
 
    ```sh

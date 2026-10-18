@@ -10,7 +10,7 @@
 // stops the capture, so no unlisted difference reaches the golden file.
 //
 // Regenerate (needs bash, jq, curl, git; a UTF-8 locale for `${v:0:n}`):
-//   git show a7468111:hooks/mempalace-transcript.sh > /tmp/mempalace-transcript.sh
+//   git show a7468111:retired hooks/mempalace-transcript.sh > /tmp/mempalace-transcript.sh
 //   node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON \
 //     scripts/tests/lib/transcript-golden-capture.ts /tmp/mempalace-transcript.sh
 //

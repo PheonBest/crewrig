@@ -3,7 +3,7 @@
 // The legacy verb pairs stay on purpose: `systemctl --user enable --now` /
 // `disable --now`. The messages are the shell's (scripts/stop-mcp-server.sh and
 // `install_daemon_supervisor` / `uninstall_daemon_supervisor` of
-// scripts/lib/common.sh). Every spawn goes through exec.ts `runManager`.
+// retired scripts/lib/common.sh). Every spawn goes through exec.ts `runManager`.
 
 import { existsSync, rmSync } from "node:fs";
 import { homedir } from "node:os";

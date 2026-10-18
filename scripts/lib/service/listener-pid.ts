@@ -1,5 +1,5 @@
 // listener-pid.ts — the PID of the listener on the daemon port (spec 0252
-// requirement 16; PLAN v3 D8). Port of `mcp_listener_pid` (scripts/lib/common.sh).
+// requirement 16; PLAN v3 D8). Port of `mcp_listener_pid` (retired scripts/lib/common.sh).
 //
 // Linux reads /proc/net/tcp{,6} (state 0A) and the socket inodes under
 // /proc/<pid>/fd; macOS and Windows parse the text os-inspect.ts returns. This

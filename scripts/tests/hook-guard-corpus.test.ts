@@ -5,7 +5,7 @@
 // the TypeScript recognition (scripts/lib/hook-recognition.ts with the guard's
 // descriptor) and through the Bash predicate that classifies framework-owned
 // session-recording handlers (`sr_is_guard` and `sr_is_transcript` in
-// scripts/lib/usage-capture-optin.sh). They accept and reject the same
+// retired scripts/lib/usage-capture-optin.sh). They accept and reject the same
 // commands. The one exception is stated in the corpus: the Antigravity CLI
 // guarded form is recognised by the TypeScript descriptor only (its flag
 // `guardedPrefix`); no Bash path ever sees it. v1-F5: `bash

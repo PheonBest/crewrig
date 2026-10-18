@@ -1,5 +1,5 @@
 // deps-step.ts — the production-dependency step of every setup (spec 0256 requirement 20, plan v2
-// step B1.9): the TypeScript twin of `install_production_dependencies` in scripts/lib/common.sh.
+// step B1.9): the TypeScript twin of `install_production_dependencies` in retired scripts/lib/common.sh.
 // `npm ci --omit=dev --workspaces=false` runs at the repository root, gated on the SHA-256 of
 // `package-lock.json` recorded in `.crewrig-state/production-deps.sha256` after the last successful
 // run. Layer 1: it runs before any dependency is installed, so it imports the standard library

@@ -10,7 +10,7 @@
 //
 // The check never spawns `jq` (delta R4). It classifies a configuration file
 // only when the file is *strict*; on a strict file it reproduces the reader of
-// `task mempalace:status` (`mcp_assistant_arrangement`, scripts/lib/common.sh)
+// `task mempalace:status` (`mcp_assistant_arrangement`, retired scripts/lib/common.sh)
 // exactly, which the agreement test proves over strict fixtures.
 
 // The Antigravity constant is defined beside the throttle, which needs its

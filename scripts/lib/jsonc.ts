@@ -30,7 +30,7 @@ function stringEnds(text: string): Int32Array {
 }
 
 /**
- * Remove comments the way `gs_strip_jsonc` (scripts/lib/gemini-settings.sh)
+ * Remove comments the way `gs_strip_jsonc` (retired scripts/lib/gemini-settings.sh)
  * and strip-json-comments do:
  *   - a string literal is kept whole, so `//`, `/*` and an escaped quote
  *     inside it are never read as a comment; a string never closed runs to

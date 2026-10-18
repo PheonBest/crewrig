@@ -1,5 +1,5 @@
 // hooks-emit.ts — the four native hook-file envelopes (spec 0254 R10).
-// Twin of `ext_hooks_render` (scripts/lib/extension-hooks.sh:314-375). Pure: it returns the
+// Twin of `ext_hooks_render` (retired scripts/lib/extension-hooks.sh:314-375). Pure: it returns the
 // value and the file name; the caller serialises with `writeJsonText` and writes `<out>/<file>`.
 
 import { GUARDED_PREFIX } from "../hook-command.ts";

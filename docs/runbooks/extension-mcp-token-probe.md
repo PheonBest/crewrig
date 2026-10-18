@@ -125,7 +125,7 @@ resolves; Option B (spec 0180 PLAN v5 step 8) is REFUTED by direct evidence.**
 Consequence recorded elsewhere: because Antigravity's MCP `cwd` behaviour
 (launch-directory-relative) DIFFERS from its hooks `cwd` behaviour (working
 directory is the plugin root when a hook fires — see
-`scripts/lib/extension-hooks.sh`'s antigravity token-stripping comment), the
+the retired `scripts/lib/extension-hooks.sh`'s antigravity token-stripping comment), the
 `rootToken: null` row in `scripts/lib/extension-targets.json` cannot mean the
 same thing for both subjects. For hooks it means "strip the token, the
 resulting relative command works." For MCP it must mean "no render-time

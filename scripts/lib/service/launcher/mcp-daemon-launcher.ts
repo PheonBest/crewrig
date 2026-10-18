@@ -1,6 +1,6 @@
 // mcp-daemon-launcher.ts — the installed entry of the shared MemPalace MCP
 // HTTP daemon (spec 0252 requirement 11; spec 0113, ADR 0016). The TypeScript
-// twin of scripts/lib/mcp-daemon-launcher.sh, which stays beside it.
+// twin of retired scripts/lib/mcp-daemon-launcher.sh, which stays beside it.
 //
 // THIS FILE IS A TEMPLATE. The supervisor never runs this copy: the installer
 // writes it to ~/.crewrig/mcp-daemon-launcher.ts with the constants below

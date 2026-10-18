@@ -1,5 +1,5 @@
 // stop-summary.ts — the summary of a `Stop` entry (spec 0247 R11), as
-// hooks/mempalace-transcript.sh:205-207 built it:
+// retired hooks/mempalace-transcript.sh:205-207 built it:
 //
 //   tail -n 20 "$TRANSCRIPT_PATH" | jq -r 'select(.type=="PLANNER_RESPONSE"
 //     or .type=="ASSISTANT_RESPONSE" or .type=="RESPONSE")

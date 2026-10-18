@@ -27,7 +27,7 @@
 //                `settings.json` reads `homes.settings`, `mcp-config.json` / `mcp_config.json` read
 //                `homes.mcpConfig`: the `.mcpServers` keys, one `  - <key>` line each.
 //   note         the FULL first line of the MemPalace-missing note, `Note: ` included (absent: Copilot);
-//                the two pin lines are added here from the pin of scripts/lib/common.sh.
+//                the two pin lines are added here from the pin of retired scripts/lib/common.sh.
 //   extraLines   lines printed verbatim after the MCP list and its blank (Copilot only; `""` is a blank).
 //   restartLine  the closing line (absent: Copilot).
 // `descriptor.storeGuidance` prints `print_store_access_guidance <cli>`; the Antigravity

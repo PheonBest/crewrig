@@ -1,6 +1,6 @@
 // mempalace-install-offer.ts — offer to install MemPalace through pipx (spec 0256 requirement 25 and
 // deviation (q) of delta-01). The TypeScript twin of `offer_mempalace_install` in
-// scripts/lib/common.sh: the same lines, the same question, the same `pipx install` argument. The
+// retired scripts/lib/common.sh: the same lines, the same question, the same `pipx install` argument. The
 // supported range comes from `readMempalacePin` (the shell variables of common.sh, read, never
 // declared a second time). The call sites ignore the result (`offer_mempalace_install || true`) and
 // detect again afterwards; the boolean is returned for the tests and for the flow's own logging.

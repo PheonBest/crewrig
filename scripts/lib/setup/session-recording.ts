@@ -1,6 +1,6 @@
 // session-recording.ts — the session-recording opt-in of the three hook-file setups (spec 0256
 // requirements 30 and 31; plan v2 step B3a.4): `render_session_recording_manifest` and
-// `merge_session_recording_hooks` of scripts/lib/usage-capture-optin.sh, with the jq definitions
+// `merge_session_recording_hooks` of retired scripts/lib/usage-capture-optin.sh, with the jq definitions
 // (`sr_merge`, `sr_report`, `uc_strip_by`, `uc_add`, `uc_reinject`) as pure functions over JSON.
 // The render yields the manifest as a value plus `transcriptWired` (the shell's
 // SR_TRANSCRIPT_WIRED); the merge returns `allHooksDisabled` (SR_ALL_HOOKS_DISABLED). A registered

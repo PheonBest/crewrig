@@ -3,10 +3,10 @@
 // primitives, and the only module mirror.js imports for daemon access.
 //
 // `endpoint()` and `tokenPath()` (and its no-mkdir twin `tokenPathNoCreate()`,
-// which hooks/mempalace-transcript.ts reads, spec 0247 R13-R14) port scripts/lib/common.sh's own
+// which hooks/mempalace-transcript.ts reads, spec 0247 R13-R14) port retired scripts/lib/common.sh's own
 // MCP_DAEMON_HOST_DEFAULT/MCP_DAEMON_PORT_DEFAULT (l. 757, l. 763) and
 // mcp_token_path() (l. 1695-1711) — verified byte-identical against
-// `bash -c '. scripts/lib/common.sh; mcp_token_path'` under a fixed HOME
+// `bash -c '. retired scripts/lib/common.sh; mcp_token_path'` under a fixed HOME
 // (see scripts/tests/usage-mirror-*.test.ts, step 10 entry criteria).
 // The mkdir under tokenPath()'s "does not yet exist" branch is the one
 // intentional departure common.sh's own function also makes: a side effect

@@ -1,6 +1,6 @@
 // setup-ensure-http-probes.test.ts — the probe sequence and the wait budget of ensureMempalaceHttp
 // (scripts/lib/setup/ensure-http.ts) against a daemon that NEVER becomes healthy: the shell oracle
-// (`ensure_mempalace_http`, scripts/lib/common.sh:1947) probes `/mcp` once with the real bearer,
+// (`ensure_mempalace_http`, retired scripts/lib/common.sh:1947) probes `/mcp` once with the real bearer,
 // installs the supervisor, polls `/healthz` for ONE 15 s budget (`install_daemon_supervisor`,
 // common.sh:914, step 0.3 s), then returns 1 without a second `/mcp` probe. The flow runs on fakes
 // and a fake clock, with the production readiness loop (`installDaemon` of

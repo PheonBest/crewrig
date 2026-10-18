@@ -1,6 +1,6 @@
 // org-mcp-fold.ts — the organisation MCP declaration of a setup (spec 0256 requirement 28): the
 // shell's `read_org_mcp_manifest`, `org_mcp_to_native` + `apply_org_mcp_servers` and
-// `org_mcp_to_claude_argv` of scripts/lib/common.sh. The translation itself is `orgMcpToNative` of
+// `org_mcp_to_claude_argv` of retired scripts/lib/common.sh. The translation itself is `orgMcpToNative` of
 // scripts/lib/org-mcp.ts; this module reads the manifest, folds the translation over a CLI's
 // `mcpServers` with the precedence framework-reserved > org > operator pre-existing, and names the
 // `claude mcp add` argv of each server. Messages are the shell's, on standard output.

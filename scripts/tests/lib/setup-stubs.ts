@@ -6,7 +6,7 @@
 // PROBE DECISION (single owner, decided once, nothing later re-decides it):
 // the daemon probe is driven by a PATH stub `curl`, NOT by the
 // `with-stub-daemon.ts` stand-in. Evidence:
-//  - `_mcp_daemon_probe_accepts` (scripts/lib/common.sh:1346-1396) decides on
+//  - `_mcp_daemon_probe_accepts` (retired scripts/lib/common.sh:1346-1396) decides on
 //    `curl -K - -s -o /dev/null -w '%{http_code}'`: the bearer arrives on
 //    STDIN as a curl config (`header = "Authorization: Bearer <token>"`), and
 //    only a 2xx code counts. A stub reads that config and answers 200 or 000.

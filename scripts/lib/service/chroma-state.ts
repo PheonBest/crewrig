@@ -1,6 +1,6 @@
 // chroma-state.ts — the PID-file state machine of the shared ChromaDB HTTP
 // daemon and the `status` and `stop` operations built on it (spec 0252
-// requirements 13, 14 and 27; plan v3 D7). It ports scripts/status-chroma-server.sh
+// requirements 13, 14 and 27; plan v3 D7). It ports retired scripts/status-chroma-server.sh
 // and scripts/stop-chroma-server.sh with every message and exit status kept.
 //
 // States: no PID file (the daemon is then supervisor-managed when the heartbeat

@@ -1,6 +1,6 @@
 // mempalace-detect.ts — find the MemPalace interpreter and read its installed version (spec 0256
 // requirement 25, as replaced by delta-01). TypeScript twins of `detect_mempalace_python` and
-// `mempalace_installed_version` in scripts/lib/common.sh. The candidate walk is the existing
+// `mempalace_installed_version` in retired scripts/lib/common.sh. The candidate walk is the existing
 // detector of scripts/lib/mempalace-python.ts (the pipx venv, the console script's interpreter,
 // `python3`, or the Windows `python` and `py -3` launchers); this module only puts it behind the
 // setup's context and its `Spawner` seam.

@@ -1,6 +1,6 @@
 // usage-capture.ts — the usage-capture opt-in of Claude Code, Gemini CLI and Copilot CLI (spec 0256
 // requirement 30, plan v2 step B3a.2b): `usage_capture_disclose`, `usage_capture_rewrite` and
-// `usage_capture_apply` of scripts/lib/usage-capture-optin.sh, and the re-export of the fragment
+// `usage_capture_apply` of retired scripts/lib/usage-capture-optin.sh, and the re-export of the fragment
 // (usage-capture-fragment.ts) and the writers (usage-capture-write.ts). `keep` (usage-capture-keep.ts) is injected into the apply.
 // Messages are the shell's, byte for byte; every status is the shell's (0 done, 1 refused or failed).
 // Layer 2: node built-ins and repository modules.

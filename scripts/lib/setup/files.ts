@@ -1,5 +1,5 @@
 // files.ts — place one file or one directory the way the shell's `install_file` / `install_dir`
-// do (scripts/lib/common.sh; spec 0256 requirements 22 and 38, deviation 44(i)).
+// do (retired scripts/lib/common.sh; spec 0256 requirements 22 and 38, deviation 44(i)).
 //
 // Copy mode copies the bytes (a source file is LF already, nothing is rewritten) through the
 // staged swap of `placeCopy`; link mode (`ctx.link`) places an absolute link through `linkOrCopy`.

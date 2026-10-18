@@ -2,7 +2,7 @@
 // the twelve documented task entry points, plus install-workspace reached directly.
 // DEVIATION from the Bash case: the entries are `cmds:` lists driving the TypeScript entries
 // (the Bash form expected a single `cmd:` running the shell shim and was red at the base commit).
-// Retires with scripts/lib/common.sh (row J4): POSIX-only.
+// Retires with retired scripts/lib/common.sh (row J4): POSIX-only.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";

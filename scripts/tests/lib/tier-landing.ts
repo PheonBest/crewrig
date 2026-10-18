@@ -1,5 +1,5 @@
 // Helpers for the tier-resolution landing, declaration and Taskfile suites (spec 0119, ported by
-// spec 0263). Retires with scripts/lib/common.sh (row J4) only for the shell shims it drives.
+// spec 0263). Retires with retired scripts/lib/common.sh (row J4) only for the shell shims it drives.
 
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";

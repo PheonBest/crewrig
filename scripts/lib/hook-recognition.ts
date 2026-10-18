@@ -2,7 +2,7 @@
 // (spec 0243 R20).
 //
 // The TypeScript twin of `uc_sig_re`/`uc_legacy_re` in
-// scripts/lib/usage-capture-optin.sh. The two SHALL accept and reject the same
+// retired scripts/lib/usage-capture-optin.sh. The two SHALL accept and reject the same
 // commands: both are run over scripts/tests/fixtures/usage-capture/
 // recognition-corpus.json, and neither may change without that corpus changing.
 //

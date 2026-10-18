@@ -2,7 +2,7 @@
 // daemon (spec 0252 requirement 5; plan v2 D1). Never read from a file a
 // same-uid process could write (spec 0158 R2): `launchctl print` and
 // `systemctl --user show` outputs are parsed in process, as the shell's
-// `mcp_supervisor_pid` (scripts/lib/common.sh) does.
+// `mcp_supervisor_pid` (retired scripts/lib/common.sh) does.
 //
 // The seam MEMPALACE_MCP_EXPECTED_PID fixes the answer for a hermetic suite;
 // set but empty it forces "undeterminable". On Windows the answer is the

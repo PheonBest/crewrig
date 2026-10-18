@@ -17,7 +17,7 @@ CLI session connects to it via `chromadb.HttpClient` through
   itself resolves it: `$PIPX_HOME` when set, else `~/.local/pipx` when that
   directory exists, else `~/Library/Application Support/pipx` on macOS and
   `${XDG_DATA_HOME:-~/.local/share}/pipx` elsewhere (`mempalace_pipx_home` in
-  `scripts/lib/common.sh`; `pipx environment --value PIPX_HOME` prints it).
+  the retired `scripts/lib/common.sh`; `pipx environment --value PIPX_HOME` prints it).
 - **`chroma` binary** available on `PATH`. The MemPalace pipx venv exposes
   it at `<pipx-home>/venvs/mempalace/bin/chroma`; symlink it into a
   directory on `PATH` if needed.

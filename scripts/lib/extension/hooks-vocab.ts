@@ -1,5 +1,5 @@
 // hooks-vocab.ts — the closed neutral hook vocabulary and its per-target mapping (spec 0254 R10).
-// Twin of scripts/lib/extension-hooks.sh:50-125 (`EXT_HOOKS_KNOWN_EVENTS`, the matcher classes,
+// Twin of retired scripts/lib/extension-hooks.sh:50-125 (`EXT_HOOKS_KNOWN_EVENTS`, the matcher classes,
 // `_ext_hooks_target_event`, `_ext_hooks_matcher_accepting`, `_ext_hooks_matcher_tool`) plus the
 // per-entry field readers the shell repeats at :140-150, :197-203 and :277-283.
 

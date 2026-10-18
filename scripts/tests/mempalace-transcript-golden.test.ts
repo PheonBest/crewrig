@@ -4,7 +4,7 @@
 //
 // scripts/tests/fixtures/mempalace-transcript/golden/matrix.json holds, for
 // each row of scripts/tests/lib/transcript-golden-rows.ts, what the SHELL hook
-// did (`git show a7468111:hooks/mempalace-transcript.sh`, run with bash, jq and
+// did (`git show a7468111:retired hooks/mempalace-transcript.sh`, run with bash, jq and
 // curl on macOS under en_US.UTF-8): its exit status, both standard streams and
 // every request the stub daemon received, with home, temp paths, port, date
 // and palace key replaced by placeholders. Replaying a row against

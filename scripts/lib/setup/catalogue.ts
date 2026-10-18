@@ -1,5 +1,5 @@
 // catalogue.ts — the team / expertise / level picker of the setup graph (spec 0256 requirements 11
-// and 17), the replacement of `pick_catalogue_entry` in scripts/lib/common.sh and of its
+// and 17), the replacement of `pick_catalogue_entry` in retired scripts/lib/common.sh and of its
 // `fzf --preview "head -20 <dir>/{}.md"`.
 //
 // The entries are the `*.md` files of the catalogue directory (dot files excluded, as the shell

@@ -2,7 +2,7 @@
 // requirement 5; plan v2 D1): the launchd label, the systemd unit and the
 // Windows task leaf, plus the daemon's host and port.
 //
-// The defaults repeat the constants of scripts/lib/common.sh
+// The defaults repeat the constants of retired scripts/lib/common.sh
 // (MCP_DAEMON_LABEL_DEFAULT, MCP_DAEMON_UNIT_DEFAULT); the conformance test of
 // plan step 14 asserts they stay equal. The overrides MEMPALACE_MCP_LABEL and
 // MEMPALACE_MCP_UNIT keep applying to the MCP daemon only, as in the shell

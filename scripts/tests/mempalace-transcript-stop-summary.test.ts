@@ -1,5 +1,5 @@
 // mempalace-transcript-stop-summary.test.ts — the summary of a `Stop` entry
-// (spec 0247 R11), built as hooks/mempalace-transcript.sh:205-207 (a7468111)
+// (spec 0247 R11), built as retired hooks/mempalace-transcript.sh:205-207 (a7468111)
 // built it:
 //
 //   tail -n 20 | jq -r 'select(.type==…RESPONSE) | .content // (.tool_calls[].name // empty)'

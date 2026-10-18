@@ -7,7 +7,7 @@
 // One corpus, fixtures/mempalace-transcript/recognition-corpus.json, is run
 // through the TypeScript recogniser (scripts/lib/transcript-recognition.ts),
 // through `hook-wiring.ts transcript classify`, and through the Bash twin
-// `sr_transcript_class` of scripts/lib/usage-capture-optin.sh. `sr_is_own` is
+// `sr_transcript_class` of retired scripts/lib/usage-capture-optin.sh. `sr_is_own` is
 // then checked to be "transcript class owned, or a guard", with the guard half
 // held to C2's own corpus. Bash legs are POSIX only.
 

@@ -1,6 +1,6 @@
 // pin.ts — the one place `prune-transcripts` meets ticket #1330's MemPalace version pin
 // (`scripts/lib/mempalace-pin.ts`, spec 0252): the two declaration lines of
-// `scripts/lib/common.sh` stay the single source until row J4.
+// `retired scripts/lib/common.sh` stay the single source until row J4.
 
 import { installSpec, readMempalacePin } from "../mempalace-pin.ts";
 

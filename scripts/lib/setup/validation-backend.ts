@@ -1,5 +1,5 @@
 // validation-backend.ts — the user-gate validation backend of the setup graph (spec 0256
-// requirement 23), a reproduction of `configure_validation_backend` in scripts/lib/common.sh
+// requirement 23), a reproduction of `configure_validation_backend` in retired scripts/lib/common.sh
 // (spec 0080): the `VALIDATION_*` bypass, the four questions, the enum guard, the persisted
 // `~/.crewrig/validation.conf` and the lines printed.
 //

@@ -3,8 +3,8 @@
 //
 // Black box: scripts/session-check-hooks.ts runs as a child process against a
 // scratch HOME (session-check-harness.ts). The coexistence cases drive the REAL
-// session-recording and usage-capture writers of scripts/lib/usage-capture-optin.sh
-// and the Antigravity transcript deploy of scripts/lib/common.sh, in both orders.
+// session-recording and usage-capture writers of retired scripts/lib/usage-capture-optin.sh
+// and the Antigravity transcript deploy of retired scripts/lib/common.sh, in both orders.
 // The check's entry is recognised here by the plan's command template, written
 // independently of the writer's own matcher.
 

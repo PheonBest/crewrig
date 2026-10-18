@@ -1,6 +1,6 @@
 // token.ts — the MCP daemon's bearer token: read-or-create (spec 0252
 // requirement 18; plan v3 D1 row `token`). The TypeScript counterpart of
-// `mcp_token_read_or_create` in scripts/lib/common.sh.
+// `mcp_token_read_or_create` in retired scripts/lib/common.sh.
 //
 // The path is the one definition of scripts/lib/usage-store/mcp.js (`tokenPath`).
 // The token is 48 characters of [A-Za-z0-9] drawn from the crypto generator by

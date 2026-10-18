@@ -1,6 +1,6 @@
 // session-recording-merge.ts — the jq definitions of the session-recording merge as pure functions
 // over JSON (`uc_all_handlers`, `uc_strip_by`, `uc_add`, `sr_merge`, `sr_report` of
-// scripts/lib/usage-capture-optin.sh; spec 0256 requirement 30). The shape is `flat` (Copilot CLI:
+// retired scripts/lib/usage-capture-optin.sh; spec 0256 requirement 30). The shape is `flat` (Copilot CLI:
 // an event holds handlers) or grouped (Claude Code, Gemini CLI: an event holds groups). Layer 2.
 
 import fs from "node:fs";

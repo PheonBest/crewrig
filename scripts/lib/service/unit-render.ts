@@ -3,7 +3,7 @@
 //
 // Same substitutions, same palace-path rule and same residual-placeholder
 // refusal as `_materialise_chroma_unit` and `_materialise_mcp_unit` of
-// scripts/lib/common.sh, plus the interpreter-token replacement: the `/bin/bash`
+// retired scripts/lib/common.sh, plus the interpreter-token replacement: the `/bin/bash`
 // of a plist and the `/usr/bin/env bash` of a unit become the absolute path of
 // the running Node.js executable, so the supervisor runs the TypeScript
 // programs of requirement 10. A refusal writes nothing.

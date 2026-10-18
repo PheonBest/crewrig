@@ -1,6 +1,6 @@
 // setup-session-recording.test.ts — the render and the merge of the session-recording opt-in
 // (spec 0256 requirements 30 and 31; plan v2 step B3a.4). The Bash oracle went with
-// scripts/lib/usage-capture-optin.sh (spec 0266); each case asserts the TypeScript outcome.
+// retired scripts/lib/usage-capture-optin.sh (spec 0266); each case asserts the TypeScript outcome.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";

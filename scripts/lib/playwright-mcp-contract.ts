@@ -56,7 +56,7 @@ export const CLI_BINARY: Readonly<Record<Cli, string>> = {
   antigravity: "agy",
 };
 
-/** The configuration file of `cli` (`mcp_assistant_config_path` in scripts/lib/common.sh). */
+/** The configuration file of `cli` (`mcp_assistant_config_path` in retired scripts/lib/common.sh). */
 export function configPath(cli: Cli, home: string): string {
   switch (cli) {
     case "claude":

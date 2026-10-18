@@ -1,7 +1,7 @@
 // assistant-arrangement.ts — the per-assistant MemPalace arrangement and its
 // report (spec 0252 requirements 15 and 22; plan v3 D1 rows status-report and
 // owner-check). Ports `mcp_assistant_present`, `mcp_assistant_arrangement` and
-// `mcp_report_assistant_arrangements` of scripts/lib/common.sh, with their
+// `mcp_report_assistant_arrangements` of retired scripts/lib/common.sh, with their
 // text and return value kept.
 //
 // DEVIATION 31(b), stated rather than implied: the shell reads the four

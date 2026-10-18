@@ -1,4 +1,4 @@
-// store-guidance.ts — `print_store_access_guidance` of scripts/lib/common.sh (spec 0256 requirements
+// store-guidance.ts — `print_store_access_guidance` of retired scripts/lib/common.sh (spec 0256 requirements
 // 25 and 32, delta-01 G9). It only prints: no file is written and no trust config is changed. The
 // two CLIs that gate an out-of-workspace read (Gemini and Copilot) get the guidance; the others get
 // nothing. The text is copied byte for byte from the shell (a test diffs it against the shell source).

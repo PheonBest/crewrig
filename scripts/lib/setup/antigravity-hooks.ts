@@ -1,6 +1,6 @@
 // antigravity-hooks.ts — the Antigravity hook steps of setup-antigravity-interactive.ts (spec 0256
 // requirements 29 and 30, plan v2 step B3a.5): the transcript-hook deployment of
-// `deploy_antigravity_transcript_hooks` (scripts/lib/common.sh), the per-run rewrites of an
+// `deploy_antigravity_transcript_hooks` (retired scripts/lib/common.sh), the per-run rewrites of an
 // installed registration, and the paths and Node.js floor the statusline channel
 // (antigravity-statusline.ts) shares. Every step runs the TypeScript modules in-process
 // (hook-guard-manifest.ts, hook-transcript-manifest.ts, hook-antigravity-transcript.ts,

@@ -1,5 +1,5 @@
 // usage-capture-optin.ts — the usage-capture opt-in and the session-recording render and merge, one
-// subcommand per public function of scripts/lib/usage-capture-optin.sh (spec 0256 requirement 33).
+// subcommand per public function of retired scripts/lib/usage-capture-optin.sh (spec 0256 requirement 33).
 //
 // Usage: node scripts/usage-capture-optin.ts [--platform <win32|linux|darwin>] <subcommand> [--result <file>] [--] <argument>...
 // The leading `--platform` overrides the platform the subcommand decides the Windows forms from

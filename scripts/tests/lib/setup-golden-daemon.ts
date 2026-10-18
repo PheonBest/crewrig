@@ -29,7 +29,7 @@ import type { ChildProcess } from "node:child_process";
 
 import { PLACEHOLDER_BEARER } from "./setup-stubs.ts";
 
-/** The shell's default `MEMPALACE_MCP_PORT` (scripts/lib/common.sh), which the fixtures record. */
+/** The shell's default `MEMPALACE_MCP_PORT` (retired scripts/lib/common.sh), which the fixtures record. */
 export const DEFAULT_MCP_PORT = "41893";
 
 export interface GoldenDaemonOptions {

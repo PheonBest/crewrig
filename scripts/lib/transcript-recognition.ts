@@ -2,7 +2,7 @@
 // command (spec 0247 R24, delta-01), decided from the command text alone.
 //
 // The TypeScript twin of `sr_transcript_class` in
-// scripts/lib/usage-capture-optin.sh. The two SHALL return the same answer for
+// retired scripts/lib/usage-capture-optin.sh. The two SHALL return the same answer for
 // every row of scripts/tests/fixtures/mempalace-transcript/recognition-corpus.json,
 // and neither may change without that corpus changing.
 //
@@ -77,7 +77,7 @@ export function isDirectShape(post: string): boolean {
 // Shell syntax and the transcript class (security review S1; review i1-F5,
 // spec 0247 delta-03). The descriptor's shared signature is wider (it serves
 // C1 and C2 unchanged), so the transcript class narrows it here, in both twins
-// (`sr_tr_safety` in scripts/lib/usage-capture-optin.sh):
+// (`sr_tr_safety` in retired scripts/lib/usage-capture-optin.sh):
 //   - `chained`: a `;`, `$(`, a backquote or a line break anywhere, or shell
 //     syntax inside the script path — a command that chains or substitutes.
 //     It is the operator's (`foreign-prefix`).

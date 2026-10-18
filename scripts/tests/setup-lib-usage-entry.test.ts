@@ -1,6 +1,6 @@
 // setup-lib-usage-entry.test.ts — scripts/usage-capture-optin.ts, the entry behind the usage-capture setup
 // steps (spec 0256 requirement 33, plan v2 step B3b.4). Per subcommand, the entry runs in a throwaway HOME
-// and must exit with a status, not crash. The shell oracle went with scripts/lib/usage-capture-optin.sh
+// and must exit with a status, not crash. The shell oracle went with retired scripts/lib/usage-capture-optin.sh
 // (spec 0266); the outcomes are asserted by setup-usage-capture.test.ts and its siblings.
 
 import assert from "node:assert/strict";

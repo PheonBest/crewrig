@@ -1,7 +1,7 @@
 // Spec 0119 requirements 12, 13, 15, 17 on the real build and shims (ported from
 // test-component-tier-resolution.sh cases 6-11, 13b, 13c; spec 0263 groups G10-G17).
 // Case 13d (G18) retires against component-overlay.test.ts L131 plus
-// tier-resolution-three-tiers.test.ts. Retires with scripts/lib/common.sh (row J4):
+// tier-resolution-three-tiers.test.ts. Retires with retired scripts/lib/common.sh (row J4):
 // POSIX-only, the shims run under bash.
 
 import assert from "node:assert/strict";

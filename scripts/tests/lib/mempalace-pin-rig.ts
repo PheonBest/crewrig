@@ -3,7 +3,7 @@
 // committed Python drivers under scripts/tests/fixtures/mempalace-pin/ (stored with a
 // `.golden` suffix so the Python ratchet does not count them, materialised as `.py`
 // into one scratch root). No pin literal is authored here: both bounds are read from
-// scripts/lib/common.sh with an independent two-line regex, never through the TypeScript
+// retired scripts/lib/common.sh with an independent two-line regex, never through the TypeScript
 // reader, so the guard test keeps its independence from it.
 
 import { spawnSync } from "node:child_process";

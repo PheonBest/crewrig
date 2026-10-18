@@ -1,6 +1,6 @@
 // setup-hooks-rewrite.test.ts — the pre-question rewrite of the installed guard and transcript
 // commands (spec 0256 requirements 29 and 31; plan v2 step B3a.1). The Bash oracle went with
-// scripts/lib/usage-capture-optin.sh (spec 0266); each case asserts the TypeScript outcome.
+// retired scripts/lib/usage-capture-optin.sh (spec 0266); each case asserts the TypeScript outcome.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";

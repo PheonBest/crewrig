@@ -1,6 +1,6 @@
 // Spec 0119 requirements 7-11 and 19 on the real shims (ported from
 // test-component-tier-resolution.sh cases 1-5 and 12; spec 0263 groups G1-G8).
-// Retires with scripts/lib/common.sh (row J4): POSIX-only, the shims run under bash.
+// Retires with retired scripts/lib/common.sh (row J4): POSIX-only, the shims run under bash.
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
