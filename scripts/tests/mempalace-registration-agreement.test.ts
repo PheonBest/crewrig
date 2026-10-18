@@ -464,7 +464,7 @@ describe("a Gemini file with comments is classified on its content after comment
         }) ?? "";
 
       assert.ok(
-        w.includes("scripts/setup-gemini-interactive.sh") &&
+        w.includes("scripts/setup-gemini-interactive.ts") &&
           /comment/i.test(w) &&
           /backup/i.test(w),
         `${f.name}: ${w}`,
