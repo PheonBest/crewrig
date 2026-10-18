@@ -35,6 +35,7 @@ import {
 } from "./lib/shell-resolve-harness.ts";
 import { yamlText } from "./lib/yaml-lib.ts";
 
+// the documents are loaded with the real `yq` (not the shell library), so the suite needs it
 const skip = parityGate();
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "conformance-org-"));
 after(() => fs.rmSync(tmp, { recursive: true, force: true }));
@@ -212,7 +213,7 @@ async function group(b: Builder): Promise<void> {
   const repoDir = b.build(tmp);
   const [ms, mt] = dirs(b.name);
   const at = (mergeDir: string): ResolveCase[] => casesOf(b, tmp, repoDir, { mergeDir });
-  const [shell, twin] = [await runShellResolve(at(ms)), runTwinResolve(at(mt))];
+  const [shell, twin] = [await runShellResolve(at(ms), `org/${b.name}`), runTwinResolve(at(mt))];
   at(ms).forEach((c, i) => {
     bad.push(...checkCase(c, shell[i] as Outcome, twin[i] as Outcome, DOCUMENTED));
     stats.pairs += 1;
@@ -233,7 +234,7 @@ async function group(b: Builder): Promise<void> {
   const reads: [string, Outcome, Outcome][] = [
     [
       "shell over the twin's directory",
-      (await runShellResolve([{ ...first, mergeDir: mt }]))[0] as Outcome,
+      (await runShellResolve([{ ...first, mergeDir: mt }], `org/${b.name}/cross`))[0] as Outcome,
       shell[0] as Outcome,
     ],
     [
