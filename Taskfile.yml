@@ -26,7 +26,7 @@ tasks:
   install-mempalace:
     desc: Install or upgrade MemPalace at the pinned version (>=3.6.0,<3.7)
     preconditions:
-      - sh: command -v pipx >/dev/null 2>&1
+      - sh: pipx --version
         msg: "pipx is required. Install with: brew install pipx (macOS) or apt-get install pipx (Linux)"
     cmd: bash {{.REPO_DIR}}/scripts/lib/tls-exec.sh pipx install --force 'mempalace>=3.6.0,<3.7'
 
@@ -458,31 +458,14 @@ tasks:
   # --- Linting ---
 
   lint-bootstrap:
-    desc: "Install every dependency the spec, Markdown and TypeScript linters need (js-yaml, semver, markdownlint-cli, typescript, oxlint, oxfmt), and report on shellcheck (spec 0225 requirement 1)"
+    desc: "Install every dependency the spec, Markdown and TypeScript linters need (js-yaml, semver, markdownlint-cli, typescript, oxlint, oxfmt)"
     cmds:
-      - |
-        set -euo pipefail
-        echo "Installing npm dependencies (js-yaml, semver, markdownlint-cli, typescript, oxlint, oxfmt)..."
-        if [ -f {{.REPO_DIR}}/package-lock.json ]; then
-          npm ci
-        else
-          npm install
-        fi
-        echo ""
-        if command -v shellcheck >/dev/null 2>&1; then
-          echo "shellcheck: found ($(shellcheck --version | grep -i version | head -1))"
-        else
-          echo "shellcheck: not found on PATH."
-          echo "  shellcheck is a system package outside npm's reach — install it with:"
-          echo "    brew install shellcheck        (macOS)"
-          echo "    apt-get install shellcheck     (Debian/Ubuntu)"
-          echo "    https://github.com/koalaman/shellcheck#installing"
-        fi
+      - npm ci
 
   lint-markdown:
     desc: Check all Markdown files for lint compliance
     preconditions:
-      - sh: command -v markdownlint >/dev/null 2>&1 || npx --no-install markdownlint --version >/dev/null 2>&1
+      - sh: npx --no-install markdownlint --version
         msg: "markdownlint-cli is required. Run: task lint-bootstrap (or: npm install -g markdownlint-cli)"
     # extensions/**/commands/*.md are pivot command sources (the body IS the
     # prompt, not prose) — exclude them from prose linting (spec 0042).
@@ -533,42 +516,42 @@ tasks:
   lint-ts:
     desc: "Run every TypeScript check CI runs: type-check, erasable syntax, Oxlint, Oxfmt (spec 0238 R4-R8)"
     preconditions:
-      - sh: test -x node_modules/.bin/tsc && test -x node_modules/.bin/oxlint && test -x node_modules/.bin/oxfmt
+      - sh: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON {{.REPO_DIR}}/scripts/check-tool-binaries.ts tsc oxlint oxfmt
         msg: "The TypeScript toolchain (typescript, oxlint, oxfmt) is required. Run: task lint-bootstrap"
     cmd: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-typescript.ts
 
   typecheck-ts:
     desc: "Type-check every tracked TypeScript source in strict mode (spec 0238 R4)"
     preconditions:
-      - sh: test -x node_modules/.bin/tsc && test -x node_modules/.bin/oxlint && test -x node_modules/.bin/oxfmt
+      - sh: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON {{.REPO_DIR}}/scripts/check-tool-binaries.ts tsc oxlint oxfmt
         msg: "The TypeScript toolchain (typescript, oxlint, oxfmt) is required. Run: task lint-bootstrap"
     cmd: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-typescript.ts --step typecheck
 
   erasable-ts:
     desc: "Reject TypeScript syntax Node type stripping cannot erase (spec 0238 R5)"
     preconditions:
-      - sh: test -x node_modules/.bin/tsc && test -x node_modules/.bin/oxlint && test -x node_modules/.bin/oxfmt
+      - sh: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON {{.REPO_DIR}}/scripts/check-tool-binaries.ts tsc oxlint oxfmt
         msg: "The TypeScript toolchain (typescript, oxlint, oxfmt) is required. Run: task lint-bootstrap"
     cmd: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-typescript.ts --step erasable
 
   oxlint-ts:
     desc: "Run Oxlint type-aware strict typing and the max-lines warning (spec 0238 R6-R7)"
     preconditions:
-      - sh: test -x node_modules/.bin/tsc && test -x node_modules/.bin/oxlint && test -x node_modules/.bin/oxfmt
+      - sh: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON {{.REPO_DIR}}/scripts/check-tool-binaries.ts tsc oxlint oxfmt
         msg: "The TypeScript toolchain (typescript, oxlint, oxfmt) is required. Run: task lint-bootstrap"
     cmd: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-typescript.ts --step lint
 
   format-ts:
     desc: "Check TypeScript formatting with Oxfmt (spec 0238 R8)"
     preconditions:
-      - sh: test -x node_modules/.bin/tsc && test -x node_modules/.bin/oxlint && test -x node_modules/.bin/oxfmt
+      - sh: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON {{.REPO_DIR}}/scripts/check-tool-binaries.ts tsc oxlint oxfmt
         msg: "The TypeScript toolchain (typescript, oxlint, oxfmt) is required. Run: task lint-bootstrap"
     cmd: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-typescript.ts --step format
 
   format-ts:fix:
     desc: "Rewrite every tracked TypeScript source with Oxfmt (local convenience, not a CI mirror)"
     preconditions:
-      - sh: test -x node_modules/.bin/tsc && test -x node_modules/.bin/oxlint && test -x node_modules/.bin/oxfmt
+      - sh: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON {{.REPO_DIR}}/scripts/check-tool-binaries.ts tsc oxlint oxfmt
         msg: "The TypeScript toolchain (typescript, oxlint, oxfmt) is required. Run: task lint-bootstrap"
     cmd: git ls-files -z '*.ts' ':!:.claude/**' ':!:.gemini/**' ':!:.github/**' ':!:.agents/**' | xargs -0 node_modules/.bin/oxfmt --write
 
@@ -594,7 +577,7 @@ tasks:
   fix-markdown:
     desc: Auto-fix Markdown formatting issues
     preconditions:
-      - sh: command -v markdownlint >/dev/null 2>&1 || npx --no-install markdownlint --version >/dev/null 2>&1
+      - sh: npx --no-install markdownlint --version
         msg: "markdownlint-cli is required. Run: task lint-bootstrap (or: npm install -g markdownlint-cli)"
     # Mirror the lint-markdown exclusion: extension command pivots are prompt
     # sources, not prose (spec 0042). artifacts/*/commands/*.md are the same
@@ -782,7 +765,7 @@ tasks:
   e2e:build:base:
     desc: "Build the shared e2e base image (crewrig/e2e-base:latest)."
     preconditions:
-      - sh: command -v docker >/dev/null 2>&1
+      - sh: docker --version
         msg: "docker is required."
     cmd: docker build -t {{.E2E_IMG_PREFIX}}-base:latest -f {{.E2E_DOCKER_DIR}}/base.Dockerfile {{.E2E_DOCKER_DIR}}
 
@@ -809,7 +792,7 @@ tasks:
   e2e:lock:
     desc: "Capture resolved CLI/tool versions from the built images into docker/e2e/.versions.lock."
     preconditions:
-      - sh: command -v docker >/dev/null 2>&1
+      - sh: docker --version
         msg: "docker is required."
     cmd: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON {{.REPO_DIR}}/scripts/e2e-capture-versions.ts "{{.E2E_IMG_PREFIX}}" "{{.E2E_VERSIONS_LOCK}}"
 
@@ -818,7 +801,7 @@ tasks:
   e2e:auth:claude:
     desc: "Interactive Claude Code login → ~/.crewrig-e2e/claude/ (RW one-shot, RO at scenario time)."
     preconditions:
-      - sh: command -v docker >/dev/null 2>&1
+      - sh: docker --version
         msg: "docker is required."
       - sh: docker image inspect {{.E2E_IMG_PREFIX}}-claude:latest >/dev/null 2>&1
         msg: "image {{.E2E_IMG_PREFIX}}-claude:latest is missing. Run `task e2e:build:claude` first."
@@ -827,7 +810,7 @@ tasks:
   e2e:auth:gemini:
     desc: "Interactive Gemini CLI login → ~/.crewrig-e2e/gemini/ (RW one-shot, RO at scenario time)."
     preconditions:
-      - sh: command -v docker >/dev/null 2>&1
+      - sh: docker --version
         msg: "docker is required."
       - sh: docker image inspect {{.E2E_IMG_PREFIX}}-gemini:latest >/dev/null 2>&1
         msg: "image {{.E2E_IMG_PREFIX}}-gemini:latest is missing. Run `task e2e:build:gemini` first."
@@ -840,7 +823,7 @@ tasks:
   e2e:auth:ollama:
     desc: "Interactive Ollama Cloud signin → ~/.crewrig-e2e/ollama/ (RW one-shot, RO at scenario time). Required only when local.toml routes Copilot through Ollama Cloud."
     preconditions:
-      - sh: command -v docker >/dev/null 2>&1
+      - sh: docker --version
         msg: "docker is required."
       - sh: docker image inspect {{.E2E_IMG_PREFIX}}-copilot:latest >/dev/null 2>&1
         msg: "image {{.E2E_IMG_PREFIX}}-copilot:latest is missing. Run `task e2e:build:copilot` first."
