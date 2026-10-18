@@ -269,9 +269,9 @@ function scopeFromArgs(opts) {
 }
 
 function printHelp() {
-  console.log(`Usage: bash scripts/usage-attribute.sh add (--session <id> | --agent <id> --parent <id> | --period <YYYY-MM>) (--task-key <key> | --asset <kind>:<ref>) --reason <text> [--author <name>]
-       bash scripts/usage-attribute.sh list [--session <id> | --agent <id> --parent <id> | --period <YYYY-MM>]
-       bash scripts/usage-attribute.sh explain --record <recordId> --cli <cli> --period <YYYY-MM>
+  console.log(`Usage: node scripts/usage-attribute.ts add (--session <id> | --agent <id> --parent <id> | --period <YYYY-MM>) (--task-key <key> | --asset <kind>:<ref>) --reason <text> [--author <name>]
+       node scripts/usage-attribute.ts list [--session <id> | --agent <id> --parent <id> | --period <YYYY-MM>]
+       node scripts/usage-attribute.ts explain --record <recordId> --cli <cli> --period <YYYY-MM>
 
 Appends to, lists, or inspects the append-only attribution ledger (spec 0208
 R13-R19). 'explain' prints the .attr.json sidecar recording the declaration

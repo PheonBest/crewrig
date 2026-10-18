@@ -1,4 +1,4 @@
-// unlink-component.test.ts — black-box contract of scripts/unlink-component.sh (spec 0255 R26;
+// unlink-component.test.ts — black-box contract of scripts/unlink-component.ts (spec 0255 R26;
 // ticket #1334): the shell leg today, the TypeScript leg once scripts/unlink-component.ts exists.
 // Everything lives under the sandbox HOME's `.gemini/<type>/<name>`.
 
@@ -36,8 +36,8 @@ const ALIASES: ReadonlyArray<readonly [string, string]> = [
 ];
 
 describe("unlink-component", () => {
-  it("has at least the shell leg", () => {
-    assert.ok(legs().includes("shell"));
+  it("has at least the node leg", () => {
+    assert.ok(legs().includes("node"));
   });
 
   for (const [singular, plural] of ALIASES) {

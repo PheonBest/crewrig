@@ -1,5 +1,5 @@
 // setup-retarget-antigravity-transcript.test.ts - the BEHAVIOUR that the retired Bash suite test-setup-antigravity-transcript
-// (spec 0263) used to read from the TEXT of scripts/setup-antigravity-interactive.sh, now observed by RUNNING the
+// (spec 0263) used to read from the TEXT of scripts/setup-antigravity-interactive.ts, now observed by RUNNING the
 // TypeScript entry (scripts/setup-antigravity-interactive.ts) in the golden sandbox (spec 0256
 // requirement 9, PR D2). Each case runs a golden cell; its pin against the unchanged shell is the golden
 // cell of the same id under scripts/tests/fixtures/setup-golden/antigravity/ (checked on both legs by

@@ -27,7 +27,7 @@ import {
 import type { RepairIo } from "./repair-backup.ts";
 
 export const USAGE: readonly string[] = [
-  "Usage: bash scripts/repair-mempalace-http.sh [--restore-backup | --reset-none]",
+  "Usage: node scripts/repair-mempalace-http.ts [--restore-backup | --reset-none]",
   "",
   "Repair the residue left by an interrupted MemPalace switch (spec 0165): an",
   "assistant whose configuration does not parse as JSON, or whose mempalace",

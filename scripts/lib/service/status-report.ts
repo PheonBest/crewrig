@@ -121,7 +121,7 @@ export function launcherSection(o: DriftOptions): 0 | 1 {
     write(`  launcher: ${launcher} *** DRIFTED ***`);
     write(`            the supervisor definition runs ${interpreter}, which no longer exists`);
     write("            (a removed or upgraded Node.js). Re-run the switch:");
-    write("            bash scripts/switch-mempalace-http.sh");
+    write("            node scripts/switch-mempalace-http.ts");
     rc = 1;
   }
   return rc;
@@ -176,7 +176,7 @@ export function taskSection(o: TaskOptions): 0 | 1 {
     o.write(
       "            starts it again within about a minute. If it stays down, re-run the switch:",
     );
-    o.write("            bash scripts/switch-mempalace-http.sh");
+    o.write("            node scripts/switch-mempalace-http.ts");
     return 1;
   }
   o.write(line);
@@ -200,6 +200,6 @@ export function assistantSection(
   if (reportArrangements("serving", installedEndpoint, env, home, write)) return 0;
   write("            One or more assistants are still in stdio mode while the shared");
   write("            daemon is serving. They are locked out of writes by the daemon's");
-  write("            exclusive lease. Run: bash scripts/switch-mempalace-http.sh");
+  write("            exclusive lease. Run: node scripts/switch-mempalace-http.ts");
   return 1;
 }

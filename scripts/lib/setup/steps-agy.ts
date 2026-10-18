@@ -1,8 +1,8 @@
 // steps-agy.ts — the Antigravity-specific steps of the setup flow (spec 0256 requirements 3, 6, 24,
 // 30; plan v2 step B3b.1, task T6) and the Gemini legacy context cleanup. Shell:
-// scripts/setup-antigravity-interactive.sh lines 403-415 (superseded migration), 417-490 (hooks
+// scripts/setup-antigravity-interactive.ts lines 403-415 (superseded migration), 417-490 (hooks
 // rewrite, session recording), 492-604 (statusline usage capture), 611-644 (generated AGENTS.md)
-// and scripts/setup-gemini-interactive.sh lines 498-505 (legacy GEMINI.md).
+// and scripts/setup-gemini-interactive.ts lines 498-505 (legacy GEMINI.md).
 //
 // `agySteps` registers the ids only Antigravity (or Antigravity and Gemini) owns. The three ids
 // whose body depends on the hook CHANNEL (`hooks-rewrite-installed`, `session-recording`,

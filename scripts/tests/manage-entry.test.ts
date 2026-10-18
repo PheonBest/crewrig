@@ -45,7 +45,7 @@ describe("manage entries: usage", () => {
       const res = entry(sandbox, cli, []);
       assert.equal(res.status, 1);
       const lines = res.stdout.split("\n");
-      assert.equal(lines[0], `Usage: manage-${cli}-component.sh <install|link> <type> [name]`);
+      assert.equal(lines[0], `Usage: manage-${cli}-component.ts <install|link> <type> [name]`);
       assert.ok((lines[1] ?? "").startsWith("Types: "), lines[1]);
       assert.ok((lines[1] ?? "").includes(types.split(", ")[0] ?? ""), lines[1]);
       assert.equal(res.stderr, "");

@@ -1,5 +1,5 @@
 // steps-usage.ts — the `usage-capture` step of Claude Code, Gemini CLI and Copilot CLI (spec 0256
-// requirement 30, plan v2 step B3b.1). Shell: scripts/setup-claude-interactive.sh 527-547, gemini
+// requirement 30, plan v2 step B3b.1). Shell: scripts/setup-claude-interactive.ts 527-547, gemini
 // 473-493, copilot 465-485; the pure parts live in usage-capture*.ts, the questions are asked here
 // (the modules never prompt). The statusline channel of Antigravity CLI (`agy-json`) is
 // `agyUsageCapture` of steps-agy.ts, to which this entry delegates.

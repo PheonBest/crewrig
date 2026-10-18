@@ -9,10 +9,10 @@ import { createFixtureTree, REPO, type FixtureTree } from "./build-fixture-tree.
 export const COLLISION_REPORT_RE = /claimed by more than one component|Every source presenting it/;
 export const UNRESOLVED_REPORT_RE = /resolved in any served tier|Locations examined/;
 
-export const CLAUDE_CMD = "scripts/manage-claude-component.sh";
-export const GEMINI_CMD = "scripts/manage-workspace-component.sh";
-export const COPILOT_CMD = "scripts/manage-copilot-component.sh";
-export const AGY_CMD = "scripts/manage-antigravity-component.sh";
+export const CLAUDE_CMD = "scripts/manage-claude-component.ts";
+export const GEMINI_CMD = "scripts/manage-workspace-component.ts";
+export const COPILOT_CMD = "scripts/manage-copilot-component.ts";
+export const AGY_CMD = "scripts/manage-antigravity-component.ts";
 
 export interface Out {
   readonly status: number | null;
@@ -37,7 +37,7 @@ export function newRepo(): FixtureTree {
 const SCRUBBED =
   /^(CI|GITHUB_.*|GITLAB_.*|HTTPS?_PROXY|NO_PROXY|ALL_PROXY|https?_proxy|no_proxy|all_proxy|REPO_DIR|CLAUDE_CONFIG_DIR)$/;
 
-/** Run a script of the fixture under bash with HOME and USERPROFILE at `home`. */
+/** Run a script of the fixture (`.ts` under node, otherwise under bash) with HOME and USERPROFILE at `home`. */
 export function run(
   t: FixtureTree,
   script: string,
@@ -50,7 +50,10 @@ export function run(
     if (v !== undefined && !SCRUBBED.test(k)) env[k] = v;
   env["HOME"] = home;
   env["USERPROFILE"] = home;
-  const r = spawnSync("bash", [t.resolve(script), ...args], {
+  const [bin, argv] = script.endsWith(".ts")
+    ? [process.execPath, [t.resolve(script), ...args]]
+    : ["bash", [t.resolve(script), ...args]];
+  const r = spawnSync(bin as string, argv as string[], {
     cwd: t.root,
     env,
     encoding: "utf8",

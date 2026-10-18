@@ -6,9 +6,7 @@ on:
     paths:
       - "scripts/lib/usage-store/**"
       - "scripts/lib/usage-capture/**"
-      - "scripts/usage-task.sh"
       - "scripts/usage-task.ts"
-      - "scripts/usage-attribute.sh"
       - "scripts/usage-attribute.ts"
       - "scripts/tests/usage-attribution-channels.test.ts"
       - "scripts/tests/usage-attribution-ledger-rollup.test.ts"
@@ -31,9 +29,7 @@ on:
     paths:
       - "scripts/lib/usage-store/**"
       - "scripts/lib/usage-capture/**"
-      - "scripts/usage-task.sh"
       - "scripts/usage-task.ts"
-      - "scripts/usage-attribute.sh"
       - "scripts/usage-attribute.ts"
       - "scripts/tests/usage-attribution-channels.test.ts"
       - "scripts/tests/usage-attribution-ledger-rollup.test.ts"

@@ -1,5 +1,5 @@
 // prune-transcripts-oracle.test.ts — behavioural oracle for
-// `bash scripts/prune-transcripts.sh` (spec 0253, delta-01 R18, R25 items 8-9,
+// `bash scripts/prune-transcripts.ts` (spec 0253, delta-01 R18, R25 items 8-9,
 // R26; PLAN v3 step A3). The script is driven as a black box under the hermetic
 // harness; MEMPALACE_PYTHON is a recording stub that drains the Python body from
 // stdin and dumps the environment the script hands to it. The same file must
@@ -15,11 +15,11 @@ import path from "node:path";
 import { describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { createHermeticEnv, poisonHit, runBash, writeStub } from "./lib/hermetic-env.ts";
+import { createHermeticEnv, poisonHit, runNodeScript, writeStub } from "./lib/hermetic-env.ts";
 import type { RunResult } from "./lib/hermetic-env.ts";
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-const SCRIPT = path.join(REPO, "scripts", "prune-transcripts.sh");
+const SCRIPT = path.join(REPO, "scripts", "prune-transcripts.ts");
 
 const RECORDED = [
   "TRANSCRIPTS_WING",
@@ -73,7 +73,7 @@ function run(
       fs.writeFileSync(path.join(h.home, ".crewrig", "tls-env.sh"), options.tlsFile);
     }
     const before = cutoff(30);
-    const res = runBash(h, SCRIPT, args, {
+    const res = runNodeScript(h, SCRIPT, args, {
       env: { MEMPALACE_PYTHON: options.python ?? stub, ...options.env },
     });
     const record: Record<string, string> | undefined = fs.existsSync(recordFile)

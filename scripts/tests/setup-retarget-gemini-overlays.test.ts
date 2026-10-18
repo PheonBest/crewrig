@@ -1,6 +1,6 @@
 // setup-retarget-gemini-overlays.test.ts — the pin of scripts/check-gemini-overlay-enrollment.ts
 // (ticket #1335, spec 0256 requirement 9). The guard reads the DECLARATION of the Gemini setup
-// instead of the text of scripts/setup-gemini-interactive.sh (a forwarding shim now): this test
+// instead of the text of scripts/setup-gemini-interactive.ts (a forwarding shim now): this test
 // pins the deployed `NN_NAME.md` set the declaration names against the literal list of overlays the
 // setup deploys. It also proves the guard's vacuity guard: an emptied descriptor makes the printer
 // fail with nothing on stdout.

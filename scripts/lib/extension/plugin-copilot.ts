@@ -1,5 +1,5 @@
 // plugin-copilot.ts — the Copilot CLI plugin renderer (spec 0254 R11, R17, R18).
-// Twin of scripts/build-copilot-plugin.sh :91-253 (everything after the shared start, which
+// Twin of scripts/build-copilot-plugin.ts :91-253 (everything after the shared start, which
 // lives in plugin-common.ts): manifest, MCP, context skill, skills, commands to skills,
 // flattened `<name>.agent.md` agents, hooks directory and the two closing lines.
 

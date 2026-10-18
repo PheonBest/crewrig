@@ -53,9 +53,4 @@ export const entries: Array<
     (h) => runProcess(process.execPath, ["scripts/doctor-mempalace.ts"], h),
     false,
   ],
-  [
-    "bash shim",
-    (h) => runProcess("bash", ["scripts/doctor-mempalace.sh"], h),
-    !posix && "bash shims are POSIX-only",
-  ],
 ];

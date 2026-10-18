@@ -144,7 +144,7 @@ export function copilotTemplatePath(repoDir: string): string {
 }
 
 /**
- * The Copilot setup's write (`setup-copilot-interactive.sh`): the template with the repository
+ * The Copilot setup's write (`setup-copilot-interactive.ts`): the template with the repository
  * placeholder replaced; the mempalace entry replaced by `entries.mempalace`, or removed when there
  * is none; the Sequential Thinking entry replaced by its wrapped form when the template has one;
  * then the operator's servers merged back. Prints the `Installed:` line the shell prints.
@@ -180,7 +180,7 @@ export function writeCopilotMcpConfig(args: WriterArgs): McpWriteResult {
 }
 
 /**
- * The Antigravity setup's write (`setup-antigravity-interactive.sh`): `{"mcpServers":{}}` with the
+ * The Antigravity setup's write (`setup-antigravity-interactive.ts`): `{"mcpServers":{}}` with the
  * mempalace entry when MemPalace is installed and the Sequential Thinking entry when the operator
  * opted in, then the operator's servers merged back. Prints the two `... MCP server configured.`
  * lines the shell prints.

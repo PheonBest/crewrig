@@ -525,10 +525,6 @@ capabilities:
           - "scripts/lib/mempalace-python.ts"
           - "scripts/lib/worktree-claim/**"
           - "scripts/lib/node-floor-guard.js"
-          - "scripts/manage-antigravity-component.sh"
-          - "scripts/manage-claude-component.sh"
-          - "scripts/manage-copilot-component.sh"
-          - "scripts/manage-workspace-component.sh"
           - "scripts/tests/antigravity-migrate.test.ts"
           - "scripts/tests/component-install.test.ts"
           - "scripts/tests/component-overlay.test.ts"
@@ -587,8 +583,6 @@ capabilities:
           - "scripts/tests/lib/install-sandbox.ts"
           - "scripts/tests/lib/build-fixture-tree.ts"
           - "scripts/tests/lib/oracle-taskfile-mutants.ts"
-          - "scripts/tests/install-shim.test.ts"
-          - "scripts/tests/install-ci-wiring.test.ts"
           - "scripts/tests/install-references.test.ts"
           - "scripts/tests/fixtures/install/**"
           - "scripts/tests/fixtures/manage-shell-facts/**"
@@ -606,7 +600,7 @@ capabilities:
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/antigravity-migrate.test.ts scripts/tests/component-install.test.ts scripts/tests/component-overlay.test.ts scripts/tests/component-roots.test.ts scripts/tests/component-twins-conformance-migrate.test.ts scripts/tests/component-twins-conformance.test.ts scripts/tests/install-oracle-mutation.test.ts scripts/tests/link-or-copy-classify.test.ts scripts/tests/link-or-copy-remove.test.ts scripts/tests/link-or-copy-swap.test.ts scripts/tests/link-or-copy.test.ts scripts/tests/manage-confirm.test.ts scripts/tests/manage-descriptors.test.ts scripts/tests/manage-main.test.ts scripts/tests/manage-mcp-claude.test.ts scripts/tests/manage-mcp-json.test.ts scripts/tests/manage-overlay-loop.test.ts scripts/tests/manage-place.test.ts scripts/tests/print-manage-declarations.test.ts scripts/tests/tree-copy-dereferenced.test.ts scripts/tests/manage-entry.test.ts scripts/tests/marketplace.test.ts scripts/tests/antigravity-tokens.test.ts scripts/tests/install-all.test.ts scripts/tests/install-entry-form.test.ts scripts/tests/install-file-size.test.ts scripts/tests/install-extension-reentrancy.test.ts scripts/tests/worktree-claim-launch.test.ts scripts/tests/install-golden.test.ts scripts/tests/install-shim.test.ts scripts/tests/install-ci-wiring.test.ts scripts/tests/install-references.test.ts scripts/tests/install-write-mode.test.ts scripts/tests/windows-install-entries.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/antigravity-migrate.test.ts scripts/tests/component-install.test.ts scripts/tests/component-overlay.test.ts scripts/tests/component-roots.test.ts scripts/tests/component-twins-conformance-migrate.test.ts scripts/tests/component-twins-conformance.test.ts scripts/tests/install-oracle-mutation.test.ts scripts/tests/link-or-copy-classify.test.ts scripts/tests/link-or-copy-remove.test.ts scripts/tests/link-or-copy-swap.test.ts scripts/tests/link-or-copy.test.ts scripts/tests/manage-confirm.test.ts scripts/tests/manage-descriptors.test.ts scripts/tests/manage-main.test.ts scripts/tests/manage-mcp-claude.test.ts scripts/tests/manage-mcp-json.test.ts scripts/tests/manage-overlay-loop.test.ts scripts/tests/manage-place.test.ts scripts/tests/print-manage-declarations.test.ts scripts/tests/tree-copy-dereferenced.test.ts scripts/tests/manage-entry.test.ts scripts/tests/marketplace.test.ts scripts/tests/antigravity-tokens.test.ts scripts/tests/install-all.test.ts scripts/tests/install-entry-form.test.ts scripts/tests/install-file-size.test.ts scripts/tests/install-extension-reentrancy.test.ts scripts/tests/worktree-claim-launch.test.ts scripts/tests/install-golden.test.ts scripts/tests/install-references.test.ts scripts/tests/install-write-mode.test.ts scripts/tests/windows-install-entries.test.ts
 
   # Spec 0255 R3: the install, manage and link entries print nothing on the oldest Node.js 24
   # release. No `paths:` filter, like extension-builders-ts-node-24-0: any shared-module change can
@@ -780,13 +774,9 @@ capabilities:
           - "scripts/lib/link-or-copy*.ts"
           - "scripts/lib/extension/types.ts"
           - "scripts/lib/tls-delegation.sh"
-          - "scripts/setup-antigravity-interactive.sh"
           - "scripts/setup-antigravity-interactive.ts"
-          - "scripts/setup-claude-interactive.sh"
           - "scripts/setup-claude-interactive.ts"
-          - "scripts/setup-copilot-interactive.sh"
           - "scripts/setup-copilot-interactive.ts"
-          - "scripts/setup-gemini-interactive.sh"
           - "scripts/setup-gemini-interactive.ts"
           - "scripts/lib/node-floor-guard.js"
           - "scripts/tests/setup-answers.test.ts"
@@ -853,7 +843,6 @@ capabilities:
           - "scripts/tests/setup-references.test.ts"
           - "scripts/tests/setup-session-recording.test.ts"
           - "scripts/tests/setup-session-recording-ownership.test.ts"
-          - "scripts/tests/setup-shim.test.ts"
           - "scripts/tests/setup-stdlib-closure.test.ts"
           - "scripts/tests/setup-steps-agy.test.ts"
           - "scripts/tests/setup-steps-agy-channels.test.ts"
@@ -908,13 +897,9 @@ capabilities:
           - "scripts/lib/link-or-copy*.ts"
           - "scripts/lib/extension/types.ts"
           - "scripts/lib/tls-delegation.sh"
-          - "scripts/setup-antigravity-interactive.sh"
           - "scripts/setup-antigravity-interactive.ts"
-          - "scripts/setup-claude-interactive.sh"
           - "scripts/setup-claude-interactive.ts"
-          - "scripts/setup-copilot-interactive.sh"
           - "scripts/setup-copilot-interactive.ts"
-          - "scripts/setup-gemini-interactive.sh"
           - "scripts/setup-gemini-interactive.ts"
           - "scripts/lib/node-floor-guard.js"
           - "scripts/tests/setup-answers.test.ts"
@@ -981,7 +966,6 @@ capabilities:
           - "scripts/tests/setup-references.test.ts"
           - "scripts/tests/setup-session-recording.test.ts"
           - "scripts/tests/setup-session-recording-ownership.test.ts"
-          - "scripts/tests/setup-shim.test.ts"
           - "scripts/tests/setup-stdlib-closure.test.ts"
           - "scripts/tests/setup-steps-agy.test.ts"
           - "scripts/tests/setup-steps-agy-channels.test.ts"
@@ -1031,7 +1015,7 @@ capabilities:
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-answers.test.ts scripts/tests/setup-antigravity-hooks.test.ts scripts/tests/setup-antigravity-statusline.test.ts scripts/tests/setup-antigravity-tier.test.ts scripts/tests/setup-backup.test.ts scripts/tests/setup-backup-failure.test.ts scripts/tests/setup-catalogue.test.ts scripts/tests/setup-chroma-install.test.ts scripts/tests/setup-chroma-install-win.test.ts scripts/tests/setup-chroma-unit.test.ts scripts/tests/setup-cli-claude-gemini.test.ts scripts/tests/setup-cli-copilot-antigravity.test.ts scripts/tests/setup-declarations.test.ts scripts/tests/setup-deps.test.ts scripts/tests/setup-ensure-http.test.ts scripts/tests/setup-ensure-http-probes.test.ts scripts/tests/setup-ensure-http-wiring.test.ts scripts/tests/setup-file-size.test.ts scripts/tests/setup-files.test.ts scripts/tests/setup-flow.test.ts scripts/tests/setup-flow-steps.test.ts scripts/tests/setup-gemini-settings.test.ts scripts/tests/setup-gemini-settings-rc.test.ts scripts/tests/setup-gemini-settings-write.test.ts scripts/tests/setup-gemini-settings-write-diff.test.ts scripts/tests/setup-golden-evidence.test.ts scripts/tests/setup-hint-strings.test.ts scripts/tests/setup-hooks-rewrite.test.ts scripts/tests/setup-json-secure.test.ts scripts/tests/setup-json-secure-failure.test.ts scripts/tests/setup-lib-shim-tls.test.ts scripts/tests/setup-lib-shim-usage.test.ts scripts/tests/setup-lib-tls-entry.test.ts scripts/tests/setup-lib-tls-entry-offer.test.ts scripts/tests/setup-lib-usage-entry.test.ts scripts/tests/setup-lib-usage-entry-form.test.ts scripts/tests/setup-link-key.test.ts scripts/tests/setup-lossless-callsites.test.ts scripts/tests/setup-lossless-shim.test.ts scripts/tests/setup-lossless-writers.test.ts scripts/tests/setup-mcp-agy-step.test.ts scripts/tests/setup-mcp-claude-flow.test.ts scripts/tests/setup-mcp-claude-step.test.ts scripts/tests/setup-mcp-copilot-step.test.ts scripts/tests/setup-mcp-gemini-step.test.ts scripts/tests/setup-mcp-json-writers.test.ts scripts/tests/setup-mcp-json-writers-merge.test.ts scripts/tests/setup-mempalace-callsite.test.ts scripts/tests/setup-mempalace-detect.test.ts scripts/tests/setup-mempalace-install-offer.test.ts scripts/tests/setup-mempalace-stdio.test.ts scripts/tests/setup-mempalace-version.test.ts scripts/tests/setup-misc-paths.test.ts scripts/tests/setup-no-posix-tool.test.ts scripts/tests/setup-org-mcp-claude-argv.test.ts scripts/tests/setup-org-mcp-fold.test.ts scripts/tests/setup-prerequisites.test.ts scripts/tests/setup-prompt.test.ts scripts/tests/setup-prompt-integration.test.ts scripts/tests/setup-prompt-table.test.ts scripts/tests/setup-prompt-tty.test.ts scripts/tests/setup-references.test.ts scripts/tests/setup-session-recording.test.ts scripts/tests/setup-session-recording-ownership.test.ts scripts/tests/setup-shim.test.ts scripts/tests/setup-stdlib-closure.test.ts scripts/tests/setup-steps-agy.test.ts scripts/tests/setup-steps-agy-channels.test.ts scripts/tests/setup-steps-copilot.test.ts scripts/tests/setup-steps-hooks.test.ts scripts/tests/setup-steps-hooks-lossy.test.ts scripts/tests/setup-steps-mcp.test.ts scripts/tests/setup-steps-rules.test.ts scripts/tests/setup-steps-rules-edge.test.ts scripts/tests/setup-steps-tiers.test.ts scripts/tests/setup-steps-usage.test.ts scripts/tests/setup-store-guidance.test.ts scripts/tests/setup-summary.test.ts scripts/tests/setup-tier-build.test.ts scripts/tests/setup-tier-install.test.ts scripts/tests/setup-tls-detect.test.ts scripts/tests/setup-tls-offer.test.ts scripts/tests/setup-trust-wrapper.test.ts scripts/tests/setup-trust-wrapper-install.test.ts scripts/tests/setup-usage-capture.test.ts scripts/tests/setup-usage-capture-keep.test.ts scripts/tests/setup-usage-capture-rank.test.ts scripts/tests/setup-usage-capture-state.test.ts scripts/tests/setup-usage-capture-wire-path.test.ts scripts/tests/setup-validation.test.ts scripts/tests/tls-env-quote.test.ts scripts/tests/tls-env-writer.test.ts scripts/tests/manage-confirm-remainder.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-answers.test.ts scripts/tests/setup-antigravity-hooks.test.ts scripts/tests/setup-antigravity-statusline.test.ts scripts/tests/setup-antigravity-tier.test.ts scripts/tests/setup-backup.test.ts scripts/tests/setup-backup-failure.test.ts scripts/tests/setup-catalogue.test.ts scripts/tests/setup-chroma-install.test.ts scripts/tests/setup-chroma-install-win.test.ts scripts/tests/setup-chroma-unit.test.ts scripts/tests/setup-cli-claude-gemini.test.ts scripts/tests/setup-cli-copilot-antigravity.test.ts scripts/tests/setup-declarations.test.ts scripts/tests/setup-deps.test.ts scripts/tests/setup-ensure-http.test.ts scripts/tests/setup-ensure-http-probes.test.ts scripts/tests/setup-ensure-http-wiring.test.ts scripts/tests/setup-file-size.test.ts scripts/tests/setup-files.test.ts scripts/tests/setup-flow.test.ts scripts/tests/setup-flow-steps.test.ts scripts/tests/setup-gemini-settings.test.ts scripts/tests/setup-gemini-settings-rc.test.ts scripts/tests/setup-gemini-settings-write.test.ts scripts/tests/setup-gemini-settings-write-diff.test.ts scripts/tests/setup-golden-evidence.test.ts scripts/tests/setup-hint-strings.test.ts scripts/tests/setup-hooks-rewrite.test.ts scripts/tests/setup-json-secure.test.ts scripts/tests/setup-json-secure-failure.test.ts scripts/tests/setup-lib-shim-tls.test.ts scripts/tests/setup-lib-shim-usage.test.ts scripts/tests/setup-lib-tls-entry.test.ts scripts/tests/setup-lib-tls-entry-offer.test.ts scripts/tests/setup-lib-usage-entry.test.ts scripts/tests/setup-lib-usage-entry-form.test.ts scripts/tests/setup-link-key.test.ts scripts/tests/setup-lossless-callsites.test.ts scripts/tests/setup-lossless-shim.test.ts scripts/tests/setup-lossless-writers.test.ts scripts/tests/setup-mcp-agy-step.test.ts scripts/tests/setup-mcp-claude-flow.test.ts scripts/tests/setup-mcp-claude-step.test.ts scripts/tests/setup-mcp-copilot-step.test.ts scripts/tests/setup-mcp-gemini-step.test.ts scripts/tests/setup-mcp-json-writers.test.ts scripts/tests/setup-mcp-json-writers-merge.test.ts scripts/tests/setup-mempalace-callsite.test.ts scripts/tests/setup-mempalace-detect.test.ts scripts/tests/setup-mempalace-install-offer.test.ts scripts/tests/setup-mempalace-stdio.test.ts scripts/tests/setup-mempalace-version.test.ts scripts/tests/setup-misc-paths.test.ts scripts/tests/setup-no-posix-tool.test.ts scripts/tests/setup-org-mcp-claude-argv.test.ts scripts/tests/setup-org-mcp-fold.test.ts scripts/tests/setup-prerequisites.test.ts scripts/tests/setup-prompt.test.ts scripts/tests/setup-prompt-integration.test.ts scripts/tests/setup-prompt-table.test.ts scripts/tests/setup-prompt-tty.test.ts scripts/tests/setup-references.test.ts scripts/tests/setup-session-recording.test.ts scripts/tests/setup-session-recording-ownership.test.ts scripts/tests/setup-stdlib-closure.test.ts scripts/tests/setup-steps-agy.test.ts scripts/tests/setup-steps-agy-channels.test.ts scripts/tests/setup-steps-copilot.test.ts scripts/tests/setup-steps-hooks.test.ts scripts/tests/setup-steps-hooks-lossy.test.ts scripts/tests/setup-steps-mcp.test.ts scripts/tests/setup-steps-rules.test.ts scripts/tests/setup-steps-rules-edge.test.ts scripts/tests/setup-steps-tiers.test.ts scripts/tests/setup-steps-usage.test.ts scripts/tests/setup-store-guidance.test.ts scripts/tests/setup-summary.test.ts scripts/tests/setup-tier-build.test.ts scripts/tests/setup-tier-install.test.ts scripts/tests/setup-tls-detect.test.ts scripts/tests/setup-tls-offer.test.ts scripts/tests/setup-trust-wrapper.test.ts scripts/tests/setup-trust-wrapper-install.test.ts scripts/tests/setup-usage-capture.test.ts scripts/tests/setup-usage-capture-keep.test.ts scripts/tests/setup-usage-capture-rank.test.ts scripts/tests/setup-usage-capture-state.test.ts scripts/tests/setup-usage-capture-wire-path.test.ts scripts/tests/setup-validation.test.ts scripts/tests/tls-env-quote.test.ts scripts/tests/tls-env-writer.test.ts scripts/tests/manage-confirm-remainder.test.ts
 
   # Spec 0257 (row of epic #1231, ticket #1336), PR 4a: the TypeScript monorepo release driver
   # modules (refusals, forge, mode, branch, identity, credentials, classification, engine-log
@@ -1644,7 +1628,6 @@ capabilities:
           - "scripts/lib/extension/**"
           - "scripts/lib/org-mcp.ts"
           - "scripts/lib/node-floor-guard.js"
-          - "scripts/install-extension.sh"
           - "scripts/lib/extension-percli-keys.json"
           - "scripts/lib/extension-generated-class.json"
           - "scripts/tests/build-extension-suite-render.test.ts"
@@ -1675,12 +1658,9 @@ capabilities:
           - "scripts/lib/extension/**"
           - "scripts/lib/org-mcp.ts"
           - "scripts/lib/node-floor-guard.js"
-          - "scripts/build-copilot-plugin.sh"
           - "scripts/build-copilot-plugin.ts"
-          - "scripts/build-antigravity-extension.sh"
           - "scripts/build-antigravity-extension.ts"
           - "scripts/lib/common.sh"
-          - "scripts/install-antigravity-extension.sh"
           - "scripts/install-extension.ts"
           - "scripts/install-antigravity-extension.ts"
           - "scripts/lib/link-or-copy*.ts"
@@ -1712,7 +1692,6 @@ capabilities:
           - "scripts/lib/extension/**"
           - "scripts/lib/org-mcp.ts"
           - "scripts/lib/node-floor-guard.js"
-          - "scripts/install-extension.sh"
           - "scripts/lib/extension-percli-keys.json"
           - "scripts/lib/extension-generated-class.json"
           - "scripts/tests/build-extension-suite-render.test.ts"
@@ -1743,12 +1722,9 @@ capabilities:
           - "scripts/lib/extension/**"
           - "scripts/lib/org-mcp.ts"
           - "scripts/lib/node-floor-guard.js"
-          - "scripts/build-copilot-plugin.sh"
           - "scripts/build-copilot-plugin.ts"
-          - "scripts/build-antigravity-extension.sh"
           - "scripts/build-antigravity-extension.ts"
           - "scripts/lib/common.sh"
-          - "scripts/install-antigravity-extension.sh"
           - "scripts/install-extension.ts"
           - "scripts/install-antigravity-extension.ts"
           - "scripts/lib/link-or-copy*.ts"
@@ -1793,7 +1769,6 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-extension-provenance.sh"
           - "scripts/tests/governance-suite-extension-provenance.test.ts"
           - "scripts/tests/governance-suite-extension-provenance-r4.test.ts"
           - "scripts/tests/lib/governance-*.ts"
@@ -1804,7 +1779,6 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-extension-provenance.sh"
           - "scripts/tests/governance-suite-extension-provenance.test.ts"
           - "scripts/tests/governance-suite-extension-provenance-r4.test.ts"
           - "scripts/tests/lib/governance-*.ts"
@@ -1828,7 +1802,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/check-extension-manifest-version.sh"
-          - "scripts/check-extension-version-bump.sh"
           - "scripts/lib/common.sh"
           - "scripts/lib/extension-hooks.sh"
           - "scripts/tests/governance-suite-extension-version-bump.test.ts"
@@ -1844,7 +1817,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/check-extension-manifest-version.sh"
-          - "scripts/check-extension-version-bump.sh"
           - "scripts/lib/common.sh"
           - "scripts/lib/extension-hooks.sh"
           - "scripts/tests/governance-suite-extension-version-bump.test.ts"
@@ -1878,7 +1850,6 @@ capabilities:
           - "scripts/lib/extension/**"
           - "scripts/lib/org-mcp.ts"
           - "scripts/lib/node-floor-guard.js"
-          - "scripts/install-extension-all.sh"
           - "scripts/tests/install-sandbox.test.ts"
           - "scripts/tests/install-workspace.test.ts"
           - "scripts/tests/unlink-component.test.ts"
@@ -1891,18 +1862,6 @@ capabilities:
           - "scripts/tests/lib/hermetic-env.ts"
           - "scripts/tests/lib/build-fixture-tree.ts"
           - "scripts/tests/lib/worktree-fixtures.ts"
-          - "scripts/install-extension.sh"
-          - "scripts/install-claude-plugin.sh"
-          - "scripts/install-copilot-plugin.sh"
-          - "scripts/install-antigravity-extension.sh"
-          - "scripts/install-workspace.sh"
-          - "scripts/manage-claude-component.sh"
-          - "scripts/manage-copilot-component.sh"
-          - "scripts/manage-antigravity-component.sh"
-          - "scripts/manage-workspace-component.sh"
-          - "scripts/link-extensions.sh"
-          - "scripts/unlink-extensions.sh"
-          - "scripts/unlink-component.sh"
           - "scripts/install-extension-all.ts"
           - "scripts/install-extension.ts"
           - "scripts/install-claude-plugin.ts"
@@ -1937,7 +1896,6 @@ capabilities:
           - "scripts/lib/extension/**"
           - "scripts/lib/org-mcp.ts"
           - "scripts/lib/node-floor-guard.js"
-          - "scripts/install-extension-all.sh"
           - "scripts/tests/install-sandbox.test.ts"
           - "scripts/tests/install-workspace.test.ts"
           - "scripts/tests/unlink-component.test.ts"
@@ -1950,18 +1908,6 @@ capabilities:
           - "scripts/tests/lib/hermetic-env.ts"
           - "scripts/tests/lib/build-fixture-tree.ts"
           - "scripts/tests/lib/worktree-fixtures.ts"
-          - "scripts/install-extension.sh"
-          - "scripts/install-claude-plugin.sh"
-          - "scripts/install-copilot-plugin.sh"
-          - "scripts/install-antigravity-extension.sh"
-          - "scripts/install-workspace.sh"
-          - "scripts/manage-claude-component.sh"
-          - "scripts/manage-copilot-component.sh"
-          - "scripts/manage-antigravity-component.sh"
-          - "scripts/manage-workspace-component.sh"
-          - "scripts/link-extensions.sh"
-          - "scripts/unlink-extensions.sh"
-          - "scripts/unlink-component.sh"
           - "scripts/install-extension-all.ts"
           - "scripts/install-extension.ts"
           - "scripts/install-claude-plugin.ts"
@@ -2002,7 +1948,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/check-core-paths.sh"
-          - "scripts/sync-from-upstream.sh"
           - "scripts/sync-from-upstream.ts"
           - "scripts/lib/sync-from-upstream/**"
           - "scripts/tests/sync-from-upstream-policies.test.ts"
@@ -2024,7 +1969,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/check-core-paths.sh"
-          - "scripts/sync-from-upstream.sh"
           - "scripts/sync-from-upstream.ts"
           - "scripts/lib/sync-from-upstream/**"
           - "scripts/tests/sync-from-upstream-policies.test.ts"
@@ -2192,7 +2136,6 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-figure-labels.sh"
           - "scripts/tests/windows-governance-figure-labels.test.ts"
           - "scripts/tests/governance-suite-figure-labels.test.ts"
           - "docs/assets/**/*.png"
@@ -2203,7 +2146,6 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-figure-labels.sh"
           - "scripts/tests/windows-governance-figure-labels.test.ts"
           - "scripts/tests/governance-suite-figure-labels.test.ts"
           - "docs/assets/**/*.png"
@@ -2408,9 +2350,7 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-test-wiring.sh"
           - "scripts/tests/governance-check-test-wiring-cases.test.ts"
-          - "scripts/check-test-strays.sh"
           - "scripts/tests/governance-check-test-strays-cases.test.ts"
           - "scripts/check-test-strays.ts"
           - "scripts/lib/governance/**"
@@ -2431,9 +2371,7 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-test-wiring.sh"
           - "scripts/tests/governance-check-test-wiring-cases.test.ts"
-          - "scripts/check-test-strays.sh"
           - "scripts/tests/governance-check-test-strays-cases.test.ts"
           - "scripts/check-test-strays.ts"
           - "scripts/lib/governance/**"
@@ -2482,11 +2420,8 @@ capabilities:
           - "scripts/tests/repair-common-sh.test.ts"
           - "scripts/tests/lib/repair-rig.ts"
           - "scripts/tests/switch-rotate-token.test.ts"
-          - "scripts/worktree-claim.sh"
           - "scripts/worktree-claim.ts"
           - "hooks/worktree-git-guard.ts"
-          - "scripts/repair-mempalace-http.sh"
-          - "scripts/switch-mempalace-http.sh"
           - "scripts/lib/**"
           - "config/launchd/**"
           - "config/systemd/**"
@@ -2506,11 +2441,8 @@ capabilities:
           - "scripts/tests/repair-common-sh.test.ts"
           - "scripts/tests/lib/repair-rig.ts"
           - "scripts/tests/switch-rotate-token.test.ts"
-          - "scripts/worktree-claim.sh"
           - "scripts/worktree-claim.ts"
           - "hooks/worktree-git-guard.ts"
-          - "scripts/repair-mempalace-http.sh"
-          - "scripts/switch-mempalace-http.sh"
           - "scripts/lib/**"
           - "config/launchd/**"
           - "config/systemd/**"
@@ -2519,7 +2451,7 @@ capabilities:
     changeset-gated: true
     requires:
       # python@3.12 is the primary/image runtime (unchanged); node@24 is a
-      # SECONDARY runtime: the worktree-claim.sh shim execs the TypeScript
+      # SECONDARY runtime: the worktree-claim.ts tool is the TypeScript
       # claim tool, and on a Node.js below 24 it exits 1 (spec 0248 R26, R36).
       runtime: [python@3.12, node@24]
       tools: [yq]
@@ -2537,11 +2469,8 @@ capabilities:
         - "scripts/tests/repair-common-sh.test.ts"
         - "scripts/tests/lib/repair-rig.ts"
         - "scripts/tests/switch-rotate-token.test.ts"
-        - "scripts/worktree-claim.sh"
         - "scripts/worktree-claim.ts"
         - "hooks/worktree-git-guard.ts"
-        - "scripts/repair-mempalace-http.sh"
-        - "scripts/switch-mempalace-http.sh"
         - "scripts/lib/**"
         - "config/launchd/**"
         - "config/systemd/**"
@@ -2687,10 +2616,8 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-no-machine-paths.sh"
           - "scripts/tests/governance-suite-no-machine-paths.test.ts"
           - "scripts/tests/lib/governance-*.ts"
-          - "scripts/check-gemini-overlay-enrollment.sh"
           - "scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts"
           - "scripts/tests/lib/build-fixture-tree.ts"
           - "scripts/tests/reserve-spec-id-contract.test.ts"
@@ -2709,7 +2636,6 @@ capabilities:
           - "scripts/reserve-spec-id.sh"
           - "scripts/check-spec-id-reserved.sh"
           - "model-mappings/**"
-          - "scripts/setup-gemini-interactive.sh"
           - "scripts/setup-gemini-interactive.ts"
           - "config/gemini/settings.json"
           - "scripts/lib/**"
@@ -2721,10 +2647,8 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-no-machine-paths.sh"
           - "scripts/tests/governance-suite-no-machine-paths.test.ts"
           - "scripts/tests/lib/governance-*.ts"
-          - "scripts/check-gemini-overlay-enrollment.sh"
           - "scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts"
           - "scripts/tests/lib/build-fixture-tree.ts"
           - "scripts/tests/reserve-spec-id-contract.test.ts"
@@ -2743,7 +2667,6 @@ capabilities:
           - "scripts/reserve-spec-id.sh"
           - "scripts/check-spec-id-reserved.sh"
           - "model-mappings/**"
-          - "scripts/setup-gemini-interactive.sh"
           - "scripts/setup-gemini-interactive.ts"
           - "config/gemini/settings.json"
           - "scripts/lib/**"
@@ -2775,8 +2698,8 @@ capabilities:
       - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-spec-id-reserved-blocking.test.ts scripts/tests/check-spec-id-reserved-mark.test.ts scripts/tests/check-spec-id-reserved-origin.test.ts scripts/tests/check-spec-id-reserved-degraded.test.ts scripts/tests/check-spec-id-reserved-base-ref.test.ts
 
   # repository-scan runs the checks whose verdict depends on files anywhere in
-  # the repository (spec 0251 R1-R4): check-no-machine-paths.sh scans every
-  # tracked file, check-markdown-links.sh every tracked *.md and the target of
+  # the repository (spec 0251 R1-R4): check-no-machine-paths.ts scans every
+  # tracked file, check-markdown-links.ts every tracked *.md and the target of
   # every relative link, and check-core-paths.sh every path the manifest names
   # plus the output directories of build-components.sh. No filter can enumerate
   # those inputs in advance, so the capability has NO `paths:` filter and runs
@@ -2816,7 +2739,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/tests/build-components-frontmatter-fence.test.ts"
-          - "scripts/check-skill-versions.sh"
           - "scripts/tests/governance-suite-skill-versions.test.ts"
           - "scripts/tests/governance-suite-skill-versions-base.test.ts"
           - "scripts/tests/lib/governance-*.ts"
@@ -2851,7 +2773,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/tests/build-components-frontmatter-fence.test.ts"
-          - "scripts/check-skill-versions.sh"
           - "scripts/tests/governance-suite-skill-versions.test.ts"
           - "scripts/tests/governance-suite-skill-versions-base.test.ts"
           - "scripts/tests/lib/governance-*.ts"
@@ -3066,7 +2987,6 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-markdown-links.sh"
           - "scripts/tests/governance-suite-markdown-links.test.ts"
           - "scripts/tests/lib/governance-*.ts"
           - "docs/**"
@@ -3078,7 +2998,6 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-markdown-links.sh"
           - "scripts/tests/governance-suite-markdown-links.test.ts"
           - "scripts/tests/lib/governance-*.ts"
           - "docs/**"
@@ -3240,7 +3159,7 @@ capabilities:
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/node-floor-guard.test.ts scripts/tests/paths.test.ts scripts/tests/line-endings.test.ts scripts/tests/tmp-file.test.ts scripts/tests/require-dependency.test.ts scripts/tests/check-timing-budget.test.ts scripts/tests/setup-dependency-step.test.ts scripts/tests/production-dependencies.test.ts
       # Spec 0253 PLAN v3 A4: the history-import and prune oracles (POSIX only,
       # they drive the shell originals through bash; each skips itself on win32).
-      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/history-import-oracle.test.ts scripts/tests/prune-transcripts-oracle.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/prune-transcripts-oracle.test.ts
       # Spec 0253 PLAN v3 C7: the cross-platform unit tests of the TypeScript
       # history-import and prune entries.
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/history-import.test.ts scripts/tests/prune-transcripts-ts.test.ts scripts/tests/prune-transcripts-ts-run.test.ts scripts/tests/history-import-python.test.ts scripts/tests/history-import-prune-python.test.ts
@@ -3399,10 +3318,8 @@ capabilities:
           - "scripts/lib/common.sh"
           - "scripts/lib/usage-capture-optin.sh"
           - "scripts/usage-capture-optin.ts"
-          - "scripts/status-mcp-server.sh"
           - "scripts/status-mcp-server.ts"
           - "scripts/lib/service/**"
-          - "scripts/setup-*-interactive.sh"
           - "scripts/setup-*-interactive.ts"
           - "scripts/tests/mempalace-registration*.test.ts"
           - "scripts/tests/mempalace-session-check.test.ts"
@@ -3424,10 +3341,8 @@ capabilities:
           - "scripts/lib/common.sh"
           - "scripts/lib/usage-capture-optin.sh"
           - "scripts/usage-capture-optin.ts"
-          - "scripts/status-mcp-server.sh"
           - "scripts/status-mcp-server.ts"
           - "scripts/lib/service/**"
-          - "scripts/setup-*-interactive.sh"
           - "scripts/setup-*-interactive.ts"
           - "scripts/tests/mempalace-registration*.test.ts"
           - "scripts/tests/mempalace-session-check.test.ts"
@@ -3526,7 +3441,6 @@ capabilities:
         paths:
           - "hooks/worktree-git-guard.sh"
           - "hooks/worktree-git-guard.ts"
-          - "scripts/worktree-claim.sh"
           - "scripts/worktree-claim.ts"
           - "scripts/lib/worktree-claim/**"
           - "scripts/lib/hook-*.ts"
@@ -3543,7 +3457,6 @@ capabilities:
         paths:
           - "hooks/worktree-git-guard.sh"
           - "hooks/worktree-git-guard.ts"
-          - "scripts/worktree-claim.sh"
           - "scripts/worktree-claim.ts"
           - "scripts/lib/worktree-claim/**"
           - "scripts/lib/hook-*.ts"
@@ -3606,7 +3519,6 @@ capabilities:
           - "scripts/lib/usage-capture-optin.sh"
           - "scripts/usage-capture-optin.ts"
           - "scripts/lib/common.sh"
-          - "scripts/setup-*-interactive.sh"
           - "scripts/setup-*-interactive.ts"
           - "hooks/*-transcript-hooks.json"
           - "scripts/tests/mempalace-transcript-*.test.ts"
@@ -3630,7 +3542,6 @@ capabilities:
           - "scripts/lib/usage-capture-optin.sh"
           - "scripts/usage-capture-optin.ts"
           - "scripts/lib/common.sh"
-          - "scripts/setup-*-interactive.sh"
           - "scripts/setup-*-interactive.ts"
           - "hooks/*-transcript-hooks.json"
           - "scripts/tests/mempalace-transcript-*.test.ts"
@@ -3964,7 +3875,6 @@ capabilities:
           - "hooks/gemini-transcript-hooks.json"
           - "hooks/copilot-transcript-hooks.json"
           - "scripts/lib/usage-capture/**"
-          - "scripts/usage-backfill.sh"
           - "scripts/usage-backfill.ts"
           - "scripts/tests/e2e-usage-headless.test.ts"
           - "scripts/tests/fixtures/usage-capture/**"
@@ -3974,11 +3884,8 @@ capabilities:
           - "scripts/lib/usage-capture-optin.sh"
           - "scripts/usage-capture-optin.ts"
           - "scripts/lib/common.sh"
-          - "scripts/setup-claude-interactive.sh"
           - "scripts/setup-claude-interactive.ts"
-          - "scripts/setup-gemini-interactive.sh"
           - "scripts/setup-gemini-interactive.ts"
-          - "scripts/setup-copilot-interactive.sh"
           - "scripts/setup-copilot-interactive.ts"
           - "scripts/tests/usage-capture-optin-*.test.ts"
           - "scripts/tests/lib/optin-*.ts"
@@ -3989,7 +3896,6 @@ capabilities:
           - "scripts/lib/hook-*.ts"
           - "scripts/hook-wiring.ts"
           - "scripts/check-timing-budget.ts"
-          - "scripts/setup-antigravity-interactive.sh"
           - "scripts/setup-antigravity-interactive.ts"
           - "scripts/tests/antigravity-statusline-shim.test.ts"
           - "scripts/tests/setup-transcript-antigravity-*.test.ts"
@@ -4020,7 +3926,6 @@ capabilities:
           - "hooks/gemini-transcript-hooks.json"
           - "hooks/copilot-transcript-hooks.json"
           - "scripts/lib/usage-capture/**"
-          - "scripts/usage-backfill.sh"
           - "scripts/usage-backfill.ts"
           - "scripts/tests/e2e-usage-headless.test.ts"
           - "scripts/tests/fixtures/usage-capture/**"
@@ -4030,11 +3935,8 @@ capabilities:
           - "scripts/lib/usage-capture-optin.sh"
           - "scripts/usage-capture-optin.ts"
           - "scripts/lib/common.sh"
-          - "scripts/setup-claude-interactive.sh"
           - "scripts/setup-claude-interactive.ts"
-          - "scripts/setup-gemini-interactive.sh"
           - "scripts/setup-gemini-interactive.ts"
-          - "scripts/setup-copilot-interactive.sh"
           - "scripts/setup-copilot-interactive.ts"
           - "scripts/tests/usage-capture-optin-*.test.ts"
           - "scripts/tests/lib/optin-*.ts"
@@ -4045,7 +3947,6 @@ capabilities:
           - "scripts/lib/hook-*.ts"
           - "scripts/hook-wiring.ts"
           - "scripts/check-timing-budget.ts"
-          - "scripts/setup-antigravity-interactive.sh"
           - "scripts/setup-antigravity-interactive.ts"
           - "scripts/tests/antigravity-statusline-shim.test.ts"
           - "scripts/tests/setup-transcript-antigravity-*.test.ts"
@@ -4091,20 +3992,14 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/lib/usage-store/**"
-          - "scripts/usage-query.sh"
           - "scripts/usage-query.ts"
-          - "scripts/usage-prune.sh"
           - "scripts/usage-prune.ts"
           - "scripts/usage-mirror.sh"
           - "scripts/usage-mirror.ts"
           - "scripts/usage-inventory.ts"
-          - "scripts/usage-drain.sh"
           - "scripts/usage-drain.ts"
-          - "scripts/usage-task.sh"
           - "scripts/usage-task.ts"
-          - "scripts/usage-attribute.sh"
           - "scripts/usage-attribute.ts"
-          - "scripts/usage-backfill.sh"
           - "scripts/usage-backfill.ts"
           - "scripts/build-usage-validator.js"
           - "scripts/tests/usage-mirror-catchup.test.ts"
@@ -4142,20 +4037,14 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/lib/usage-store/**"
-          - "scripts/usage-query.sh"
           - "scripts/usage-query.ts"
-          - "scripts/usage-prune.sh"
           - "scripts/usage-prune.ts"
           - "scripts/usage-mirror.sh"
           - "scripts/usage-mirror.ts"
           - "scripts/usage-inventory.ts"
-          - "scripts/usage-drain.sh"
           - "scripts/usage-drain.ts"
-          - "scripts/usage-task.sh"
           - "scripts/usage-task.ts"
-          - "scripts/usage-attribute.sh"
           - "scripts/usage-attribute.ts"
-          - "scripts/usage-backfill.sh"
           - "scripts/usage-backfill.ts"
           - "scripts/build-usage-validator.js"
           - "scripts/tests/usage-mirror-catchup.test.ts"
@@ -4229,9 +4118,7 @@ capabilities:
         paths:
           - "scripts/lib/usage-store/**"
           - "scripts/lib/usage-capture/**"
-          - "scripts/usage-task.sh"
           - "scripts/usage-task.ts"
-          - "scripts/usage-attribute.sh"
           - "scripts/usage-attribute.ts"
           - "scripts/tests/usage-attribution-channels.test.ts"
           - "scripts/tests/usage-attribution-ledger-rollup.test.ts"
@@ -4254,9 +4141,7 @@ capabilities:
         paths:
           - "scripts/lib/usage-store/**"
           - "scripts/lib/usage-capture/**"
-          - "scripts/usage-task.sh"
           - "scripts/usage-task.ts"
-          - "scripts/usage-attribute.sh"
           - "scripts/usage-attribute.ts"
           - "scripts/tests/usage-attribution-channels.test.ts"
           - "scripts/tests/usage-attribution-ledger-rollup.test.ts"
@@ -4298,8 +4183,8 @@ capabilities:
   # or prune.js would not run the suite that owns the R37 assertion. The usage-dashboard
   # tree and entry script are in the paths filter because the suite runs the dashboard
   # (cases 17 and 19), so a change to either must run it.
-  # The three usage-store entry scripts (usage-attribute.sh, usage-prune.sh,
-  # usage-query.sh) are in the paths filter for the same reason: the suite runs
+  # The three usage-store entry scripts (usage-attribute.ts, usage-prune.ts,
+  # usage-query.ts) are in the paths filter for the same reason: the suite runs
   # them (the R37 prune cases 14 and 15, the case 17 period-rollup helper, the
   # case 19 ledger writes), so a change to their exec line or argument handling
   # must run it.
@@ -4310,7 +4195,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/lib/usage-price/**"
-          - "scripts/usage-price.sh"
           - "scripts/usage-price.ts"
           - "scripts/tests/usage-pricing-compute.test.ts"
           - "scripts/tests/usage-pricing-fx.test.ts"
@@ -4327,14 +4211,10 @@ capabilities:
           - "scripts/tests/fixtures/usage-pricing/**"
           - "model-prices.org.json"
           - "scripts/lib/usage-store/**"
-          - "scripts/usage-attribute.sh"
           - "scripts/usage-attribute.ts"
-          - "scripts/usage-prune.sh"
           - "scripts/usage-prune.ts"
-          - "scripts/usage-query.sh"
           - "scripts/usage-query.ts"
           - "scripts/lib/usage-dashboard/**"
-          - "scripts/usage-dashboard.sh"
           - "scripts/usage-dashboard.ts"
           - "package.json"
           - "package-lock.json"
@@ -4342,7 +4222,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/lib/usage-price/**"
-          - "scripts/usage-price.sh"
           - "scripts/usage-price.ts"
           - "scripts/tests/usage-pricing-compute.test.ts"
           - "scripts/tests/usage-pricing-fx.test.ts"
@@ -4359,14 +4238,10 @@ capabilities:
           - "scripts/tests/fixtures/usage-pricing/**"
           - "model-prices.org.json"
           - "scripts/lib/usage-store/**"
-          - "scripts/usage-attribute.sh"
           - "scripts/usage-attribute.ts"
-          - "scripts/usage-prune.sh"
           - "scripts/usage-prune.ts"
-          - "scripts/usage-query.sh"
           - "scripts/usage-query.ts"
           - "scripts/lib/usage-dashboard/**"
-          - "scripts/usage-dashboard.sh"
           - "scripts/usage-dashboard.ts"
           - "package.json"
           - "package-lock.json"
@@ -4391,7 +4266,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/lib/usage-dashboard/**"
-          - "scripts/usage-dashboard.sh"
           - "scripts/usage-dashboard.ts"
           - "scripts/tests/usage-dashboard-agreement.test.ts"
           - "scripts/tests/usage-dashboard-crosscheck.test.ts"
@@ -4418,13 +4292,9 @@ capabilities:
           - "model-prices.org.json"
           - "scripts/lib/usage-store/**"
           - "scripts/lib/usage-price/**"
-          - "scripts/usage-query.sh"
           - "scripts/usage-query.ts"
-          - "scripts/usage-price.sh"
           - "scripts/usage-price.ts"
-          - "scripts/usage-attribute.sh"
           - "scripts/usage-attribute.ts"
-          - "scripts/usage-prune.sh"
           - "scripts/usage-prune.ts"
           - "schemas/usage-record/**"
           - "package.json"
@@ -4433,7 +4303,6 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "scripts/lib/usage-dashboard/**"
-          - "scripts/usage-dashboard.sh"
           - "scripts/usage-dashboard.ts"
           - "scripts/tests/usage-dashboard-agreement.test.ts"
           - "scripts/tests/usage-dashboard-crosscheck.test.ts"
@@ -4460,13 +4329,9 @@ capabilities:
           - "model-prices.org.json"
           - "scripts/lib/usage-store/**"
           - "scripts/lib/usage-price/**"
-          - "scripts/usage-query.sh"
           - "scripts/usage-query.ts"
-          - "scripts/usage-price.sh"
           - "scripts/usage-price.ts"
-          - "scripts/usage-attribute.sh"
           - "scripts/usage-attribute.ts"
-          - "scripts/usage-prune.sh"
           - "scripts/usage-prune.ts"
           - "schemas/usage-record/**"
           - "package.json"

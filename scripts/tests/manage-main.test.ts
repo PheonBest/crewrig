@@ -38,7 +38,7 @@ describe("usage and unknown type", () => {
       }
     }
     assert.deepEqual(usageLines(CLAUDE), [
-      "Usage: manage-claude-component.sh <install|link> <type> [name]",
+      "Usage: manage-claude-component.ts <install|link> <type> [name]",
       "Types: claude-skills, policies, mcp-servers",
     ]);
   });

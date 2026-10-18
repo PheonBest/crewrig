@@ -25,9 +25,7 @@ setup script asks; re-running the script is also how you switch capture off.
 
 Each setup is the TypeScript entry `scripts/setup-<cli>-interactive.ts`, which
 needs Node.js 24 or later. Run `node scripts/lib/node-floor-guard.js` first,
-then the entry, as two separate steps (not chained with `&&`). The older
-`bash scripts/setup-<cli>-interactive.sh` form still works: it is a forwarding
-shim that runs the same two steps.
+then the entry, as two separate steps (not chained with `&&`). The old Bash setup scripts were removed (see `docs/shell-removal.md`).
 
 This section was verified against `main` at commit `c8baa79` on 2026-09-24.
 

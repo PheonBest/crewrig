@@ -68,7 +68,7 @@ export function createBackend(home: string = homedir()): ServiceBackend {
         detail: [
           `MCP daemon: restart requested (${names.label})`,
           "  Under KeepAlive the supervisor brings it straight back.",
-          "  To end it: bash scripts/uninstall-mcp-daemon.sh",
+          "  To end it: node scripts/uninstall-mcp-daemon.ts",
         ].join("\n"),
       };
     },

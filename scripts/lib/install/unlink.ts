@@ -1,5 +1,5 @@
 // unlink.ts — remove what the install scripts placed under the Gemini home (spec 0255 R13).
-// Twins of scripts/unlink-component.sh and scripts/unlink-extensions.sh. Removal is by name and
+// Twins of scripts/unlink-component.ts and scripts/unlink-extensions.ts. Removal is by name and
 // never follows a link: a symbolic link (a dangling one included) is unlinked and its target is
 // left alone, a directory is removed with its content.
 
@@ -23,7 +23,7 @@ export function unlinkComponentMain(ctx: InstallCtx, argv: readonly string[]): n
   const type = argv[0] ?? "";
   const name = argv[1] ?? "";
   if (type === "" || name === "") {
-    ctx.io.out("Usage: unlink-component.sh <type> <name>");
+    ctx.io.out("Usage: unlink-component.ts <type> <name>");
     ctx.io.out("Types: commands, skills, hooks, agents, policies, mcp-servers, themes");
     return 1;
   }

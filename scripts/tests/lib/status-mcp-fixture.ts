@@ -23,7 +23,6 @@ export interface Result {
 export type Entry = (name: string) => [string, string[]];
 export const ENTRIES: Array<[string, Entry, string | false]> = [
   ["TypeScript entry", (n) => [process.execPath, [`scripts/${n}.ts`]], false],
-  ["bash shim", (n) => ["bash", [`scripts/${n}.sh`]], !posix && "bash shims are POSIX-only"],
 ];
 
 /** The environment of a run: the inherited one minus every MCP seam, plus an isolated HOME. */

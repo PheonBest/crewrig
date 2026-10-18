@@ -34,7 +34,7 @@
 // `forge-issue` refs — for the textually identical task-handoff key of one
 // macro task. This is the one case R9's cross-CLI textual identity does not
 // reach by construction; the documented recourse is an explicit
-// declaration (`bash scripts/usage-task.sh set --task-key <key> --channel
+// declaration (`node scripts/usage-task.ts set --task-key <key> --channel
 // explicit`), which resolves at channel 1 and never reaches this
 // derivation. See docs/usage-attribution.md (doc-writer, issue #1171) for
 // the adopter-facing explanation.

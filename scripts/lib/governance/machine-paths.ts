@@ -1,5 +1,5 @@
 // machine-paths.ts — reject machine-specific home paths in tracked files
-// (spec 0081 R5/R6; TypeScript twin of check-no-machine-paths.sh, spec 0259).
+// (spec 0081 R5/R6; TypeScript twin of check-no-machine-paths.ts, spec 0259).
 //
 // `git grep` runs through runGit, so binary-file, attribute and ordering semantics stay
 // Git's own. Its output is decoded as latin1 (one char per byte, the C-locale view the
@@ -30,7 +30,6 @@ const TOKEN = /([A-Za-z]:)?\/(Users|home)\/[A-Za-z0-9._-]+(\/|$)/g;
 
 /** Self-exclusions: the two shell files, their TypeScript twins and this ticket's scan tests. */
 export const EXCLUDES: readonly string[] = [
-  "scripts/check-no-machine-paths.sh",
   "scripts/check-no-machine-paths.ts",
   "scripts/tests/governance-check-no-machine-paths.test.ts",
   "scripts/tests/governance-repo-scans-differential.test.ts",
@@ -84,7 +83,7 @@ export function evaluateMachinePaths(repoDir: string): MachinePathsOutcome {
       "",
       "Tracked files must not contain absolute /Users/<user>/ or /home/<user>/ paths.",
       "Replace them with a neutral placeholder ($HOME, <user>, <repo>). The benign",
-      "owners declared in scripts/check-no-machine-paths.sh are allowed: 'agent'",
+      "owners declared in scripts/check-no-machine-paths.ts are allowed: 'agent'",
       "(docker/e2e/base.Dockerfile) and 'ana' (Windows drive-letter form C:/Users/ana/",
       "only). A new benign owner requires a one-line, commented addition citing its source.",
     );

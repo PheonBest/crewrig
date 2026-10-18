@@ -9,8 +9,6 @@
 # The five shims: their header and usage text name the invocation they keep working.
 scripts/build-extension.sh
 scripts/build-claude-plugin.sh
-scripts/build-copilot-plugin.sh
-scripts/build-antigravity-extension.sh
 scripts/migrate-extension.sh
 # The TypeScript check that replaced check-extension-manifest-version.sh keeps the shell script's
 # diagnostic verbatim, which tells a reader to run the old builder invocation.

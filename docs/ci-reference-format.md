@@ -314,7 +314,7 @@ that mechanism.
 `path-ownership` proves that some filter owns each tracked file. It never
 proves that a check reacts to a change of the files it reads. That gap let a
 violation pass green on its own pull requests and fail on a later, unrelated
-push (the `check-no-machine-paths.sh` incident fixed by #1503 and #1505).
+push (the `check-no-machine-paths.ts` incident fixed by #1503 and #1505).
 Spec 0251 R14 closes it with the following trigger rule.
 
 - **A check with a finite input.** A check whose input is a known, finite set
@@ -422,7 +422,7 @@ The exhaustive run scans strays too. It executes each reference command with
 `eval`, and every registered suite command is declared in the scanned form
 (see *Stray scan of registered test suites*), so the daily run checks every
 suite for strays through the commands it already runs, with no extra code.
-`check-test-strays.sh` is not diff-scoped any more: it executes no suite and
+`check-test-strays.ts` is not diff-scoped any more: it executes no suite and
 only runs `bash -n` over the suites (spec 0170 delta-01 R9), so the exhaustive
 run adds nothing for that command and needs nothing from it.
 
@@ -575,7 +575,7 @@ when (a) a capability `command` or a workflow `run:` line executes a registered
 suite without the scan, or (b) a suite that has an owning capability is matched
 by the pull-request `paths:` of none of its owners (an owner with no `paths:`
 filter always matches). A suite with no owner is left to
-`scripts/check-test-wiring.sh` and `ci/test-wiring-exemptions.txt`.
+`scripts/check-test-wiring.ts` and `ci/test-wiring-exemptions.txt`.
 
 **When a suite prints the phrase.** A suite that prints `command not found` on
 purpose (an echo, an assertion on it) fails the scan with exit 70, because the

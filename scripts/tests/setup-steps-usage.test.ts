@@ -99,7 +99,7 @@ describe("usage-capture: the golden cells", { skip: POSIX_ONLY }, () => {
       within(result.out, cli, "usage-capture-absent-no");
       assert.ok(
         result.out.endsWith(
-          `Usage capture not enabled (re-run scripts/setup-${cli}-interactive.sh to enable it).\n`,
+          `Usage capture not enabled (re-run scripts/setup-${cli}-interactive.ts to enable it).\n`,
         ),
       );
       if (cli === "copilot") sameCopilotFiles("usage-capture-absent-no", false);

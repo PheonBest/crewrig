@@ -158,3 +158,32 @@ export function runBash(
 export function poisonHit(h: HermeticEnv): boolean {
   return fs.existsSync(h.poisonFile);
 }
+
+/** Run the TypeScript entry `script` with the real `node` (absolute path), `args`, and `h.env` overlaid with `options.env`. */
+export function runNodeScript(
+  h: HermeticEnv,
+  script: string,
+  args: readonly string[],
+  options: {
+    input?: string;
+    env?: Readonly<Record<string, string | undefined>>;
+    cwd?: string;
+  } = {},
+): RunResult {
+  const env: NodeJS.ProcessEnv = { ...h.env };
+  for (const [key, value] of Object.entries(options.env ?? {})) {
+    if (value === undefined) delete env[key];
+    else env[key] = value;
+  }
+  const res = spawnSync(
+    process.execPath,
+    ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", script, ...args],
+    {
+      encoding: "utf8",
+      env,
+      ...(options.cwd === undefined ? {} : { cwd: options.cwd }),
+      ...(options.input === undefined ? {} : { input: options.input }),
+    },
+  );
+  return { status: res.status, stdout: res.stdout, stderr: res.stderr };
+}

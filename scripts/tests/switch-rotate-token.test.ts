@@ -51,15 +51,8 @@ function tokenFile(r: Rig): string {
   return res.stdout;
 }
 
-const entry = (
-  cmd: "sh" | "ts",
-  r: Rig,
-  args: string[],
-): { status: number | null; out: string } => {
-  const [bin, argv] =
-    cmd === "sh"
-      ? ["bash", ["scripts/switch-mempalace-http.sh", ...args]]
-      : [process.execPath, ["scripts/switch-mempalace-http.ts", ...args]];
+const entry = (cmd: "ts", r: Rig, args: string[]): { status: number | null; out: string } => {
+  const [bin, argv] = [process.execPath, [`scripts/switch-mempalace-http.${cmd}`, ...args]];
   const res = spawnSync(bin as string, argv as string[], {
     cwd: REPO,
     env: r.env,
@@ -76,50 +69,46 @@ const bearer = (r: Rig, parts: string[]): string => {
   return doc.mcpServers.mempalace.headers.Authorization;
 };
 
-for (const which of ["sh", "ts"] as const) {
-  describe(
-    `switch --rotate (${which === "sh" ? "bash shim" : "TypeScript entry"})`,
-    { skip: !posix && "POSIX stubs" },
-    () => {
-      test("G1: --help documents --rotate; an unknown flag exits non-zero", () => {
-        const r = rig(`g1${which}`);
-        assert.ok(entry(which, r, ["--help"]).out.includes("--rotate"));
-        assert.notEqual(entry(which, r, ["--invalid-flag"]).status, 0);
-      });
+for (const which of ["ts"] as const) {
+  describe(`switch --rotate (TypeScript entry)`, { skip: !posix && "POSIX stubs" }, () => {
+    test("G1: --help documents --rotate; an unknown flag exits non-zero", () => {
+      const r = rig(`g1${which}`);
+      assert.ok(entry(which, r, ["--help"]).out.includes("--rotate"));
+      assert.notEqual(entry(which, r, ["--invalid-flag"]).status, 0);
+    });
 
-      test("G2-G4: rotate mints a distinct 0600 token, re-registers all four configs, purges every .bak.*", () => {
-        const r = rig(`g2${which}`);
-        const file = tokenFile(r);
-        fs.mkdirSync(path.dirname(file), { recursive: true });
-        fs.writeFileSync(file, `${TOKEN_A}\n`, { mode: 0o600 });
-        entry(which, r, ["--rotate"]);
-        const b = fs.readFileSync(file, "utf8").trim();
-        assert.notEqual(b, TOKEN_A);
-        assert.ok(b.length >= 32, `token length ${b.length}`);
-        assert.equal(modeOf(file), "600");
-        for (const [name, parts] of CONFIGS) {
-          assert.equal(bearer(r, parts), `Bearer ${b}`, `${name} config carries the new token`);
+    test("G2-G4: rotate mints a distinct 0600 token, re-registers all four configs, purges every .bak.*", () => {
+      const r = rig(`g2${which}`);
+      const file = tokenFile(r);
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, `${TOKEN_A}\n`, { mode: 0o600 });
+      entry(which, r, ["--rotate"]);
+      const b = fs.readFileSync(file, "utf8").trim();
+      assert.notEqual(b, TOKEN_A);
+      assert.ok(b.length >= 32, `token length ${b.length}`);
+      assert.equal(modeOf(file), "600");
+      for (const [name, parts] of CONFIGS) {
+        assert.equal(bearer(r, parts), `Bearer ${b}`, `${name} config carries the new token`);
+      }
+      const left: string[] = [];
+      const walk = (dir: string): void => {
+        for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+          const p = path.join(dir, e.name);
+          if (e.isDirectory()) walk(p);
+          else if (e.name.includes(".bak.")) left.push(p);
         }
-        const left: string[] = [];
-        const walk = (dir: string): void => {
-          for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-            const p = path.join(dir, e.name);
-            if (e.isDirectory()) walk(p);
-            else if (e.name.includes(".bak.")) left.push(p);
-          }
-        };
-        walk(r.home);
-        assert.deepEqual(left, []);
-      });
+      };
+      walk(r.home);
+      assert.deepEqual(left, []);
+    });
 
-      test("G5: a plain run keeps the existing token", () => {
-        const r = rig(`g5${which}`);
-        const file = tokenFile(r);
-        fs.mkdirSync(path.dirname(file), { recursive: true });
-        fs.writeFileSync(file, `${TOKEN_A}\n`, { mode: 0o600 });
-        entry(which, r, []);
-        assert.equal(fs.readFileSync(file, "utf8").trim(), TOKEN_A);
-      });
-    },
-  );
+    test("G5: a plain run keeps the existing token", () => {
+      const r = rig(`g5${which}`);
+      const file = tokenFile(r);
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, `${TOKEN_A}\n`, { mode: 0o600 });
+      entry(which, r, []);
+      assert.equal(fs.readFileSync(file, "utf8").trim(), TOKEN_A);
+    });
+  });
 }

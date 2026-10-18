@@ -1,4 +1,4 @@
-// antigravity-statusline.ts — the usage-capture STATUSLINE channel of setup-antigravity-interactive.sh
+// antigravity-statusline.ts — the usage-capture STATUSLINE channel of setup-antigravity-interactive.ts
 // (spec 0256 requirement 30, plan v2 step B3a.5; spec 0206, spec 0243): `statusLine.command` of the
 // CLI's settings and the marker state file `$CREWRIG_USAGE_ROOT/state/antigravity-statusline.json`,
 // a separate path from the hooks-file channel of antigravity-hooks.ts. The command line and both

@@ -274,7 +274,7 @@ system-context store*.
    **Also record the session's usage declaration** before any task work
    begins (spec 0208 R3): run the floor guard `node scripts/lib/node-floor-guard.js`,
    then `node scripts/usage-task.ts set --task-key <handoff_key> --channel
-   protocol` (`bash scripts/usage-task.sh` remains a forwarding shim only);
+   protocol`;
    `handoff_key` is the bare decimal ticket number, identical across every CLI.
 
 **Reviewer-seat exemption.** A seated pass — an agent instantiated per

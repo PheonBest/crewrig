@@ -1,7 +1,7 @@
 // steps-hooks.ts — the `hooks-rewrite-installed` and `session-recording` steps of the three CLIs
 // that keep their hooks in a JSON file: Claude Code and Gemini CLI (`settings.json`) and Copilot CLI
 // (`~/.copilot/hooks/copilot-transcript-hooks.json`) — spec 0256 requirements 29-31, plan v2 step
-// B3b.1. Shell: scripts/setup-claude-interactive.sh 440-525, gemini 396-471, copilot 386-463. The
+// B3b.1. Shell: scripts/setup-claude-interactive.ts 440-525, gemini 396-471, copilot 386-463. The
 // steps dispatch on `descriptor.hooks.channel`; `agy-json` is Antigravity CLI's: the body is steps-agy.ts's
 // (`agyHooksRewriteInstalled`, `agySessionRecording`), to which these entries delegate.
 //

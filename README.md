@@ -242,8 +242,7 @@ harness loop:
 > **Node.js note:** the four setups are TypeScript entries
 > (`scripts/setup-<cli>-interactive.ts`) and need
 > [Node.js 24 or later](https://nodejs.org/en/download). The `task
-> setup-<cli>-interactive` entries and the `bash
-> scripts/setup-<cli>-interactive.sh` shims run the Node.js floor guard
+> setup-<cli>-interactive` entries run the Node.js floor guard
 > (`scripts/lib/node-floor-guard.js`) before the entry and stop with a
 > diagnostic below 24. Run by hand, use two separate steps: `node
 > scripts/lib/node-floor-guard.js`, then `node
@@ -492,28 +491,28 @@ tests/
 scripts/
 ├── build-components.sh               # Shim: forwards to build-components.ts (the TypeScript build)
 ├── build-claude-plugin.sh            # Shim: forwards to build-claude-plugin.ts (the TypeScript plugin generator)
-├── check-skill-versions.sh           # CI gate: enforces version bump on modified sources
+├── check-skill-versions.ts           # CI gate: enforces version bump on modified sources
 ├── create-extension.sh               # Shim: forwards to create-extension.ts (the TypeScript extension scaffolder)
 ├── migrate-extension.sh              # Shim: forwards to migrate-extension.ts (converts an extension off the retired declaration shape, spec 0183)
-├── import-claude-history.sh          # Claude transcript import
-├── import-gemini-history.sh          # Gemini transcript import
-├── install-claude-plugin.sh          # Shim: forwards to install-claude-plugin.ts (Claude Code plugin installer)
-├── install-extension.sh              # Shim: forwards to install-extension.ts (Gemini extension installer)
-├── install-extension-all.sh          # Shim: forwards to install-extension-all.ts (cross-CLI umbrella extension installer)
-├── install-workspace.sh              # Shim: forwards to install-workspace.ts (bulk Gemini component install)
-├── link-extensions.sh                # Shim: forwards to link-extensions.ts (symlink extensions for local dev)
-├── manage-claude-component.sh        # Shim: forwards to manage-claude-component.ts (Claude Code component manager)
-├── manage-workspace-component.sh     # Shim: forwards to manage-workspace-component.ts (Gemini component manager)
+├── import-claude-history.ts          # Claude transcript import
+├── import-gemini-history.ts          # Gemini transcript import
+├── install-claude-plugin.ts          # Shim: forwards to install-claude-plugin.ts (Claude Code plugin installer)
+├── install-extension.ts              # Shim: forwards to install-extension.ts (Gemini extension installer)
+├── install-extension-all.ts          # Shim: forwards to install-extension-all.ts (cross-CLI umbrella extension installer)
+├── install-workspace.ts              # Shim: forwards to install-workspace.ts (bulk Gemini component install)
+├── link-extensions.ts                # Shim: forwards to link-extensions.ts (symlink extensions for local dev)
+├── manage-claude-component.ts        # Shim: forwards to manage-claude-component.ts (Claude Code component manager)
+├── manage-workspace-component.ts     # Shim: forwards to manage-workspace-component.ts (Gemini component manager)
 ├── monorepo-release.sh               # Shim: forwards to monorepo-release.ts (monorepo release driver — bumps versions, calls release-package-extension.ts, publishes the release (GitHub: through a release PR, docs/github-release-pr.md))
 ├── release-package-extension.sh      # Shim: forwards to release-package-extension.ts (the ONE place a release artifact's shape is decided: renders, asserts, archives; spec 0183)
 ├── release-pr.ts                     # Opens/updates/closes the GitHub release PR and dispatches its required checks (issue #1379)
 ├── package-extension.sh              # Shim: forwards to package-extension.ts (manually package a single extension at its current committed version)
 ├── package-extensions.sh             # Shim: forwards to package-extensions.ts (manually package every extension)
-├── prune-transcripts.sh              # Remove old transcript archives
-├── setup-claude-interactive.sh       # Shim: forwards to setup-claude-interactive.ts (Claude Code setup, interactive)
-├── setup-gemini-interactive.sh       # Shim: forwards to setup-gemini-interactive.ts (Gemini CLI setup, interactive)
-├── unlink-component.sh               # Shim: forwards to unlink-component.ts (remove a component symlink)
-├── unlink-extensions.sh              # Shim: forwards to unlink-extensions.ts (remove all extension symlinks)
+├── prune-transcripts.ts              # Remove old transcript archives
+├── setup-claude-interactive.ts       # Shim: forwards to setup-claude-interactive.ts (Claude Code setup, interactive)
+├── setup-gemini-interactive.ts       # Shim: forwards to setup-gemini-interactive.ts (Gemini CLI setup, interactive)
+├── unlink-component.ts               # Shim: forwards to unlink-component.ts (remove a component symlink)
+├── unlink-extensions.ts              # Shim: forwards to unlink-extensions.ts (remove all extension symlinks)
 ├── lib/
 │   └── common.sh                     # Shared Bash helpers (sourced by scripts)
 └── tests/

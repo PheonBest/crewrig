@@ -72,11 +72,11 @@ CLI. This is a direct extension of working code, not new research,
 and is therefore in-scope by default. The list of trigger scripts is
 authoritative:
 
-- `scripts/setup-<cli>-interactive.sh`
+- `scripts/setup-<cli>-interactive.ts`
 - `scripts/import-<cli>-history.sh`
 - `scripts/manage-<cli>-component.sh` and its TypeScript entry
   `scripts/manage-<cli>-component.ts` (or a new `--target <cli>`
-  branch in `scripts/manage-workspace-component.sh` if that script
+  branch in `scripts/manage-workspace-component.ts` if that script
   already serves multiple CLIs)
 - `scripts/build-components.ts` `--target <cli>` branch (`scripts/build-components.sh` forwards to it)
 - Every `Taskfile.yml` entry whose name carries a CLI prefix

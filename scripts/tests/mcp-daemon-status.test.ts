@@ -1,10 +1,10 @@
 // mcp-daemon-status.test.ts — group G17 of the former scripts/tests/test-mcp-daemon.sh
-// (spec 0263, row D): the `status-mcp-server.sh` shim. Sections 13a-13d are pinned by
+// (spec 0263, row D): the `status-mcp-server.ts` shim. Sections 13a-13d are pinned by
 // status-mcp-lifecycle.test.ts; one cross-reference test per section fails if that
 // suite loses its literal. Sections 13e and 13f (spec 0172) are asserted here, through
 // the shipped shim, against the shared rig (scratch HOME, free loopback port).
 //
-// The shim leg is POSIX-only (it runs `bash scripts/status-mcp-server.sh`).
+// The shim leg is POSIX-only (it runs `node scripts/status-mcp-server.ts`).
 
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
@@ -16,7 +16,7 @@ import { type FakeMcp, makeRig, type Rig, startFakeMcp } from "./lib/mcp-daemon-
 import { cleanupAll, REPO, SKIP_POSIX, which } from "./lib/worktree-fixtures.ts";
 
 const PINNED_BY = path.join(REPO, "scripts", "tests", "status-mcp-lifecycle.test.ts");
-const SHIM = path.join(REPO, "scripts", "status-mcp-server.sh");
+const SHIM = path.join(REPO, "scripts", "status-mcp-server.ts");
 const BASH = which("bash") ?? "/bin/bash";
 
 const GEMINI_STDIO = {
@@ -77,7 +77,7 @@ describe("mcp-daemon status: the shim against a serving daemon", { skip: SKIP_PO
   // would starve it and the probe would time out against a dead event loop.
   const status = (owner: Record<string, string>): Promise<{ status: number | null; out: string }> =>
     new Promise((resolve) => {
-      const child = spawn(BASH, [SHIM], {
+      const child = spawn(process.execPath, [SHIM], {
         cwd: rig.home,
         env: { ...rig.env, MEMPALACE_MCP_HOST: "127.0.0.1", ...owner },
         stdio: ["ignore", "pipe", "pipe"],

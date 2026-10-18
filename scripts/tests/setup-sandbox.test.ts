@@ -69,12 +69,12 @@ test("run returns status, stdout and stderr of a fake script, stdin and env reac
   const sb = createSetupSandbox();
   const script = path.join(sb.repo, "scripts/fake-entry.sh");
   fs.writeFileSync(script, 'read a\necho "out:$a:$HOME:$EXTRA"\necho err >&2\nexit 3\n');
-  const res = sb.run("fake-entry", [], { stdin: "hello\n", env: { EXTRA: "x" } });
+  const res = sb.run("fake-entry", [], { leg: "shell", stdin: "hello\n", env: { EXTRA: "x" } });
   assert.equal(res.status, 3);
   assert.equal(res.stdout, `out:hello:${sb.home}:x\n`);
   assert.equal(res.stderr, "err\n");
   assert.throws(() => sb.run("fake-entry", [], { leg: "ts" }), /does not exist/);
-  assert.ok(IMPL.includes("shell"));
+  assert.deepEqual([...IMPL], ["ts"]);
 });
 
 test("real-home guard passes when nothing changed and reports a change", () => {

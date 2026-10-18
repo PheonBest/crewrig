@@ -1,4 +1,4 @@
-// copilot-plugin.ts — twin of scripts/install-copilot-plugin.sh (spec 0255 R10): build the plugin
+// copilot-plugin.ts — twin of scripts/install-copilot-plugin.ts (spec 0255 R10): build the plugin
 // into dist-copilot-plugin/<name>, then `copilot plugin install <dir>`.
 
 import type { EntryInput } from "../extension/entry-ctx.ts";
@@ -10,7 +10,7 @@ import { runTool } from "./spawn.ts";
 export async function installCopilotPlugin(input: EntryInput): Promise<number> {
   const ctx = createPluginCtx(input);
   const prepared = prepare(ctx, {
-    script: "install-copilot-plugin.sh",
+    script: "install-copilot-plugin.ts",
     binary: "copilot",
     missing: "Error: 'copilot' CLI is required. Install GitHub Copilot CLI first.",
   });

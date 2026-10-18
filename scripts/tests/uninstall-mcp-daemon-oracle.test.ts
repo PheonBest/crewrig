@@ -1,5 +1,5 @@
 // uninstall-mcp-daemon-oracle.test.ts — black-box oracle of
-// `scripts/uninstall-mcp-daemon.sh` (spec 0252 R21, PLAN step A2) and of the
+// `scripts/uninstall-mcp-daemon.ts` (spec 0252 R21, PLAN step A2) and of the
 // `uninstall_daemon_supervisor` it drives. Runs the script through `bash` under
 // the hermetic harness and observes exit status, output, files under the temp
 // HOME and the argv of the launchctl / systemctl stubs. The supervisor is ended
@@ -12,12 +12,17 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, test } from "node:test";
 
-import { createHermeticEnv, runBash, writeStub, type HermeticEnv } from "./lib/hermetic-env.ts";
+import {
+  createHermeticEnv,
+  runNodeScript,
+  writeStub,
+  type HermeticEnv,
+} from "./lib/hermetic-env.ts";
 import { linkReal, tokenPathOf } from "./lib/uninstall-oracle-fixture.ts";
 
-const UNINSTALL_SCRIPT = path.resolve(import.meta.dirname, "..", "uninstall-mcp-daemon.sh");
+const UNINSTALL_SCRIPT = path.resolve(import.meta.dirname, "..", "uninstall-mcp-daemon.ts");
 
-// Expected strings, read from scripts/uninstall-mcp-daemon.sh and uninstall_daemon_supervisor.
+// Expected strings, read from scripts/uninstall-mcp-daemon.ts and uninstall_daemon_supervisor.
 const LABEL = "com.mempalace.mcp-server";
 const UNIT = "mempalace-mcp-server";
 const TOKEN = "token_uninstall_BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
@@ -94,7 +99,7 @@ function withFixture(fn: (fx: Fixture) => void): void {
 
 function uninstall(fx: Fixture, os: string, env: Record<string, string> = {}) {
   fs.writeFileSync(fx.calls, "");
-  return runBash(fx.h, UNINSTALL_SCRIPT, [], {
+  return runNodeScript(fx.h, UNINSTALL_SCRIPT, [], {
     env: {
       FAKE_UNAME: os,
       CREWRIG_TEST_SERVICE_PLATFORM: os.toLowerCase(),
@@ -149,7 +154,7 @@ function writeFile(file: string, content: string): void {
   fs.writeFileSync(file, content);
 }
 
-describe("uninstall-mcp-daemon.sh oracle", { skip: process.platform === "win32" }, () => {
+describe("uninstall-mcp-daemon.ts oracle", { skip: process.platform === "win32" }, () => {
   test("Darwin uninstall of a loaded unit, then a second run that finds nothing", () => {
     withFixture((fx) => {
       writeFile(fx.plist, "plist\n");
@@ -276,7 +281,7 @@ describe("uninstall-mcp-daemon.sh oracle", { skip: process.platform === "win32" 
       const res = uninstall(fx, "Linux");
       has(res.stdout, "The bearer token is left in place: it is per-palace and a later install");
       has(res.stdout, "  task mempalace:rotate-token");
-      has(res.stdout, "  # or: bash scripts/switch-mempalace-http.sh --rotate");
+      has(res.stdout, "  # or: node scripts/switch-mempalace-http.ts --rotate");
       has(res.stdout, "To DECOMMISSION this palace entirely, remove the token by hand:");
       has(res.stdout, `  rm -rf ${path.dirname(fx.tokenPath)}`);
       assert.equal(fs.readFileSync(fx.tokenPath, "utf8").trim(), TOKEN);

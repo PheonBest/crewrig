@@ -20,8 +20,8 @@ export type Leg = "shell" | "ts";
 const AVAILABLE: readonly Leg[] = fs.existsSync(
   path.join(REPO, "scripts/setup-claude-interactive.ts"),
 )
-  ? ["shell", "ts"]
-  : ["shell"];
+  ? ["ts"]
+  : [];
 
 /**
  * The legs available now, by file existence in the real repository (one entry name suffices).
@@ -59,7 +59,7 @@ export interface SetupSandbox {
   readonly env: Readonly<Record<string, string>>;
   /** Write an executable `#!/bin/sh` stub into `bin`; returns its path. */
   stub(name: string, body: string): string;
-  /** Run `scripts/<entry>.sh` (leg `shell`, default) or `scripts/<entry>.ts` (leg `ts`) in the repo. */
+  /** Run `scripts/<entry>.ts` (leg `ts`, the default) in the repo. */
   run(entry: string, args?: readonly string[], options?: SetupRunOptions): RunResult;
   dispose(): void;
 }
@@ -132,7 +132,7 @@ export function createSetupSandbox(options: SetupSandboxOptions = {}): SetupSand
     env,
     stub: (name, body) => writeStub(hermetic, name, body),
     run(entry, args = [], run = {}) {
-      const leg = run.leg ?? "shell";
+      const leg = run.leg ?? "ts";
       const child: Record<string, string | undefined> = { ...env, ...run.env };
       const file = path.join(repo, "scripts", `${entry}.${leg === "shell" ? "sh" : "ts"}`);
       if (!fs.existsSync(file)) throw new Error(`setup-sandbox: ${file} does not exist`);

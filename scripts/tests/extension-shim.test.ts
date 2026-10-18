@@ -4,7 +4,7 @@
 //
 // `node` absent: one `Error:` line naming node and 24, exit 1, no file written. A `node` reporting
 // v20: the floor guard's diagnostic, the entry not run. A healthy node: arguments and the exit
-// status reach the entry. The shell allowlist keeps the five and no longer lists render-context.sh.
+// status reach the entry. The shell allowlist keeps the three and no longer lists render-context.sh.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -25,13 +25,7 @@ const SKIP =
     : BASH === null
       ? "SKIP: bash is not installed"
       : false;
-const NAMES = [
-  "build-extension",
-  "build-claude-plugin",
-  "build-copilot-plugin",
-  "build-antigravity-extension",
-  "migrate-extension",
-];
+const NAMES = ["build-extension", "build-claude-plugin", "migrate-extension"];
 
 function run(name: string, args: readonly string[], env: NodeJS.ProcessEnv, cwd: string) {
   const shim = path.join(REPO, "scripts", `${name}.sh`);
@@ -97,7 +91,7 @@ for (const name of NAMES) {
 describe("the shell allowlist", () => {
   const lines = fs.readFileSync(path.join(REPO, "ci", "shell-allowlist.txt"), "utf8").split("\n");
 
-  test("still lists the five shims", () => {
+  test("still lists the three shims", () => {
     for (const n of NAMES) assert.ok(lines.includes(`scripts/${n}.sh`), n);
   });
 

@@ -65,7 +65,7 @@ export async function stopMcp(o: LifecycleOptions): Promise<number> {
   }
   o.io.out(`MCP daemon: restart requested (${task})`);
   o.io.out("  The task was ended and run again at once.");
-  o.io.out("  To end it: bash scripts/uninstall-mcp-daemon.sh");
+  o.io.out("  To end it: node scripts/uninstall-mcp-daemon.ts");
   return 0;
 }
 
@@ -135,7 +135,7 @@ export async function uninstallMcp(o: LifecycleOptions): Promise<number> {
   io.out("");
   io.out("To ROTATE it (do this if you have any reason to think it leaked):");
   io.out("  task mempalace:rotate-token");
-  io.out("  # or: bash scripts/switch-mempalace-http.sh --rotate");
+  io.out("  # or: node scripts/switch-mempalace-http.ts --rotate");
   io.out("");
   io.out("  This removes the old token, mints a new one, replaces the daemon process");
   io.out("  (spec 0139), purges stale .bak backups, and re-registers every assistant.");

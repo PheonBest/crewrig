@@ -2,7 +2,7 @@
 #
 # Holds one file per adopt-on-edit path: <path>.sha containing the upstream
 # blob SHA the last successful sync applied. Machine-managed by
-# scripts/sync-from-upstream.sh — DO NOT hand-edit.
+# scripts/sync-from-upstream.ts — DO NOT hand-edit.
 #
 # Committed by the adopter (durable across a fresh clone, so the "modified?"
 # verdict survives), but carved out of the upstream sync guard and restore

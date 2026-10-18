@@ -1,5 +1,5 @@
 // setup-steps-copilot.test.ts — the Copilot-only `copilot-workspace-files` step (spec 0256
-// requirement 3; shell scripts/setup-copilot-interactive.sh 87-107): the settings template is
+// requirement 3; shell scripts/setup-copilot-interactive.ts 87-107): the settings template is
 // installed when the workspace file is missing, the entry point is reported or warned about, and a
 // failed copy stops the run with one `Error:` line. Temp repositories only; the golden cell is
 // asserted for the printed bytes.

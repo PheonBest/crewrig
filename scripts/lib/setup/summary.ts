@@ -1,5 +1,5 @@
 // summary.ts — the `summary` step: the closing report of the four setups (spec 0256 requirement 3,
-// plan v2 step B3b.2; shell: setup-claude-interactive.sh 552-571, setup-gemini 507-528, setup-copilot
+// plan v2 step B3b.2; shell: setup-claude-interactive.ts 552-571, setup-gemini 507-528, setup-copilot
 // 490-512, setup-antigravity 646-671). Every line is data from `descriptor.summary` /
 // `descriptor.storeGuidance` / `descriptor.homes`, or a constant copied from the shell.
 //

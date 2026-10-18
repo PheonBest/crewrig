@@ -46,7 +46,7 @@ live against the installed tools
 | Gemini CLI | `${extensionPath}` | Gemini CLI itself | At **load** time, when it loads the extension from the installed tree. |
 | Claude Code | `${CLAUDE_PLUGIN_ROOT}` | Claude Code itself | At **load** time, when it loads the installed plugin. |
 | GitHub Copilot CLI | `${COPILOT_PLUGIN_ROOT}` | Copilot CLI itself | At **spawn** time — Copilot also defaults a plugin server's `cwd` to its own plugin root, confirmed live: all three candidate forms (the neutral token, the native token, and a bare relative path) spawn correctly. |
-| Antigravity CLI | left **unresolved** at render time | `scripts/install-antigravity-extension.ts` (shim `scripts/install-antigravity-extension.sh`), a **post-install** step | After `agy plugin install` places the plugin — a relative `command`/`args` does not resolve against the plugin directory when Antigravity spawns a plugin's MCP server (confirmed live: it fails silently, with no error surfaced). |
+| Antigravity CLI | left **unresolved** at render time | `scripts/install-antigravity-extension.ts`, a **post-install** step | After `agy plugin install` places the plugin — a relative `command`/`args` does not resolve against the plugin directory when Antigravity spawns a plugin's MCP server (confirmed live: it fails silently, with no error surfaced). |
 
 For Gemini CLI, Claude Code, and Copilot CLI the rewrite happens at
 **render** time, before the token ever needs a party to resolve it further.

@@ -78,7 +78,7 @@ describe("silence", () => {
       const res = runEntry(sandbox, name, [], { leg: "node" });
       assert.doesNotMatch(res.stderr, /\(node:\d+\)|Warning|DeprecationWarning|--trace-warnings/);
       const stderr = res.stderr.split("\n").filter((line) => line !== "");
-      for (const line of stderr) assert.match(line, /^Usage: [a-z-]+\.sh /, line);
+      for (const line of stderr) assert.match(line, /^Usage: [a-z-]+\.ts /, line);
       assert.ok(res.status === 0 || res.status === 1, `status ${res.status}`);
     });
   }

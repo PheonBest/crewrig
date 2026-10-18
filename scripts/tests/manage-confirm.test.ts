@@ -61,10 +61,10 @@ async function ask(stdin: FakeStdin, emit: () => void) {
 
 describe("linkWarningLines", () => {
   const SCRIPT: Record<LinkWarningCli, string> = {
-    claude: "manage-claude-component.sh",
-    copilot: "manage-copilot-component.sh",
-    antigravity: "manage-antigravity-component.sh",
-    workspace: "manage-workspace-component.sh",
+    claude: "manage-claude-component.ts",
+    copilot: "manage-copilot-component.ts",
+    antigravity: "manage-antigravity-component.ts",
+    workspace: "manage-workspace-component.ts",
   };
   for (const [cli, script] of Object.entries(SCRIPT) as [LinkWarningCli, string][]) {
     test(`${cli} block equals the echo lines of ${script}`, () => {

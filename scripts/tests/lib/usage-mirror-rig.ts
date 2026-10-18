@@ -245,7 +245,7 @@ export function setMarkerMtime(file: string, epochMs: number): void {
   fs.utimesSync(file, t, t);
 }
 
-/** `bash <repo>/scripts/<name>.sh args` (a shim), synchronously. */
+/** `usage-mirror` through its bash shim, `usage-prune` through its TypeScript entry, synchronously. */
 export function runShim(
   rig: Rig,
   name: "usage-mirror" | "usage-prune",
@@ -253,7 +253,9 @@ export function runShim(
   extra: Record<string, string | undefined> = {},
   repo = REPO,
 ): Run {
-  const r = spawnSync("bash", [path.join(repo, "scripts", `${name}.sh`), ...args], {
+  const [bin, entry] =
+    name === "usage-prune" ? [process.execPath, `${name}.ts`] : ["bash", `${name}.sh`];
+  const r = spawnSync(bin, [path.join(repo, "scripts", entry), ...args], {
     env: childEnv(rig, extra),
     encoding: "utf8",
   });

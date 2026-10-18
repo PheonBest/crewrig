@@ -9,7 +9,7 @@
 //   2. Coexistence / upsert          -> R1 + R2 + "two extensions coexist"
 //   3. Idempotent re-install         -> R5
 //   4. Failed install leaves registry intact
-// POSIX only: the stub `claude` is a shell shim reached through bash scripts/install-claude-plugin.sh.
+// POSIX only: the stub `claude` is a shell shim reached through node scripts/install-claude-plugin.ts.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -63,11 +63,15 @@ function seed(r: Rig): void {
 }
 
 function install(r: Rig, ext: string): number | null {
-  const res = spawnSync("bash", [path.join(REPO, "scripts", "install-claude-plugin.sh"), ext], {
-    encoding: "utf8",
-    cwd: REPO,
-    env: { ...r.h.env, CLAUDE_CONFIG_DIR: r.config, LC_ALL: "C" },
-  });
+  const res = spawnSync(
+    process.execPath,
+    [path.join(REPO, "scripts", "install-claude-plugin.ts"), ext],
+    {
+      encoding: "utf8",
+      cwd: REPO,
+      env: { ...r.h.env, CLAUDE_CONFIG_DIR: r.config, LC_ALL: "C" },
+    },
+  );
   return res.status;
 }
 

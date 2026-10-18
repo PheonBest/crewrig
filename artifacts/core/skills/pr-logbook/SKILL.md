@@ -11,7 +11,7 @@ metadata:
   provenance:
     canonical: "${CANONICAL_REPO}"
     feedback: "${CANONICAL_REPO}"
-    version: "1.3.1"
+    version: "1.3.2"
 claude:
   allowed-tools:
     - Read
@@ -190,7 +190,7 @@ that applies to any PR you compose whose diff touches a
 `artifacts/core/skills/*/SKILL.md` or
 `artifacts/core/agents/*/AGENT.md` source. The PR MUST bump
 `provenance.version` in the same diff. The rule is enforced by
-`scripts/check-skill-versions.sh` in CI (and locally via
+`scripts/check-skill-versions.ts` in CI (and locally via
 `task check-skill-versions`).
 
 SemVer applies:

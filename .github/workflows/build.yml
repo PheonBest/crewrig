@@ -452,10 +452,6 @@ jobs:
               - 'scripts/lib/mempalace-python.ts'
               - 'scripts/lib/worktree-claim/**'
               - 'scripts/lib/node-floor-guard.js'
-              - 'scripts/manage-antigravity-component.sh'
-              - 'scripts/manage-claude-component.sh'
-              - 'scripts/manage-copilot-component.sh'
-              - 'scripts/manage-workspace-component.sh'
               - 'scripts/tests/antigravity-migrate.test.ts'
               - 'scripts/tests/component-install.test.ts'
               - 'scripts/tests/component-overlay.test.ts'
@@ -514,8 +510,6 @@ jobs:
               - 'scripts/tests/lib/install-sandbox.ts'
               - 'scripts/tests/lib/build-fixture-tree.ts'
               - 'scripts/tests/lib/oracle-taskfile-mutants.ts'
-              - 'scripts/tests/install-shim.test.ts'
-              - 'scripts/tests/install-ci-wiring.test.ts'
               - 'scripts/tests/install-references.test.ts'
               - 'scripts/tests/fixtures/install/**'
               - 'scripts/tests/fixtures/manage-shell-facts/**'
@@ -539,7 +533,7 @@ jobs:
         run: node scripts/lib/node-floor-guard.js
       - name: Test the TypeScript link-or-copy, component twin, manage and install modules
         if: steps.filter.outputs.install-ts == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/antigravity-migrate.test.ts scripts/tests/component-install.test.ts scripts/tests/component-overlay.test.ts scripts/tests/component-roots.test.ts scripts/tests/component-twins-conformance-migrate.test.ts scripts/tests/component-twins-conformance.test.ts scripts/tests/install-oracle-mutation.test.ts scripts/tests/link-or-copy-classify.test.ts scripts/tests/link-or-copy-remove.test.ts scripts/tests/link-or-copy-swap.test.ts scripts/tests/link-or-copy.test.ts scripts/tests/manage-confirm.test.ts scripts/tests/manage-descriptors.test.ts scripts/tests/manage-main.test.ts scripts/tests/manage-mcp-claude.test.ts scripts/tests/manage-mcp-json.test.ts scripts/tests/manage-overlay-loop.test.ts scripts/tests/manage-place.test.ts scripts/tests/print-manage-declarations.test.ts scripts/tests/tree-copy-dereferenced.test.ts scripts/tests/manage-entry.test.ts scripts/tests/marketplace.test.ts scripts/tests/antigravity-tokens.test.ts scripts/tests/install-all.test.ts scripts/tests/install-entry-form.test.ts scripts/tests/install-file-size.test.ts scripts/tests/install-extension-reentrancy.test.ts scripts/tests/worktree-claim-launch.test.ts scripts/tests/install-golden.test.ts scripts/tests/install-shim.test.ts scripts/tests/install-ci-wiring.test.ts scripts/tests/install-references.test.ts scripts/tests/install-write-mode.test.ts scripts/tests/windows-install-entries.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/antigravity-migrate.test.ts scripts/tests/component-install.test.ts scripts/tests/component-overlay.test.ts scripts/tests/component-roots.test.ts scripts/tests/component-twins-conformance-migrate.test.ts scripts/tests/component-twins-conformance.test.ts scripts/tests/install-oracle-mutation.test.ts scripts/tests/link-or-copy-classify.test.ts scripts/tests/link-or-copy-remove.test.ts scripts/tests/link-or-copy-swap.test.ts scripts/tests/link-or-copy.test.ts scripts/tests/manage-confirm.test.ts scripts/tests/manage-descriptors.test.ts scripts/tests/manage-main.test.ts scripts/tests/manage-mcp-claude.test.ts scripts/tests/manage-mcp-json.test.ts scripts/tests/manage-overlay-loop.test.ts scripts/tests/manage-place.test.ts scripts/tests/print-manage-declarations.test.ts scripts/tests/tree-copy-dereferenced.test.ts scripts/tests/manage-entry.test.ts scripts/tests/marketplace.test.ts scripts/tests/antigravity-tokens.test.ts scripts/tests/install-all.test.ts scripts/tests/install-entry-form.test.ts scripts/tests/install-file-size.test.ts scripts/tests/install-extension-reentrancy.test.ts scripts/tests/worktree-claim-launch.test.ts scripts/tests/install-golden.test.ts scripts/tests/install-references.test.ts scripts/tests/install-write-mode.test.ts scripts/tests/windows-install-entries.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -687,13 +681,9 @@ jobs:
               - 'scripts/lib/link-or-copy*.ts'
               - 'scripts/lib/extension/types.ts'
               - 'scripts/lib/tls-delegation.sh'
-              - 'scripts/setup-antigravity-interactive.sh'
               - 'scripts/setup-antigravity-interactive.ts'
-              - 'scripts/setup-claude-interactive.sh'
               - 'scripts/setup-claude-interactive.ts'
-              - 'scripts/setup-copilot-interactive.sh'
               - 'scripts/setup-copilot-interactive.ts'
-              - 'scripts/setup-gemini-interactive.sh'
               - 'scripts/setup-gemini-interactive.ts'
               - 'scripts/lib/node-floor-guard.js'
               - 'scripts/tests/setup-answers.test.ts'
@@ -760,7 +750,6 @@ jobs:
               - 'scripts/tests/setup-references.test.ts'
               - 'scripts/tests/setup-session-recording.test.ts'
               - 'scripts/tests/setup-session-recording-ownership.test.ts'
-              - 'scripts/tests/setup-shim.test.ts'
               - 'scripts/tests/setup-stdlib-closure.test.ts'
               - 'scripts/tests/setup-steps-agy.test.ts'
               - 'scripts/tests/setup-steps-agy-channels.test.ts'
@@ -817,7 +806,7 @@ jobs:
         run: node scripts/lib/node-floor-guard.js
       - name: Test the TypeScript setup modules
         if: steps.filter.outputs.setup-modules-ts == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-answers.test.ts scripts/tests/setup-antigravity-hooks.test.ts scripts/tests/setup-antigravity-statusline.test.ts scripts/tests/setup-antigravity-tier.test.ts scripts/tests/setup-backup.test.ts scripts/tests/setup-backup-failure.test.ts scripts/tests/setup-catalogue.test.ts scripts/tests/setup-chroma-install.test.ts scripts/tests/setup-chroma-install-win.test.ts scripts/tests/setup-chroma-unit.test.ts scripts/tests/setup-cli-claude-gemini.test.ts scripts/tests/setup-cli-copilot-antigravity.test.ts scripts/tests/setup-declarations.test.ts scripts/tests/setup-deps.test.ts scripts/tests/setup-ensure-http.test.ts scripts/tests/setup-ensure-http-probes.test.ts scripts/tests/setup-ensure-http-wiring.test.ts scripts/tests/setup-file-size.test.ts scripts/tests/setup-files.test.ts scripts/tests/setup-flow.test.ts scripts/tests/setup-flow-steps.test.ts scripts/tests/setup-gemini-settings.test.ts scripts/tests/setup-gemini-settings-rc.test.ts scripts/tests/setup-gemini-settings-write.test.ts scripts/tests/setup-gemini-settings-write-diff.test.ts scripts/tests/setup-golden-evidence.test.ts scripts/tests/setup-hint-strings.test.ts scripts/tests/setup-hooks-rewrite.test.ts scripts/tests/setup-json-secure.test.ts scripts/tests/setup-json-secure-failure.test.ts scripts/tests/setup-lib-shim-tls.test.ts scripts/tests/setup-lib-shim-usage.test.ts scripts/tests/setup-lib-tls-entry.test.ts scripts/tests/setup-lib-tls-entry-offer.test.ts scripts/tests/setup-lib-usage-entry.test.ts scripts/tests/setup-lib-usage-entry-form.test.ts scripts/tests/setup-link-key.test.ts scripts/tests/setup-lossless-callsites.test.ts scripts/tests/setup-lossless-shim.test.ts scripts/tests/setup-lossless-writers.test.ts scripts/tests/setup-mcp-agy-step.test.ts scripts/tests/setup-mcp-claude-flow.test.ts scripts/tests/setup-mcp-claude-step.test.ts scripts/tests/setup-mcp-copilot-step.test.ts scripts/tests/setup-mcp-gemini-step.test.ts scripts/tests/setup-mcp-json-writers.test.ts scripts/tests/setup-mcp-json-writers-merge.test.ts scripts/tests/setup-mempalace-callsite.test.ts scripts/tests/setup-mempalace-detect.test.ts scripts/tests/setup-mempalace-install-offer.test.ts scripts/tests/setup-mempalace-stdio.test.ts scripts/tests/setup-mempalace-version.test.ts scripts/tests/setup-misc-paths.test.ts scripts/tests/setup-no-posix-tool.test.ts scripts/tests/setup-org-mcp-claude-argv.test.ts scripts/tests/setup-org-mcp-fold.test.ts scripts/tests/setup-prerequisites.test.ts scripts/tests/setup-prompt.test.ts scripts/tests/setup-prompt-integration.test.ts scripts/tests/setup-prompt-table.test.ts scripts/tests/setup-prompt-tty.test.ts scripts/tests/setup-references.test.ts scripts/tests/setup-session-recording.test.ts scripts/tests/setup-session-recording-ownership.test.ts scripts/tests/setup-shim.test.ts scripts/tests/setup-stdlib-closure.test.ts scripts/tests/setup-steps-agy.test.ts scripts/tests/setup-steps-agy-channels.test.ts scripts/tests/setup-steps-copilot.test.ts scripts/tests/setup-steps-hooks.test.ts scripts/tests/setup-steps-hooks-lossy.test.ts scripts/tests/setup-steps-mcp.test.ts scripts/tests/setup-steps-rules.test.ts scripts/tests/setup-steps-rules-edge.test.ts scripts/tests/setup-steps-tiers.test.ts scripts/tests/setup-steps-usage.test.ts scripts/tests/setup-store-guidance.test.ts scripts/tests/setup-summary.test.ts scripts/tests/setup-tier-build.test.ts scripts/tests/setup-tier-install.test.ts scripts/tests/setup-tls-detect.test.ts scripts/tests/setup-tls-offer.test.ts scripts/tests/setup-trust-wrapper.test.ts scripts/tests/setup-trust-wrapper-install.test.ts scripts/tests/setup-usage-capture.test.ts scripts/tests/setup-usage-capture-keep.test.ts scripts/tests/setup-usage-capture-rank.test.ts scripts/tests/setup-usage-capture-state.test.ts scripts/tests/setup-usage-capture-wire-path.test.ts scripts/tests/setup-validation.test.ts scripts/tests/tls-env-quote.test.ts scripts/tests/tls-env-writer.test.ts scripts/tests/manage-confirm-remainder.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-answers.test.ts scripts/tests/setup-antigravity-hooks.test.ts scripts/tests/setup-antigravity-statusline.test.ts scripts/tests/setup-antigravity-tier.test.ts scripts/tests/setup-backup.test.ts scripts/tests/setup-backup-failure.test.ts scripts/tests/setup-catalogue.test.ts scripts/tests/setup-chroma-install.test.ts scripts/tests/setup-chroma-install-win.test.ts scripts/tests/setup-chroma-unit.test.ts scripts/tests/setup-cli-claude-gemini.test.ts scripts/tests/setup-cli-copilot-antigravity.test.ts scripts/tests/setup-declarations.test.ts scripts/tests/setup-deps.test.ts scripts/tests/setup-ensure-http.test.ts scripts/tests/setup-ensure-http-probes.test.ts scripts/tests/setup-ensure-http-wiring.test.ts scripts/tests/setup-file-size.test.ts scripts/tests/setup-files.test.ts scripts/tests/setup-flow.test.ts scripts/tests/setup-flow-steps.test.ts scripts/tests/setup-gemini-settings.test.ts scripts/tests/setup-gemini-settings-rc.test.ts scripts/tests/setup-gemini-settings-write.test.ts scripts/tests/setup-gemini-settings-write-diff.test.ts scripts/tests/setup-golden-evidence.test.ts scripts/tests/setup-hint-strings.test.ts scripts/tests/setup-hooks-rewrite.test.ts scripts/tests/setup-json-secure.test.ts scripts/tests/setup-json-secure-failure.test.ts scripts/tests/setup-lib-shim-tls.test.ts scripts/tests/setup-lib-shim-usage.test.ts scripts/tests/setup-lib-tls-entry.test.ts scripts/tests/setup-lib-tls-entry-offer.test.ts scripts/tests/setup-lib-usage-entry.test.ts scripts/tests/setup-lib-usage-entry-form.test.ts scripts/tests/setup-link-key.test.ts scripts/tests/setup-lossless-callsites.test.ts scripts/tests/setup-lossless-shim.test.ts scripts/tests/setup-lossless-writers.test.ts scripts/tests/setup-mcp-agy-step.test.ts scripts/tests/setup-mcp-claude-flow.test.ts scripts/tests/setup-mcp-claude-step.test.ts scripts/tests/setup-mcp-copilot-step.test.ts scripts/tests/setup-mcp-gemini-step.test.ts scripts/tests/setup-mcp-json-writers.test.ts scripts/tests/setup-mcp-json-writers-merge.test.ts scripts/tests/setup-mempalace-callsite.test.ts scripts/tests/setup-mempalace-detect.test.ts scripts/tests/setup-mempalace-install-offer.test.ts scripts/tests/setup-mempalace-stdio.test.ts scripts/tests/setup-mempalace-version.test.ts scripts/tests/setup-misc-paths.test.ts scripts/tests/setup-no-posix-tool.test.ts scripts/tests/setup-org-mcp-claude-argv.test.ts scripts/tests/setup-org-mcp-fold.test.ts scripts/tests/setup-prerequisites.test.ts scripts/tests/setup-prompt.test.ts scripts/tests/setup-prompt-integration.test.ts scripts/tests/setup-prompt-table.test.ts scripts/tests/setup-prompt-tty.test.ts scripts/tests/setup-references.test.ts scripts/tests/setup-session-recording.test.ts scripts/tests/setup-session-recording-ownership.test.ts scripts/tests/setup-stdlib-closure.test.ts scripts/tests/setup-steps-agy.test.ts scripts/tests/setup-steps-agy-channels.test.ts scripts/tests/setup-steps-copilot.test.ts scripts/tests/setup-steps-hooks.test.ts scripts/tests/setup-steps-hooks-lossy.test.ts scripts/tests/setup-steps-mcp.test.ts scripts/tests/setup-steps-rules.test.ts scripts/tests/setup-steps-rules-edge.test.ts scripts/tests/setup-steps-tiers.test.ts scripts/tests/setup-steps-usage.test.ts scripts/tests/setup-store-guidance.test.ts scripts/tests/setup-summary.test.ts scripts/tests/setup-tier-build.test.ts scripts/tests/setup-tier-install.test.ts scripts/tests/setup-tls-detect.test.ts scripts/tests/setup-tls-offer.test.ts scripts/tests/setup-trust-wrapper.test.ts scripts/tests/setup-trust-wrapper-install.test.ts scripts/tests/setup-usage-capture.test.ts scripts/tests/setup-usage-capture-keep.test.ts scripts/tests/setup-usage-capture-rank.test.ts scripts/tests/setup-usage-capture-state.test.ts scripts/tests/setup-usage-capture-wire-path.test.ts scripts/tests/setup-validation.test.ts scripts/tests/tls-env-quote.test.ts scripts/tests/tls-env-writer.test.ts scripts/tests/manage-confirm-remainder.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -1016,7 +1005,6 @@ jobs:
               - 'scripts/lib/extension/**'
               - 'scripts/lib/org-mcp.ts'
               - 'scripts/lib/node-floor-guard.js'
-              - 'scripts/install-extension.sh'
               - 'scripts/lib/extension-percli-keys.json'
               - 'scripts/lib/extension-generated-class.json'
               - 'scripts/tests/build-extension-suite-render.test.ts'
@@ -1044,12 +1032,9 @@ jobs:
               - 'scripts/create-extension.sh'
               - 'scripts/build-claude-plugin.sh'
               - 'scripts/build-claude-plugin.ts'
-              - 'scripts/build-copilot-plugin.sh'
               - 'scripts/build-copilot-plugin.ts'
-              - 'scripts/build-antigravity-extension.sh'
               - 'scripts/build-antigravity-extension.ts'
               - 'scripts/lib/common.sh'
-              - 'scripts/install-antigravity-extension.sh'
               - 'scripts/install-extension.ts'
               - 'scripts/install-antigravity-extension.ts'
               - 'scripts/lib/link-or-copy*.ts'
@@ -1119,7 +1104,6 @@ jobs:
         with:
           filters: |
             extension-provenance:
-              - 'scripts/check-extension-provenance.sh'
               - 'scripts/tests/governance-suite-extension-provenance.test.ts'
               - 'scripts/tests/governance-suite-extension-provenance-r4.test.ts'
               - 'scripts/tests/lib/governance-*.ts'
@@ -1154,7 +1138,6 @@ jobs:
           filters: |
             extension-manifest:
               - 'scripts/check-extension-manifest-version.sh'
-              - 'scripts/check-extension-version-bump.sh'
               - 'scripts/lib/common.sh'
               - 'scripts/lib/extension-hooks.sh'
               - 'scripts/tests/governance-suite-extension-version-bump.test.ts'
@@ -1196,7 +1179,6 @@ jobs:
               - 'scripts/lib/extension/**'
               - 'scripts/lib/org-mcp.ts'
               - 'scripts/lib/node-floor-guard.js'
-              - 'scripts/install-extension-all.sh'
               - 'scripts/tests/install-sandbox.test.ts'
               - 'scripts/tests/install-workspace.test.ts'
               - 'scripts/tests/unlink-component.test.ts'
@@ -1209,18 +1191,6 @@ jobs:
               - 'scripts/tests/lib/hermetic-env.ts'
               - 'scripts/tests/lib/build-fixture-tree.ts'
               - 'scripts/tests/lib/worktree-fixtures.ts'
-              - 'scripts/install-extension.sh'
-              - 'scripts/install-claude-plugin.sh'
-              - 'scripts/install-copilot-plugin.sh'
-              - 'scripts/install-antigravity-extension.sh'
-              - 'scripts/install-workspace.sh'
-              - 'scripts/manage-claude-component.sh'
-              - 'scripts/manage-copilot-component.sh'
-              - 'scripts/manage-antigravity-component.sh'
-              - 'scripts/manage-workspace-component.sh'
-              - 'scripts/link-extensions.sh'
-              - 'scripts/unlink-extensions.sh'
-              - 'scripts/unlink-component.sh'
               - 'scripts/install-extension-all.ts'
               - 'scripts/install-extension.ts'
               - 'scripts/install-claude-plugin.ts'
@@ -1277,7 +1247,6 @@ jobs:
           filters: |
             core-paths:
               - 'scripts/check-core-paths.sh'
-              - 'scripts/sync-from-upstream.sh'
               - 'scripts/sync-from-upstream.ts'
               - 'scripts/lib/sync-from-upstream/**'
               - 'scripts/tests/sync-from-upstream-policies.test.ts'
@@ -1423,7 +1392,6 @@ jobs:
         with:
           filters: |
             figure-labels:
-              - 'scripts/check-figure-labels.sh'
               - 'scripts/tests/windows-governance-figure-labels.test.ts'
               - 'scripts/tests/governance-suite-figure-labels.test.ts'
               - 'docs/assets/**/*.png'
@@ -1553,9 +1521,7 @@ jobs:
         with:
           filters: |
             test-wiring:
-              - 'scripts/check-test-wiring.sh'
               - 'scripts/tests/governance-check-test-wiring-cases.test.ts'
-              - 'scripts/check-test-strays.sh'
               - 'scripts/tests/governance-check-test-strays-cases.test.ts'
               - 'scripts/tests/**'
               - 'hooks/worktree-git-guard.sh'
@@ -1611,11 +1577,8 @@ jobs:
               - 'scripts/tests/repair-common-sh.test.ts'
               - 'scripts/tests/lib/repair-rig.ts'
               - 'scripts/tests/switch-rotate-token.test.ts'
-              - 'scripts/worktree-claim.sh'
               - 'scripts/worktree-claim.ts'
               - 'hooks/worktree-git-guard.ts'
-              - 'scripts/repair-mempalace-http.sh'
-              - 'scripts/switch-mempalace-http.sh'
               - 'scripts/lib/**'
               - 'config/launchd/**'
               - 'config/systemd/**'
@@ -1638,10 +1601,10 @@ jobs:
         if: steps.filter.outputs.chroma-mcp == 'true'
         with:
           path: .ci-cache
-          key: ${{ hashFiles('scripts/tests/chroma-wrapper-source.test.ts', 'scripts/tests/chroma-wrapper-live.test.ts', 'scripts/tests/chroma-health-race.test.ts', 'scripts/tests/chroma-fd-limits.test.ts', 'scripts/tests/mcp-daemon-*.test.ts', 'scripts/tests/lib/mcp-daemon-rig.ts', 'scripts/tests/service-launcher-palace-path.test.ts', 'scripts/tests/repair-restore-modes.test.ts', 'scripts/tests/repair-report-handoff.test.ts', 'scripts/tests/repair-common-sh.test.ts', 'scripts/tests/lib/repair-rig.ts', 'scripts/tests/switch-rotate-token.test.ts', 'scripts/worktree-claim.sh', 'scripts/worktree-claim.ts', 'hooks/worktree-git-guard.ts', 'scripts/repair-mempalace-http.sh', 'scripts/switch-mempalace-http.sh', 'scripts/lib/**', 'config/launchd/**', 'config/systemd/**', 'config/windows/**', 'scripts/ci-cache-guard.sh') }}
+          key: ${{ hashFiles('scripts/tests/chroma-wrapper-source.test.ts', 'scripts/tests/chroma-wrapper-live.test.ts', 'scripts/tests/chroma-health-race.test.ts', 'scripts/tests/chroma-fd-limits.test.ts', 'scripts/tests/mcp-daemon-*.test.ts', 'scripts/tests/lib/mcp-daemon-rig.ts', 'scripts/tests/service-launcher-palace-path.test.ts', 'scripts/tests/repair-restore-modes.test.ts', 'scripts/tests/repair-report-handoff.test.ts', 'scripts/tests/repair-common-sh.test.ts', 'scripts/tests/lib/repair-rig.ts', 'scripts/tests/switch-rotate-token.test.ts', 'scripts/worktree-claim.ts', 'hooks/worktree-git-guard.ts', 'scripts/lib/**', 'config/launchd/**', 'config/systemd/**', 'config/windows/**', 'scripts/ci-cache-guard.sh') }}
       - name: Test Chroma, MCP Daemon and Repair (TypeScript)
         if: steps.filter.outputs.chroma-mcp == 'true'
-        run: bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files "scripts/tests/chroma-wrapper-source.test.ts,scripts/tests/chroma-wrapper-live.test.ts,scripts/tests/chroma-health-race.test.ts,scripts/tests/chroma-fd-limits.test.ts,scripts/tests/mcp-daemon-*.test.ts,scripts/tests/lib/mcp-daemon-rig.ts,scripts/tests/service-launcher-palace-path.test.ts,scripts/tests/repair-restore-modes.test.ts,scripts/tests/repair-report-handoff.test.ts,scripts/tests/repair-common-sh.test.ts,scripts/tests/lib/repair-rig.ts,scripts/tests/switch-rotate-token.test.ts,scripts/worktree-claim.sh,scripts/worktree-claim.ts,hooks/worktree-git-guard.ts,scripts/repair-mempalace-http.sh,scripts/switch-mempalace-http.sh,scripts/lib/**,config/launchd/**,config/systemd/**,config/windows/**,scripts/ci-cache-guard.sh" --key-env "" -- bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/chroma-wrapper-source.test.ts scripts/tests/chroma-wrapper-live.test.ts scripts/tests/chroma-health-race.test.ts scripts/tests/chroma-fd-limits.test.ts scripts/tests/mcp-daemon-token-launcher.test.ts scripts/tests/mcp-daemon-static-guards.test.ts scripts/tests/mcp-daemon-registration.test.ts scripts/tests/mcp-daemon-switch.test.ts scripts/tests/mcp-daemon-status.test.ts scripts/tests/mcp-daemon-replace.test.ts scripts/tests/mcp-daemon-replace-live.test.ts scripts/tests/repair-restore-modes.test.ts scripts/tests/repair-report-handoff.test.ts scripts/tests/repair-common-sh.test.ts scripts/tests/switch-rotate-token.test.ts
+        run: bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files "scripts/tests/chroma-wrapper-source.test.ts,scripts/tests/chroma-wrapper-live.test.ts,scripts/tests/chroma-health-race.test.ts,scripts/tests/chroma-fd-limits.test.ts,scripts/tests/mcp-daemon-*.test.ts,scripts/tests/lib/mcp-daemon-rig.ts,scripts/tests/service-launcher-palace-path.test.ts,scripts/tests/repair-restore-modes.test.ts,scripts/tests/repair-report-handoff.test.ts,scripts/tests/repair-common-sh.test.ts,scripts/tests/lib/repair-rig.ts,scripts/tests/switch-rotate-token.test.ts,scripts/worktree-claim.ts,hooks/worktree-git-guard.ts,scripts/lib/**,config/launchd/**,config/systemd/**,config/windows/**,scripts/ci-cache-guard.sh" --key-env "" -- bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/chroma-wrapper-source.test.ts scripts/tests/chroma-wrapper-live.test.ts scripts/tests/chroma-health-race.test.ts scripts/tests/chroma-fd-limits.test.ts scripts/tests/mcp-daemon-token-launcher.test.ts scripts/tests/mcp-daemon-static-guards.test.ts scripts/tests/mcp-daemon-registration.test.ts scripts/tests/mcp-daemon-switch.test.ts scripts/tests/mcp-daemon-status.test.ts scripts/tests/mcp-daemon-replace.test.ts scripts/tests/mcp-daemon-replace-live.test.ts scripts/tests/repair-restore-modes.test.ts scripts/tests/repair-report-handoff.test.ts scripts/tests/repair-common-sh.test.ts scripts/tests/switch-rotate-token.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -1936,10 +1899,8 @@ jobs:
         with:
           filters: |
             misc:
-              - 'scripts/check-no-machine-paths.sh'
               - 'scripts/tests/governance-suite-no-machine-paths.test.ts'
               - 'scripts/tests/lib/governance-*.ts'
-              - 'scripts/check-gemini-overlay-enrollment.sh'
               - 'scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts'
               - 'scripts/tests/lib/build-fixture-tree.ts'
               - 'scripts/tests/reserve-spec-id-contract.test.ts'
@@ -1958,7 +1919,6 @@ jobs:
               - 'scripts/reserve-spec-id.sh'
               - 'scripts/check-spec-id-reserved.sh'
               - 'model-mappings/**'
-              - 'scripts/setup-gemini-interactive.sh'
               - 'scripts/setup-gemini-interactive.ts'
               - 'config/gemini/settings.json'
               - 'scripts/lib/**'
@@ -2021,7 +1981,6 @@ jobs:
           filters: |
             frontmatter:
               - 'scripts/tests/build-components-frontmatter-fence.test.ts'
-              - 'scripts/check-skill-versions.sh'
               - 'scripts/tests/governance-suite-skill-versions.test.ts'
               - 'scripts/tests/governance-suite-skill-versions-base.test.ts'
               - 'scripts/tests/lib/governance-*.ts'
@@ -2098,7 +2057,6 @@ jobs:
         with:
           filters: |
             markdown-links:
-              - 'scripts/check-markdown-links.sh'
               - 'scripts/tests/governance-suite-markdown-links.test.ts'
               - 'scripts/tests/lib/governance-*.ts'
               - 'docs/**'
@@ -2277,7 +2235,7 @@ jobs:
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/node-floor-guard.test.ts scripts/tests/paths.test.ts scripts/tests/line-endings.test.ts scripts/tests/tmp-file.test.ts scripts/tests/require-dependency.test.ts scripts/tests/check-timing-budget.test.ts scripts/tests/setup-dependency-step.test.ts scripts/tests/production-dependencies.test.ts
 
       - name: Test the history import and prune oracles (POSIX only)
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/history-import-oracle.test.ts scripts/tests/prune-transcripts-oracle.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/prune-transcripts-oracle.test.ts
 
       - name: Test the history import and prune TypeScript units
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/history-import.test.ts scripts/tests/prune-transcripts-ts.test.ts scripts/tests/prune-transcripts-ts-run.test.ts scripts/tests/history-import-python.test.ts scripts/tests/history-import-prune-python.test.ts
@@ -2376,7 +2334,6 @@ jobs:
             worktree-guard:
               - 'hooks/worktree-git-guard.sh'
               - 'hooks/worktree-git-guard.ts'
-              - 'scripts/worktree-claim.sh'
               - 'scripts/worktree-claim.ts'
               - 'scripts/lib/worktree-claim/**'
               - 'scripts/lib/hook-*.ts'
@@ -2440,7 +2397,6 @@ jobs:
               - 'scripts/lib/usage-capture-optin.sh'
               - 'scripts/usage-capture-optin.ts'
               - 'scripts/lib/common.sh'
-              - 'scripts/setup-*-interactive.sh'
               - 'scripts/setup-*-interactive.ts'
               - 'hooks/*-transcript-hooks.json'
               - 'scripts/tests/mempalace-transcript-*.test.ts'
@@ -3289,7 +3245,7 @@ jobs:
         run: node scripts/lib/node-floor-guard.js
 
       - name: Test the setup module unit suites
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-answers.test.ts scripts/tests/setup-antigravity-hooks.test.ts scripts/tests/setup-antigravity-statusline.test.ts scripts/tests/setup-antigravity-tier.test.ts scripts/tests/setup-backup.test.ts scripts/tests/setup-backup-failure.test.ts scripts/tests/setup-catalogue.test.ts scripts/tests/setup-chroma-install.test.ts scripts/tests/setup-chroma-install-win.test.ts scripts/tests/setup-chroma-unit.test.ts scripts/tests/setup-cli-claude-gemini.test.ts scripts/tests/setup-cli-copilot-antigravity.test.ts scripts/tests/setup-declarations.test.ts scripts/tests/setup-deps.test.ts scripts/tests/setup-ensure-http.test.ts scripts/tests/setup-ensure-http-probes.test.ts scripts/tests/setup-ensure-http-wiring.test.ts scripts/tests/setup-file-size.test.ts scripts/tests/setup-files.test.ts scripts/tests/setup-flow.test.ts scripts/tests/setup-flow-steps.test.ts scripts/tests/setup-gemini-settings.test.ts scripts/tests/setup-gemini-settings-rc.test.ts scripts/tests/setup-gemini-settings-write.test.ts scripts/tests/setup-gemini-settings-write-diff.test.ts scripts/tests/setup-golden-evidence.test.ts scripts/tests/setup-hint-strings.test.ts scripts/tests/setup-hooks-rewrite.test.ts scripts/tests/setup-json-secure.test.ts scripts/tests/setup-json-secure-failure.test.ts scripts/tests/setup-lib-shim-tls.test.ts scripts/tests/setup-lib-shim-usage.test.ts scripts/tests/setup-lib-tls-entry.test.ts scripts/tests/setup-lib-tls-entry-offer.test.ts scripts/tests/setup-lib-usage-entry.test.ts scripts/tests/setup-lib-usage-entry-form.test.ts scripts/tests/setup-link-key.test.ts scripts/tests/setup-lossless-callsites.test.ts scripts/tests/setup-lossless-shim.test.ts scripts/tests/setup-lossless-writers.test.ts scripts/tests/setup-mcp-agy-step.test.ts scripts/tests/setup-mcp-claude-flow.test.ts scripts/tests/setup-mcp-claude-step.test.ts scripts/tests/setup-mcp-copilot-step.test.ts scripts/tests/setup-mcp-gemini-step.test.ts scripts/tests/setup-mcp-json-writers.test.ts scripts/tests/setup-mcp-json-writers-merge.test.ts scripts/tests/setup-mempalace-callsite.test.ts scripts/tests/setup-mempalace-detect.test.ts scripts/tests/setup-mempalace-install-offer.test.ts scripts/tests/setup-mempalace-stdio.test.ts scripts/tests/setup-mempalace-version.test.ts scripts/tests/setup-misc-paths.test.ts scripts/tests/setup-no-posix-tool.test.ts scripts/tests/setup-org-mcp-claude-argv.test.ts scripts/tests/setup-org-mcp-fold.test.ts scripts/tests/setup-prerequisites.test.ts scripts/tests/setup-prompt.test.ts scripts/tests/setup-prompt-integration.test.ts scripts/tests/setup-prompt-table.test.ts scripts/tests/setup-prompt-tty.test.ts scripts/tests/setup-references.test.ts scripts/tests/setup-session-recording.test.ts scripts/tests/setup-session-recording-ownership.test.ts scripts/tests/setup-shim.test.ts scripts/tests/setup-stdlib-closure.test.ts scripts/tests/setup-steps-agy.test.ts scripts/tests/setup-steps-agy-channels.test.ts scripts/tests/setup-steps-copilot.test.ts scripts/tests/setup-steps-hooks.test.ts scripts/tests/setup-steps-hooks-lossy.test.ts scripts/tests/setup-steps-mcp.test.ts scripts/tests/setup-steps-rules.test.ts scripts/tests/setup-steps-rules-edge.test.ts scripts/tests/setup-steps-tiers.test.ts scripts/tests/setup-steps-usage.test.ts scripts/tests/setup-store-guidance.test.ts scripts/tests/setup-summary.test.ts scripts/tests/setup-tier-build.test.ts scripts/tests/setup-tier-install.test.ts scripts/tests/setup-tls-detect.test.ts scripts/tests/setup-tls-offer.test.ts scripts/tests/setup-trust-wrapper.test.ts scripts/tests/setup-trust-wrapper-install.test.ts scripts/tests/setup-usage-capture.test.ts scripts/tests/setup-usage-capture-keep.test.ts scripts/tests/setup-usage-capture-rank.test.ts scripts/tests/setup-usage-capture-state.test.ts scripts/tests/setup-usage-capture-wire-path.test.ts scripts/tests/setup-validation.test.ts scripts/tests/tls-env-quote.test.ts scripts/tests/tls-env-writer.test.ts scripts/tests/manage-confirm-remainder.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-answers.test.ts scripts/tests/setup-antigravity-hooks.test.ts scripts/tests/setup-antigravity-statusline.test.ts scripts/tests/setup-antigravity-tier.test.ts scripts/tests/setup-backup.test.ts scripts/tests/setup-backup-failure.test.ts scripts/tests/setup-catalogue.test.ts scripts/tests/setup-chroma-install.test.ts scripts/tests/setup-chroma-install-win.test.ts scripts/tests/setup-chroma-unit.test.ts scripts/tests/setup-cli-claude-gemini.test.ts scripts/tests/setup-cli-copilot-antigravity.test.ts scripts/tests/setup-declarations.test.ts scripts/tests/setup-deps.test.ts scripts/tests/setup-ensure-http.test.ts scripts/tests/setup-ensure-http-probes.test.ts scripts/tests/setup-ensure-http-wiring.test.ts scripts/tests/setup-file-size.test.ts scripts/tests/setup-files.test.ts scripts/tests/setup-flow.test.ts scripts/tests/setup-flow-steps.test.ts scripts/tests/setup-gemini-settings.test.ts scripts/tests/setup-gemini-settings-rc.test.ts scripts/tests/setup-gemini-settings-write.test.ts scripts/tests/setup-gemini-settings-write-diff.test.ts scripts/tests/setup-golden-evidence.test.ts scripts/tests/setup-hint-strings.test.ts scripts/tests/setup-hooks-rewrite.test.ts scripts/tests/setup-json-secure.test.ts scripts/tests/setup-json-secure-failure.test.ts scripts/tests/setup-lib-shim-tls.test.ts scripts/tests/setup-lib-shim-usage.test.ts scripts/tests/setup-lib-tls-entry.test.ts scripts/tests/setup-lib-tls-entry-offer.test.ts scripts/tests/setup-lib-usage-entry.test.ts scripts/tests/setup-lib-usage-entry-form.test.ts scripts/tests/setup-link-key.test.ts scripts/tests/setup-lossless-callsites.test.ts scripts/tests/setup-lossless-shim.test.ts scripts/tests/setup-lossless-writers.test.ts scripts/tests/setup-mcp-agy-step.test.ts scripts/tests/setup-mcp-claude-flow.test.ts scripts/tests/setup-mcp-claude-step.test.ts scripts/tests/setup-mcp-copilot-step.test.ts scripts/tests/setup-mcp-gemini-step.test.ts scripts/tests/setup-mcp-json-writers.test.ts scripts/tests/setup-mcp-json-writers-merge.test.ts scripts/tests/setup-mempalace-callsite.test.ts scripts/tests/setup-mempalace-detect.test.ts scripts/tests/setup-mempalace-install-offer.test.ts scripts/tests/setup-mempalace-stdio.test.ts scripts/tests/setup-mempalace-version.test.ts scripts/tests/setup-misc-paths.test.ts scripts/tests/setup-no-posix-tool.test.ts scripts/tests/setup-org-mcp-claude-argv.test.ts scripts/tests/setup-org-mcp-fold.test.ts scripts/tests/setup-prerequisites.test.ts scripts/tests/setup-prompt.test.ts scripts/tests/setup-prompt-integration.test.ts scripts/tests/setup-prompt-table.test.ts scripts/tests/setup-prompt-tty.test.ts scripts/tests/setup-references.test.ts scripts/tests/setup-session-recording.test.ts scripts/tests/setup-session-recording-ownership.test.ts scripts/tests/setup-stdlib-closure.test.ts scripts/tests/setup-steps-agy.test.ts scripts/tests/setup-steps-agy-channels.test.ts scripts/tests/setup-steps-copilot.test.ts scripts/tests/setup-steps-hooks.test.ts scripts/tests/setup-steps-hooks-lossy.test.ts scripts/tests/setup-steps-mcp.test.ts scripts/tests/setup-steps-rules.test.ts scripts/tests/setup-steps-rules-edge.test.ts scripts/tests/setup-steps-tiers.test.ts scripts/tests/setup-steps-usage.test.ts scripts/tests/setup-store-guidance.test.ts scripts/tests/setup-summary.test.ts scripts/tests/setup-tier-build.test.ts scripts/tests/setup-tier-install.test.ts scripts/tests/setup-tls-detect.test.ts scripts/tests/setup-tls-offer.test.ts scripts/tests/setup-trust-wrapper.test.ts scripts/tests/setup-trust-wrapper-install.test.ts scripts/tests/setup-usage-capture.test.ts scripts/tests/setup-usage-capture-keep.test.ts scripts/tests/setup-usage-capture-rank.test.ts scripts/tests/setup-usage-capture-state.test.ts scripts/tests/setup-usage-capture-wire-path.test.ts scripts/tests/setup-validation.test.ts scripts/tests/tls-env-quote.test.ts scripts/tests/tls-env-writer.test.ts scripts/tests/manage-confirm-remainder.test.ts
 
       - name: Cancel workflow on job failure
         if: failure()

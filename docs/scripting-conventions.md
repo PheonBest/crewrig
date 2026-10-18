@@ -165,7 +165,7 @@ saw, so the next reader can spot a wedge upstream.
 
 ### Why
 
-PR #39 (`scripts/prune-transcripts.sh`) shipped a pagination loop whose
+PR #39 (`scripts/prune-transcripts.ts`) shipped a pagination loop whose
 termination condition (`count <= offset + len(drawers)`) misread the API
 contract and exited after the first page. The script had a perfectly
 correct format-mismatch escalation that fired on the 100 drawers it saw,

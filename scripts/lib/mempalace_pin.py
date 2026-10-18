@@ -3,7 +3,7 @@
 
 One home for the two operations shared by the memory-server launch guard in
 ``mempalace-http-wrapper.py`` and the operator diagnostic
-``scripts/doctor-mempalace.sh``:
+``scripts/doctor-mempalace.ts``:
 
 * :func:`read_pin` — extract ``MEMPALACE_MIN_VERSION`` and
   ``MEMPALACE_MAX_VERSION_EXCLUSIVE`` from ``scripts/lib/common.sh``, the single

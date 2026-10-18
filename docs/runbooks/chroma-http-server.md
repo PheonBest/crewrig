@@ -89,7 +89,7 @@ Both should report `65536` (or higher) once the reload completes.
 
 ### File-descriptor floor on the manual launch path
 
-`scripts/start-chroma-server.ts` (reached by the `start-chroma-server.sh` shim) — the ad-hoc path used to bring up the
+`scripts/start-chroma-server.ts` — the ad-hoc path used to bring up the
 daemon outside the installed supervisor — raises the daemon process's
 open-file soft limit to `10240` (`MEMPALACE_CHROMA_ULIMIT_FLOOR`
 overrides the default) immediately before launching it. This floor is
@@ -147,8 +147,7 @@ If you upgraded a working CrewRig install across the #98 boundary:
    ```
 
    Run the guard once, as its own step; the setup entries need Node.js 24 or
-   later. Each `bash scripts/setup-<cli>-interactive.sh` still works: it is a
-   forwarding shim that runs the guard, then the entry.
+   later. The old Bash setup scripts were removed (see `docs/shell-removal.md`).
 
    The setup script installs the supervisor unit, starts the daemon,
    runs the health check, and rewrites the MCP entry to point at

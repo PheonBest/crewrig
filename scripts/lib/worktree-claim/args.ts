@@ -49,7 +49,7 @@ export function parseArgs(argv: readonly string[]): Parsed {
     ) {
       const value = rest[i + 1];
       if (value === undefined) {
-        throw new ClaimFailure(`'${arg}' requires a value: worktree-claim.sh ${subcommand} … ${arg} <value>. Run
+        throw new ClaimFailure(`'${arg}' requires a value: worktree-claim.ts ${subcommand} … ${arg} <value>. Run
        with --help for the usage block.`);
       }
       i++;
@@ -77,7 +77,7 @@ export function parseArgs(argv: readonly string[]): Parsed {
   }
   if (subcommand === "run" && command.length === 0) {
     throw new ClaimFailure(
-      "'run' needs a command: worktree-claim.sh run --agent <name> -- <command…>",
+      "'run' needs a command: worktree-claim.ts run --agent <name> -- <command…>",
     );
   }
 

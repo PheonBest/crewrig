@@ -22,7 +22,7 @@ const all = [CLAUDE, GEMINI, COPILOT, ANTIGRAVITY];
 class Facts {
   readonly rows: [string, string][] = [];
   constructor(d: CliDescriptor) {
-    const name = d.script.replace(/^manage-(.+)-component\.sh$/, "$1");
+    const name = d.script.replace(/^manage-(.+)-component\.ts$/, "$1");
     const file = path.join(here, "fixtures", "manage-shell-facts", `${name}.facts.golden`);
     for (const line of fs.readFileSync(file, "utf8").split("\n")) {
       const at = line.indexOf(": ");

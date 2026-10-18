@@ -210,7 +210,7 @@ export function usageCaptureApply(o: UcApplyOptions): number {
       return usageCaptureEnable(o);
     }
     ctx.io.out(
-      `Usage capture not enabled (re-run scripts/setup-${cli}-interactive.sh to enable it).`,
+      `Usage capture not enabled (re-run scripts/setup-${cli}-interactive.ts to enable it).`,
     );
     return 0;
   }

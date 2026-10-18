@@ -178,7 +178,7 @@ so a change to either regenerates the output. That is why the four compiled
 agent output trees carry the sync policy `regenerable` (spec 0199 R43)
 rather than `strict`: an organization-level override of the mapping in
 force (`docs/org-model-mapping-override.md`) makes those four outputs
-legitimately diverge from upstream, and `scripts/sync-from-upstream.sh`
+legitimately diverge from upstream, and `scripts/sync-from-upstream.ts`
 cannot run the build to tell that apart from a hand edit. The compiled
 skill and command trees reach no mapping, so they stay `strict` (R45).
 While governed by `strict`, their organization-owned compiled outputs
@@ -201,7 +201,7 @@ exist, how org artifacts integrate) is defined in spec 0012 sub-spec E2.
 | `.github/copilot-instructions.md` | Copilot system prompt built from `AGENTS.md`. |
 | `.github/workflows/` | CI/CD pipeline definitions. |
 | `.github/copilot/` | GitHub Copilot workspace configuration. |
-| `.github/copilot/settings.json` | Committed workspace settings, `strict` by default as a member of `.github/copilot/` above — except its `hooks` key, which the transcript-hooks opt-in in `setup-copilot-interactive.ts` deliberately rewrites locally with an absolute path (ADR-0001 Discovery finding #8). Reclassified `excluded`, nested under the strict `.github/copilot/` parent (spec 0097 / issue #605), so that designed-in local mutation no longer aborts `scripts/sync-from-upstream.sh`; sibling members such as `extension.json` remain `strict` and still abort on a local diff. |
+| `.github/copilot/settings.json` | Committed workspace settings, `strict` by default as a member of `.github/copilot/` above — except its `hooks` key, which the transcript-hooks opt-in in `setup-copilot-interactive.ts` deliberately rewrites locally with an absolute path (ADR-0001 Discovery finding #8). Reclassified `excluded`, nested under the strict `.github/copilot/` parent (spec 0097 / issue #605), so that designed-in local mutation no longer aborts `scripts/sync-from-upstream.ts`; sibling members such as `extension.json` remain `strict` and still abort on a local diff. |
 | `.agents/skills/` | Compiled Antigravity CLI skill definitions. |
 | `.agents/agents/` | Compiled Antigravity CLI agent definitions. Reclassified `regenerable` (spec 0199 R43 / spec 0121 delta-01 R9). |
 
@@ -236,7 +236,7 @@ to every deployment of CrewRig.
 
 | Path | Description |
 |---|---|
-| `.crewrig/` | Machine-readable sync manifest and related tooling. `.crewrig/core-paths.txt` enumerates core-layer paths and their sync policy consumed by `scripts/sync-from-upstream.sh`. Two members are carved out as adopter-owned (spec 0020) — see the Overlay layer: the `.crewrig/.synced-markers/` subtree (machine-managed sync state) and `.crewrig/spec-id-carrier` (the reservation-namespace setting, spec 0112). |
+| `.crewrig/` | Machine-readable sync manifest and related tooling. `.crewrig/core-paths.txt` enumerates core-layer paths and their sync policy consumed by `scripts/sync-from-upstream.ts`. Two members are carved out as adopter-owned (spec 0020) — see the Overlay layer: the `.crewrig/.synced-markers/` subtree (machine-managed sync state) and `.crewrig/spec-id-carrier` (the reservation-namespace setting, spec 0112). |
 
 ---
 
@@ -305,7 +305,7 @@ sync.
 
 | Path | Description |
 |---|---|
-| `.crewrig/.synced-markers/` | Per-path last-synced upstream blob SHAs backing the **adopt-on-edit** decision. Machine-managed by `scripts/sync-from-upstream.sh` (do not hand-edit); **committed** by the adopter so the customization verdict survives a fresh clone (R7), and **never synced** from upstream — carved out of the `.crewrig` guard and restore. |
+| `.crewrig/.synced-markers/` | Per-path last-synced upstream blob SHAs backing the **adopt-on-edit** decision. Machine-managed by `scripts/sync-from-upstream.ts` (do not hand-edit); **committed** by the adopter so the customization verdict survives a fresh clone (R7), and **never synced** from upstream — carved out of the `.crewrig` guard and restore. |
 
 The `README.md` core-governance entry carries the **adopt-on-edit** policy
 (spec 0020): upstream-owned until the adopter modifies it, then preserved
@@ -316,7 +316,7 @@ permanently. It remains a core path; only its sync policy differs from
 
 `config/expertise/`, `config/teams/`, and `config/level/` are **core paths**
 carrying the **adopt-on-edit** policy at **directory granularity**. Each is
-reconciled member-by-member by `scripts/sync-from-upstream.sh`
+reconciled member-by-member by `scripts/sync-from-upstream.ts`
 (`reconcile_dir`): an untouched file keeps updating from upstream, a newly
 published upstream example is added (if the path never existed in the org's
 own history), a file the org customizes or deletes freezes permanently
@@ -427,7 +427,7 @@ committed to the repository.
 | `.claude/worktrees/` | Claude Code worktree metadata. |
 | `.worktrees/` | Git worktrees created during agent team sessions. |
 | `dist/<tier>/` | Gitignored staging tree for non-`core` build outputs (ADR-0011, spec 0019). `scripts/build-components.ts` writes each non-`core` tier here (`library`, `community`, `org`); the interactive setup scripts install from it to the user home. Never committed. |
-| `build/extensions/<name>/` | The render-at-publication build tree for an extension (spec 0173, as amended by `specs/0173-extension-declaration-model.delta-01.md`). `node scripts/build-extension.ts --target gemini` produces the complete installable tree Gemini CLI loads — every generated extension output (`gemini-extension.json`, `commands/*.toml`, `hooks/hooks.json` when the generic `hooks` section maps on Gemini — spec 0179, issue #1005, via `scripts/lib/extension-hooks.sh` —, `GEMINI.md` when a `context` source is declared — spec 0181, issue #1007, via `scripts/lib/extension/context-render.ts` — …) is produced INTO this build directory and committed nowhere; `scripts/install-extension.sh` and `task link-gemini-extension-build` are what consume it for a local install; `scripts/release-package-extension.sh` (spec 0183, issue #1008) is the third consumer, archiving this tree's contents at the archive root (no wrapper directory — pinned live against the installed tool, `docs/runbooks/extension-release-install-probe.md`) as the published release artifact. |
+| `build/extensions/<name>/` | The render-at-publication build tree for an extension (spec 0173, as amended by `specs/0173-extension-declaration-model.delta-01.md`). `node scripts/build-extension.ts --target gemini` produces the complete installable tree Gemini CLI loads — every generated extension output (`gemini-extension.json`, `commands/*.toml`, `hooks/hooks.json` when the generic `hooks` section maps on Gemini — spec 0179, issue #1005, via `scripts/lib/extension-hooks.sh` —, `GEMINI.md` when a `context` source is declared — spec 0181, issue #1007, via `scripts/lib/extension/context-render.ts` — …) is produced INTO this build directory and committed nowhere; `scripts/install-extension.ts` and `task link-gemini-extension-build` are what consume it for a local install; `scripts/release-package-extension.sh` (spec 0183, issue #1008) is the third consumer, archiving this tree's contents at the archive root (no wrapper directory — pinned live against the installed tool, `docs/runbooks/extension-release-install-probe.md`) as the published release artifact. |
 | `build/gaps/<name>/` | The observed, unmappable-declaration gap set the render actually saw for one extension (`observed-gaps.json`), a build output compared by `node scripts/build-extension.ts --check` against the extension's hand-authored, committed `accepted-gaps.json`. Kept outside `build/extensions/<name>/` so the installable tree stays free of build metadata. Each entry carries `subject` and `target`; a `hooks`-subject entry (spec 0179 R14) additionally carries `hook`, `event` and `part` (`"event"` or `"matcher"`), so two hooks differing only in their neutral event produce distinguishable entries rather than colliding on one `subject`+`target` pair. |
 | `.DS_Store` | macOS Finder metadata. |
 | `node_modules/` | Node.js dependencies installed locally — gitignored. |

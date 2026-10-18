@@ -3,9 +3,8 @@
 // HOME/USERPROFILE and a PATH of ONE directory holding stub CLIs and coreutils; no jq, no Python.
 // API: createInstallSandbox, stubCli, cliCalls (recorded argv), runEntry (one leg), runLegs (every
 // existing leg), listTree (sorted relative paths, `/` after directories, ` -> target` on links).
-// IMPL is the only switch between legs (`shell`: `bash scripts/<name>.sh`, now a fail-closed shim
-// forwarding to the TypeScript entry; `node`: `node scripts/<name>.ts` directly). Both are real user
-// paths, so both stay; `runLegs` skips a leg whose file is absent.
+// IMPL lists the legs: the `shell` leg (`bash scripts/<name>.sh`, the removed forwarding shims) is gone, so
+// only `node scripts/<name>.ts` runs; `runLegs` skips a leg whose file is absent.
 
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
@@ -20,7 +19,7 @@ import { which } from "./worktree-fixtures.ts";
 
 export type Leg = "shell" | "node";
 
-export const IMPL: readonly Leg[] = ["shell", "node"];
+export const IMPL: readonly Leg[] = ["node"];
 
 export const DEFAULT_CLIS: readonly string[] = ["claude", "copilot", "agy", "gemini"];
 
@@ -97,7 +96,7 @@ export function createInstallSandbox(opts: SandboxOptions = {}): InstallSandbox 
   return sandbox;
 }
 
-/** Run `scripts/<name>` through one leg (default `shell`); cwd is the tree root. */
+/** Run `scripts/<name>` through one leg (default `node`); cwd is the tree root. */
 export function runEntry(
   sandbox: InstallSandbox,
   name: string,
@@ -106,7 +105,7 @@ export function runEntry(
 ): RunResult {
   const env = { ...opts.env, REPO_DIR: undefined, LC_ALL: "C" };
   const cwd = opts.cwd ?? sandbox.tree.root;
-  if ((opts.leg ?? "shell") === "shell") {
+  if ((opts.leg ?? "node") === "shell") {
     return runBash(sandbox.hermetic, sandbox.tree.resolve(`scripts/${name}.sh`), args, {
       env,
       cwd,

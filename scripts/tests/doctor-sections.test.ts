@@ -64,12 +64,9 @@ describe("the three sections and the verdict", () => {
         },
       });
       const a = entries[0]![1](h);
-      const b = entries[1]![1](h);
       assert.match(a.out, /transport:\s+http \(shared daemon, spec 0113\)/);
       assert.match(a.out, /bearer header present \(value not shown\)/);
       assert.ok(!a.out.includes("s3cret"));
-      assert.equal(a.status, b.status, "the shim returns the entry's exit status");
-      assert.equal(a.out, b.out, "the shim returns the entry's output");
     },
   );
 

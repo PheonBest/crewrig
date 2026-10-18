@@ -84,7 +84,7 @@ Enabling usage capture will:
   No prompt or response text is recorded: only token counts, model and timing.
   MemPalace is not required: records go to the file-system usage journal.
 
-Usage capture not enabled (re-run scripts/setup-copilot-interactive.sh to enable it).
+Usage capture not enabled (re-run scripts/setup-copilot-interactive.ts to enable it).
   MemPalace session check registered in ~/.copilot/hooks/crewrig-mempalace-session-check.json
 
 ====================================
