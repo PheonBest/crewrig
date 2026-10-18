@@ -1943,6 +1943,39 @@ jobs:
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
+  check-taskfile-commands:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            check-taskfile-commands:
+              - 'Taskfile.yml'
+              - 'scripts/check-taskfile-commands.ts'
+              - 'scripts/lib/taskfile-command*.ts'
+              - 'scripts/lib/taskfile-command-exemptions.json'
+              - 'scripts/tests/check-taskfile-commands.test.ts'
+              - 'scripts/check-tool-binaries.ts'
+              - 'scripts/lib/tool-binaries.ts'
+              - 'scripts/tests/check-tool-binaries.test.ts'
+      - uses: actions/setup-node@v4
+        if: steps.filter.outputs.check-taskfile-commands == 'true'
+        with:
+          node-version: 24
+      - name: Install production dependencies
+        if: steps.filter.outputs.check-taskfile-commands == 'true'
+        run: npm ci --omit=dev --workspaces=false
+      - name: Check Taskfile Commands
+        if: steps.filter.outputs.check-taskfile-commands == 'true'
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-taskfile-commands.ts
+      - name: Test Check Taskfile Commands
+        if: steps.filter.outputs.check-taskfile-commands == 'true'
+        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-taskfile-commands.test.ts scripts/tests/check-tool-binaries.test.ts
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
   misc:
     runs-on: ubuntu-latest
     steps:

@@ -2488,6 +2488,34 @@ check-claude-agent-layout:
         - "scripts/check-claude-agent-layout.ts"
         - "scripts/lib/governance/**"
 
+check-taskfile-commands:
+  image: node:24
+  script:
+    - "npm ci --omit=dev --workspaces=false"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-taskfile-commands.ts"
+    - "bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-taskfile-commands.test.ts scripts/tests/check-tool-binaries.test.ts"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
+      changes:
+        - "Taskfile.yml"
+        - "scripts/check-taskfile-commands.ts"
+        - "scripts/lib/taskfile-command*.ts"
+        - "scripts/lib/taskfile-command-exemptions.json"
+        - "scripts/tests/check-taskfile-commands.test.ts"
+        - "scripts/check-tool-binaries.ts"
+        - "scripts/lib/tool-binaries.ts"
+        - "scripts/tests/check-tool-binaries.test.ts"
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
+      changes:
+        - "Taskfile.yml"
+        - "scripts/check-taskfile-commands.ts"
+        - "scripts/lib/taskfile-command*.ts"
+        - "scripts/lib/taskfile-command-exemptions.json"
+        - "scripts/tests/check-taskfile-commands.test.ts"
+        - "scripts/check-tool-binaries.ts"
+        - "scripts/lib/tool-binaries.ts"
+        - "scripts/tests/check-tool-binaries.test.ts"
+
 markdown-links:
   image: node:24
   script:

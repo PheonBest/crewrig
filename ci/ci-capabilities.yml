@@ -3038,6 +3038,40 @@ capabilities:
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-claude-agent-layout.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-claude-agent-layout.sh
 
+  - id: check-taskfile-commands
+    name: "Check Taskfile.yml names no POSIX-only command and run the tool-binary check suites"
+    trigger:
+      - on: pull-request
+        branches: [main, "release/**"]
+        paths:
+          - "Taskfile.yml"
+          - "scripts/check-taskfile-commands.ts"
+          - "scripts/lib/taskfile-command*.ts"
+          - "scripts/lib/taskfile-command-exemptions.json"
+          - "scripts/tests/check-taskfile-commands.test.ts"
+          - "scripts/check-tool-binaries.ts"
+          - "scripts/lib/tool-binaries.ts"
+          - "scripts/tests/check-tool-binaries.test.ts"
+      - on: push
+        branches: [main, "release/**"]
+        paths:
+          - "Taskfile.yml"
+          - "scripts/check-taskfile-commands.ts"
+          - "scripts/lib/taskfile-command*.ts"
+          - "scripts/lib/taskfile-command-exemptions.json"
+          - "scripts/tests/check-taskfile-commands.test.ts"
+          - "scripts/check-tool-binaries.ts"
+          - "scripts/lib/tool-binaries.ts"
+          - "scripts/tests/check-tool-binaries.test.ts"
+    portability: portable
+    changeset-gated: true
+    requires:
+      runtime: node@24
+    command:
+      - npm ci --omit=dev --workspaces=false
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-taskfile-commands.ts
+      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-taskfile-commands.test.ts scripts/tests/check-tool-binaries.test.ts
+
   - id: markdown-links
     name: "Check relative Markdown link integrity"
     trigger:
