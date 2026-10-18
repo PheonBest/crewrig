@@ -97,6 +97,17 @@ their rows here.
 | `hooks/worktree-git-guard.sh` | `hooks/worktree-git-guard.ts` (same rewrite on the next setup run; the guard is absent until then) | `#1344 slice 5` |
 | `scripts/lib/tls-exec.sh` | `scripts/tls-exec.ts` (module `scripts/lib/tls-exec/run.ts`). An installed MCP registration or Chroma unit still naming `bash <repo>/scripts/lib/tls-exec.sh` is rewritten by the next `node scripts/setup-<cli>-interactive.ts` run, and until then it fails with a missing-file error | `#1344 slice 5b` |
 | `scripts/lib/tls-delegation.sh` | `scripts/tls-delegation.ts` (detection `scripts/lib/setup/tls-detect.ts`, offer `scripts/lib/setup/tls-offer.ts`) | `#1344 slice 5b` |
+| `scripts/build-ci.sh` | `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts` | #1344 slice 6 |
+| `scripts/check-agent-profiles.sh` | `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-agent-profiles.ts` | #1344 slice 6 |
+| `scripts/check-ci-parity.sh` | `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-ci-parity.ts` | #1344 slice 6 |
+| `scripts/check-model-mappings.sh` | `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-model-mappings.ts` | #1344 slice 6 |
+| `scripts/check-spec-id-reserved.sh` | `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-spec-id-reserved.ts` | #1344 slice 6 |
+| `scripts/ci-cache-guard.sh` | `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts` | #1344 slice 6 |
+| `scripts/ci-changeset-coverage.sh` | `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-changeset-coverage.ts` | #1344 slice 6 |
+| `scripts/reserve-spec-id.sh` | `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts` | #1344 slice 6 |
+| `scripts/build-components.sh` | `node scripts/build-components.ts` | #1344 slice 6 |
+| `tests/e2e/lib/test-gemini-headless.sh` | `node tests/e2e/lib/test-gemini-headless.ts` | #1344 slice 6 |
+| `task skill:check` (inline `yq`/`awk` script) | `node scripts/check-skill-mirrors.ts <skill-name>` | #1344 slice 6 |
 
 From a built skill directory the same commands read `node scripts/curate.ts`,
 `node scripts/schedule-curator.ts` and `node scripts/setup-labels.ts`; the
@@ -156,5 +167,14 @@ and documents that call `bash <checkout>/scripts/<name>.sh` must call
 - **Install, manage, link and build entries** (`install-*`, `manage-*`,
   `link-extensions`, `unlink-*`, `build-copilot-plugin`,
   `build-antigravity-extension`): call `node <checkout>/scripts/<name>.ts`.
-  `scripts/build-components.sh` and `scripts/build-claude-plugin.sh` remain
-  for now and are removed in a later slice.
+  `scripts/build-components.sh` is removed in slice 6: call
+  `node <checkout>/scripts/build-components.ts` (after
+  `node <checkout>/scripts/lib/node-floor-guard.js`).
+- **`scripts/reserve-spec-id.sh`, `scripts/check-ci-parity.sh`,
+  `scripts/build-ci.sh`.** These forwarding shims are gone, along with
+  `check-model-mappings`, `check-agent-profiles`, `check-spec-id-reserved`,
+  `ci-cache-guard` and `ci-changeset-coverage`. A contributor's own scripts,
+  shell aliases, git hooks and CI jobs must call
+  `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON <checkout>/scripts/<name>.ts`
+  with the same arguments; the exit status, output and streams are unchanged.
+  For `ci-cache-guard`, the wrapped command keeps following `--`.

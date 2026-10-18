@@ -41,4 +41,4 @@ jobs:
       - name: Floor guard accepts Node.js 24
         run: node scripts/lib/node-floor-guard.js
       - name: Exhaustive run of every changeset-gated check (spec 0147 delta-01 R21)
-        run: bash scripts/ci-changeset-coverage.sh
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-changeset-coverage.ts

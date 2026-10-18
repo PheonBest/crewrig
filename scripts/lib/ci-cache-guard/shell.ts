@@ -23,9 +23,9 @@ export function statusOf(status: number | null, signal: NodeJS.Signals | null): 
   return 1;
 }
 
-/** `$0` the shell script would show: the twin's own path with the `.sh` extension. */
+/** `$0` the wrapped shell shows: the entry's own path (the `.sh` twin is deleted). */
 export function shellName(entry: string): string {
-  return entry.replace(/\.ts$/, ".sh");
+  return entry;
 }
 
 function envGet(env: NodeJS.ProcessEnv, name: string): string | undefined {

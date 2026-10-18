@@ -24,7 +24,7 @@ A mapping is a committed declaration, one per target, that says which models a
 command-line interface can reach, what each model provides, and how the
 vocabulary of [spec 0195](../specs/0195-agent-capability-profile.md) turns into that
 target's native fields and prose. It is a *description*: a mapping is read on every compilation of an agent source ([spec 0198](../specs/0198-build-mapping-resolution.md)), and the checker
-(`scripts/check-model-mappings.sh`) is an authoring-time gate over a proposed
+(`scripts/check-model-mappings.ts`) is an authoring-time gate over a proposed
 change, never a resolution-time failure (spec 0197 R51).
 
 ## File location and ownership
@@ -114,7 +114,7 @@ dropped (R19).
 
 ### Validation (R29-R32)
 
-`scripts/check-model-mappings.sh` validates three things per target:
+`scripts/check-model-mappings.ts` validates three things per target:
 
 1. **The core mapping alone**, unchanged, when one exists.
 2. **The org channel file alone** — the same assertion table as a core
@@ -251,7 +251,7 @@ delta that adds a rung ships as a **new file**, and a derived guard would keep
 passing while stale — a green that certifies nothing. **Obligation:** a
 future delta of spec 0195 that changes one of these domains SHALL be
 accompanied by an update to this block and to the identical block in
-`scripts/check-model-mappings.sh`.
+`scripts/check-model-mappings.ts`.
 
 | Axis | Domain | Spec 0195 |
 |---|---|---|
@@ -422,7 +422,7 @@ so the checker does not assume rank and rung move together.
 
 ## The checker
 
-`scripts/check-model-mappings.sh` implements the assertion table this
+`scripts/check-model-mappings.ts` implements the assertion table this
 document makes normative (spec 0197 R46–R51). Its own header comment carries
 the full usage and exit-code contract, including the `--print-selection`
 mode used to pin the golden per-rung selection tables in

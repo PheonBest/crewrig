@@ -15,7 +15,7 @@
 // scripts; with --require-tools a missing tool is a wiring fault (exit 2).
 // Exit: 0 clean (max-lines warnings never fail), 1 findings, 2 wiring fault.
 //
-// Self-contained on purpose: build-components.sh copies it verbatim into the
+// Self-contained on purpose: build-components.ts copies it verbatim into the
 // four built trees, so it must not import anything from scripts/.
 
 import { spawnSync } from "node:child_process";

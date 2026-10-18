@@ -31,12 +31,7 @@ const drop = (target: string, path: string, value: string, reason: string): stri
   tab("model-drop", "probe", target, path, value, reason);
 const first = (doc: Record<string, unknown>, i: number) =>
   listOf(doc, "offerings")[i] as Record<string, unknown>;
-const hasChecker =
-  (process.platform === "linux" || process.env["CREWRIG_SHELL_PARITY"] === "1") &&
-  spawnSync("yq", ["--version"]).status === 0;
-const noChecker = hasChecker
-  ? undefined
-  : "skipped: needs Linux (or CREWRIG_SHELL_PARITY=1) with bash and mikefarah yq";
+const noChecker: string | undefined = undefined; // the TypeScript checker needs no yq
 
 describe("degradation cases", () => {
   test("C7 a malformed mapping cell degrades: no field, one unreadable-cell note", () => {
@@ -61,9 +56,10 @@ describe("degradation cases", () => {
       first(doc, 1)["native-value"] = "not-a-domain-member";
     });
     const run = spawnSync(
-      "bash",
+      process.execPath,
       [
-        path.join(REPO, "scripts", "check-model-mappings.sh"),
+        "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
+        path.join(REPO, "scripts", "check-model-mappings.ts"),
         path.join(root, "model-mappings", "gemini.yml"),
       ],
       { encoding: "utf8" },
@@ -167,9 +163,10 @@ describe("mutations of the claude mapping", () => {
       doc["offerings"] = [...listOf(doc, "offerings"), extra];
     });
     const run = spawnSync(
-      "bash",
+      process.execPath,
       [
-        path.join(REPO, "scripts", "check-model-mappings.sh"),
+        "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
+        path.join(REPO, "scripts", "check-model-mappings.ts"),
         "--print-selection",
         path.join(root, "model-mappings", "claude.yml"),
       ],

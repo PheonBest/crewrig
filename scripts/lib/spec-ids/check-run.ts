@@ -177,7 +177,9 @@ export function checkMain(argv: readonly string[], env: NodeJS.ProcessEnv): void
         mark === "true"
           ? `${spec} — id '${id}' was never secured (neither ${refPrimary} nor ${refTags} exists on '${remote}'), and the spec correctly declares 'unsecured-id: true'. Requirement 10: a maintainer secures the id and REMOVES the mark in the same act:`
           : `${spec} — id '${id}' was never secured (neither ${refPrimary} nor ${refTags} exists on '${remote}'). Secure it with:`;
-      findings.push(`${lead}\n      bash scripts/reserve-spec-id.sh --id ${id} --issue ${ticket}`);
+      findings.push(
+        `${lead}\n      node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts --id ${id} --issue ${ticket}`,
+      );
       continue;
     }
     let holderPrimary = "";
@@ -207,7 +209,7 @@ export function checkMain(argv: readonly string[], env: NodeJS.ProcessEnv): void
     const holder = holderPrimary !== "" ? holderPrimary : holderTags;
     if (holder !== ticket) {
       findings.push(
-        `${spec} — id '${id}' is secured for issue #${holder} (at ${heldAt}) but this spec declares 'related-issue: ${ticket}'. The id belongs to #${holder}; #${ticket} must allocate its own with:\n      bash scripts/reserve-spec-id.sh --issue ${ticket}`,
+        `${spec} — id '${id}' is secured for issue #${holder} (at ${heldAt}) but this spec declares 'related-issue: ${ticket}'. The id belongs to #${holder}; #${ticket} must allocate its own with:\n      node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts --issue ${ticket}`,
       );
       continue;
     }

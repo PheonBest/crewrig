@@ -79,7 +79,7 @@ jobs:
         run: npm install
 
       - name: Validate the model-id resolution, arithmetic, and prune reach (no network)
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-pricing-compute.test.ts scripts/tests/usage-pricing-fx.test.ts scripts/tests/usage-pricing-rollup.test.ts scripts/tests/usage-pricing-rollup-period.test.ts scripts/tests/usage-pricing-prune.test.ts scripts/tests/usage-pricing-static.test.ts scripts/tests/usage-pricing-conversion.test.ts scripts/tests/usage-pricing-conversion-b.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-pricing-compute.test.ts scripts/tests/usage-pricing-fx.test.ts scripts/tests/usage-pricing-rollup.test.ts scripts/tests/usage-pricing-rollup-period.test.ts scripts/tests/usage-pricing-prune.test.ts scripts/tests/usage-pricing-static.test.ts scripts/tests/usage-pricing-conversion.test.ts scripts/tests/usage-pricing-conversion-b.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure

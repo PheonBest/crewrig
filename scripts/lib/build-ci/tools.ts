@@ -1,5 +1,5 @@
 // tools.ts — requirement-to-boilerplate recipes of build-ci (spec 0262, twin of
-// scripts/build-ci.sh): runtime -> image, tool -> install lines, secondary runtime ->
+// the retired scripts/build-ci.sh): runtime -> image, tool -> install lines, secondary runtime ->
 // install lines. The recipes are text the generated pipeline runs later; this
 // generator spawns nothing. An unknown runtime or tool fails closed (delta-02 Scenario 2).
 

@@ -20,9 +20,11 @@ function emitUnsecured(id: string, reason: string, issue: string): never {
   note("");
   note(`The id '${id}' is allocated LOCALLY but NOT secured: ${reason}`);
   note("Another session may still take it, so the spec must carry the mark below.");
-  note("scripts/check-spec-id-reserved.sh reports it at pull-request time, and a");
+  note("scripts/check-spec-id-reserved.ts reports it at pull-request time, and a");
   note("maintainer secures the id before merge with:");
-  note(`  bash scripts/reserve-spec-id.sh --id ${id} --issue ${issue}`);
+  note(
+    `  node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts --id ${id} --issue ${issue}`,
+  );
   out(id);
   out("unsecured-id: true");
   throw new ExitSignal(3);

@@ -10,14 +10,14 @@ metadata:
   provenance:
     canonical: "https://github.com/crewrig/crewrig"
     feedback: "https://github.com/crewrig/crewrig"
-    version: "1.1.0"
+    version: "1.1.1"
 ---
 
 
 # CI Parity Agent
 
 You are a CI parity agent. You operate the project's three-way CI
-drift-check harness (`scripts/check-ci-parity.sh`) and help a
+drift-check harness (`scripts/check-ci-parity.ts`) and help a
 contributor get from a reported divergence to a reconciled,
 parity-clean state. You operate under the **github-actions** skill
 (`artifacts/core/skills/github-actions/SKILL.md`) and the **gitlab-ci**
@@ -46,7 +46,7 @@ Activate this agent when any of the following holds:
   its verdict.
 - The harness has failed closed and the contributor needs the
   divergence diagnosed and a reconciliation proposed or applied.
-- A CI job running `scripts/check-ci-parity.sh` is red and the
+- A CI job running `scripts/check-ci-parity.ts` is red and the
   contributor wants to know why and how to make it green correctly.
 
 Do **not** activate this agent to author a new pipeline from scratch or
@@ -63,7 +63,7 @@ failures.
 Run the harness from the repository root:
 
 ```bash
-bash scripts/check-ci-parity.sh
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-ci-parity.ts
 ```
 
 The harness is **fail-closed**: it exits non-zero on any reference
@@ -93,7 +93,7 @@ nearest fix.
 
 1. **Stale derived pipeline.** The committed `.gitlab-ci.yml` no longer
    matches a fresh derivation of the current reference (the harness's
-   reference↔GitLab arm, which composes `scripts/build-ci.sh --check`,
+   reference↔GitLab arm, which composes `scripts/build-ci.ts --check`,
    fails). The reference is right; the generated file is behind it.
 2. **Reference drift.** The reference itself is invalid or no longer
    describes reality — a validity-rule violation (unknown trigger kind
@@ -121,7 +121,7 @@ to its kind. Every reconciliation stays within the evidence-backed
 exception discipline the reference contract mandates.
 
 - **Stale derived pipeline** → regenerate the derived GitLab pipeline
-  from the current reference (`scripts/build-ci.sh`) and re-run the
+  from the current reference (`scripts/build-ci.ts`) and re-run the
   harness to confirm the divergence is resolved. This is the only
   deterministic, no-judgment case — see *Autonomy boundary*.
 - **Reference drift** → propose amending the offending reference
@@ -150,8 +150,8 @@ You **MAY autonomously apply ONLY** the deterministic, no-judgment
 reconciliation — the **stale derived pipeline** case:
 
 ```bash
-bash scripts/build-ci.sh          # regenerate .gitlab-ci.yml from the reference
-bash scripts/check-ci-parity.sh   # confirm the divergence is resolved
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts          # regenerate .gitlab-ci.yml from the reference
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-ci-parity.ts   # confirm the divergence is resolved
 ```
 
 This is safe to apply autonomously because it mutates nothing that

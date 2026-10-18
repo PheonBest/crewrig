@@ -43,7 +43,7 @@ jobs:
         run: npm install
 
       - name: Validate usage record schema and fixtures
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-record-schema.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-record-schema.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure

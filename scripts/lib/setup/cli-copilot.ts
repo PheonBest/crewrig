@@ -116,7 +116,7 @@ export const copilotDescriptor: SetupDescriptor = {
     // No MemPalace note and no restart line: the Copilot shell prints neither.
     extraLines: [
       "Copilot looks for skills under .github/skills/ and agents under .github/agents/.",
-      "Run 'bash scripts/build-components.sh --target copilot' to (re)generate them.",
+      "Run 'node scripts/build-components.ts --target copilot' to (re)generate them.",
       "",
       "Transcript hooks are installed at two levels:",
       "  - User-level (~/.copilot/hooks/copilot-transcript-hooks.json): fires for ALL projects.",

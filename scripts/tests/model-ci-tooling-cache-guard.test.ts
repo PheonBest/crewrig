@@ -1,7 +1,7 @@
 // model-ci-tooling-cache-guard.test.ts — TS assertions of ci-cache-guard (spec 0262 req 10, 23): key,
 // marker, log lines, option rejections and passed-through status, on scratch sandboxes only (the
 // cache directory is inside each sandbox). Runs POSIX only; the shell-versus-TypeScript comparison
-// was retired with the switch (scripts/ci-cache-guard.sh is a forwarding shim).
+// was retired with the switch (the shell twin is deleted).
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -16,7 +16,7 @@ import {
 } from "./lib/bash-suite-differential.ts";
 
 const posix = process.platform === "win32" ? { skip: "shell legs need bash" } : {};
-const CASE: DiffCase = { script: "scripts/ci-cache-guard.sh" };
+const CASE: DiffCase = { script: "scripts/ci-cache-guard.ts" };
 
 function put(ctx: SideCtx, rel: string, body: string): void {
   const file = path.join(ctx.root, rel);
@@ -162,7 +162,7 @@ describe("ci-cache-guard twin: TS-only diagnostics (spec 0262 req 24 (c))", () =
       { encoding: "utf8" },
     );
     assert.equal(r.status, 1);
-    assert.match(r.stderr, /^Error: .*ci-cache-guard\.sh: option '--cache-dir' needs a value\n$/);
+    assert.match(r.stderr, /^Error: .*ci-cache-guard\.ts: option '--cache-dir' needs a value\n$/);
     assert.equal(r.stdout, "");
   });
 });

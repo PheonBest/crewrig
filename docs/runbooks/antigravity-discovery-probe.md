@@ -165,7 +165,7 @@ under either reading.
 **Consequences recorded elsewhere:**
 
 - The installed agent shape is the **directory** shape, matching what
-  `scripts/build-components.sh` stages. `docs/cli-matrix.md` row 4 needs no
+  `scripts/build-components.ts` stages. `docs/cli-matrix.md` row 4 needs no
   `[GAP]`: staged shape and installed shape agree.
 - The duplicate-name outcome is benign for the real case. After this fix
   `harness-curator` exists at `~/.gemini/agents/harness-curator.md` (the Gemini

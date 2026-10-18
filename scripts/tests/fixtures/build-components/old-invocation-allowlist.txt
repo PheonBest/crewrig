@@ -6,78 +6,12 @@
 # directory. Every entry carries a reason as the `#` comment line directly above it. An entry
 # that no longer matches a file with a hit, or that appears twice, fails the suite.
 
-# The shim itself: its header and usage text name the invocation it keeps working.
-scripts/build-components.sh
-
-# Spec 0250 R23: the unmigrated shell scripts that still reach the entry through the shim.
-
-# Spec 0262 R17: the golden record of the component-resolve shell leg holds the shell's own
-# diagnostics, which name the invocation; it outlives the library it was recorded from.
-scripts/tests/fixtures/component-resolve-oracle/component-twins.json.golden
-
-# Spec 0256: the setup scripts became forwarding shims of the TypeScript entries; the TypeScript
-# setup modules reproduce, byte for byte, the hint the shell printed ("run bash
-# scripts/build-components.sh first"), because the build shim stays until its own row.
-scripts/lib/setup/antigravity-tier.ts
-scripts/lib/setup/cli-copilot.ts
-scripts/lib/setup/tier-build.ts
-scripts/lib/setup/tier-install.ts
-
-# The unit suites that pin those hints.
-scripts/tests/setup-antigravity-tier.test.ts
-scripts/tests/setup-summary.test.ts
-scripts/tests/setup-tier-build.test.ts
-scripts/tests/setup-tier-install.test.ts
-
-# The golden transcripts of the setup entries record the hint as the shell printed it.
-scripts/tests/fixtures/setup-golden/
-
-# Spec 0261 R15: the recorded shell verdicts of scenario 03 hold the build log, which names the
-# invocation as the scenario printed it; goldens are history, not an instruction.
-scripts/tests/fixtures/e2e-oracle/scenarios/03-skill-build/
-
-# The scenario-03 builder drives the shim on purpose: the e2e oracle replays that invocation.
-tests/e2e/lib/scenario-03-skill-build.ts
-
 # Spec text and delta-specs record the invocation as it was specified; merged specs are history.
 specs/
 
-# docs/adoption-guide.md line 226 documents that the old invocation still works and forwards.
-docs/adoption-guide.md
-
-# docs/authoring.md line 82 re-derives emissions printed by the old invocation at a pinned commit.
-docs/authoring.md
-
-# docs/agent-profile-migration.md line 189 names the old invocation as the measured baseline.
-docs/agent-profile-migration.md
-
-# docs/cli-matrix.md names the old invocation in the shim description and in rows whose cited
-# behaviour is the unmigrated shell scripts' auto-build, which still goes through the shim.
-docs/cli-matrix.md
-
-# Scenario 03 deliberately drives the shim end to end inside the e2e container; its run.sh is
-# allowlisted for the same reason and its prompt is the instruction the agent receives.
-tests/e2e/scenarios/03-skill-build/sample-skill.prompt
-
-# Spec 0255 R5/R6 (row F2): the TypeScript twins of the shell resolution and manage scripts
-# reproduce, byte for byte, the hints and the report the shell prints ("run bash
-# scripts/build-components.sh first"); the shim stays until row J4, so the hint stays true.
+# Spec 0255 R5/R6 (row F2): a comment of the overlay twin still names the retired shim it was ported from.
 scripts/lib/component-overlay.ts
-scripts/lib/component-roots.ts
-scripts/lib/manage/confirm.ts
-scripts/lib/manage/descriptors.ts
-
-# Spec 0255 R5: the unit test that pins the byte-for-byte hint of component-roots.ts.
-scripts/tests/component-roots.test.ts
 
 # A recorded Copilot CLI integration-test log: it documents the commands as they were run and
 # is history, not an instruction.
 tests/copilot-cli-integration.md
-
-# Spec 0255 PR E: the manage scripts became shims of scripts/manage-*-component.ts; the golden
-# facts below keep the link-mode warning text the shell printed ("run bash
-# scripts/build-components.sh first"), which the TypeScript descriptors reproduce byte for byte.
-scripts/tests/fixtures/manage-shell-facts/antigravity.facts.golden
-scripts/tests/fixtures/manage-shell-facts/claude.facts.golden
-scripts/tests/fixtures/manage-shell-facts/copilot.facts.golden
-scripts/tests/fixtures/manage-shell-facts/workspace.facts.golden

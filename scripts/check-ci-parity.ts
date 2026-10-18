@@ -1,4 +1,4 @@
-// check-ci-parity.ts — 3-way CI drift harness; TypeScript twin of scripts/check-ci-parity.sh
+// check-ci-parity.ts — 3-way CI drift harness; TypeScript twin of the retired scripts/check-ci-parity.sh
 // (spec 0262, dark until the switch pull request). Every section is ported: reference validity,
 // traceability, arm 1, arm 2 (spawns scripts/build-ci.ts --check), arm 3 and the path filters.
 //

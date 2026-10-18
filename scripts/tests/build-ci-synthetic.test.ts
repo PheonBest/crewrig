@@ -31,7 +31,10 @@ describe("build-ci synthetic (group S)", () => {
     const res = runBuildCi(root, ["--check"]);
     assert.equal(res.status, 1);
     assert.match(res.stderr, /^DRIFT: /);
-    assert.match(res.stderr, /FAILED: run 'bash scripts\/build-ci\.sh' to regenerate/);
+    assert.match(
+      res.stderr,
+      /FAILED: run 'node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts\/build-ci\.ts' to regenerate/,
+    );
   });
 
   it("24(h): the printed normal-format hunks turn the committed file into the generated one", () => {

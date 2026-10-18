@@ -77,13 +77,13 @@ contract — never flowing back upstream.
 | Path | Description |
 |---|---|
 | `ci/` | Platform-neutral CI capability reference (`ci/ci-capabilities.yml`). One entry per CI job — the engine-agnostic source of truth that the per-engine pipelines (GitHub Actions today, GitLab CI and others later) are derived from and drift-checked against. Core/`strict`; its normative shape is `docs/ci-reference-format.md` (ADR-0012). Top-level rather than under `.github/` so the reference reads as engine-neutral, not GitHub-owned. Also holds the path-ownership exemption list, `ci/path-ownership-exemptions.txt` (spec 0147 delta-01 R14, R24): the reasoned list of tracked files that no check exercises, read by `scripts/check-path-ownership.ts`; registered explicitly in `.crewrig/core-paths.txt` as `strict`. The `ci/org/` subtree is carved out as overlay (spec 0020) — see *Org overlay carve-outs in core trees* below. |
-| `.gitlab-ci.yml` | Generated GitLab CI pipeline (spec 0048). The derived GitLab form of the portable subset of `ci/ci-capabilities.yml` — one job per portable capability, produced by `scripts/build-ci.sh`. Core/`strict` (engine-neutral generated output, upstream-owned). Never hand-edited: `bash scripts/build-ci.sh --check` guards it against drift from the reference in CI. The GitHub Actions workflows under `.github/workflows/` are NOT generated (spec 0048 R5); only GitLab is derived here. |
+| `.gitlab-ci.yml` | Generated GitLab CI pipeline (spec 0048). The derived GitLab form of the portable subset of `ci/ci-capabilities.yml` — one job per portable capability, produced by `scripts/build-ci.ts`. Core/`strict` (engine-neutral generated output, upstream-owned). Never hand-edited: `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts --check` guards it against drift from the reference in CI. The GitHub Actions workflows under `.github/workflows/` are NOT generated (spec 0048 R5); only GitLab is derived here. |
 
 ### Model mappings (spec 0197)
 
 | Path | Description |
 |---|---|
-| `model-mappings/` | Per-CLI model mapping artifacts (`model-mappings/<target>.yml`, one per supported target) declaring which models a target can reach, what each provides, and how the spec 0195 capability vocabulary turns into that target's native fields and prose. Core/`strict`; its normative shape is `docs/model-mapping-format.md`; its hermetic gate is `scripts/check-model-mappings.sh`. Top-level rather than under `artifacts/`: a mapping is a build input, not a component, and nothing deploys it to a CLI (spec 0197 Decision 1). Each core mapping is paired with an org-owned override channel, `model-mappings/<target>.org.yml` — see *Org overlay carve-outs in core trees* below (spec 0199). |
+| `model-mappings/` | Per-CLI model mapping artifacts (`model-mappings/<target>.yml`, one per supported target) declaring which models a target can reach, what each provides, and how the spec 0195 capability vocabulary turns into that target's native fields and prose. Core/`strict`; its normative shape is `docs/model-mapping-format.md`; its hermetic gate is `scripts/check-model-mappings.ts`. Top-level rather than under `artifacts/`: a mapping is a build input, not a component, and nothing deploys it to a CLI (spec 0197 Decision 1). Each core mapping is paired with an org-owned override channel, `model-mappings/<target>.org.yml` — see *Org overlay carve-outs in core trees* below (spec 0199). |
 
 ### Usage record schema (spec 0205)
 
@@ -166,7 +166,7 @@ Core system-context store (installed to user home, read on demand):
 
 ### Built outputs
 
-Built by `scripts/build-components.ts` (via the `scripts/build-components.sh` shim) from `artifacts/`. These
+Built by `scripts/build-components.ts` from `artifacts/`. These
 directories are **assembly zones**: after a build they contain both
 core-provided harness components and the adopting organization's own compiled
 components. They are never edited directly; the source of truth is always

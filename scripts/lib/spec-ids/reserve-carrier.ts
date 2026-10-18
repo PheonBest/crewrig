@@ -67,7 +67,7 @@ export function resolveCarrier(repoDir: string, env: NodeJS.ProcessEnv): [string
   return fail(`invalid carrier '${carrier}' (from ${source}).
        Allowed values are exactly '${CARRIER_PRIMARY}' and '${CARRIER_TAGS}'.
        A third namespace would be written by the push and read by neither the
-       allocation union nor scripts/check-spec-id-reserved.sh, so every id
+       allocation union nor scripts/check-spec-id-reserved.ts, so every id
        secured under it would be invisible to both.`);
 }
 

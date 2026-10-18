@@ -17,7 +17,7 @@ understand these five pillars without needing to read README.md or ADRs:
    CLI, Claude Code, Copilot CLI, and Antigravity CLI.
 3. **Skill/agent/command creation and sharing** — `artifacts/` is the
    single-source zone where skills, agents, and commands are authored once;
-   `scripts/build-components.sh` (a shim to `scripts/build-components.ts`) compiles them into outputs for all four CLIs.
+   `scripts/build-components.ts` compiles them into outputs for all four CLIs.
 4. **Harness engineering** — a built-in feedback loop where agents invoke the
    `harness-report` skill to tag frictions during real work, and the
    `harness-curator` skill clusters those frictions into actionable GitHub
@@ -262,7 +262,7 @@ See [`docs/cli-matrix-maintenance.md`](docs/cli-matrix-maintenance.md) for the f
 
 **Summary:** Any PR touching `.claude/**`, `.gemini/**`, `artifacts/**`, `extensions/**`,
 `hooks/*-transcript-hooks.json`, `config/claude/**`, `config/gemini/**`,
-`scripts/build-components.sh`, `scripts/build-components.ts`, `scripts/lib/build-components/**`, any `scripts/{build,install,setup,import,manage}-*.{sh,ts}`, `scripts/lib/{link-or-copy*.ts,manage/**,install/**}`,
+`scripts/build-components.ts`, `scripts/lib/build-components/**`, any `scripts/{build,install,setup,import,manage}-*.{sh,ts}`, `scripts/lib/{link-or-copy*.ts,manage/**,install/**}`,
 `.github/workflows/claude.yml` or `.github/workflows/gemini.yml`,
 `CLAUDE.md`, `GEMINI.md`, or CLI-prefixed `Taskfile.yml` entries MUST consult and update
 `docs/cli-matrix.md` in the same diff.

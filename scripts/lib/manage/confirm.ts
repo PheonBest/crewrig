@@ -16,25 +16,25 @@ const BODY: Readonly<Record<LinkWarningCli, readonly string[]>> = {
     "For claude-skills the link target is the regenerable staging",
     "tree dist/<tier>/, which a rebuild replaces wholesale: an edit",
     "to the authoring source under artifacts/ takes effect only",
-    "after 'bash scripts/build-components.sh' has run.",
+    "after 'node scripts/build-components.ts' has run.",
   ],
   copilot: [
     "For skills the link target is the regenerable staging tree",
     "dist/<tier>/, which a rebuild replaces wholesale: an edit to",
     "the authoring source under artifacts/ takes effect only after",
-    "'bash scripts/build-components.sh' has run.",
+    "'node scripts/build-components.ts' has run.",
   ],
   antigravity: [
     "For antigravity-skills the link target is the regenerable",
     "staging tree dist/<tier>/, which a rebuild replaces wholesale:",
     "an edit to the authoring source under artifacts/ takes effect",
-    "only after 'bash scripts/build-components.sh' has run.",
+    "only after 'node scripts/build-components.ts' has run.",
   ],
   workspace: [
     "For skills and agents the link target is the regenerable",
     "staging tree dist/<tier>/, which a rebuild replaces wholesale:",
     "an edit to the authoring source under artifacts/ takes effect",
-    "only after 'bash scripts/build-components.sh' has run.",
+    "only after 'node scripts/build-components.ts' has run.",
   ],
 };
 

@@ -72,7 +72,7 @@ function buildScript(target: string, dir: string, skills: string): string {
   return [
     "set -euo pipefail",
     "cd /repo",
-    `bash scripts/build-components.sh --target ${target}`,
+    `node scripts/build-components.ts --target ${target}`,
     "manifest=/tmp/e2e-build-manifest.txt",
     `if [ -d "${dir}" ]; then`,
     `  find "${dir}" -type f | sort > "$manifest"`,
@@ -91,12 +91,12 @@ function buildScript(target: string, dir: string, skills: string): string {
 
 function findRepoRoot(start: string): string | undefined {
   let dir = start;
-  while (dir !== "/" && !fs.existsSync(path.join(dir, "scripts", "build-components.sh"))) {
+  while (dir !== "/" && !fs.existsSync(path.join(dir, "scripts", "build-components.ts"))) {
     const parent = path.dirname(dir);
     if (parent === dir) break;
     dir = parent;
   }
-  return fs.existsSync(path.join(dir, "scripts", "build-components.sh")) ? dir : undefined;
+  return fs.existsSync(path.join(dir, "scripts", "build-components.ts")) ? dir : undefined;
 }
 
 export function runScenario03(env: Env, cwd: string, packages: readonly string[]): ScenarioOutcome {
@@ -113,7 +113,7 @@ export function runScenario03(env: Env, cwd: string, packages: readonly string[]
     const { dir: expectDir, skills } = target as { dir: string; skills: string };
     const repoRoot = findRepoRoot(ctx.scenarioDir);
     if (repoRoot === undefined) {
-      tap.skip(`could not locate scripts/build-components.sh from ${ctx.scenarioDir}`);
+      tap.skip(`could not locate scripts/build-components.ts from ${ctx.scenarioDir}`);
     }
     const workDir = path.join(reportDir, "build-work");
     stderr += stageBuildTree(repoRoot as string, workDir, packages);
@@ -156,8 +156,8 @@ export function runScenario03(env: Env, cwd: string, packages: readonly string[]
     };
     emit(
       res.rc === 0,
-      "build: scripts/build-components.sh exited 0",
-      "build: scripts/build-components.sh exited non-zero",
+      "build: scripts/build-components.ts exited 0",
+      "build: scripts/build-components.ts exited non-zero",
     );
 
     const manifest = path.join(hostOut, "manifest.txt");

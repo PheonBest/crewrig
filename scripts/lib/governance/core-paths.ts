@@ -4,7 +4,7 @@
 // directories (asked of the repository's own builder entry, spawned with
 // `process.execPath`, never in process) to manifest, and `model-mappings/` targets
 // (`git ls-tree`) to `excluded` org carve-outs. The messages name
-// `scripts/build-components.sh` as the shell does, the entry stays a public shim.
+// `scripts/build-components.ts`.
 //
 // Usage: runCorePaths(repoDir) returns the ordered output lines and the exit status.
 // Exit codes: 0 agree, 1 finding, 2 missing or unqueryable input.
@@ -93,7 +93,6 @@ export function runCorePaths(repoDir: string): CorePathsResult {
   }
 
   const builder = path.join(repoDir, "scripts", "build-components.ts");
-  const named = path.join(repoDir, "scripts", "build-components.sh");
   if (!isFile(builder)) {
     err(`Error: build script not found: ${builder}`);
     err("The reverse direction (spec 0121 R5) derives the built-output directory");
@@ -104,7 +103,7 @@ export function runCorePaths(repoDir: string): CorePathsResult {
   const derived = queryOutputDirs(builder);
   if (derived === null) {
     err(
-      `Error: failed to query built-output directories from build script: ${named} --list-output-dirs`,
+      `Error: failed to query built-output directories from build script: ${builder} --list-output-dirs`,
     );
     return done(2);
   }
@@ -141,7 +140,7 @@ export function runCorePaths(repoDir: string): CorePathsResult {
     err(
       `FAILED: ${ungoverned.length} of ${derived.length} built-output director(y/ies) derived from`,
     );
-    err("scripts/build-components.sh carry no upstream-sync guarantee:");
+    err("scripts/build-components.ts carry no upstream-sync guarantee:");
     listSection(out, ungoverned, (d) => `  - ${d}`);
     err("");
     err("Every directory the component build writes component outputs into must be");
@@ -153,7 +152,7 @@ export function runCorePaths(repoDir: string): CorePathsResult {
   }
   out.push({
     stream: "stdout",
-    text: `OK: all ${derived.length} built-output directories derived from scripts/build-components.sh are governed.`,
+    text: `OK: all ${derived.length} built-output directories derived from scripts/build-components.ts are governed.`,
   });
 
   const stems = targetStems(repoDir);

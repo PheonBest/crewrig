@@ -121,7 +121,11 @@ describe("windows model-ci-tooling: spec-id twins", () => {
       const err = lf(r.err + r.out);
       assert.match(err, /Specs added or renamed by this change: 1/, why(r, "scanned the spec"));
       assert.match(err, /id '0777' was never secured/, why(r, "names the unsecured id"));
-      assert.match(err, /bash scripts\/reserve-spec-id\.sh --id 0777 --issue 881/, why(r, "fix"));
+      assert.match(
+        err,
+        /node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts\/reserve-spec-id\.ts --id 0777 --issue 881/,
+        why(r, "fix"),
+      );
     });
   });
 
@@ -147,7 +151,7 @@ describe("windows model-ci-tooling: spec-id twins", () => {
       expectStatus(r, 3);
       assert.equal(lf(r.out), "0002\nunsecured-id: true\n", why(r, "id then the mark"));
       assert.match(lf(r.err), /--offline/, why(r, "states why"));
-      assert.match(lf(r.err), /reserve-spec-id\.sh --id 0002/, why(r, "remediation"));
+      assert.match(lf(r.err), /reserve-spec-id\.ts --id 0002/, why(r, "remediation"));
     });
   });
 });

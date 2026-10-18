@@ -19,7 +19,7 @@ release commit itself — see [GitHub release PR](github-release-pr.md).
 
 The generated `.gitlab-ci.yml` at the repository root already carries the
 `release` and `release-rehearsal` jobs once it is in sync with
-`ci/ci-capabilities.yml` (`bash scripts/build-ci.sh --check`). A fork that
+`ci/ci-capabilities.yml` (`node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts --check`). A fork that
 uses that file as its GitLab project's pipeline configuration as-is needs
 no pipeline-file change at all.
 
@@ -41,7 +41,7 @@ to cherry-pick a subset of an included file's jobs. If you want only
 pipeline, do not `include:` the generated file at all — copy those two job
 definitions out of `.gitlab-ci.yml` into your own pipeline file instead.
 That copy is then yours to keep in sync by hand: it stops tracking
-`bash scripts/build-ci.sh` regenerations, which is the trade-off for not
+`node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts` regenerations, which is the trade-off for not
 taking the other 43 jobs.
 
 The `release` job runs on push to `main` — the release branch, unchanged

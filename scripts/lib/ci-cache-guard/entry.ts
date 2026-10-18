@@ -1,5 +1,5 @@
 // entry.ts — ci-cache-guard: argument parsing, cache mode and the dispatch to `--stray-scan`
-// (spec 0147 R6/R7, spec 0170 delta-01, spec 0262 req 10). Twin of scripts/ci-cache-guard.sh.
+// (spec 0147 R6/R7, spec 0170 delta-01, spec 0262 req 10). Former twin of the deleted ci-cache-guard.sh.
 //
 // Usage: runGuard(argv, self). Exit codes: 0 hit or success, the wrapped command's status,
 // 2 usage error (unknown option, no command, --stray-scan with a cache option), 70/71 stray-scan.

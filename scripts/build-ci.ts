@@ -1,5 +1,5 @@
 // build-ci.ts — derives .gitlab-ci.yml from ci/ci-capabilities.yml; TypeScript twin of
-// scripts/build-ci.sh (spec 0262, dark until the shell is retired).
+// the retired scripts/build-ci.sh (spec 0262, dark until the shell is retired).
 //
 // Usage: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts [--check]
 // The shell exits 2 with "yq is required" when yq is absent; this twin reads the reference

@@ -83,7 +83,7 @@
  "3b35e9f93edb30b2cdfd719dd79f0809f08c9a27aa77364d43b4ce9fd6c99ad7": {
   "status": 1,
   "stdout": "",
-  "stderr": "Error: no component named 'ghost' of type 'skills' resolved in any served tier.\nLocations examined, in resolution order:\n  - <SB>/dist/library/.claude/skills (absent)\n  - <SB>/dist/community/.claude/skills (absent)\n  - <SB>/dist/org/.claude/skills (absent)\nNo served tier of this type was available at all. Populate one, or run:\n  bash scripts/build-components.sh\n",
+  "stderr": "Error: no component named 'ghost' of type 'skills' resolved in any served tier.\nLocations examined, in resolution order:\n  - <SB>/dist/library/.claude/skills (absent)\n  - <SB>/dist/community/.claude/skills (absent)\n  - <SB>/dist/org/.claude/skills (absent)\nNo served tier of this type was available at all. Populate one, or run:\n  node scripts/build-components.ts\n",
   "tree": [
    "package.json",
    "scripts",
@@ -590,7 +590,7 @@
  "e9e4ead67db93f98a201f8d2a7c9db7d2a197f6a4b3c4ba64c55d92c64dca7e2": {
   "status": 0,
   "stdout": "",
-  "stderr": "Error: no component named 'ghost' of type 'skills' resolved in any served tier.\nLocations examined, in resolution order:\n  - <SB>/dist/library/.claude/skills (absent)\n  - <SB>/dist/community/.claude/skills (absent)\n  - <SB>/dist/org/.claude/skills (absent)\nNo served tier of this type was available at all. Populate one, or run:\n  bash scripts/build-components.sh\n",
+  "stderr": "Error: no component named 'ghost' of type 'skills' resolved in any served tier.\nLocations examined, in resolution order:\n  - <SB>/dist/library/.claude/skills (absent)\n  - <SB>/dist/community/.claude/skills (absent)\n  - <SB>/dist/org/.claude/skills (absent)\nNo served tier of this type was available at all. Populate one, or run:\n  node scripts/build-components.ts\n",
   "tree": [
    "package.json"
   ]

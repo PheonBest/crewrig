@@ -11,7 +11,7 @@ metadata:
   provenance:
     canonical: "${CANONICAL_REPO}"
     feedback: "${CANONICAL_REPO}"
-    version: "1.1.6"
+    version: "1.1.7"
 claude:
   allowed-tools:
     - Read
@@ -107,11 +107,11 @@ Before reporting a task as done, run:
   `node scripts/build-components.ts --check` to confirm drift-free.
   This is non-optional — the CI `check-components` job rejects PRs
   where source and bundles disagree.
-- For changes that include shell scripts: after any push via the MCP
+- For changes that include executable files: after any push via the MCP
   `push_files` tool (which strips file modes), verify the executable
-  bit survived. `git ls-files --stage -- '*.sh'` must show `100755`,
-  or `ls -la` show `755`. Restore with `git update-index --chmod=+x
-  <file>` before the next push.
+  bit survived with `git ls-files --stage -- <file>` (`100755`, not
+  `100644`). Restore with `git update-index --chmod=+x <file>` before the
+  next push.
 
 If the project has no test or type-check infrastructure, say so
 explicitly in the report — do not claim verification you did not do.

@@ -171,14 +171,14 @@ describe("reportUnresolved", () => {
         "Locations examined, in resolution order:\n" +
         roots.map((root) => `  - ${root} (absent)\n`).join("") +
         "No served tier of this type was available at all. Populate one, or run:\n" +
-        "  bash scripts/build-components.sh\n",
+        "  node scripts/build-components.ts\n",
     );
   });
 
   test("an empty root list still reports, with the build hint", () => {
     assert.match(
       report("n", "t", []),
-      /^Error: .*\nLocations examined.*\nNo served tier .*\n {2}bash /,
+      /^Error: .*\nLocations examined.*\nNo served tier .*\n {2}node /,
     );
   });
 

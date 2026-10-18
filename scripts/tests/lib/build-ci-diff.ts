@@ -1,5 +1,6 @@
-// build-ci-diff.ts — shared harness of the build-ci differential tests: runs the shell
-// and the TypeScript entry in scratch trees and compares every observable.
+// build-ci-diff.ts — shared harness of the build-ci determinism tests: the shell twin is deleted,
+// so both legs ("sh" and "ts") run the TypeScript entry in separate scratch trees and every
+// observable must agree between them.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -9,13 +10,11 @@ import path from "node:path";
 import { after } from "node:test";
 
 import { applyNormalDiff } from "./normal-diff-apply.ts";
-import { REPO, WINDOWS } from "./worktree-fixtures.ts";
+import { REPO } from "./worktree-fixtures.ts";
 
-export const SH = path.join(REPO, "scripts", "build-ci.sh");
 export const TS = path.join(REPO, "scripts", "build-ci.ts");
 export const REAL_REF = fs.readFileSync(path.join(REPO, "ci", "ci-capabilities.yml"), "utf8");
-const HAS_YQ = !WINDOWS && spawnSync("yq", ["--version"], { stdio: "ignore" }).status === 0;
-export const SKIP = HAS_YQ ? false : "SKIP: shell leg needs bash and yq (not on win32)";
+export const SKIP = false;
 export const roots: string[] = [];
 after(() => {
   for (const root of roots) fs.rmSync(root, { recursive: true, force: true });
@@ -38,7 +37,7 @@ function tree(reference: string, committed?: string): string {
   return root;
 }
 
-/** Run one entry in a fresh tree; paths in the output are normalised to `<ROOT>`. */
+/** Run the TypeScript entry (either leg) in a fresh tree; paths in the output are normalised to `<ROOT>`. */
 export function run(
   entry: "sh" | "ts",
   args: string[],
@@ -46,14 +45,14 @@ export function run(
   committed?: string,
 ): Run {
   const root = tree(reference, committed);
-  const [cmd, argv] =
-    entry === "sh"
-      ? ["bash", [SH, ...args]]
-      : [process.execPath, ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", TS, ...args]];
-  const r = spawnSync(cmd, argv, {
-    encoding: "utf8",
-    env: { ...process.env, LC_ALL: "C", REPO_DIR: root },
-  });
+  const r = spawnSync(
+    process.execPath,
+    ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", TS, ...args],
+    {
+      encoding: "utf8",
+      env: { ...process.env, LC_ALL: "C", REPO_DIR: root },
+    },
+  );
   const norm = (s: string): string => s.replaceAll(root, "<ROOT>");
   const out = path.join(root, ".gitlab-ci.yml");
   return {

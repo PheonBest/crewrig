@@ -55,7 +55,7 @@ Setting up personal profile...
   Copied: PROFILE.md -> 30_USER_PROFILE.md
 
 Installing library components to <HOME>/.gemini/skills (automatic)...
-Tier not built (no <REPO>/dist/library/.gemini) — building automatically via 'bash scripts/build-components.sh --target gemini'...
+Tier not built (no <REPO>/dist/library/.gemini) — building automatically via 'node scripts/build-components.ts --target gemini'...
 =========================================
   Community Component Builder
   Target: gemini
@@ -65,7 +65,7 @@ Tier not built (no <REPO>/dist/library/.gemini) — building automatically via '
 --- Tier: core (output root: <REPO>) ---
 
 Done.
-  Tier 'library' not built (no <REPO>/dist/library/.gemini) — run 'bash scripts/build-components.sh' first.
+  Tier 'library' not built (no <REPO>/dist/library/.gemini) — run 'node scripts/build-components.ts' first.
 
   Installed skill: community/community-demo -> ~/.gemini/skills/community-demo
 

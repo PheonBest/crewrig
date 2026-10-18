@@ -121,7 +121,7 @@ jobs:
         run: npm install
 
       - name: Validate usage capture adapters and fixtures
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-usage-headless.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-usage-headless.test.ts
 
       - name: Validate the TypeScript hook entries, wiring and deprecation channel
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/antigravity-statusline-shim.test.ts scripts/tests/hook-*.test.ts scripts/tests/usage-capture-*.test.ts

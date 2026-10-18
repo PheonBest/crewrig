@@ -111,7 +111,11 @@ describe("windows model-ci-tooling: build-ci", () => {
         why(r, "DRIFT first line"),
       );
       assert.match(err, /-drifted/, why(r, "the drifted line appears in the diff"));
-      assert.match(err, /FAILED: run 'bash scripts\/build-ci\.sh' to regenerate/, why(r, "tail"));
+      assert.match(
+        err,
+        /FAILED: run 'node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts\/build-ci\.ts' to regenerate/,
+        why(r, "tail"),
+      );
       assert.equal(r.out, "", why(r, "nothing on stdout"));
     });
   });

@@ -129,7 +129,11 @@ export function compareLegs(l: Layout, c: DiffCase, mirrorFirst = false): DiffRe
     // Wrapper mode: the suite's own CI marker is part of the case (cleanEnv drops the ambient one).
     if (mirrorFirst && process.env.CI) env.CI = process.env.CI;
     for (const [k, v] of Object.entries(c.env ?? {})) env[k] = forSide(v, side);
-    const cmd = side === "shell" ? ["bash", l.shellFile] : [...l.tsCommand, l.tsFile];
+    // A `.ts` shell-side entry (the shell twin is retired) runs through Node: both legs then check determinism.
+    const shellCmd = l.shellFile.endsWith(".ts")
+      ? ["node", TYPELESS_FLAG, l.shellFile]
+      : ["bash", l.shellFile];
+    const cmd = side === "shell" ? shellCmd : [...l.tsCommand, l.tsFile];
     // The TS leg must not carry the MODULE_TYPELESS_PACKAGE_JSON warning on stderr.
     if (side === "ts" && cmd[0] === "node") cmd.splice(1, 0, TYPELESS_FLAG);
     const file = path.join(roots[side], cmd[cmd.length - 1] ?? "");

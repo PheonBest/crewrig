@@ -1,5 +1,5 @@
 // entry.ts — ci-changeset-coverage: exhaustive run of every changeset-gated command (spec 0147
-// delta-01 R21; spec 0262 req 11). Twin of scripts/ci-changeset-coverage.sh.
+// delta-01 R21; spec 0262 req 11). Former twin of the deleted ci-changeset-coverage.sh.
 //
 // Usage: runCoverage(entry, env). Exit codes: 0 every command passed, 1 a command failed (the
 // rest still run), 2 yq or the reference is missing.
@@ -14,7 +14,7 @@ import { atLine, bashPath, NO_BASH, shellName } from "../ci-cache-guard/shell.ts
 import { fatal, ok } from "../governance/report.ts";
 import { gatedPlan, runList } from "./reference.ts";
 
-/** Line of ci-changeset-coverage.sh where the shell evaluates each command. */
+/** Line of the retired ci-changeset-coverage.sh where the shell evaluates each command. */
 const EVAL_LINE = 62;
 
 /** `command -v yq`: kept so a missing yq exits 2 as the shell does; yq itself is never spawned. */

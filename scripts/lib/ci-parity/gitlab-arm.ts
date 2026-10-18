@@ -22,7 +22,7 @@ function composeBuildCheck(state: ParityState): void {
     },
   );
   if (r.status === 0) return;
-  fail(state, "reference↔GitLab divergence (gitlab) — composed 'build-ci.sh --check' failed (R5):");
+  fail(state, "reference↔GitLab divergence (gitlab) — composed 'build-ci.ts --check' failed (R5):");
   const out = `${r.stdout}${r.stderr}`.replace(/\n+$/, "");
   for (const ln of out.split("\n")) state.stderr += `    ${ln}\n`;
 }

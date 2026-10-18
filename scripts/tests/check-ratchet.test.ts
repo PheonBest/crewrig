@@ -193,6 +193,45 @@ describe("shell-file detection", () => {
   });
 });
 
+describe("spec 0266 terminal state: an empty allowlist", () => {
+  const EMPTY: Tree = {
+    "README.md": "fixture\n",
+    "specs/0001-demo.md": "# demo\n",
+    [SHELL_LIST]: "# header\n",
+    [JS_BASELINE]: "# header\n",
+    [JS_EXCEPTIONS]: "# header\n",
+  };
+
+  test("a tree with no shell file passes with a header-only allowlist", () => {
+    expectClean(ratchet(repo({}, EMPTY)));
+    expectClean(ratchet(repo({ "docs/note.md": "x\n" }, EMPTY), { baseRef: "main" }));
+  });
+
+  test("a tracked .sh file fails as shell-unlisted", () => {
+    const dir = repo({ "scripts/new.sh": "#!/usr/bin/env bash\necho new\n" }, EMPTY);
+    expectFinding(ratchet(dir), "shell-unlisted", "scripts/new.sh");
+  });
+
+  test("an extension-less file with a bash shebang fails as shell-unlisted", () => {
+    const dir = repo({ "bin/tool": "#!/usr/bin/env bash\necho tool\n" }, EMPTY);
+    expectFinding(ratchet(dir), "shell-unlisted", "bin/tool");
+  });
+
+  test("an allowlist entry added to the empty list fails as shell-entry-added", () => {
+    const dir = repo(
+      { "scripts/new.sh": "#!/usr/bin/env bash\n", [SHELL_LIST]: "# header\nscripts/new.sh\n" },
+      EMPTY,
+    );
+    expectFinding(ratchet(dir, { baseRef: "main" }), "shell-entry-added", `${SHELL_LIST}:2`);
+  });
+
+  test("--write on the empty base does not grow the list", () => {
+    const dir = repo({ "scripts/new.sh": "#!/usr/bin/env bash\n" }, EMPTY);
+    ratchet(dir, { baseRef: "main", write: true });
+    assert.deepEqual(entries(dir, SHELL_LIST), []);
+  });
+});
+
 describe("list hygiene and JavaScript exceptions", () => {
   test("an out-of-order allowlist fails as list-unsorted", () => {
     const dir = repo({ [SHELL_LIST]: "# header\nscripts/zeta.sh\nscripts/old.sh\n" });

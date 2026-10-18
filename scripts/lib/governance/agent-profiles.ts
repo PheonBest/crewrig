@@ -1,6 +1,6 @@
 // agent-profiles.ts — hermetic checker for an agent source's `metadata.model:`
 // capability profile (spec 0195 R23-R25, spec 0198 R36-R39); twin of
-// scripts/check-agent-profiles.sh (spec 0262 requirements 1-4, 7, 24).
+// the retired scripts/check-agent-profiles.sh (spec 0262 requirements 1-4, 7, 24).
 //
 // Pure of process state: `runCheck` returns the streams and the exit code, the entry
 // writes them. Every `yq` read of the shell goes through scripts/lib/yq-accessors/.

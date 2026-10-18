@@ -488,7 +488,7 @@ tests/
 └── security-mcp.yml                  # MCP security scan
 
 scripts/
-├── build-components.sh               # Shim: forwards to build-components.ts (the TypeScript build)
+├── build-components.ts               # The TypeScript build
 ├── build-claude-plugin.ts            # Shim: forwards to build-claude-plugin.ts (the TypeScript plugin generator)
 ├── check-skill-versions.ts           # CI gate: enforces version bump on modified sources
 ├── create-extension.ts               # Shim: forwards to create-extension.ts (the TypeScript extension scaffolder)

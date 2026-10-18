@@ -2,13 +2,3 @@
 # Regenerate with: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-ratchet.ts --write
 # Entries may only ever be removed: delete a line in the same PR that
 # deletes or migrates its file. See DEVELOPMENT.md (TypeScript toolchain and ratchet).
-scripts/build-ci.sh
-scripts/build-components.sh
-scripts/check-agent-profiles.sh
-scripts/check-ci-parity.sh
-scripts/check-model-mappings.sh
-scripts/check-spec-id-reserved.sh
-scripts/ci-cache-guard.sh
-scripts/ci-changeset-coverage.sh
-scripts/reserve-spec-id.sh
-tests/e2e/lib/test-gemini-headless.sh

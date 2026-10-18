@@ -57,12 +57,7 @@ const TABLE: Record<string, readonly string[]> = {
   ],
   copilot: Array<string>(7).fill(""),
 };
-const bashOk =
-  (process.platform === "linux" || process.env["CREWRIG_SHELL_PARITY"] === "1") &&
-  spawnSync("yq", ["--version"]).status === 0;
-const noChecker = bashOk
-  ? undefined
-  : "skipped: needs Linux (or CREWRIG_SHELL_PARITY=1) with bash and mikefarah yq";
+const noChecker: string | undefined = undefined; // the TypeScript checker needs no yq
 
 describe("C1, C3, C4, C13(i): selection on the real mappings", () => {
   test("C1 canonical example on claude: haiku, effort directed, two-line prose, one guard note", () => {
@@ -103,14 +98,19 @@ describe("C1, C3, C4, C13(i): selection on the real mappings", () => {
     });
 
   test(
-    "C3 the twin agrees with check-model-mappings.sh --print-selection",
+    "C3 the twin agrees with check-model-mappings.ts --print-selection",
     { skip: noChecker },
     () => {
       for (const target of TARGETS) {
         const file = path.join(REPO, "model-mappings", `${target}.yml`);
         const run = spawnSync(
-          "bash",
-          [path.join(REPO, "scripts", "check-model-mappings.sh"), "--print-selection", file],
+          process.execPath,
+          [
+            "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
+            path.join(REPO, "scripts", "check-model-mappings.ts"),
+            "--print-selection",
+            file,
+          ],
           { encoding: "utf8" },
         );
         const table = run.stdout

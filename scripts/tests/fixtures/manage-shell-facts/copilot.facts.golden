@@ -14,7 +14,7 @@ link-warning:          repository, so a branch switch changes it in place.
 link-warning:          For skills the link target is the regenerable staging tree
 link-warning:          dist/<tier>/, which a rebuild replaces wholesale: an edit to
 link-warning:          the authoring source under artifacts/ takes effect only after
-link-warning:          'bash scripts/build-components.sh' has run.
+link-warning:          'node scripts/build-components.ts' has run.
 link-warning: Only use if you trust all branches in this repository.
 home: .copilot
 marker: DEST="$COPILOT_HOME/skills"

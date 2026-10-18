@@ -1,5 +1,5 @@
 // setup-tier-build.test.ts — ensureTierBuilt and the staging paths of scripts/lib/setup/tier-build.ts
-// against temporary directories and a fake in-process build (no `bash scripts/build-components.sh`).
+// against temporary directories and a fake in-process build (no `node scripts/build-components.ts`).
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -72,7 +72,7 @@ describe("ensureTierBuilt", () => {
       },
     });
     assert.deepEqual(out, [
-      `Tier not built (no ${staging}) — building automatically via 'bash scripts/build-components.sh --target gemini'...`,
+      `Tier not built (no ${staging}) — building automatically via 'node scripts/build-components.ts --target gemini'...`,
       "build output",
     ]);
     assert.deepEqual(seen?.argv, ["--target", "gemini"]);

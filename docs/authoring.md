@@ -79,7 +79,7 @@ What a declared profile resolves to on each target, and how the build performs t
 
 ### Worked examples
 
-Every emission below was printed by `bash scripts/build-components.sh --resolve <agent-source> <target>` against `main` at `18b026d`, not composed by hand — re-run the same command at that commit to re-derive it. At the current head the same emission is `node scripts/build-components.ts --resolve <agent-source> <target>`, run after `node scripts/lib/node-floor-guard.js` as a separate step.
+Every emission below was printed by `node scripts/build-components.ts --resolve <agent-source> <target>` against `main` at `18b026d`, not composed by hand — re-run the same command at that commit to re-derive it. At the current head the same emission is `node scripts/build-components.ts --resolve <agent-source> <target>`, run after `node scripts/lib/node-floor-guard.js` as a separate step.
 
 `artifacts/core/agents/doc-writer/AGENT.md` declares:
 
@@ -120,7 +120,7 @@ nothing.
 
 ## The build
 
-`scripts/build-components.ts` is the compiler (`scripts/build-components.sh` is a shim that forwards to it). It is tier-agnostic: it discovers
+`scripts/build-components.ts` is the compiler. It is tier-agnostic: it discovers
 every tier directory under `artifacts/` and compiles each one, routing the
 output by tier. Core components are written into the committed project tree
 (`.claude/`, `.gemini/`, `.github/`, `.agents/`); non-core tiers are written into a

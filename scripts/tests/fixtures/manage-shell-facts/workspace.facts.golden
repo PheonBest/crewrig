@@ -18,7 +18,7 @@ link-warning:          repository, so a branch switch changes it in place.
 link-warning:          For skills and agents the link target is the regenerable
 link-warning:          staging tree dist/<tier>/, which a rebuild replaces wholesale:
 link-warning:          an edit to the authoring source under artifacts/ takes effect
-link-warning:          only after 'bash scripts/build-components.sh' has run.
+link-warning:          only after 'node scripts/build-components.ts' has run.
 link-warning: Only use if you trust all branches in this repository.
 home: .gemini
 marker: commands|skills|hooks|agents|policies)

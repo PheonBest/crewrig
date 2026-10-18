@@ -52,7 +52,7 @@ This is a separate, order-independent follow-up rather than a step in the
 sequence above, so it is not depicted in the diagram below.
 
 A single CLI can be converted on its own by re-running that CLI's own
-`setup-<cli>-interactive.ts` entry (its `.sh` shim forwards to it); the machine-wide, all-four-CLIs-or-none obligation
+`setup-<cli>-interactive.ts` entry; the machine-wide, all-four-CLIs-or-none obligation
 belongs only to `task mempalace:switch-http`.
 
 ![Four ordered steps to convert a machine to the shared MemPalace MCP HTTP daemon: provision the bearer token, install and start the daemon, register every CLI with the token, then verify status and auth.](../assets/mempalace-mcp/convert-machine.png)
@@ -212,7 +212,7 @@ the registration it started with.
 | The warning says | Meaning | Repair |
 |---|---|---|
 | no `mempalace` registration | The file exists but has no `mempalace` entry. This session has no memory tools. | `task mempalace:switch-http` |
-| no `mempalace` registration, naming a setup script | The registration file does not exist. `switch-http` would refuse this machine (see below). | Run the named setup script: `node scripts/lib/node-floor-guard.js`, then `node scripts/setup-<cli>-interactive.ts` (the `.sh` the warning names is a forwarding shim to it and works too) |
+| no `mempalace` registration, naming a setup script | The registration file does not exist. `switch-http` would refuse this machine (see below). | Run the named setup script: `node scripts/lib/node-floor-guard.js`, then `node scripts/setup-<cli>-interactive.ts` |
 | registered on stdio | The CLI launches its own memory server, and the daemon's lease refuses its writes. | `task mempalace:switch-http` |
 | registered at another endpoint | The HTTP entry points elsewhere. The warning shows both endpoints, the registered one redacted (no user info, query, fragment, or control characters). | `task mempalace:switch-http` (read the launcher note below first) |
 | unrecognised entry, naming `task mempalace:repair` | The file is strict JSON, but the entry is neither the HTTP shape (`url`/`serverUrl`) nor the stdio shape (`command`). | `task mempalace:repair` to see the options, then `task mempalace:repair -- --restore-backup` or `-- --reset-none`, then `task mempalace:switch-http` |

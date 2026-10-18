@@ -1,6 +1,6 @@
 // build-components-ci-wiring.test.ts — the CI reference (ci/ci-capabilities.yml) wires the
 // TypeScript component build correctly (spec 0250 R27, delta-01: the build entry is now
-// `node scripts/build-components.ts`, `scripts/build-components.sh` is a shim).
+// `node scripts/build-components.ts`; the `.sh` shim is deleted).
 //
 // The assertions live in functions over the PARSED reference, so the mutation tests below can
 // run the very same functions on an in-memory mutated copy and prove each one can go red. No
@@ -29,7 +29,7 @@ interface Capability {
 }
 
 const ENTRY = "scripts/build-components.ts";
-const SHIM = "scripts/build-components.sh";
+const SHIM = "scripts/build-components.sh"; // deleted: no capability may name it
 const MAIN = "scripts/lib/build-components/main.ts";
 const ASSEMBLY = "build-assembly-routing.test.ts";
 const PROD_INSTALL = /^npm ci( --omit=dev --workspaces=false)?$/;
@@ -40,11 +40,10 @@ const SUITE_COMMAND = /--test /;
 // The script names are the ones the reference runs for the capabilities `frontmatter`,
 // `agent-profile-migration`, `check-agent-profiles` and `component-drift`:
 // each shell test assembles components through the build, so it needs Node.js 24 and the
-// production dependencies exactly as the direct invocation does. `check-core-paths` (the `.sh`
-// shim or the `.ts` entry) builds nothing here; `core-paths` is listed separately in NODE_ONLY_CAPABILITIES.
+// production dependencies exactly as the direct invocation does. `check-core-paths` builds nothing here; `core-paths` is listed separately in NODE_ONLY_CAPABILITIES.
 const BUILD_COMMAND = new RegExp(
   [
-    "scripts/build-components\\.(ts|sh)",
+    "scripts/build-components\\.ts",
     "task build-components",
     "task check-components",
     "build-assembly-routing\\.test\\.ts",
@@ -54,7 +53,7 @@ const BUILD_COMMAND = new RegExp(
     "build-components-frontmatter-fence\\.test\\.ts",
     "build-install-scope-(build|gate)\\.test\\.ts",
     "build-components-canonical-repo\\.test\\.ts",
-    "check-core-paths\\.(sh|ts)",
+    "check-core-paths\\.ts",
   ].join("|"),
 );
 
@@ -103,13 +102,13 @@ function assemblySelectedBy(ref: Reference, file: string): string[] {
     .map((cap) => cap.id);
 }
 
-/** (b) Capability ids that name the shim in `paths:`/`cache.files` without naming the entry. */
-function shimWithoutEntry(ref: Reference): string[] {
+/** (b) Capability ids that still name the deleted shim in `paths:`/`cache.files`. */
+function namesDeletedShim(ref: Reference): string[] {
   const bad: string[] = [];
   for (const cap of ref.capabilities) {
     const lists = [pathsOf(cap), [...(cap.cache?.files ?? [])]];
     for (const list of lists) {
-      if (list.includes(SHIM) && !list.includes(ENTRY)) bad.push(cap.id);
+      if (list.includes(SHIM)) bad.push(cap.id);
     }
   }
   return bad;
@@ -156,7 +155,7 @@ function suiteListFaults(ref: Reference): string[] {
   const runner = commandsOf(cap).find((c) => SUITE_COMMAND.test(c)) ?? "";
   const suites = runner.split(/\s+/).filter((t) => t.endsWith(".test.ts"));
   const faults: string[] = [];
-  for (const name of ["shim", "ci-wiring", "references"]) {
+  for (const name of ["ci-wiring", "references"]) {
     if (!suites.includes(`scripts/tests/build-components-${name}.test.ts`))
       faults.push(`build-components-ts: suite ${name} not listed`);
   }
@@ -180,8 +179,8 @@ describe("the CI reference wires the TypeScript component build", () => {
     }
   });
 
-  test("every capability naming the shim in its paths also names the entry", () => {
-    assert.deepEqual(shimWithoutEntry(REF), []);
+  test("no capability names the deleted shim in its paths or cache files", () => {
+    assert.deepEqual(namesDeletedShim(REF), []);
   });
 
   test("every capability that builds declares node@24 and installs production dependencies first", () => {
@@ -213,13 +212,13 @@ describe("mutation check: each assertion goes red on a broken reference", () => 
     assert.deepEqual(assemblySelectedBy(copy as unknown as Reference, ENTRY), []);
   });
 
-  test("dropping the entry from one capability that names the shim is reported", () => {
+  test("naming the deleted shim in one capability is reported", () => {
     const copy = mutableCopy(REF);
     const cap = copy.capabilities.find((c) => c.id === "component-drift") as {
       trigger: { paths?: string[] }[];
     };
-    for (const t of cap.trigger) if (t.paths) t.paths = t.paths.filter((p) => p !== ENTRY);
-    assert.deepEqual(shimWithoutEntry(copy as unknown as Reference), ["component-drift"]);
+    for (const t of cap.trigger) if (t.paths) t.paths = [...t.paths, SHIM];
+    assert.deepEqual(namesDeletedShim(copy as unknown as Reference), ["component-drift"]);
   });
 
   test("dropping the install command from a building capability is reported", () => {

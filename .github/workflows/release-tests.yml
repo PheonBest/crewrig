@@ -97,10 +97,10 @@ jobs:
         run: npm install --include=dev
 
       - name: Test the release driver (hermetic)
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/release-docs-and-workflows.test.ts scripts/tests/release-golden-generator.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/release-docs-and-workflows.test.ts scripts/tests/release-golden-generator.test.ts
 
       - name: Test the release driver (real engine, local forge stub)
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-engine-rehearsal.test.ts scripts/tests/monorepo-release-engine-gitlab-publish.test.ts scripts/tests/monorepo-release-engine-github-pr.test.ts scripts/tests/monorepo-release-engine-templates.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-engine-rehearsal.test.ts scripts/tests/monorepo-release-engine-gitlab-publish.test.ts scripts/tests/monorepo-release-engine-github-pr.test.ts scripts/tests/monorepo-release-engine-templates.test.ts
 
       - name: Test the lint-safe changelog facade (issue #1364)
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/release-changelog.test.ts

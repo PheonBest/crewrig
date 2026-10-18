@@ -6,7 +6,8 @@ import { jobNode, loadJobs, readJob, type JobRecord } from "./job-records.ts";
 import { installRecipeTool, normalizeCmd } from "./probe-tokens.ts";
 import { ShellAbort, type CapRecord, type ParityState } from "./state.ts";
 
-const GUARD = "bash scripts/ci-cache-guard.sh --cache-dir ";
+const GUARD =
+  "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir ";
 
 /** `sort -u` of the non-empty lines, bytewise. */
 export const sortedUnique = (xs: string[]): string[] =>

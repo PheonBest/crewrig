@@ -260,7 +260,7 @@ references to `Claude Code`, `Gemini CLI`, or `Copilot CLI`
 mechanics in the prose. Per-CLI integration (Claude Code
 `allowed-tools`, Gemini frontmatter overlays, Copilot equivalents)
 lives in the YAML frontmatter and is materialised at build time by
-`scripts/build-components.sh`. The multi-CLI distribution mechanics
+`scripts/build-components.ts`. The multi-CLI distribution mechanics
 themselves are tracked in **#174** and are explicitly out of scope
 for this ticket.
 

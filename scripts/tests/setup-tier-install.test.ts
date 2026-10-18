@@ -94,7 +94,7 @@ describe("installTierToHome, Claude", () => {
   it("prints the not-built line and installs nothing when the tier has no staging", () => {
     installTierToHome({ ctx: ctxOf(), cli: "claude", tier: "library" });
     assert.deepEqual(out, [
-      `  Tier 'library' not built (no ${path.join(repo, "dist/library/.claude")}) — run 'bash scripts/build-components.sh' first.`,
+      `  Tier 'library' not built (no ${path.join(repo, "dist/library/.claude")}) — run 'node scripts/build-components.ts' first.`,
     ]);
     assert.equal(fs.existsSync(path.join(home, ".claude")), false);
   });
@@ -139,7 +139,7 @@ describe("installTierToHome, Copilot", () => {
 
   it("prints the no-built-skills line for an absent or empty skills staging", () => {
     const staging = path.join(repo, "dist/library/.github/skills");
-    const line = `  Tier 'library' has no built skills (no ${staging}) — run 'bash scripts/build-components.sh --target copilot' first.`;
+    const line = `  Tier 'library' has no built skills (no ${staging}) — run 'node scripts/build-components.ts --target copilot' first.`;
     installTierToHome({ ctx: ctxOf(), cli: "copilot", tier: "library" });
     fs.mkdirSync(staging, { recursive: true });
     installTierToHome({ ctx: ctxOf(), cli: "copilot", tier: "library" });
@@ -224,7 +224,7 @@ describe("runTierInstall", () => {
     assert.deepEqual(out, [
       "",
       `Installing library components to ${path.join(home, ".claude/skills")} (automatic)...`,
-      `Tier not built (no ${lib}) — building automatically via 'bash scripts/build-components.sh --target claude'...`,
+      `Tier not built (no ${lib}) — building automatically via 'node scripts/build-components.ts --target claude'...`,
       "  Installed skill: library/l -> ~/.claude/skills/l",
       "",
       "  'org' install skipped.",

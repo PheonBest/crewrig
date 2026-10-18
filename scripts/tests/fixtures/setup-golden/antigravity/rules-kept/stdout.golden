@@ -36,7 +36,7 @@ Shared memory daemon (spec 0113 delta-02): defaulting antigravity to HTTP.
 
 
 Installing library components to <HOME>/.gemini/config/skills (automatic)...
-Tier not built (no <REPO>/dist/library/.agents) — building automatically via 'bash scripts/build-components.sh --target antigravity'...
+Tier not built (no <REPO>/dist/library/.agents) — building automatically via 'node scripts/build-components.ts --target antigravity'...
 =========================================
   Community Component Builder
   Target: antigravity
@@ -46,7 +46,7 @@ Tier not built (no <REPO>/dist/library/.agents) — building automatically via '
 --- Tier: core (output root: <REPO>) ---
 
 Done.
-  Tier 'library' not built (no <REPO>/dist/library/.agents) — run 'bash scripts/build-components.sh' first.
+  Tier 'library' not built (no <REPO>/dist/library/.agents) — run 'node scripts/build-components.ts' first.
 
 Migrating components left at the superseded placement...
 

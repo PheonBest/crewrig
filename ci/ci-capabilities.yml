@@ -56,7 +56,7 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/build-components.sh"
+          - "scripts/build-components.ts"
           - "scripts/build-components.ts"
           - "package.json"
           - "package-lock.json"
@@ -83,7 +83,7 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/build-components.sh"
+          - "scripts/build-components.ts"
           - "scripts/build-components.ts"
           - "package.json"
           - "package-lock.json"
@@ -113,7 +113,7 @@ capabilities:
       runtime: node@24
     cache:
       files:
-        - "scripts/build-components.sh"
+        - "scripts/build-components.ts"
         - "scripts/build-components.ts"
         - "package.json"
         - "package-lock.json"
@@ -141,7 +141,7 @@ capabilities:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
       - node scripts/build-components.ts --target all --check
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-assembly-routing.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-assembly-routing.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-components-canonical-repo.test.ts
 
   - id: agent-profile-migration
@@ -150,7 +150,7 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/build-components.sh"
+          - "scripts/build-components.ts"
           - "scripts/build-components.ts"
           - "scripts/tests/build-components-canonical-repo.test.ts"
           - "scripts/tests/agent-profile-*.test.ts"
@@ -165,7 +165,7 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/build-components.sh"
+          - "scripts/build-components.ts"
           - "scripts/build-components.ts"
           - "scripts/tests/build-components-canonical-repo.test.ts"
           - "scripts/tests/agent-profile-*.test.ts"
@@ -183,7 +183,7 @@ capabilities:
       runtime: node@24
     cache:
       files:
-        - "scripts/build-components.sh"
+        - "scripts/build-components.ts"
         - "scripts/build-components.ts"
         - "scripts/tests/build-components-canonical-repo.test.ts"
         - "scripts/tests/agent-profile-*.test.ts"
@@ -194,11 +194,11 @@ capabilities:
         - ".crewrig/core-paths.txt"
         - "docs/agent-profile-migration.md"
         - "model-mappings/**"
-        - "scripts/ci-cache-guard.sh"
+        - "scripts/ci-cache-guard.ts"
       env: []
     command:
       - npm ci --omit=dev --workspaces=false
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/agent-profile-baseline-doc.test.ts scripts/tests/agent-profile-build.test.ts scripts/tests/agent-profile-committed.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/agent-profile-baseline-doc.test.ts scripts/tests/agent-profile-build.test.ts scripts/tests/agent-profile-committed.test.ts
 
   # Spec 0250 R27, R28 (issue #1332): the TypeScript component-build core, its
   # shared library twins and their node --test suites. `paths:` lists every
@@ -691,7 +691,7 @@ capabilities:
   # Spec 0256 requirement 10 (ticket #1335), PR C: the parity proof. Every golden cell that runs on both
   # legs is run on the unchanged shell setup and on the TypeScript entry and the two results are
   # compared directly through the tagged deviations (one shard file per CLI), and each TypeScript twin of
-  # a shell library function is compared with its original. Linux only (needs bash and jq); retired
+  # a shell library function is compared with its original. Linux only (it needed the shell and jq); retired
   # with the shell setups.
   - id: setup-differential
     name: "Run the shell-against-TypeScript parity proof of the four setups and the twin differential suites"
@@ -1215,7 +1215,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0254 R23).
@@ -1244,7 +1244,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0255 R28).
@@ -1272,7 +1272,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0257 R27).
@@ -1299,7 +1299,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0258 R27).
@@ -1326,7 +1326,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0258 R27).
@@ -1334,7 +1334,7 @@ capabilities:
   # Spec 0258 R23-R27 (ticket #1337): the extension scaffolder entry from a non-POSIX interpreter.
   # The production dependencies are installed first, the floor guard runs, then
   # scripts/tests/windows-create-extension.test.ts runs the entry through pwsh and cmd.exe against a
-  # hermetic sandbox repository with no bash and no fzf on PATH. The dev toolchain is absent, so no
+  # hermetic sandbox repository with no POSIX shell and no fzf on PATH. The dev toolchain is absent, so no
   # `check-typescript` here. No timing budget and no `paths:` filter, like the Windows jobs above:
   # the proof must not skip silently on a change it does not list.
   - id: windows-create-extension
@@ -1353,7 +1353,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0258 R27).
@@ -1380,7 +1380,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0258 R27).
@@ -1406,7 +1406,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0261 R17, R21).
@@ -1426,8 +1426,6 @@ capabilities:
           - "scripts/tests/governance-*"
           - "scripts/tests/lib/governance-*"
           - "scripts/tests/check-agents-size.test.ts"
-          - "scripts/check-*.sh"
-          - "scripts/tests/test-check-*.sh"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -1437,8 +1435,6 @@ capabilities:
           - "scripts/tests/governance-*"
           - "scripts/tests/lib/governance-*"
           - "scripts/tests/check-agents-size.test.ts"
-          - "scripts/check-*.sh"
-          - "scripts/tests/test-check-*.sh"
     portability: portable
     requires:
       runtime: node@24
@@ -1467,7 +1463,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0259 R26-R28).
@@ -1526,7 +1522,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0262 R21-R23).
@@ -1552,7 +1548,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0256 R40).
@@ -1578,7 +1574,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0256 R34).
@@ -1696,7 +1692,7 @@ capabilities:
     command:
       - npm ci --omit=dev --workspaces=false
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-pivot.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-extension-suite-render.test.ts scripts/tests/build-extension-suite-check.test.ts scripts/tests/build-extension-suite-hooks.test.ts scripts/tests/build-extension-suite-context.test.ts scripts/tests/build-extension-suite-scaffold.test.ts scripts/tests/migrate-extension-entry.test.ts scripts/tests/create-extension-combinations.test.ts scripts/tests/create-extension-gap-derivation.test.ts scripts/tests/extension-render-conformance.test.ts scripts/tests/extension-render-conformance-checks.test.ts scripts/tests/extension-sandbox.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-extension-suite-render.test.ts scripts/tests/build-extension-suite-check.test.ts scripts/tests/build-extension-suite-hooks.test.ts scripts/tests/build-extension-suite-context.test.ts scripts/tests/build-extension-suite-scaffold.test.ts scripts/tests/migrate-extension-entry.test.ts scripts/tests/create-extension-combinations.test.ts scripts/tests/create-extension-gap-derivation.test.ts scripts/tests/extension-render-conformance.test.ts scripts/tests/extension-render-conformance-checks.test.ts scripts/tests/extension-sandbox.test.ts
       - node scripts/lib/node-floor-guard.js
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-extension.ts --check
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-hook-tokens.ts
@@ -1733,7 +1729,7 @@ capabilities:
     command:
       - npm ci --omit=dev --workspaces=false
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-provenance.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-extension-provenance.test.ts scripts/tests/governance-suite-extension-provenance-r4.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-extension-provenance.test.ts scripts/tests/governance-suite-extension-provenance-r4.test.ts
 
   - id: extension-manifest
     name: "Enforce extension manifest single-version and version-bump"
@@ -1768,7 +1764,7 @@ capabilities:
       runtime: node@24
     command:
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-manifest-version.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-extension-version-bump.test.ts scripts/tests/governance-suite-extension-version-bump-base.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-extension-version-bump.test.ts scripts/tests/governance-suite-extension-version-bump-base.test.ts
 
   - id: extension-install
     name: "Test extension install and agent frontmatter contracts"
@@ -1868,7 +1864,7 @@ capabilities:
       tools: [jq, yq]
     command:
       - npm ci --omit=dev --workspaces=false
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/install-claude-plugin-marketplace.test.ts scripts/tests/install-extension-all-real.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/install-claude-plugin-marketplace.test.ts scripts/tests/install-extension-all-real.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/install-sandbox.test.ts scripts/tests/install-workspace.test.ts scripts/tests/unlink-component.test.ts scripts/tests/unlink-extensions.test.ts scripts/tests/install-extension.test.ts scripts/tests/link-extensions.test.ts scripts/tests/install-copilot-plugin.test.ts scripts/tests/install-antigravity-extension.test.ts
 
   - id: core-paths
@@ -1920,7 +1916,7 @@ capabilities:
       runtime: node@24
       tools: [yq]
     command:
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/sync-from-upstream-policies.test.ts scripts/tests/sync-from-upstream-reconcile.test.ts scripts/tests/sync-from-upstream-orphans.test.ts scripts/tests/sync-from-upstream-dirty-report.test.ts scripts/tests/sync-from-upstream-preserve.test.ts scripts/tests/sync-from-upstream-signing.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/sync-from-upstream-policies.test.ts scripts/tests/sync-from-upstream-reconcile.test.ts scripts/tests/sync-from-upstream-orphans.test.ts scripts/tests/sync-from-upstream-dirty-report.test.ts scripts/tests/sync-from-upstream-preserve.test.ts scripts/tests/sync-from-upstream-signing.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/sync-from-upstream-self-update.test.ts
 
   - id: ci-parity
@@ -1929,10 +1925,10 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-ci-parity.sh"
-          - "scripts/build-ci.sh"
-          - "scripts/ci-cache-guard.sh"
-          - "scripts/ci-changeset-coverage.sh"
+          - "scripts/check-ci-parity.ts"
+          - "scripts/build-ci.ts"
+          - "scripts/ci-cache-guard.ts"
+          - "scripts/ci-changeset-coverage.ts"
           - "scripts/tests/ci-parity-positive.test.ts"
           - "scripts/tests/ci-parity-fail-closed.test.ts"
           - "scripts/tests/ci-parity-stray-scan.test.ts"
@@ -1953,10 +1949,10 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/check-ci-parity.sh"
-          - "scripts/build-ci.sh"
-          - "scripts/ci-cache-guard.sh"
-          - "scripts/ci-changeset-coverage.sh"
+          - "scripts/check-ci-parity.ts"
+          - "scripts/build-ci.ts"
+          - "scripts/ci-cache-guard.ts"
+          - "scripts/ci-changeset-coverage.ts"
           - "scripts/tests/ci-parity-positive.test.ts"
           - "scripts/tests/ci-parity-fail-closed.test.ts"
           - "scripts/tests/ci-parity-stray-scan.test.ts"
@@ -1981,10 +1977,10 @@ capabilities:
       tools: [yq]
     cache:
       files:
-        - "scripts/check-ci-parity.sh"
-        - "scripts/build-ci.sh"
-        - "scripts/ci-cache-guard.sh"
-        - "scripts/ci-changeset-coverage.sh"
+        - "scripts/check-ci-parity.ts"
+        - "scripts/build-ci.ts"
+        - "scripts/ci-cache-guard.ts"
+        - "scripts/ci-changeset-coverage.ts"
         - "scripts/tests/ci-parity-positive.test.ts"
         - "scripts/tests/ci-parity-fail-closed.test.ts"
         - "scripts/tests/ci-parity-stray-scan.test.ts"
@@ -2006,8 +2002,8 @@ capabilities:
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/ci-parity-positive.test.ts scripts/tests/ci-parity-fail-closed.test.ts scripts/tests/ci-parity-stray-scan.test.ts scripts/tests/ci-parity-path-filters.test.ts scripts/tests/ci-parity-path-filters-undet.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-ci-real-tree.test.ts scripts/tests/build-ci-synthetic.test.ts scripts/tests/build-ci-synthetic-write.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/ci-parity-positive.test.ts scripts/tests/ci-parity-fail-closed.test.ts scripts/tests/ci-parity-stray-scan.test.ts scripts/tests/ci-parity-path-filters.test.ts scripts/tests/ci-parity-path-filters-undet.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-ci-real-tree.test.ts scripts/tests/build-ci-synthetic.test.ts scripts/tests/build-ci-synthetic-write.test.ts
 
   - id: docs-index
     name: "Check docs index drift"
@@ -2048,12 +2044,12 @@ capabilities:
         - "scripts/tests/build-docs-index-entry.test.ts"
         - "scripts/tests/lib/docs-index-entry-tree.ts"
         - "docs/**"
-        - "scripts/ci-cache-guard.sh"
+        - "scripts/ci-cache-guard.ts"
       env: []
     command:
       - node scripts/lib/node-floor-guard.js
       - node scripts/build-docs-index.ts --check
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-docs-index-entry.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-docs-index-entry.test.ts
 
   - id: figure-labels
     name: "Check figure labels with OCR"
@@ -2085,7 +2081,7 @@ capabilities:
       tools: [tesseract]
     command:
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-figure-labels.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/windows-governance-figure-labels.test.ts scripts/tests/governance-suite-figure-labels.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/windows-governance-figure-labels.test.ts scripts/tests/governance-suite-figure-labels.test.ts
 
   - id: mempalace
     name: "Test mempalace transcript, pin, and runtime guards"
@@ -2223,7 +2219,7 @@ capabilities:
         - "artifacts/library/skills/mempalace/**"
         - "artifacts/library/skills/harness-report/**"
         - "config/copilot/*.json.template"
-        - "scripts/ci-cache-guard.sh"
+        - "scripts/ci-cache-guard.ts"
         - "scripts/setup-*-interactive.ts"
         - "scripts/tests/setup-retarget-*.test.ts"
         - "scripts/tests/lib/setup-*.ts"
@@ -2239,7 +2235,7 @@ capabilities:
       # sandbox, which rebuilds the served overlay tiers and loads js-yaml.
       - npm ci --omit=dev --workspaces=false
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/mempalace-http-client-reuse.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-transcript-claude.test.ts scripts/tests/setup-transcript-gemini.test.ts scripts/tests/setup-transcript-copilot.test.ts scripts/tests/setup-transcript-antigravity-manifest.test.ts scripts/tests/setup-transcript-antigravity-statusline.test.ts scripts/tests/mempalace-transcript-antigravity-payload.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-transcript-claude.test.ts scripts/tests/setup-transcript-gemini.test.ts scripts/tests/setup-transcript-copilot.test.ts scripts/tests/setup-transcript-antigravity-manifest.test.ts scripts/tests/setup-transcript-antigravity-statusline.test.ts scripts/tests/mempalace-transcript-antigravity-payload.test.ts
       # `packaging` is the spec-0108 launch guard's PRIMARY comparator and is the
       # branch in force on every serving interpreter that carries it, so CI must
       # exercise it against the real library rather than only against the degraded
@@ -2248,8 +2244,8 @@ capabilities:
       # comparator was actually tested. Not a runtime dependency of the guard: the
       # wrapper still runs, and is still tested, where `packaging` is absent.
       - python3 -m pip install --quiet packaging
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/mempalace-pin-read.test.ts scripts/tests/mempalace-pin-compare.test.ts scripts/tests/mempalace-pin-corpus.test.ts scripts/tests/mempalace-runtime-guard-refusal.test.ts scripts/tests/mempalace-runtime-guard-paths.test.ts scripts/tests/mempalace-doctor-divergence.test.ts scripts/tests/mempalace-doctor-report.test.ts scripts/tests/mempalace-doctor-launch.test.ts scripts/tests/mempalace-doctor-shell-wrappers.test.ts scripts/tests/mempalace-version-range.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/antigravity-manage-sandbox.test.ts scripts/tests/antigravity-tier-twin.test.ts scripts/tests/system-context-store.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/mempalace-pin-read.test.ts scripts/tests/mempalace-pin-compare.test.ts scripts/tests/mempalace-pin-corpus.test.ts scripts/tests/mempalace-runtime-guard-refusal.test.ts scripts/tests/mempalace-runtime-guard-paths.test.ts scripts/tests/mempalace-doctor-divergence.test.ts scripts/tests/mempalace-doctor-report.test.ts scripts/tests/mempalace-doctor-launch.test.ts scripts/tests/mempalace-doctor-shell-wrappers.test.ts scripts/tests/mempalace-version-range.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/antigravity-manage-sandbox.test.ts scripts/tests/antigravity-tier-twin.test.ts scripts/tests/system-context-store.test.ts
 
   - id: test-wiring
     name: "Enforce test-wiring registration and suite syntax"
@@ -2303,9 +2299,9 @@ capabilities:
       runtime: node@24
     command:
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-test-wiring.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-check-test-wiring-cases.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-check-test-wiring-cases.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-test-strays.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-check-test-strays-cases.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-check-test-strays-cases.test.ts
 
   - id: chroma-mcp
     name: "Test chroma server, MCP daemon, and worktree claim"
@@ -2374,10 +2370,10 @@ capabilities:
         - "config/launchd/**"
         - "config/systemd/**"
         - "config/windows/**"
-        - "scripts/ci-cache-guard.sh"
+        - "scripts/ci-cache-guard.ts"
       env: []
     command:
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/chroma-wrapper-source.test.ts scripts/tests/chroma-wrapper-live.test.ts scripts/tests/chroma-fd-limits.test.ts scripts/tests/mcp-daemon-static-guards.test.ts scripts/tests/mcp-daemon-status.test.ts scripts/tests/repair-restore-modes.test.ts scripts/tests/repair-report-handoff.test.ts scripts/tests/switch-rotate-token.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/chroma-wrapper-source.test.ts scripts/tests/chroma-wrapper-live.test.ts scripts/tests/chroma-fd-limits.test.ts scripts/tests/mcp-daemon-static-guards.test.ts scripts/tests/mcp-daemon-status.test.ts scripts/tests/repair-restore-modes.test.ts scripts/tests/repair-report-handoff.test.ts scripts/tests/switch-rotate-token.test.ts
 
   # e2e is the heaviest group; it stays enforced on push/PR (changeset-gated)
   # but is ALSO manually triggerable (spec 0147 R8) so a contributor can run it
@@ -2389,7 +2385,6 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/tests/test-e2e-*.sh"
           - "scripts/tests/e2e-*.test.ts"
           - "scripts/tests/lib/e2e-*.ts"
           - "scripts/tests/fixtures/e2e-oracle/**"
@@ -2401,7 +2396,6 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/tests/test-e2e-*.sh"
           - "scripts/tests/e2e-*.test.ts"
           - "scripts/tests/lib/e2e-*.ts"
           - "scripts/tests/fixtures/e2e-oracle/**"
@@ -2429,7 +2423,6 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/tests/test-setup-*.sh"
           - "scripts/tests/setup-common-*.test.ts"
           - "scripts/tests/setup-identity-flow.test.ts"
           - "scripts/tests/setup-legacy-gemini-md-declaration.test.ts"
@@ -2446,7 +2439,6 @@ capabilities:
           - "scripts/tests/setup-gemini-settings-seeds.test.ts"
           - "scripts/tests/lib/gemini-settings-rig.ts"
           - "scripts/tests/lib/worktree-fixtures.ts"
-          - "scripts/setup-*.sh"
           - "scripts/setup-*-interactive.ts"
           - "scripts/tls-delegation.ts"
           - "scripts/usage-capture-optin.ts"
@@ -2465,7 +2457,6 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/tests/test-setup-*.sh"
           - "scripts/tests/setup-common-*.test.ts"
           - "scripts/tests/setup-identity-flow.test.ts"
           - "scripts/tests/setup-legacy-gemini-md-declaration.test.ts"
@@ -2482,7 +2473,6 @@ capabilities:
           - "scripts/tests/setup-gemini-settings-seeds.test.ts"
           - "scripts/tests/lib/gemini-settings-rig.ts"
           - "scripts/tests/lib/worktree-fixtures.ts"
-          - "scripts/setup-*.sh"
           - "scripts/setup-*-interactive.ts"
           - "scripts/tls-delegation.ts"
           - "scripts/usage-capture-optin.ts"
@@ -2506,8 +2496,8 @@ capabilities:
     command:
       # The retargeted suites run the TypeScript setup in a sandbox that copies js-yaml and argparse from here.
       - npm ci --omit=dev --workspaces=false
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-identity-flow.test.ts scripts/tests/setup-legacy-gemini-md-declaration.test.ts scripts/tests/setup-mcp-merge-policy.test.ts scripts/tests/setup-org-mcp-wiring.test.ts scripts/tests/setup-secrets-fold.test.ts scripts/tests/setup-tier-staging-declared.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tls-delegation-contract.test.ts scripts/tests/setup-gemini-settings-failure.test.ts scripts/tests/setup-gemini-settings-jsonc.test.ts scripts/tests/setup-gemini-settings-runs.test.ts scripts/tests/setup-gemini-settings-seeds.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-identity-flow.test.ts scripts/tests/setup-legacy-gemini-md-declaration.test.ts scripts/tests/setup-mcp-merge-policy.test.ts scripts/tests/setup-org-mcp-wiring.test.ts scripts/tests/setup-secrets-fold.test.ts scripts/tests/setup-tier-staging-declared.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tls-delegation-contract.test.ts scripts/tests/setup-gemini-settings-failure.test.ts scripts/tests/setup-gemini-settings-jsonc.test.ts scripts/tests/setup-gemini-settings-runs.test.ts scripts/tests/setup-gemini-settings-seeds.test.ts
 
   - id: misc
     name: "Run miscellaneous portability and reservation checks"
@@ -2532,8 +2522,8 @@ capabilities:
           - "scripts/tests/lib/spec-id-constants.ts"
           - "scripts/tests/lib/scratch-remote.ts"
           - "scripts/tests/lib/differential-guard.ts"
-          - "scripts/reserve-spec-id.sh"
-          - "scripts/check-spec-id-reserved.sh"
+          - "scripts/reserve-spec-id.ts"
+          - "scripts/check-spec-id-reserved.ts"
           - "model-mappings/**"
           - "scripts/setup-gemini-interactive.ts"
           - "config/gemini/settings.json"
@@ -2563,8 +2553,8 @@ capabilities:
           - "scripts/tests/lib/spec-id-constants.ts"
           - "scripts/tests/lib/scratch-remote.ts"
           - "scripts/tests/lib/differential-guard.ts"
-          - "scripts/reserve-spec-id.sh"
-          - "scripts/check-spec-id-reserved.sh"
+          - "scripts/reserve-spec-id.ts"
+          - "scripts/check-spec-id-reserved.ts"
           - "model-mappings/**"
           - "scripts/setup-gemini-interactive.ts"
           - "config/gemini/settings.json"
@@ -2580,27 +2570,27 @@ capabilities:
       # node@24 is the PRIMARY runtime on purpose (finding i1-F16): the
       # GitLab image is derived from the FIRST entry, so the job runs on the
       # pinned node:24 image like every other Node job, instead of piping an
-      # unpinned NodeSource script into bash on a python:3.12 image.
-      # check-gemini-overlay-enrollment.ts runs on Node.js 24 and the Bash
-      # suites reach the check shims, which fail closed below Node.js 24. No
+      # unpinned NodeSource script on a python:3.12 image.
+      # check-gemini-overlay-enrollment.ts runs on Node.js 24, and the check
+      # entries fail closed below Node.js 24. No
       # python runtime is declared: check-markdown-links was the only
       # python3 consumer and it is TypeScript now. The GitLab leg cannot be
-      # run locally; it is covered by build-ci.sh --check and
-      # check-ci-parity.sh only.
+      # run locally; it is covered by build-ci.ts --check and
+      # check-ci-parity.ts only.
       runtime: node@24
     command:
       - npm ci --omit=dev --workspaces=false
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-no-machine-paths.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-no-machine-paths.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-gemini-overlay-enrollment.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/reserve-spec-id-contract.test.ts scripts/tests/reserve-spec-id-carrier-reuse.test.ts scripts/tests/reserve-spec-id-races.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-spec-id-reserved-blocking.test.ts scripts/tests/check-spec-id-reserved-mark.test.ts scripts/tests/check-spec-id-reserved-origin.test.ts scripts/tests/check-spec-id-reserved-degraded.test.ts scripts/tests/check-spec-id-reserved-base-ref.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/reserve-spec-id-contract.test.ts scripts/tests/reserve-spec-id-carrier-reuse.test.ts scripts/tests/reserve-spec-id-races.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-spec-id-reserved-blocking.test.ts scripts/tests/check-spec-id-reserved-mark.test.ts scripts/tests/check-spec-id-reserved-origin.test.ts scripts/tests/check-spec-id-reserved-degraded.test.ts scripts/tests/check-spec-id-reserved-base-ref.test.ts
 
   # repository-scan runs the checks whose verdict depends on files anywhere in
   # the repository (spec 0251 R1-R4): check-no-machine-paths.ts scans every
   # tracked file, check-markdown-links.ts every tracked *.md and the target of
-  # every relative link, and check-core-paths.sh every path the manifest names
-  # plus the output directories of build-components.sh. No filter can enumerate
+  # every relative link, and check-core-paths.ts every path the manifest names
+  # plus the output directories of build-components.ts. No filter can enumerate
   # those inputs in advance, so the capability has NO `paths:` filter and runs
   # on every pull request and push to main and release/**. It is deliberately
   # NOT filtered with a catch-all `**` glob (R4): that would make every tracked
@@ -2609,9 +2599,9 @@ capabilities:
   # stay in misc, markdown-links and core-paths, under their own filters.
   # The three scans are TypeScript entries on Node.js 24: no python runtime is
   # declared (check-markdown-links was its only consumer), and check-core-paths
-  # needs no yq because `build-components.sh --list-output-dirs` exits in its
-  # list_output_dirs guard (scripts/build-components.sh:64-117) before the yq
-  # prerequisite check (scripts/build-components.sh:120).
+  # needs no yq because `build-components.ts --list-output-dirs` exits in its
+  # list_output_dirs guard (scripts/build-components.ts:64-117) before the yq
+  # prerequisite check (scripts/build-components.ts:120).
   - id: repository-scan
     name: "Run repository-wide scans on every change"
     trigger:
@@ -2621,9 +2611,8 @@ capabilities:
         branches: [main, "release/**"]
     portability: portable
     requires:
-      # check-core-paths.ts runs build-components.sh through
-      # `--list-output-dirs`; on the release branch that is a shim over the
-      # TypeScript build, which fails closed below Node.js 24 (spec 0215 R31
+      # check-core-paths.ts runs build-components.ts through
+      # `--list-output-dirs`, through the TypeScript build, which fails closed below Node.js 24 (spec 0215 R31
       # follow-up noted in #1550).
       runtime: node@24
     command:
@@ -2709,13 +2698,13 @@ capabilities:
       tools: [yq, jq]
     command:
       - npm ci --omit=dev --workspaces=false
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-components-frontmatter-fence.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-skill-versions.test.ts scripts/tests/governance-suite-skill-versions-base.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-feedback-routing.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-assembly-routing.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-install-scope-build.test.ts scripts/tests/build-install-scope-gate.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tier-resolution-collision.test.ts scripts/tests/tier-resolution-declarations.test.ts scripts/tests/tier-resolution-install.test.ts scripts/tests/tier-resolution-landing.test.ts scripts/tests/tier-resolution-taskfile.test.ts scripts/tests/tier-resolution-three-tiers.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/pr-logbook-label-scope.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-components-frontmatter-fence.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-skill-versions.test.ts scripts/tests/governance-suite-skill-versions-base.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-feedback-routing.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-assembly-routing.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-install-scope-build.test.ts scripts/tests/build-install-scope-gate.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tier-resolution-collision.test.ts scripts/tests/tier-resolution-declarations.test.ts scripts/tests/tier-resolution-install.test.ts scripts/tests/tier-resolution-landing.test.ts scripts/tests/tier-resolution-taskfile.test.ts scripts/tests/tier-resolution-three-tiers.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/pr-logbook-label-scope.test.ts
 
   - id: check-model-mappings
     name: "Check model-mapping conformance and run its mutation test suite"
@@ -2725,7 +2714,7 @@ capabilities:
         paths:
           - "model-mappings/**"
           - "docs/model-mapping-format.md"
-          - "scripts/check-model-mappings.sh"
+          - "scripts/check-model-mappings.ts"
           - "scripts/tests/check-model-mappings-rejections.test.ts"
           - "scripts/tests/check-model-mappings-org.test.ts"
           - "scripts/tests/check-model-mappings-selection.test.ts"
@@ -2736,7 +2725,7 @@ capabilities:
         paths:
           - "model-mappings/**"
           - "docs/model-mapping-format.md"
-          - "scripts/check-model-mappings.sh"
+          - "scripts/check-model-mappings.ts"
           - "scripts/tests/check-model-mappings-rejections.test.ts"
           - "scripts/tests/check-model-mappings-org.test.ts"
           - "scripts/tests/check-model-mappings-selection.test.ts"
@@ -2750,8 +2739,8 @@ capabilities:
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - bash scripts/check-model-mappings.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-model-mappings-rejections.test.ts scripts/tests/check-model-mappings-org.test.ts scripts/tests/check-model-mappings-selection.test.ts scripts/tests/check-model-mappings-committed.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-model-mappings.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-model-mappings-rejections.test.ts scripts/tests/check-model-mappings-org.test.ts scripts/tests/check-model-mappings-selection.test.ts scripts/tests/check-model-mappings-committed.test.ts
 
   - id: check-agent-profiles
     name: "Check agent capability-profile conformance and run its mutation test suite"
@@ -2760,7 +2749,7 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "artifacts/**"
-          - "scripts/check-agent-profiles.sh"
+          - "scripts/check-agent-profiles.ts"
           - "scripts/tests/check-agent-profiles-rejections.test.ts"
           - "scripts/tests/check-agent-profiles-green.test.ts"
           - "scripts/tests/lib/agent-profile-fixtures.ts"
@@ -2768,7 +2757,7 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - "artifacts/**"
-          - "scripts/check-agent-profiles.sh"
+          - "scripts/check-agent-profiles.ts"
           - "scripts/tests/check-agent-profiles-rejections.test.ts"
           - "scripts/tests/check-agent-profiles-green.test.ts"
           - "scripts/tests/lib/agent-profile-fixtures.ts"
@@ -2779,8 +2768,8 @@ capabilities:
       tools: [yq]
     command:
       - npm ci --omit=dev --workspaces=false
-      - bash scripts/check-agent-profiles.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-agent-profiles-rejections.test.ts scripts/tests/check-agent-profiles-green.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-agent-profiles.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-agent-profiles-rejections.test.ts scripts/tests/check-agent-profiles-green.test.ts
 
   - id: check-metadata-keys
     name: "Check the component metadata: closed key set and run its mutation test suite"
@@ -2821,7 +2810,7 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - ".claude/agents/**"
-          - "scripts/build-components.sh"
+          - "scripts/build-components.ts"
           - "scripts/build-components.ts"
           - "scripts/lib/build-components/**"
           - "scripts/check-claude-agent-layout.ts"
@@ -2830,7 +2819,7 @@ capabilities:
         branches: [main, "release/**"]
         paths:
           - ".claude/agents/**"
-          - "scripts/build-components.sh"
+          - "scripts/build-components.ts"
           - "scripts/build-components.ts"
           - "scripts/lib/build-components/**"
           - "scripts/check-claude-agent-layout.ts"
@@ -2874,7 +2863,7 @@ capabilities:
     command:
       - npm ci --omit=dev --workspaces=false
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-taskfile-commands.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-taskfile-commands.test.ts scripts/tests/check-tool-binaries.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-taskfile-commands.test.ts scripts/tests/check-tool-binaries.test.ts
 
   - id: markdown-links
     name: "Check relative Markdown link integrity"
@@ -2906,7 +2895,7 @@ capabilities:
     requires:
       runtime: node@24
     command:
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-markdown-links.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-markdown-links.test.ts
 
   # changeset-coverage is the exhaustive run (spec 0147 delta-01 R21): it has
   # no pull-request and no push trigger. It runs `scheduled` (daily, on the
@@ -2932,7 +2921,7 @@ capabilities:
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - bash scripts/ci-changeset-coverage.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-changeset-coverage.ts
 
   # changeset-coverage-test keeps the exhaustive script's regression test on the
   # pull-request path (spec 0147 delta-01 R23). It has never been path-filtered
@@ -3069,12 +3058,12 @@ capabilities:
       # the win32-only suites (service-windows*.test.ts) run in `windows-service-task`.
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/service-backend.test.ts scripts/tests/service-bundle-closure.test.ts scripts/tests/service-exec.test.ts scripts/tests/service-file-size.test.ts scripts/tests/service-install.test.ts scripts/tests/service-launchd-systemd.test.ts scripts/tests/service-launcher-child.test.ts scripts/tests/service-launcher-record.test.ts scripts/tests/service-launcher-token.test.ts scripts/tests/service-launcher-palace-path.test.ts scripts/tests/service-listener-pid.test.ts scripts/tests/service-names.test.ts scripts/tests/service-os-inspect.test.ts scripts/tests/service-owner-check.test.ts scripts/tests/service-probe.test.ts scripts/tests/service-process-tree.test.ts scripts/tests/service-program-install.test.ts scripts/tests/service-schtasks.test.ts scripts/tests/service-schtasks-uninstall.test.ts scripts/tests/service-snapshot-failure.test.ts scripts/tests/service-task-ownership.test.ts scripts/tests/service-task-snapshot.test.ts scripts/tests/service-task-state.test.ts scripts/tests/service-token-argv.test.ts scripts/tests/service-trust-wrapper.test.ts scripts/tests/service-unit-render.test.ts scripts/tests/service-windows-task-xml.test.ts scripts/tests/mcp-launcher-lifecycle.test.ts
       # Spec 0258 R15, R28, R34 (ticket #1337): the calendar-trigger renderers and backends of the
-      # service layer, the harness-curator differential (the shell leg is skipped: the three `.sh` are
+      # service layer, the harness-curator differential (the shell leg was retired with the three `.sh`
       # forwarding shims, spec 0258 R32) and its callers guard. No `paths:` filter: the job already runs on
       # every change, which covers the curator and schedule paths.
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/service-schedule-launchd-systemd.test.ts scripts/tests/service-schedule-names.test.ts scripts/tests/service-schedule-render.test.ts scripts/tests/service-schedule-schtasks.test.ts scripts/tests/harness-curator-differential.test.ts scripts/tests/harness-curator-callers.test.ts
       # Spec 0252 PR C (issue #1330): the ChromaDB trio, black-box through the
-      # TypeScript entries and the bash shims, and the open-file floor (needs python3;
+      # TypeScript entries, and the open-file floor (needs python3;
       # the Windows-capable parts also run in `windows-chroma-trio`).
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/chroma-lifecycle.test.ts scripts/tests/chroma-launch.test.ts scripts/tests/chroma-launch-env.test.ts
       # Spec 0252 PR D (issue #1330): the MCP daemon status report, black-box through
@@ -3085,12 +3074,12 @@ capabilities:
       # token-bearing config backup (review i1-F38), unit level.
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/service-token.test.ts scripts/tests/switch-transaction.test.ts scripts/tests/switch-replace.test.ts scripts/tests/service-backup-config.test.ts
       # Spec 0252 PR E (issue #1330): the switch residue repair, black-box through the
-      # TypeScript entry and the bash shim (POSIX stubs), and its platform-neutral
+      # TypeScript entry (POSIX stubs), and its platform-neutral
       # oracle (TypeScript entry only, also run in `windows-doctor-repair`).
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/repair-verbs.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/repair-windows.test.ts
       # Spec 0252 PR E (issue #1330): the doctor report, black-box through the TypeScript
-      # entry and the bash shim; the Windows fourth section through the os-inspect seam.
+      # entry; the Windows fourth section through the os-inspect seam.
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/doctor-sections.test.ts scripts/tests/doctor-sections-windows.test.ts
 
   # Spec 0237 (issue #1322): the Windows hook command-line parsing probe's
@@ -3318,7 +3307,7 @@ capabilities:
   # chroma-mcp) do not replace. `jq` is declared for the differential test of
   # the payload chain (R5), which is skipped with an explicit line where `jq`
   # is absent. Deliberately NOT changeset-gated, mirroring usage-capture above:
-  # the fail-safe job (ci-changeset-coverage.sh) provisions python@3.12, yq and
+  # the fail-safe job (ci-changeset-coverage.ts) provisions python@3.12, yq and
   # node@24 only and carries no `jq`.
   - id: worktree-guard
     name: "Validate the worktree git guard and worktree claim tool (TypeScript)"
@@ -3474,7 +3463,7 @@ capabilities:
       BASE_REF: "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
     command:
       - npm install
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/spec-linter-*.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/spec-linter-*.test.ts
       - task spec:lint
 
   - id: test-harness-curate
@@ -3534,10 +3523,10 @@ capabilities:
   # NO `tools:` KEY, deliberately. The generated GitLab job runs on the default
   # `debian:stable-slim` image, which ships no git, so git is installed
   # CONDITIONALLY as the first line of `command:` — a business step, not setup.
-  # Declaring `tools: [git]` instead would still fail check-ci-parity.sh Arm 2
+  # Declaring `tools: [git]` instead would still fail check-ci-parity.ts Arm 2
   # (reference↔GitLab): `git`/`diff` have no `tool_install_lines` recipe in
-  # build-ci.sh, so a GitLab job needing either hard-errors at generation time.
-  # Arm 1 (GitHub Actions) no longer blocks this — since #1216, check-ci-parity.sh
+  # build-ci.ts, so a GitLab job needing either hard-errors at generation time.
+  # Arm 1 (GitHub Actions) no longer blocks this — since #1216, check-ci-parity.ts
   # treats `git`/`diff` as preinstalled on ubuntu-latest, the same as `jq`, so
   # neither an `install_recipe_tool` pattern nor a hand-authored GHA install
   # step is needed there anymore. This shape still needs none of it — the one
@@ -3564,7 +3553,7 @@ capabilities:
       CREWRIG_PR_HEAD_REPO: "$CI_MERGE_REQUEST_SOURCE_PROJECT_PATH"
     command:
       - command -v git >/dev/null || (apt-get update && apt-get install -y --no-install-recommends git ca-certificates)
-      - bash scripts/check-spec-id-reserved.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-spec-id-reserved.ts
 
   - id: check-agents-size
     name: "Check AGENTS.md file size"
@@ -3656,7 +3645,7 @@ capabilities:
       - npm audit --audit-level=critical
 
   # usage-record-schema validates the usage record contract (spec 0205).
-  # Deliberately NOT changeset-gated: the fail-safe job (ci-changeset-coverage.sh)
+  # Deliberately NOT changeset-gated: the fail-safe job (ci-changeset-coverage.ts)
   # provisions python@3.12 + yq + node@24, so a node@22 capability must never
   # enter its execution set.
   - id: usage-record-schema
@@ -3685,7 +3674,7 @@ capabilities:
       runtime: node@24
     command:
       - npm install
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-record-schema.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-record-schema.test.ts
 
   # release-notes renders an extension release note through the real
   # scripts/monorepo-release.ts configuration against a hermetic fixture
@@ -3736,12 +3725,12 @@ capabilities:
       runtime: node@24
     command:
       - npm ci
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-notes-real-engine.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-notes-real-engine.test.ts
 
   # usage-capture validates the spec 0206 capture-adapter module tree and the
-  # spec 0211 per-CLI usage-capture opt-in (scripts/lib/usage-capture-optin.sh).
+  # spec 0211 per-CLI usage-capture opt-in (scripts/usage-capture-optin.ts).
   # Deliberately NOT changeset-gated, mirroring usage-record-schema above:
-  # the fail-safe job (ci-changeset-coverage.sh) provisions node@24 only, so a
+  # the fail-safe job (ci-changeset-coverage.ts) provisions node@24 only, so a
   # node@22 capability must never enter it.
   - id: usage-capture
     name: "Validate usage capture adapters and fixtures"
@@ -3848,7 +3837,7 @@ capabilities:
       tools: [jq]
     command:
       - npm install
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-usage-headless.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/e2e-usage-headless.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/antigravity-statusline-shim.test.ts scripts/tests/hook-*.test.ts scripts/tests/usage-capture-*.test.ts
 
   # usage-storage validates the usage-record storage contract (spec 0207):
@@ -3963,8 +3952,8 @@ capabilities:
       runtime: node@24
     command:
       - npm install
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-storage-journal.test.ts scripts/tests/usage-storage-query.test.ts scripts/tests/usage-storage-gate.test.ts scripts/tests/usage-mirror-spawn.test.ts scripts/tests/usage-storage-wing.test.ts scripts/tests/usage-storage-drain.test.ts scripts/tests/usage-storage-prune.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-mirror-catchup.test.ts scripts/tests/usage-mirror-prune.test.ts scripts/tests/usage-mirror-failures.test.ts scripts/tests/usage-mirror-mutants.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-storage-journal.test.ts scripts/tests/usage-storage-query.test.ts scripts/tests/usage-storage-gate.test.ts scripts/tests/usage-mirror-spawn.test.ts scripts/tests/usage-storage-wing.test.ts scripts/tests/usage-storage-drain.test.ts scripts/tests/usage-storage-prune.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-mirror-catchup.test.ts scripts/tests/usage-mirror-prune.test.ts scripts/tests/usage-mirror-failures.test.ts scripts/tests/usage-mirror-mutants.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-inventory.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-wrappers-oracle.test.ts scripts/tests/usage-wrappers.test.ts scripts/tests/hermetic-env.test.ts
       - node scripts/build-usage-validator.js --check
@@ -4035,7 +4024,7 @@ capabilities:
       runtime: node@24
     command:
       - npm install
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-attribution-channels.test.ts scripts/tests/usage-attribution-ledger-rollup.test.ts scripts/tests/usage-attribution-period-rollup.test.ts scripts/tests/usage-attribution-prune.test.ts scripts/tests/usage-attribution-mutations.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-attribution-channels.test.ts scripts/tests/usage-attribution-ledger-rollup.test.ts scripts/tests/usage-attribution-period-rollup.test.ts scripts/tests/usage-attribution-prune.test.ts scripts/tests/usage-attribution-mutations.test.ts
 
   # usage-pricing validates spec 0209's comparative pricing engine: the
   # model-id resolution pipeline (exact/alias/family/org fallback), the
@@ -4121,7 +4110,7 @@ capabilities:
       runtime: node@24
     command:
       - npm install
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-pricing-compute.test.ts scripts/tests/usage-pricing-fx.test.ts scripts/tests/usage-pricing-rollup.test.ts scripts/tests/usage-pricing-rollup-period.test.ts scripts/tests/usage-pricing-prune.test.ts scripts/tests/usage-pricing-static.test.ts scripts/tests/usage-pricing-conversion.test.ts scripts/tests/usage-pricing-conversion-b.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-pricing-compute.test.ts scripts/tests/usage-pricing-fx.test.ts scripts/tests/usage-pricing-rollup.test.ts scripts/tests/usage-pricing-rollup-period.test.ts scripts/tests/usage-pricing-prune.test.ts scripts/tests/usage-pricing-static.test.ts scripts/tests/usage-pricing-conversion.test.ts scripts/tests/usage-pricing-conversion-b.test.ts
 
   # usage-dashboard is spec 0210's three-form agreement, injection and
   # loopback-bind suite (PLAN v2 steps 13-15). Fully offline, reusing the
@@ -4212,7 +4201,7 @@ capabilities:
       runtime: node@24
     command:
       - npm install
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-dashboard-agreement.test.ts scripts/tests/usage-dashboard-crosscheck.test.ts scripts/tests/usage-dashboard-buckets.test.ts scripts/tests/usage-dashboard-render.test.ts scripts/tests/usage-dashboard-empty.test.ts scripts/tests/usage-dashboard-page.test.ts scripts/tests/usage-dashboard-static.test.ts scripts/tests/usage-dashboard-home-marker.test.ts scripts/tests/usage-dashboard-server.test.ts scripts/tests/usage-dashboard-readonly.test.ts scripts/tests/usage-dashboard-mutations.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-dashboard-agreement.test.ts scripts/tests/usage-dashboard-crosscheck.test.ts scripts/tests/usage-dashboard-buckets.test.ts scripts/tests/usage-dashboard-render.test.ts scripts/tests/usage-dashboard-empty.test.ts scripts/tests/usage-dashboard-page.test.ts scripts/tests/usage-dashboard-static.test.ts scripts/tests/usage-dashboard-home-marker.test.ts scripts/tests/usage-dashboard-server.test.ts scripts/tests/usage-dashboard-readonly.test.ts scripts/tests/usage-dashboard-mutations.test.ts
 
   # gitlab-ci-check is the generator's own drift gate (spec 0048 R6/R7),
   # registered as a portable capability so the verification surface is itself
@@ -4233,14 +4222,14 @@ capabilities:
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - bash scripts/build-ci.sh --check
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts --check
 
   # check-ci-parity is the 3-way CI drift harness (spec 0049). It checks the
   # reference against both engine pipelines on the portable capability set;
   # registered as a portable capability (spec 0049 R11) so the verification
   # surface is itself contract-described and parity-checked — symmetric with
   # gitlab-ci-check above. It shells `yq` to read the reference and the
-  # pipelines, and composes `build-ci.sh --check` (which also needs yq) for the
+  # pipelines, and composes `build-ci.ts --check` (which also needs yq) for the
   # reference↔GitLab arm; hence `tools: [yq]` (delta-02 R12).
   - id: check-ci-parity
     name: "Verify the reference, GitHub Actions, and GitLab pipelines agree"
@@ -4256,7 +4245,7 @@ capabilities:
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - bash scripts/check-ci-parity.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-ci-parity.ts
 
   # --- Engine-specific: bot-mention assistants ----------------------------
   # A bot-mention trigger (an issue or review comment) is engine-specific,
@@ -4342,7 +4331,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 70-81), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 70-81), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15).
@@ -4366,7 +4355,7 @@ capabilities:
         drives the real Windows Task Scheduler (`schtasks.exe`). GitLab CI, as
         configured for this repository, exposes no Windows runner: every
         generated GitLab job derives its `image` from `requires.runtime`
-        through `runtime_to_image` (scripts/build-ci.sh), which maps only to
+        through `runtime_to_image` (scripts/build-ci.ts), which maps only to
         Linux Docker images, and .gitlab-ci.yml declares no runner `tags:` that
         could select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15).
@@ -4389,7 +4378,7 @@ capabilities:
         drives the real Windows Task Scheduler (`schtasks.exe`). GitLab CI, as
         configured for this repository, exposes no Windows runner: every
         generated GitLab job derives its `image` from `requires.runtime`
-        through `runtime_to_image` (scripts/build-ci.sh), which maps only to
+        through `runtime_to_image` (scripts/build-ci.ts), which maps only to
         Linux Docker images, and .gitlab-ci.yml declares no runner `tags:` that
         could select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15).
@@ -4410,7 +4399,7 @@ capabilities:
         drives the real Windows Task Scheduler (`schtasks.exe`). GitLab CI, as
         configured for this repository, exposes no Windows runner: every
         generated GitLab job derives its `image` from `requires.runtime`
-        through `runtime_to_image` (scripts/build-ci.sh), which maps only to
+        through `runtime_to_image` (scripts/build-ci.ts), which maps only to
         Linux Docker images, and .gitlab-ci.yml declares no runner `tags:` that
         could select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15).
@@ -4432,7 +4421,7 @@ capabilities:
         drives the real Windows Task Scheduler (`schtasks.exe`). GitLab CI, as
         configured for this repository, exposes no Windows runner: every
         generated GitLab job derives its `image` from `requires.runtime`
-        through `runtime_to_image` (scripts/build-ci.sh), which maps only to
+        through `runtime_to_image` (scripts/build-ci.ts), which maps only to
         Linux Docker images, and .gitlab-ci.yml declares no runner `tags:` that
         could select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15).
@@ -4458,7 +4447,7 @@ capabilities:
         (.github/workflows/build.yml, job `windows-usage-capture`). GitLab CI,
         as configured for this repository, exposes no Windows runner: every
         generated GitLab job derives its `image` from `requires.runtime`
-        through `runtime_to_image` (scripts/build-ci.sh lines 70-81), which
+        through `runtime_to_image` (scripts/build-ci.ts lines 70-81), which
         maps only to Linux Docker images, and .gitlab-ci.yml declares no
         runner `tags:` that could select a Windows executor. There is no
         faithful equivalent on the other supported engines (spec 0240 R15,
@@ -4486,7 +4475,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0253 R27).
@@ -4515,7 +4504,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 70-81), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 70-81), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0248 R34).
@@ -4544,7 +4533,7 @@ capabilities:
         GitLab CI, as configured for this repository, exposes no Windows
         runner: every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0247 R31).
@@ -4580,7 +4569,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0250 R28).
@@ -4607,7 +4596,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0253 R27).
@@ -4637,7 +4626,7 @@ capabilities:
   # token with api + write_repository, allowed to push to the protected
   # release branch and to create tags); its GitHub value is
   # secrets.GITHUB_TOKEN. yq is required by the packager's render step
-  # (scripts/build-extension.sh). Full history: the engine reads every tag.
+  # (scripts/build-extension.ts). Full history: the engine reads every tag.
   # The business steps diverge on one point, inside the driver (issue #1379,
   # docs/github-release-pr.md): on GitHub the release commit goes through a
   # release PR (branch release-pr/main, required checks dispatched through
@@ -4659,7 +4648,7 @@ capabilities:
         CI, as configured for this repository, exposes no Windows runner:
         every generated GitLab job derives its `image` from
         `requires.runtime` through `runtime_to_image`
-        (scripts/build-ci.sh lines 93-104), which maps only to Linux Docker
+        (scripts/build-ci.ts lines 93-104), which maps only to Linux Docker
         images, and .gitlab-ci.yml declares no runner `tags:` that could
         select a Windows executor. There is no faithful equivalent on the
         other supported engines (spec 0240 R15, spec 0253 R27).
@@ -4689,7 +4678,7 @@ capabilities:
   # token with api + write_repository, allowed to push to the protected
   # release branch and to create tags); its GitHub value is
   # secrets.GITHUB_TOKEN. yq is required by the packager's render step
-  # (scripts/build-extension.sh). Full history: the engine reads every tag.
+  # (scripts/build-extension.ts). Full history: the engine reads every tag.
   # The business steps diverge on one point, inside the driver (issue #1379,
   # docs/github-release-pr.md): on GitHub the release commit goes through a
   # release PR (branch release-pr/main, required checks dispatched through
@@ -4816,8 +4805,8 @@ capabilities:
       history-depth: full
     command:
       - npm install --include=dev
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/release-docs-and-workflows.test.ts scripts/tests/release-golden-generator.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-engine-rehearsal.test.ts scripts/tests/monorepo-release-engine-gitlab-publish.test.ts scripts/tests/monorepo-release-engine-github-pr.test.ts scripts/tests/monorepo-release-engine-templates.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/release-docs-and-workflows.test.ts scripts/tests/release-golden-generator.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-engine-rehearsal.test.ts scripts/tests/monorepo-release-engine-gitlab-publish.test.ts scripts/tests/monorepo-release-engine-github-pr.test.ts scripts/tests/monorepo-release-engine-templates.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/release-changelog.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/release-pr.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/release-driver-sandbox.test.ts

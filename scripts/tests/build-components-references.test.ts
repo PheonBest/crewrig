@@ -1,6 +1,6 @@
 // build-components-references.test.ts — no live instruction still names the old component-build
-// invocation (spec 0250 R31, delta-01). The build is `node scripts/build-components.ts` behind
-// the Node.js floor guard; `scripts/build-components.sh` is only a forwarding shim. The suite
+// invocation (spec 0250 R31, delta-01). The build is `node scripts/build-components.ts`; the
+// `scripts/build-components.sh` forwarding shim is deleted. The suite
 // scans every tracked and untracked text file and fails on a file that names the old
 // invocation and is not on the reasoned allowlist
 // (scripts/tests/fixtures/build-components/old-invocation-allowlist.txt). The allowlist is
