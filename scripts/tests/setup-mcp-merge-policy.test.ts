@@ -27,13 +27,13 @@ const FW_GH = {
   env: { Authorization: "Bearer $GITHUB_PAT" },
 };
 const FW_MEM = {
-  command: "bash",
-  args: ["/repo/scripts/lib/tls-exec.sh", "/py", "/repo/scripts/lib/mempalace-http-wrapper.py"],
+  command: "node",
+  args: ["/repo/scripts/tls-exec.ts", "/py", "/repo/scripts/lib/mempalace-http-wrapper.py"],
 };
 const FW_SEQ = {
-  command: "bash",
+  command: "node",
   args: [
-    "/repo/scripts/lib/tls-exec.sh",
+    "/repo/scripts/tls-exec.ts",
     "npx",
     "-y",
     "@modelcontextprotocol/server-sequential-thinking",
@@ -41,12 +41,12 @@ const FW_SEQ = {
 };
 const PW_COPILOT = {
   type: "stdio",
-  command: "bash",
-  args: ["/repo/scripts/lib/tls-exec.sh", "npx", "@playwright/mcp@latest"],
+  command: "node",
+  args: ["/repo/scripts/tls-exec.ts", "npx", "@playwright/mcp@latest"],
 };
 const PW_AGY = {
-  command: "bash",
-  args: ["/repo/scripts/lib/tls-exec.sh", "npx", "@playwright/mcp@latest"],
+  command: "node",
+  args: ["/repo/scripts/tls-exec.ts", "npx", "@playwright/mcp@latest"],
 };
 const BACKUP_REF = "/tmp/x/config.json.bak.20260722-000000";
 

@@ -31,7 +31,7 @@ before(() => {
     writeFileSync(path.join(repoDir, rel), readFileSync(path.join(realRepo, rel)));
   }
   mkdirSync(path.join(repoDir, "scripts", "lib"), { recursive: true });
-  writeFileSync(path.join(repoDir, "scripts", "lib", "tls-exec.sh"), "#!/bin/sh\n");
+  writeFileSync(path.join(repoDir, "scripts", "tls-exec.ts"), "\n");
 });
 after(() => rmSync(root, { recursive: true, force: true }));
 

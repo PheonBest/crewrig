@@ -105,9 +105,12 @@ Two runtime paths are launched **later**, in a fresh process that is not a
 child of your interactive shell, so the framework wires trust into them
 explicitly (without editing your profile):
 
-- **MCP servers** are registered through `scripts/lib/tls-exec.sh`, a small
-  wrapper that sources `~/.crewrig/tls-env.sh` (if present) and then `exec`s the
-  real server command. A missing file makes the wrapper a transparent no-op.
+- **MCP servers** are registered through `node <repo>/scripts/tls-exec.ts`, a
+  small wrapper that reads `~/.crewrig/tls-env.sh` (if present, parsed and never
+  executed) and then runs the real server command with those variables added,
+  exiting with its status. A missing file makes the wrapper a transparent no-op.
+  Setup rewrites a registration written by an earlier version
+  (`bash <repo>/scripts/lib/tls-exec.sh ...`) to this form on its next run.
   The opt-in Playwright MCP server (`task setup:playwright-mcp`, spec 0245) is
   registered the same way on all four assistants; the task requires
   Node.js >= 24. If you ran `task setup:playwright-mcp` before it routed
@@ -122,7 +125,7 @@ explicitly (without editing your profile):
 `scripts/prune-transcripts.ts` reads it without running it (`readTlsEnv`, spec
 0253 R18) and hands its variables to every child it spawns, for the same
 reason. The standalone
-`task install-mempalace` runs its `pipx install` through `tls-exec.sh` too, so
+`task install-mempalace` runs its `pipx install` through `tls-exec.ts` too, so
 a MemPalace upgrade outside setup inherits the trust.
 
 The session-recording hook, `hooks/mempalace-transcript.ts` (spec 0247),
@@ -162,11 +165,11 @@ require custom-CA trust behind an intercepting gateway:
   Keychain).
 - **`npx` fails but `curl` works:** Node ignores the OS store — it needs
   `NODE_EXTRA_CA_CERTS` specifically. Confirm the variable is exported in the
-  process that launches the MCP server (the `tls-exec.sh` wrapper handles this
+  process that launches the MCP server (the `tls-exec.ts` wrapper handles this
   when `~/.crewrig/tls-env.sh` exists).
 - **The daemon's embedding fetch fails at runtime though setup succeeded:**
   re-run setup so the launchd/systemd unit is re-materialised through
-  `tls-exec.sh`, and confirm `~/.crewrig/tls-env.sh` exists.
+  `tls-exec.ts`, and confirm `~/.crewrig/tls-env.sh` exists.
 - **git rejects the private forge:** set `GIT_SSL_CAINFO` (env) or
   `git config --global http.sslCAInfo <CA>`; never `http.sslVerify false`.
 - **The CA path is right but still `UnknownIssuer`:** the bundle may be missing

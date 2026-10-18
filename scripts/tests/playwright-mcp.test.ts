@@ -72,7 +72,7 @@ function makeWorld(binaries: readonly Cli[] = CLIS): World {
   fs.mkdirSync(home);
   fs.mkdirSync(bin);
   fs.mkdirSync(path.join(repoRoot, "scripts", "lib"), { recursive: true });
-  const wrapper = path.join(repoRoot, "scripts", "lib", "tls-exec.sh");
+  const wrapper = path.join(repoRoot, "scripts", "tls-exec.ts");
   fs.writeFileSync(wrapper, '#!/usr/bin/env bash\nexec "$@"\n', { mode: 0o755 });
   for (const cli of binaries) {
     fs.writeFileSync(path.join(bin, BINARY[cli]), "#!/bin/sh\nexit 99\n", { mode: 0o755 });
@@ -115,8 +115,8 @@ function baseDoc(cli: Cli, playwright?: unknown): Json {
   };
   const afterSlot = {
     sequentialthinking: {
-      command: "bash",
-      args: ["/repo/scripts/lib/tls-exec.sh", "npx", "-y", "seq"],
+      command: "node",
+      args: ["/repo/scripts/tls-exec.ts", "npx", "-y", "seq"],
     },
   };
   const mcp = { ...before, ...(playwright === undefined ? {} : { playwright }), ...afterSlot };
@@ -250,11 +250,11 @@ function stored(cli: Cli, wrapper: string): Json {
   const args = [wrapper, "npx", PKG];
   switch (cli) {
     case "claude":
-      return { type: "stdio", command: "bash", args, env: {} };
+      return { type: "stdio", command: "node", args, env: {} };
     case "copilot":
-      return { type: "stdio", command: "bash", args };
+      return { type: "stdio", command: "node", args };
     default:
-      return { command: "bash", args };
+      return { command: "node", args };
   }
 }
 
@@ -269,13 +269,13 @@ const LEGACY_TOLERATED: Record<Cli, readonly Json[]> = {
   gemini: [],
   antigravity: [],
 };
-const OLD_WRAPPER = "/old/clone/scripts/lib/tls-exec.sh";
+const OLD_WRAPPER = "/old/clone/scripts/tls-exec.ts";
 const relocated = (cli: Cli): Json =>
   cli === "copilot"
-    ? { type: "stdio", command: "bash", args: [OLD_WRAPPER, "npx", PKG] }
+    ? { type: "stdio", command: "node", args: [OLD_WRAPPER, "npx", PKG] }
     : cli === "claude"
-      ? { type: "stdio", command: "bash", args: [OLD_WRAPPER, "npx", PKG], env: {} }
-      : { command: "bash", args: [OLD_WRAPPER, "npx", PKG] };
+      ? { type: "stdio", command: "node", args: [OLD_WRAPPER, "npx", PKG], env: {} }
+      : { command: "node", args: [OLD_WRAPPER, "npx", PKG] };
 
 /** Everything except the `playwright` slot, as serialised text: order matters (R8). */
 function withoutPlaywright(doc: Json): string {
@@ -308,7 +308,7 @@ for (const cli of CLIS) {
             "user",
             "playwright",
             "--",
-            "bash",
+            "node",
             w.wrapper,
             "npx",
             PKG,
@@ -385,15 +385,15 @@ for (const cli of CLIS) {
       ["a non-empty env", { command: "npx", args: [PKG], env: { DEBUG: "pw:*" } }],
       [
         "a wrapped entry with a pinned version",
-        { command: "bash", args: [w0(), "npx", "@playwright/mcp@0.0.40"] },
+        { command: "node", args: [w0(), "npx", "@playwright/mcp@0.0.40"] },
       ],
       [
         "a wrapped entry with a relative wrapper path",
-        { command: "bash", args: ["old/clone/scripts/lib/tls-exec.sh", "npx", PKG] },
+        { command: "node", args: ["old/clone/scripts/tls-exec.ts", "npx", PKG] },
       ],
       [
         "a wrapped entry whose wrapper is another script",
-        { command: "bash", args: ["/old/clone/scripts/lib/other.sh", "npx", PKG] },
+        { command: "node", args: ["/old/clone/scripts/lib/other.sh", "npx", PKG] },
       ],
       ["a stray field", { command: "npx", args: [PKG], timeout: 5 }],
       ["an http transport", { type: "http", url: "http://127.0.0.1:8931/mcp" }],
@@ -480,7 +480,7 @@ describe("all four assistants", () => {
       const file = cfg(w, "copilot");
       putJson(
         file,
-        baseDoc("copilot", { ...extra, command: "bash", args: [w.wrapper, "npx", PKG] }),
+        baseDoc("copilot", { ...extra, command: "node", args: [w.wrapper, "npx", PKG] }),
       );
       const before = snapshot(w);
       const r = await runTask(w);
@@ -706,7 +706,7 @@ describe("write guarantees", () => {
       const w = makeWorld();
       const alias = path.join(path.dirname(w.repoRoot), "alias");
       fs.symlinkSync(w.repoRoot, alias);
-      const aliasWrapper = path.join(alias, "scripts", "lib", "tls-exec.sh");
+      const aliasWrapper = path.join(alias, "scripts", "tls-exec.ts");
       for (const cli of CLIS) putJson(cfg(w, cli), baseDoc(cli, stored(cli, aliasWrapper)));
       const before = snapshot(w);
       const r = await runTask(w);

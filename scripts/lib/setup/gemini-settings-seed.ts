@@ -48,9 +48,9 @@ export function toJson(value: unknown): JsonValue | undefined {
   return out;
 }
 
-/** The default stdio wrapper of the shell: `bash <repo>/scripts/lib/tls-exec.sh <words...>`. */
+/** The default stdio wrapper: `node <repo>/scripts/tls-exec.ts <words...>`. */
 export function shellWrap(repoDir: string): WrapStdio {
-  return (words) => ["bash", `${repoDir}/scripts/lib/tls-exec.sh`, ...words];
+  return (words) => ["node", `${repoDir}/scripts/tls-exec.ts`, ...words];
 }
 
 /** The template minus what the merge owns: `context.fileName` and the reserved MCP names. */

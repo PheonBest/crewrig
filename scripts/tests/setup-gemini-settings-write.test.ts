@@ -82,9 +82,9 @@ describe("geminiSettingsWrite", () => {
     assert.deepEqual(backups(r), []);
     const servers = parsed(r).mcpServers;
     assert.equal("mempalace" in servers, false);
-    assert.equal(servers.sequentialthinking?.command, "bash");
+    assert.equal(servers.sequentialthinking?.command, "node");
     assert.deepEqual(servers.sequentialthinking?.args.slice(0, 2), [
-      `${FAKE_REPO}/scripts/lib/tls-exec.sh`,
+      `${FAKE_REPO}/scripts/tls-exec.ts`,
       "npx",
     ]);
     assert.ok(fs.readFileSync(r.target, "utf8").endsWith("}\n"));
@@ -106,9 +106,9 @@ describe("geminiSettingsWrite", () => {
     assert.equal(doc.theme, "dark");
     assert.equal(doc.general.previewFeatures, false);
     assert.equal(doc.mcpServers["mine"]?.command, "m");
-    assert.equal(doc.mcpServers["mempalace"]?.command, "bash");
+    assert.equal(doc.mcpServers["mempalace"]?.command, "node");
     assert.deepEqual(doc.mcpServers["mempalace"]?.args.slice(0, 3), [
-      `${FAKE_REPO}/scripts/lib/tls-exec.sh`,
+      `${FAKE_REPO}/scripts/tls-exec.ts`,
       "/opt/py/bin/python3",
       `${FAKE_REPO}/scripts/lib/mempalace-http-wrapper.py`,
     ]);
@@ -192,7 +192,7 @@ describe("geminiSettingsWrite", () => {
     assert.equal(r.rc, 0);
     const servers = parsed(r).mcpServers;
     assert.equal(servers["b"]?.command, "new");
-    assert.equal(servers["mempalace"]?.command, "bash");
+    assert.equal(servers["mempalace"]?.command, "node");
     assert.match(r.out.join("\n"), /org-declared MCP server 'b' overrides your pre-existing 'b'/);
     assert.match(r.out.join("\n"), /the org declaration for 'mempalace' was NOT applied/);
   });

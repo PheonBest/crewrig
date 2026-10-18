@@ -24,7 +24,7 @@ export interface SetupDeps {
   /** `HOME` (or `USERPROFILE`) and `PATH` are read from it. */
   readonly env: Readonly<Record<string, string | undefined>>;
   readonly now: () => Date;
-  /** The checkout the task runs from; the wrapper is `<repoRoot>/scripts/lib/tls-exec.sh`. */
+  /** The checkout the task runs from; the wrapper is `<repoRoot>/scripts/tls-exec.ts`. */
   readonly repoRoot: string;
   /** Notices and the report (stdout). */
   readonly out: (line: string) => void;

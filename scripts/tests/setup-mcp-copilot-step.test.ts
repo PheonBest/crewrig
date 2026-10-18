@@ -54,7 +54,7 @@ beforeEach(() => {
   copy("config/copilot/mcp-config.json.template");
   copy("config/systemd/mempalace-chroma-server.service");
   fs.mkdirSync(path.join(repo, "scripts/lib"), { recursive: true });
-  fs.writeFileSync(path.join(repo, "scripts/lib/tls-exec.sh"), "#!/bin/sh\n");
+  fs.writeFileSync(path.join(repo, "scripts/tls-exec.ts"), "#!/bin/sh\n");
   fs.mkdirSync(path.dirname(python), { recursive: true });
   fs.writeFileSync(python, "#!/bin/sh\n");
   // `rules-existing` creates `~/.copilot/instructions` before the MCP step runs.
@@ -161,9 +161,9 @@ describe("copilot mcp step", { skip: !posix }, () => {
     await go({ events });
     assert.deepEqual(events, ["stdio-written"]);
     const mempalace = entries()["mempalace"] as { command: string; args: string[] };
-    assert.equal(mempalace.command, "bash");
+    assert.equal(mempalace.command, "node");
     assert.deepEqual(mempalace.args, [
-      path.join(repo, "scripts/lib/tls-exec.sh"),
+      path.join(repo, "scripts/tls-exec.ts"),
       python,
       path.join(repo, "scripts/lib/mempalace-http-wrapper.py"),
     ]);

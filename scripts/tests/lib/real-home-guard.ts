@@ -10,7 +10,7 @@ const dirs = [".claude/rules", ".claude/skills", ".claude/agents", ".gemini/anti
 dirs.push(".gemini/config", ".copilot/instructions", ".copilot/hooks", ".crewrig/system-context");
 const files = [".claude/settings.json", ".gemini/settings.json", ".gemini/GEMINI.md"];
 files.push(".copilot/mcp-config.json", ".crewrig/tls-env.sh", ".crewrig/validation.conf");
-files.push(".crewrig/tls-exec.sh", ".crewrig/mcp-daemon-launcher.sh");
+files.push(".crewrig/tls-exec.sh", ".crewrig/tls-exec.ts", ".crewrig/mcp-daemon-launcher.sh");
 dirs.push(".gemini/agents", ".copilot/skills", ".crewrig/hooks", ".crewrig/service-lib");
 // Listed by name only: `usage` and the MemPalace `server` keys churn with live sessions and the
 // daemon, but a setup creating or removing an entry there is an effect.

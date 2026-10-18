@@ -10,7 +10,5 @@ scripts/check-model-mappings.sh
 scripts/check-spec-id-reserved.sh
 scripts/ci-cache-guard.sh
 scripts/ci-changeset-coverage.sh
-scripts/lib/tls-delegation.sh
-scripts/lib/tls-exec.sh
 scripts/reserve-spec-id.sh
 tests/e2e/lib/test-gemini-headless.sh

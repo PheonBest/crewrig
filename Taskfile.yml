@@ -28,7 +28,7 @@ tasks:
     preconditions:
       - sh: pipx --version
         msg: "pipx is required. Install with: brew install pipx (macOS) or apt-get install pipx (Linux)"
-    cmd: bash {{.REPO_DIR}}/scripts/lib/tls-exec.sh pipx install --force 'mempalace>=3.6.0,<3.7'
+    cmd: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON {{.REPO_DIR}}/scripts/tls-exec.ts pipx install --force 'mempalace>=3.6.0,<3.7'
 
   mempalace:doctor:
     desc: "Report which MemPalace will actually answer on this machine — resolved path, interpreter and version behind every MemPalace command and every CLI's memory-server registration. Exits non-zero on divergence (spec 0108)."
@@ -139,7 +139,7 @@ tasks:
   # Spec 0245: the opt-in Playwright MCP registration, routed through the
   # spec 0084 trust wrapper on every CLI. Run it from the checkout you keep.
   setup:playwright-mcp:
-    desc: "Register the Playwright MCP server (opt-in) in Claude Code, Gemini CLI, GitHub Copilot CLI and Antigravity CLI, routed through scripts/lib/tls-exec.sh; converges a legacy or relocated entry, leaves a customised one untouched (spec 0245). Requires Node.js >= 24; run it from the checkout you keep. Idempotent."
+    desc: "Register the Playwright MCP server (opt-in) in Claude Code, Gemini CLI, GitHub Copilot CLI and Antigravity CLI, routed through scripts/tls-exec.ts; converges a legacy or relocated entry, leaves a customised one untouched (spec 0245). Requires Node.js >= 24; run it from the checkout you keep. Idempotent."
     cmds:
       - node {{.REPO_DIR}}/scripts/lib/node-floor-guard.js
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON {{.REPO_DIR}}/scripts/setup-playwright-mcp.ts

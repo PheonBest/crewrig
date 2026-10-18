@@ -112,7 +112,7 @@ Active rule files:
 <HOME>/.claude/rules/65-org-tools.md
 
 MCP servers (from 'claude mcp list'):
-  sequentialthinking: bash <REPO>/scripts/lib/tls-exec.sh npx -y @modelcontextprotocol/server-sequential-thinking - ✓ Connected
-  mempalace: bash <REPO>/scripts/lib/tls-exec.sh <HOME>/.local/share/pipx/venvs/mempalace/bin/python <REPO>/scripts/lib/mempalace-http-wrapper.py - ✓ Connected
+  sequentialthinking: node <REPO>/scripts/tls-exec.ts npx -y @modelcontextprotocol/server-sequential-thinking - ✓ Connected
+  mempalace: node <REPO>/scripts/tls-exec.ts <HOME>/.local/share/pipx/venvs/mempalace/bin/python <REPO>/scripts/lib/mempalace-http-wrapper.py - ✓ Connected
 
 Restart any running Claude Code session to pick up the new MCP servers.

@@ -2,7 +2,7 @@
 //
 // The logic lives in scripts/lib/playwright-mcp.ts (model:
 // scripts/lib/playwright-mcp-shape.ts). Run it from the checkout you keep:
-// every registration points at that checkout's scripts/lib/tls-exec.sh.
+// every registration points at that checkout's scripts/tls-exec.ts.
 //
 //   node scripts/lib/node-floor-guard.js && \
 //     node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/setup-playwright-mcp.ts

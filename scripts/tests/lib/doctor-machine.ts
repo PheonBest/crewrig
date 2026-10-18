@@ -50,7 +50,7 @@ export const POSIX = process.platform !== "win32";
 export const WRAPPER = path.join(REPO, "scripts", "lib", "mempalace-http-wrapper.py");
 export const PIN_MODULE = path.join(REPO, "scripts", "lib", "mempalace_pin.py");
 export const PIN_FILE = path.join(REPO, "scripts", "lib", "mempalace-pin.json");
-export const TLS_EXEC = path.join(REPO, "scripts", "lib", "tls-exec.sh");
+export const TLS_EXEC = path.join(REPO, "scripts", "tls-exec.ts");
 const DOCTOR = path.join(REPO, "scripts", "doctor-mempalace.ts");
 
 export const PIN = readMempalacePin(REPO);
@@ -155,9 +155,9 @@ function writeJson(file: string, value: unknown): void {
   fs.writeFileSync(file, `${JSON.stringify(value)}\n`);
 }
 
-/** `bash tls-exec.sh <py> <wrapper>`: the interpreter sits INSIDE args. */
+/** `node tls-exec.ts <py> <wrapper>`: the interpreter sits INSIDE args. */
 export function writeRegBash(file: string, py: string, wrapper: string): void {
-  const entry = { type: "stdio", command: "bash", args: [TLS_EXEC, py, wrapper] };
+  const entry = { type: "stdio", command: "node", args: [TLS_EXEC, py, wrapper] };
   writeJson(file, { mcpServers: { mempalace: entry } });
 }
 

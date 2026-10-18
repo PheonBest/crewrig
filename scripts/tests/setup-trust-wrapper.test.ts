@@ -11,10 +11,10 @@ import {
 const posix = { platform: "linux", home: "/home/a", repoDir: "/repo" } as const;
 const win = { platform: "win32", home: "C:\\Users\\a b", repoDir: "C:\\src\\crewrig" } as const;
 
-test("POSIX: bash and the repository wrapper, byte-identical to the shell registration", () => {
-  assert.equal(wrapperProgram("darwin"), "bash");
-  assert.equal(wrapperScriptPath(posix), "/repo/scripts/lib/tls-exec.sh");
-  assert.deepEqual(trustWrapperPrefix(posix), ["bash", "/repo/scripts/lib/tls-exec.sh"]);
+test("POSIX: node and the repository wrapper entry", () => {
+  assert.equal(wrapperProgram("darwin"), "node");
+  assert.equal(wrapperScriptPath(posix), "/repo/scripts/tls-exec.ts");
+  assert.deepEqual(trustWrapperPrefix(posix), ["node", "/repo/scripts/tls-exec.ts"]);
 });
 
 test("win32: node and the installed TypeScript wrapper, never bash", () => {
@@ -37,11 +37,6 @@ test("win32: node and the installed TypeScript wrapper, never bash", () => {
 test("the wrapped command words follow the prefix unchanged", () => {
   assert.deepEqual(
     wrapStdioCommand(posix, ["python3", "/repo/scripts/lib/mempalace-http-wrapper.py"]),
-    [
-      "bash",
-      "/repo/scripts/lib/tls-exec.sh",
-      "python3",
-      "/repo/scripts/lib/mempalace-http-wrapper.py",
-    ],
+    ["node", "/repo/scripts/tls-exec.ts", "python3", "/repo/scripts/lib/mempalace-http-wrapper.py"],
   );
 });

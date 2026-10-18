@@ -1,20 +1,22 @@
 // chroma-unit.ts — the unit materialisation of `install_chroma_daemon` (`_materialise_chroma_unit`,
 // `install_tls_exec_wrapper` of retired scripts/lib/common.sh; spec 0256 requirement 25, delta-01 deviation
-// (q)). It renders the shipped launchd plist or systemd unit with the interpreter, the chroma binary
-// and the palace path, refuses a rendering that keeps a `__X__` placeholder, and copies the `.sh`
-// trust wrapper to `~/.crewrig/tls-exec.sh`. Messages are the shell's, byte for byte.
-//
-// Unlike `service/unit-render.ts` `materialiseUnit`, the interpreter token of the template is NOT
-// replaced: the chroma unit keeps `/bin/bash` and `bash` because it runs the `.sh` wrapper. The
-// palace-path rule is reused from there. On win32 the daemon is a scheduled task, so only the
-// chroma binary pre-flight runs (in its Windows form) and nothing is written.
+// (q); spec 0266 slice 5b). It renders the shipped launchd plist or systemd unit with the interpreter,
+// the chroma binary and the palace path, refuses a rendering that keeps a `__X__` placeholder, and
+// installs the Node.js trust wrapper to `~/.crewrig/tls-exec.ts` (the program and bundle of spec 0252
+// requirement 12, `installTrustWrapperProgram`). The supervisor runs it with the running Node.js
+// executable, as `service/unit-render.ts` does for the MCP daemon. A unit written by an earlier setup
+// (`bash ~/.crewrig/tls-exec.sh`) is overwritten by the next run; its installed `.sh` copy is left
+// where it is, so a daemon loaded from the old unit keeps running until it is reloaded. On win32 the
+// daemon is a scheduled task, so only the chroma binary pre-flight runs (in its Windows form) and
+// nothing is written.
 
-import { accessSync, chmodSync, constants, copyFileSync, existsSync, mkdirSync } from "node:fs";
+import { accessSync, constants, existsSync, mkdirSync } from "node:fs";
 import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import type { SetupCtx } from "./context.ts";
-import { chromaPalacePathFor } from "../service/unit-render.ts";
+import { installTrustWrapperProgram, installedPaths } from "../service/program-install.ts";
+import { chromaPalacePathFor, renderUnit } from "../service/unit-render.ts";
 
 export interface ChromaUnitRequest {
   readonly ctx: Pick<SetupCtx, "io" | "env" | "platform" | "home" | "repoDir">;
@@ -33,7 +35,6 @@ export interface ChromaUnitResult {
   readonly text?: string;
 }
 
-const RESIDUAL_RE = /__[A-Z][A-Z0-9_]*__/;
 const FIX = "run: pipx inject mempalace 'chromadb>=1.5.9'";
 
 /** `<python dir>/chroma` on POSIX, `<venv>\Scripts\chroma.exe` on win32 (the interpreter sits in `Scripts`). */
@@ -42,12 +43,9 @@ export function chromaBinaryFor(python: string, platform: NodeJS.Platform): stri
   return `${path.posix.dirname(python)}/chroma`;
 }
 
-/** The installed trust wrapper: `MEMPALACE_TLS_EXEC_PATH` when non-empty, else `<home>/.crewrig/tls-exec.sh`. */
+/** The installed trust wrapper: `MEMPALACE_TLS_EXEC_PATH` (`.sh` read as `.ts`) else `<home>/.crewrig/tls-exec.ts`. */
 export function tlsExecInstalledPath(ctx: Pick<SetupCtx, "env" | "home">): string {
-  const override = ctx.env["MEMPALACE_TLS_EXEC_PATH"];
-  return override !== undefined && override !== ""
-    ? override
-    : path.join(ctx.home, ".crewrig", "tls-exec.sh");
+  return installedPaths(ctx.home, ctx.env).wrapper;
 }
 
 function isExecutable(file: string): boolean {
@@ -59,17 +57,14 @@ function isExecutable(file: string): boolean {
   }
 }
 
-/** Copy the repository wrapper to its installed path with mode 0755; false (after the message) when it is not shipped. */
+/** Install the wrapper program and its bundle; false (after the message) when it is not shipped. */
 export function installTlsExecWrapper(ctx: ChromaUnitRequest["ctx"]): boolean {
-  const dst = tlsExecInstalledPath(ctx);
-  const src = path.join(ctx.repoDir, "scripts", "lib", "tls-exec.sh");
+  const src = path.join(ctx.repoDir, "scripts", "tls-exec.ts");
   if (!existsSync(src)) {
     ctx.io.out(`  ERROR: ${src} missing — tls-exec wrapper not shipped.`);
     return false;
   }
-  mkdirSync(path.dirname(dst), { recursive: true });
-  copyFileSync(src, dst);
-  chmodSync(dst, 0o755);
+  installTrustWrapperProgram({ paths: installedPaths(ctx.home, ctx.env) });
   return true;
 }
 
@@ -101,22 +96,26 @@ export function materialiseChromaUnit(req: ChromaUnitRequest): ChromaUnitResult 
 
   if (!installTlsExecWrapper(ctx)) return { ok: false };
 
-  const values: ReadonlyArray<readonly [string, string]> = [
-    ["__MEMPALACE_HOME__", mempalaceHome],
-    ["__PIPX_PYTHON__", python],
-    ["__CHROMA_BIN__", chromaBin],
-    ["__CHROMA_PALACE_PATH__", palacePath],
-    ["__TLS_EXEC__", tlsExecInstalledPath(ctx)],
-  ];
-  let text = template;
-  for (const [token, value] of values) text = text.split(token).join(value);
-
-  if (RESIDUAL_RE.test(text)) {
+  const rendered = renderUnit({
+    templatePath: req.template,
+    template,
+    targetPath: req.target,
+    nodePath: process.execPath,
+    values: {
+      mempalaceHome,
+      pipxPython: python,
+      chromaBin,
+      chromaPalacePath: palacePath,
+      tlsExec: tlsExecInstalledPath(ctx),
+    },
+  });
+  if (!rendered.ok) {
     // The shell wrote the file, found the placeholder, then removed it.
     rmSync(req.target, { force: true });
-    ctx.io.err(`  ERROR: ${req.target} still contains an unsubstituted placeholder.`);
+    ctx.io.err(`  ERROR: ${rendered.reason}`);
     return { ok: false };
   }
+  const text = rendered.text;
   mkdirSync(path.dirname(req.target), { recursive: true });
   writeFileSync(req.target, text, { mode: 0o644 });
   return { ok: true, text };

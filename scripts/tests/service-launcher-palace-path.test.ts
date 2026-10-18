@@ -138,7 +138,7 @@ test("A10 service unit custom path / A11 no residue", { skip: !posix }, () => {
   const repoDir = path.join(root, "unit-repo");
   const home = path.join(root, "unit-home");
   const venv = path.join(root, "unit-venv", "bin");
-  for (const rel of ["config/systemd/mempalace-chroma-server.service", "scripts/lib/tls-exec.sh"]) {
+  for (const rel of ["config/systemd/mempalace-chroma-server.service", "scripts/tls-exec.ts"]) {
     mkdirSync(path.dirname(path.join(repoDir, rel)), { recursive: true });
     writeFileSync(path.join(repoDir, rel), readFileSync(path.join(realRepo, rel)));
   }

@@ -1,20 +1,6 @@
 {
   "exemptions": [
     {
-      "task": "install-mempalace",
-      "command": ".sh",
-      "owner": "J4",
-      "issue": "#1344",
-      "reason": "scripts/lib/tls-exec.sh has no TypeScript twin yet; retargeted when the final library-retirement slice (spec 0266 S5) deletes it"
-    },
-    {
-      "task": "install-mempalace",
-      "command": "bash",
-      "owner": "J4",
-      "issue": "#1344",
-      "reason": "scripts/lib/tls-exec.sh has no TypeScript twin yet; retargeted when the final library-retirement slice (spec 0266 S5) deletes it"
-    },
-    {
       "task": "check-model-mappings",
       "command": ".sh",
       "owner": "I2",

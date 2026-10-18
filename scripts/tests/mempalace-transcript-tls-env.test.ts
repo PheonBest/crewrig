@@ -2,9 +2,8 @@
 // scripts/lib/tls-env.ts and its use by the transcript hook (spec 0247 R16).
 //
 // The accepted format is not hand-copied: the file is produced by the real
-// writer, `offer_tls_delegation` of scripts/lib/tls-delegation.sh, run under
-// Bash against a throwaway HOME (TLS_DELEGATION=on, the bundle named by
-// CREWRIG_TLS_CA), with bundle paths that make `printf %q` escape — a space, a
+// writer, `writeTlsEnv` of scripts/lib/tls-env.ts (the writer of the retired
+// scripts/lib/tls-delegation.sh), against a throwaway HOME, with bundle paths that make `printf %q` escape — a space, a
 // quote, a non-ASCII byte, a tab, a line feed — in both the C and a UTF-8
 // locale, with every Bash on the host (macOS /bin/bash is 3.2). What the reader
 // yields must equal what Bash itself gets by sourcing the same file. Then the
@@ -19,7 +18,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { after, before, describe, test } from "node:test";
 
-import { parseTlsEnv, readTlsEnv, tlsEnvPath } from "../lib/tls-env.ts";
+import { parseTlsEnv, readTlsEnv, tlsEnvPath, writeTlsEnv } from "../lib/tls-env.ts";
 import {
   daemonEnv,
   lines,
@@ -34,12 +33,10 @@ import {
   cleanupAll,
   makePathDir,
   realTmp,
-  REPO,
   SKIP_POSIX,
   which,
 } from "./lib/worktree-fixtures.ts";
 
-const WRITER = path.join(REPO, "scripts", "lib", "tls-delegation.sh");
 const VARS = [
   "NODE_EXTRA_CA_CERTS",
   "SSL_CERT_FILE",
@@ -77,14 +74,9 @@ function bashEnv(
 }
 
 /** Run the real writer for `bundle` under `home`; return the file it wrote. */
-function writeWithSetup(bash: string, home: string, bundle: string, locale: string): string {
-  const res = spawnSync(bash, ["-c", '. "$1" && offer_tls_delegation', "_", WRITER], {
-    env: bashEnv(home, locale, { TLS_DELEGATION: "on", CREWRIG_TLS_CA: bundle }),
-    encoding: "utf8",
-  });
-  assert.equal(res.status, 0, res.stderr);
-  const file = tlsEnvPath(home);
-  assert.ok(fs.existsSync(file), res.stdout);
+function writeWithSetup(_bash: string, home: string, bundle: string, _locale: string): string {
+  const file = writeTlsEnv(home, bundle).path;
+  assert.ok(fs.existsSync(file), file);
   return file;
 }
 

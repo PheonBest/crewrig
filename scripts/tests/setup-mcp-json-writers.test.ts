@@ -18,7 +18,7 @@ import type { Box } from "./lib/mcp-writers-box.ts";
 
 /** The shell's Copilot sequence: template patch, Sequential Thinking wrap, merge (common.sh). */
 function shellCopilot(b: Box, pre: string, withMempalace: boolean): string {
-  const tlsexec = `${b.repo}/scripts/lib/tls-exec.sh`;
+  const tlsexec = `${b.repo}/scripts/tls-exec.ts`;
   const template = fs.readFileSync(TEMPLATE, "utf8");
   const patched = withMempalace
     ? jq(template, [
@@ -31,14 +31,14 @@ function shellCopilot(b: Box, pre: string, withMempalace: boolean): string {
         "--arg",
         "repo",
         b.repo,
-        '.mcpServers.mempalace.command = "bash" | .mcpServers.mempalace.args = ([$tlsexec, $py] + (.mcpServers.mempalace.args | map(gsub("__CREWRIG_REPO_DIR__"; $repo))))',
+        '.mcpServers.mempalace.command = "node" | .mcpServers.mempalace.args = ([$tlsexec, $py] + (.mcpServers.mempalace.args | map(gsub("__CREWRIG_REPO_DIR__"; $repo))))',
       ])
     : jq(template, ["del(.mcpServers.mempalace)"]);
   const wrapped = jq(patched, [
     "--arg",
     "tlsexec",
     tlsexec,
-    'if .mcpServers.sequentialthinking then .mcpServers.sequentialthinking.args = ([$tlsexec, .mcpServers.sequentialthinking.command] + .mcpServers.sequentialthinking.args) | .mcpServers.sequentialthinking.command = "bash" else . end',
+    'if .mcpServers.sequentialthinking then .mcpServers.sequentialthinking.args = ([$tlsexec, .mcpServers.sequentialthinking.command] + .mcpServers.sequentialthinking.args) | .mcpServers.sequentialthinking.command = "node" else . end',
   ]);
   fs.writeFileSync(path.join(b.root, "pre.json"), pre);
   return jq(wrapped, [
@@ -155,13 +155,13 @@ test(
       seed(b.target, OPERATOR);
       const captured = backupAndCapture(b.ctx, b.target);
       const e = {
-        mempalace: { command: "bash", args: ["t", PY, "w"] },
-        sequentialThinking: { command: "bash", args: ["t", "npx", "-y", "p"] },
+        mempalace: { command: "node", args: ["t", PY, "w"] },
+        sequentialThinking: { command: "node", args: ["t", "npx", "-y", "p"] },
       };
       b.out.length = 0;
       writeAntigravityMcpConfig({ ctx: b.ctx, entries: e, writeJson, target: b.target, captured });
       const base =
-        '{"mcpServers":{"mempalace":{"command":"bash","args":["t","/venv/bin/python","w"]},"sequentialthinking":{"command":"bash","args":["t","npx","-y","p"]}}}';
+        '{"mcpServers":{"mempalace":{"command":"node","args":["t","/venv/bin/python","w"]},"sequentialthinking":{"command":"node","args":["t","npx","-y","p"]}}}';
       fs.writeFileSync(path.join(b.root, "pre.json"), JSON.stringify(OPERATOR.mcpServers));
       const expected = jq(base, [
         "--slurpfile",

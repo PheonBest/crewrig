@@ -173,7 +173,7 @@ describe("G9 re-runs are idempotent", () => {
       ui: unknown;
     };
     const seq = d.mcpServers["sequentialthinking"] as { args: string[] };
-    assert.equal(seq.args.filter((a) => a.endsWith("tls-exec.sh")).length, 1);
+    assert.equal(seq.args.filter((a) => a.endsWith("tls-exec.ts")).length, 1);
     assert.equal(canon(seq), canon(SEQ));
     assert.equal((d.mcpServers["mempalace"] as { type: string }).type, "http");
     for (const groups of Object.values(d.hooks)) {
@@ -199,14 +199,40 @@ describe("G13 declared order", () => {
 });
 
 describe("G14 a wrapped-form playwright entry survives a setup run", () => {
-  test("14 playwright entry preserved verbatim, key order included, no warning names it", () => {
-    const pw =
-      '{"command":"bash","args":["/old/clone/scripts/lib/tls-exec.sh","npx","@playwright/mcp@latest"]}';
-    const c = caseWith(`{"mcpServers":{"playwright":${pw},"acme-tools":{"command":"acme"}}}\n`);
+  const OTHER =
+    '{"command":"node","args":["/old/clone/scripts/tls-exec.ts","npx","@playwright/mcp@latest"]}';
+  const LEGACY =
+    '{"command":"bash","args":["/old/clone/scripts/lib/tls-exec.sh","npx","@playwright/mcp@latest"]}';
+  const NEW = `{"command":"node","args":["${REPO}/scripts/tls-exec.ts","npx","@playwright/mcp@latest"]}`;
+
+  test("14 a node-form playwright entry is preserved verbatim, key order included, no warning names it", () => {
+    const c = caseWith(`{"mcpServers":{"playwright":${OTHER},"acme-tools":{"command":"acme"}}}\n`);
     setupRun(c, true, "yes", true);
     assert.equal(c.rc, 0, c.err.join("\n"));
-    assert.equal(JSON.stringify((readDoc(c)["mcpServers"] as Obj)["playwright"]), pw);
+    assert.equal(JSON.stringify((readDoc(c)["mcpServers"] as Obj)["playwright"]), OTHER);
     assert.ok(!stdout(c).includes("'playwright'"));
     assert.ok(!c.err.join("\n").includes("'playwright'"));
+  });
+
+  test("14b a legacy shell-wrapper playwright entry is rewritten to the node form, then stable (spec 0266 R9)", () => {
+    const c = caseWith(`{"mcpServers":{"playwright":${LEGACY},"acme-tools":{"command":"acme"}}}\n`);
+    setupRun(c, true, "yes", true);
+    assert.equal(c.rc, 0, c.err.join("\n"));
+    assert.equal(JSON.stringify((readDoc(c)["mcpServers"] as Obj)["playwright"]), NEW);
+    assert.deepEqual((readDoc(c)["mcpServers"] as Obj)["acme-tools"], { command: "acme" });
+    setupRun(c, true, "yes", true);
+    assert.equal(c.rc, 0, c.err.join("\n"));
+    const second = fs.readFileSync(c.target, "utf8");
+    setupRun(c, true, "yes", true);
+    assert.equal(c.rc, 0, c.err.join("\n"));
+    assert.equal(fs.readFileSync(c.target, "utf8"), second, "a further run writes the same bytes");
+    assert.equal(JSON.stringify((readDoc(c)["mcpServers"] as Obj)["playwright"]), NEW);
+  });
+
+  test("14c a user-edited playwright entry that is not the legacy shape is left alone", () => {
+    const edited = '{"command":"bash","args":["/x/my-wrapper.sh","npx","@playwright/mcp@latest"]}';
+    const c = caseWith(`{"mcpServers":{"playwright":${edited}}}\n`);
+    setupRun(c, true, "yes", true);
+    assert.equal(JSON.stringify((readDoc(c)["mcpServers"] as Obj)["playwright"]), edited);
   });
 });

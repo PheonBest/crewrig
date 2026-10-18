@@ -21,6 +21,7 @@ import { parseJson } from "../extension/json-ordered.ts";
 import { writeJsonText } from "../extension/json-write.ts";
 import { stripJsonComments } from "../jsonc.ts";
 import { MCP_RESERVED_NAMES } from "../org-mcp.ts";
+import { upgradeLegacyEntry } from "../tls-exec/legacy.ts";
 import {
   clone,
   frameworkMcp,
@@ -49,7 +50,7 @@ export interface MergeInput {
   readonly seedPath?: string | undefined;
   /** The timestamped backup the warnings name; `undefined` prints `(none)`. */
   readonly backupRef?: string | undefined;
-  /** The stdio wrapper of the reserved entries; defaults to the shell's `bash tls-exec.sh`. */
+  /** The stdio wrapper of the reserved entries; defaults to `node <repo>/scripts/tls-exec.ts`. */
   readonly wrap?: WrapStdio | undefined;
 }
 
@@ -201,6 +202,10 @@ export function mergeGeminiSettings(input: MergeInput): MergeResult {
   const servers = new Map(asObj(merged.get("mcpServers")));
   for (const name of MCP_RESERVED_NAMES) servers.delete(name);
   for (const [name, entry] of framework) servers.set(name, entry);
+  // Spec 0266 R9: an installed playwright entry that still names the retired shell wrapper is
+  // rewritten to the node form; any other entry is the operator's and stays untouched.
+  const playwright = upgradeLegacyEntry(servers.get("playwright"), wrap(["-"]).slice(0, -1));
+  if (playwright !== undefined) servers.set("playwright", playwright);
   merged.set("mcpServers", servers);
 
   // Spec 0089 fold: a content no-op, its warnings stay.

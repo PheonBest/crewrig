@@ -48,7 +48,7 @@ before(() => {
   for (const rel of [
     "config/systemd/mempalace-chroma-server.service",
     "config/launchd/com.mempalace.chroma-server.plist",
-    "scripts/lib/tls-exec.sh",
+    "scripts/tls-exec.ts",
   ]) {
     mkdirSync(path.dirname(path.join(repoDir, rel)), { recursive: true });
     writeFileSync(path.join(repoDir, rel), readFileSync(path.join(realRepo, rel)));
@@ -70,7 +70,7 @@ function fresh(withChroma: boolean) {
 }
 
 test(
-  "systemd unit: placeholders replaced, interpreter token kept, wrapper copied 0755",
+  "systemd unit: placeholders replaced, node runs the installed wrapper, wrapper installed 0755",
   { skip: !posix },
   () => {
     fresh(true);
@@ -78,18 +78,16 @@ test(
     const res = materialiseChromaUnit(r);
     assert.equal(res.ok, true);
     const text = readFileSync(r.target, "utf8");
-    const wrapper = path.join(home, ".crewrig", "tls-exec.sh");
+    const wrapper = path.join(home, ".crewrig", "tls-exec.ts");
     assert.ok(
       text.includes(
-        `ExecStart=/usr/bin/env bash ${wrapper} ${python} ${path.dirname(python)}/chroma run --path %h/.mempalace/palace --host`,
+        `ExecStart=${process.execPath} ${wrapper} ${python} ${path.dirname(python)}/chroma run --path %h/.mempalace/palace --host`,
       ),
     );
     assert.ok(!/__[A-Z]/.test(text));
     assert.equal(statSync(wrapper).mode & 0o777, 0o755);
-    assert.equal(
-      readFileSync(wrapper, "utf8"),
-      readFileSync(path.join(repoDir, "scripts/lib/tls-exec.sh"), "utf8"),
-    );
+    assert.ok(existsSync(path.join(home, ".crewrig", "service-lib", "tls-env.ts")));
+    assert.ok(readFileSync(wrapper, "utf8").includes("./service-lib/tls-env.ts"));
   },
 );
 
@@ -103,7 +101,8 @@ test(
     assert.equal(materialiseChromaUnit(r).ok, true);
     let text = readFileSync(r.target, "utf8");
     assert.ok(text.includes(`<string>${home}/.mempalace/palace</string>`));
-    assert.ok(text.includes("<string>/bin/bash</string>"));
+    assert.ok(text.includes(`<string>${process.execPath}</string>`));
+    assert.ok(!text.includes("/bin/bash"));
     r = req({ template: plist, env: { MEMPALACE_PALACE_PATH: "/data/palace" } });
     materialiseChromaUnit(r);
     text = readFileSync(r.target, "utf8");
@@ -120,7 +119,7 @@ test(
   () => {
     fresh(true);
     const tpl = path.join(root, "bad.service");
-    writeFileSync(tpl, "ExecStart=__PIPX_PYTHON__ __UNKNOWN_THING__\n");
+    writeFileSync(tpl, "ExecStart=/usr/bin/env bash __PIPX_PYTHON__ __UNKNOWN_THING__\n");
     const r = req({ template: tpl });
     mkdirSync(path.dirname(r.target), { recursive: true });
     writeFileSync(r.target, "old");
@@ -143,7 +142,7 @@ test(
       `  ERROR: chroma binary not found at ${path.dirname(python)}/chroma — run: pipx inject mempalace 'chromadb>=1.5.9'`,
     ]);
     assert.equal(existsSync(r.target), false);
-    assert.equal(existsSync(path.join(home, ".crewrig", "tls-exec.sh")), false);
+    assert.equal(existsSync(path.join(home, ".crewrig", "tls-exec.ts")), false);
   },
 );
 
@@ -212,7 +211,45 @@ test(
       false,
     );
     assert.deepEqual(out, [
-      `  ERROR: ${path.join(root, "empty", "scripts", "lib", "tls-exec.sh")} missing — tls-exec wrapper not shipped.`,
+      `  ERROR: ${path.join(root, "empty", "scripts", "tls-exec.ts")} missing — tls-exec wrapper not shipped.`,
     ]);
+  },
+);
+
+test(
+  "a unit written by an earlier setup (bash tls-exec.sh) is overwritten, and a second run writes the same bytes",
+  { skip: !posix },
+  () => {
+    fresh(true);
+    const r = req();
+    mkdirSync(path.dirname(r.target), { recursive: true });
+    const legacyWrapper = path.join(home, ".crewrig", "tls-exec.sh");
+    writeFileSync(r.target, `ExecStart=/usr/bin/env bash ${legacyWrapper} ${python} chroma run\n`);
+    assert.equal(materialiseChromaUnit(r).ok, true);
+    const first = readFileSync(r.target, "utf8");
+    assert.ok(!first.includes("tls-exec.sh") && !first.includes("env bash"));
+    assert.ok(
+      first.includes(
+        `ExecStart=${process.execPath} ${path.join(home, ".crewrig", "tls-exec.ts")} `,
+      ),
+    );
+    const bundle = readFileSync(path.join(home, ".crewrig", "tls-exec.ts"), "utf8");
+    assert.equal(materialiseChromaUnit(r).ok, true);
+    assert.equal(readFileSync(r.target, "utf8"), first);
+    assert.equal(readFileSync(path.join(home, ".crewrig", "tls-exec.ts"), "utf8"), bundle);
+  },
+);
+
+test(
+  "a template without the interpreter token is refused and nothing is written",
+  { skip: !posix },
+  () => {
+    fresh(true);
+    const tpl = path.join(root, "notoken.service");
+    writeFileSync(tpl, "ExecStart=__PIPX_PYTHON__\n");
+    const r = req({ template: tpl });
+    assert.equal(materialiseChromaUnit(r).ok, false);
+    assert.equal(existsSync(r.target), false);
+    assert.match(err.join("\n"), /no longer carries the interpreter token/);
   },
 );
