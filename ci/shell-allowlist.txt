@@ -13,15 +13,10 @@ scripts/check-model-mappings.sh
 scripts/check-spec-id-reserved.sh
 scripts/ci-cache-guard.sh
 scripts/ci-changeset-coverage.sh
-scripts/lib/common.sh
 scripts/lib/extension-hooks.sh
 scripts/lib/extension-install.sh
-scripts/lib/gemini-settings.sh
-scripts/lib/mcp-daemon-launcher.sh
-scripts/lib/render-command.sh
 scripts/lib/tls-delegation.sh
 scripts/lib/tls-exec.sh
-scripts/lib/usage-capture-optin.sh
 scripts/reserve-spec-id.sh
 scripts/status-chroma-server.sh
 scripts/usage-mirror.sh

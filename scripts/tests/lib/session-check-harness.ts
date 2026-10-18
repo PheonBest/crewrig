@@ -24,8 +24,6 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-export const COMMON_SH = path.join(REPO, "scripts", "lib", "common.sh");
-export const OPTIN_SH = path.join(REPO, "scripts", "lib", "usage-capture-optin.sh");
 export const CHECK_TS = path.join(REPO, "scripts", "mempalace-session-check.ts");
 export const WRITER_TS = path.join(REPO, "scripts", "session-check-hooks.ts");
 export const REGISTRATION_TS = path.join(REPO, "scripts", "lib", "mempalace-registration.ts");
@@ -55,7 +53,7 @@ export const LIVE_PORT = 41893;
 /** Planted in the token file and in every fixture header; must never surface (R10). */
 export const SENTINEL = "SENTINEL-0246-d2f7c1b9e4a8";
 
-/** User-level registration file of each CLI, relative to HOME (common.sh:1492-1500). */
+/** User-level registration file of each CLI, relative to HOME . */
 export const CONFIG_REL: Record<Cli, string> = {
   claude: ".claude.json",
   gemini: path.join(".gemini", "settings.json"),
@@ -375,12 +373,13 @@ export function writeConfig(sb: Sandbox, cli: Cli, content: unknown): string {
   return file;
 }
 
-/** Plants the sentinel in the token file mcp_token_path computes for this HOME. */
+/** Plants the sentinel in the token file the framework computes for this HOME. */
 export function plantToken(sb: Sandbox): string {
-  const r = spawnSync("bash", ["-c", `. ${shq(COMMON_SH)}; mcp_token_path`], {
-    env: sb.env(),
-    encoding: "utf8",
-  });
+  const r = spawnSync(
+    process.execPath,
+    ["-e", 'process.stdout.write(require("./scripts/lib/usage-store/mcp.js").tokenPath())'],
+    { env: sb.env(), encoding: "utf8", cwd: REPO },
+  );
   assert.equal(r.status, 0, r.stderr);
   const file = r.stdout.trim();
   assert.ok(file.startsWith(sb.home), `token path ${file} escapes the sandbox`);
@@ -489,22 +488,6 @@ export function mkfifo(file: string): void {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   const r = spawnSync("mkfifo", [file], { encoding: "utf8" });
   assert.equal(r.status, 0, r.stderr);
-}
-
-/** Sources common.sh (and optionally the opt-in library) in a sandboxed bash. */
-export function bashLib(
-  sb: Sandbox,
-  script: string,
-  opts: { env?: Record<string, string>; optin?: boolean } = {},
-): ReturnType<typeof spawnSync> & { stdout: string; stderr: string } {
-  const prelude =
-    `INSTALL_MODE=copy; CREWRIG_REPO_DIR=${shq(REPO)}; . ${shq(COMMON_SH)}; ` +
-    (opts.optin ? `. ${shq(OPTIN_SH)}; ` : "");
-  return spawnSync("bash", ["-c", prelude + script], {
-    env: sb.env(opts.env),
-    encoding: "utf8",
-    cwd: sb.root,
-  }) as ReturnType<typeof spawnSync> & { stdout: string; stderr: string };
 }
 
 /**
