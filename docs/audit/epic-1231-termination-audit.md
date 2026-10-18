@@ -1,6 +1,6 @@
-<!-- crewrig-doc: published=false -->
-
 # Termination audit of epic #1231 (spec 0215 requirement 25, spec 0266 requirement 19)
+
+<!-- crewrig-doc: published=false -->
 
 Generated 2026-10-18T10:04:48.581Z by `scripts/audit-termination.ts` at HEAD `048f30d1c7c83abd4c559a03520f805b31b250da`. Every figure below comes from a command run at audit time (command log at the end).
 
