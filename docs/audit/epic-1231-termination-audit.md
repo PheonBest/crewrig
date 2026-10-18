@@ -4,7 +4,7 @@
 
 Generated 2026-10-18T10:04:48.581Z by `scripts/audit-termination.ts` at HEAD `048f30d1c7c83abd4c559a03520f805b31b250da`. Every figure below comes from a command run at audit time (command log at the end).
 
-Self-check: PASSED.
+Self-check: PASSED. The figures below were generated at the tree of `048f30d1`; the later commits of this pull request change only documentation dispositions, tests and this page, and the final release-to-main pull request body re-records the shell-file count and the Windows job run on the release head.
 
 ## 1. Specs of the epic
 
@@ -56,64 +56,64 @@ Evidence: `#N` references in the bodies and comments of #1231 and #1344 (row tic
 
 Issues: 47 (open 4, closed 43, other 0); pull requests referenced: 187.
 
-| issue | title                                                                                                                 | state  | owner (assignee)        | found by                                                |
-| ----- | --------------------------------------------------------------------------------------------------------------------- | ------ | ----------------------- | ------------------------------------------------------- |
-| #3    | 🔥 Remove ci-workflow-engineering from repo history                                                                   | closed | (none assigned)         | #1231 reference                                         |
-| #4    | ✨ GitHub Actions skill, CI configurator agent, and CI debugger agent                                                 | closed | (none assigned)         | #1231 reference                                         |
-| #961  | 📋 Findings ledger — deferred non-blocking findings                                                                   | open   | (none assigned)         | #1231 reference; #1344 reference                        |
-| #1191 | 🏗️ Study migrating CrewRig shell scripts to a cross-platform language (Windows, macOS, Linux)                         | closed | @gfourny-sfeir          | #1231 reference                                         |
-| #1192 | [IDEA] Target language for the shell-script migration — Python vs TypeScript vs Go (parent #1191)                     | closed | @hcross, @gfourny-sfeir | #1231 reference; search "1231 in:body"                  |
-| #1210 | 🐛 Gemini setup rewrites settings.json from the template on every run, erasing operator settings and registered hooks | closed | @gfourny-sfeir          | #1231 reference                                         |
-| #1314 | 🏗️ Shell to TypeScript — Sub-spec A: Foundations                                                                      | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
-| #1315 | 🏗️ Shell to TypeScript — Sub-spec B: Windows hook command lines                                                       | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
-| #1316 | 🏗️ Shell to TypeScript — Sub-spec C: Hooks and CLI integration points                                                 | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
-| #1317 | 🏗️ Shell to TypeScript — Sub-spec D: OS service management                                                            | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
-| #1318 | 🏗️ Shell to TypeScript — Sub-spec E: Symbolic links                                                                   | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
-| #1319 | 🏗️ Shell to TypeScript — Sub-spec F: Setup, install, manage and import                                                | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
-| #1320 | 🏗️ Shell to TypeScript — Sub-spec G: Build                                                                            | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
-| #1323 | 🏗️ Shell to TypeScript — Sub-spec H: Skill- and extension-bundled scripts                                             | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
-| #1325 | 🏗️ Shell to TypeScript — Sub-spec I: CI checks                                                                        | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
-| #1327 | 🏗️ Shell to TypeScript — Sub-spec J: Tests and final removal                                                          | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
-| #1364 | 🐛 Extension release writes a CHANGELOG.md that fails lint-markdown and breaks main                                   | closed | (none assigned)         | #1231 reference                                         |
-| #1379 | 🐛 Release bot cannot push to main since ratchet and lint-typescript became required checks                           | closed | (none assigned)         | #1231 reference                                         |
-| #1387 | 🤝 Define multi-contributor ticket-assignment conventions                                                             | closed | @hcross                 | search "1231 in:body"                                   |
-| #1389 | 📏 Measure Antigravity CLI statusLine.command parsing on Windows (cli-matrix row 37e)                                 | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
-| #1392 | 🔒 Wire the Antigravity CLI status line on Windows without a current-directory interpreter lookup                     | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
-| #1398 | 🧪 Probe exit status 1 on the wired usage-capture events for Claude Code, Gemini CLI and Copilot CLI (spec 0243 R12)  | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
-| #1400 | ⚡️ Bring implementation-PR CI wall-clock back toward the spec 0147 budget (EPIC)                                      | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
-| #1401 | 🐛 check-test-strays.sh runs every test suite in CI because the bare base ref never resolves                          | closed | @gfourny-sfeir          | search "1231 in:body"                                   |
-| #1402 | 🐛 ci-changeset-coverage.sh diffs release/** pull requests against main                                               | closed | @gfourny-sfeir          | search "1231 in:body"                                   |
-| #1405 | 🏗️ Replace the runtime changeset-coverage fail-safe with a static path-ownership check                                | closed | @gfourny-sfeir          | search "1231 in:body"                                   |
-| #1422 | 🔍 Compare GitHub path filters with ci-capabilities.yml paths in check-ci-parity                                      | closed | @gfourny-sfeir          | #1231 reference                                         |
-| #1432 | ⚡️ Find why build-components --check costs ~35 s on a one-agent emission root                                         | closed | @gfourny-sfeir          | #1231 reference                                         |
-| #1437 | 💬 Make the spec 0243 R12 missing-dependency diagnostic visible on Copilot CLI and once per turn on Gemini CLI        | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
-| #1438 | 🐛 Replace the machine paths in spec 0243 delta-03 that fail check-no-machine-paths on the release branch             | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
-| #1440 | 🔍 Reconcile usage-pricing paths with the scripts its suite executes                                                  | closed | @gfourny-sfeir          | #1231 reference                                         |
-| #1441 | 📝 Record the lifecycle status of spec 0243 and its deltas on the release branch                                      | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
-| #1445 | ⚡️ Stop running changed test suites twice for the stray scan in test-wiring                                           | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
-| #1503 | 🐛 Remove the machine-path tokens (a home-directory placeholder) that turned release/1231-ts-migration red after row C3                     | closed | @hcross                 | search "1231 in:body"                                   |
-| #1508 | 🐛 Run the repository-wide scans of the misc capability on every change, not only when their own script changes       | closed | @hcross                 | search "1231 in:body"                                   |
-| #1515 | 🐛 Remove the bash spawn of usage-mirror from the usage store (Windows parity gap, before J4)                         | closed | @gfourny-sfeir          | #1344 reference; search "1231 in:body"                  |
-| #1545 | 🔒 Decide whether the MCP switch should abort when an assistant configuration cannot be backed up                     | closed | @gfourny-sfeir          | #1231 reference                                         |
-| #1551 | 🔒 Fix the critical npm audit advisories before lock-only pull requests start failing                                 | closed | @hcross                 | search "1231 in:body"                                   |
-| #1563 | 🔀 Sync main into release/1231-ts-migration after row F2                                                              | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
-| #1564 | 📝 Record the implemented status of spec 0243 delta-04 on the release branch                                          | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
-| #1599 | 🐛 Keep a workspace install's node_modules out of the extension release archive                                       | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
-| #1601 | 🔬 Measure the plugin-root hook command lines of the four CLIs on Windows (follow-up of #1337)                        | open   | (none assigned)         | #1231 reference; #1344 reference; search "1231 in:body" |
-| #1611 | 🔧 Close the review ledger of row H (follow-up of #1337)                                                              | closed | @gfourny-sfeir          | #1231 reference; #1344 reference; search "1231 in:body" |
-| #1612 | 🔀 Sync main into release/1231-ts-migration after rows G2 and H                                                       | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
-| #1614 | ♻️ Decouple the setup goldens from the real package-lock.json                                                         | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
-| #1693 | 🧪 Re-guard e2e-capture-versions and the publish-probe-verdict edge cases with TypeScript literal tests               | open   | @gfourny-sfeir          | #1344 reference; search "1231 in:body"                  |
-| #1712 | 📝 Regenerate the rotate-token MemPalace diagram without the deleted switch-mempalace-http.sh name                    | open   | @gfourny-sfeir          | search "1231 in:body"                                   |
+| issue | title                                                                                                                   | state  | owner (assignee)        | found by                                                |
+| ----- | ----------------------------------------------------------------------------------------------------------------------- | ------ | ----------------------- | ------------------------------------------------------- |
+| #3    | 🔥 Remove ci-workflow-engineering from repo history                                                                     | closed | (none assigned)         | #1231 reference                                         |
+| #4    | ✨ GitHub Actions skill, CI configurator agent, and CI debugger agent                                                   | closed | (none assigned)         | #1231 reference                                         |
+| #961  | 📋 Findings ledger — deferred non-blocking findings                                                                     | open   | (none assigned)         | #1231 reference; #1344 reference                        |
+| #1191 | 🏗️ Study migrating CrewRig shell scripts to a cross-platform language (Windows, macOS, Linux)                           | closed | @gfourny-sfeir          | #1231 reference                                         |
+| #1192 | [IDEA] Target language for the shell-script migration — Python vs TypeScript vs Go (parent #1191)                       | closed | @hcross, @gfourny-sfeir | #1231 reference; search "1231 in:body"                  |
+| #1210 | 🐛 Gemini setup rewrites settings.json from the template on every run, erasing operator settings and registered hooks   | closed | @gfourny-sfeir          | #1231 reference                                         |
+| #1314 | 🏗️ Shell to TypeScript — Sub-spec A: Foundations                                                                        | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
+| #1315 | 🏗️ Shell to TypeScript — Sub-spec B: Windows hook command lines                                                         | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
+| #1316 | 🏗️ Shell to TypeScript — Sub-spec C: Hooks and CLI integration points                                                   | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
+| #1317 | 🏗️ Shell to TypeScript — Sub-spec D: OS service management                                                              | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
+| #1318 | 🏗️ Shell to TypeScript — Sub-spec E: Symbolic links                                                                     | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
+| #1319 | 🏗️ Shell to TypeScript — Sub-spec F: Setup, install, manage and import                                                  | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
+| #1320 | 🏗️ Shell to TypeScript — Sub-spec G: Build                                                                              | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
+| #1323 | 🏗️ Shell to TypeScript — Sub-spec H: Skill- and extension-bundled scripts                                               | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
+| #1325 | 🏗️ Shell to TypeScript — Sub-spec I: CI checks                                                                          | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
+| #1327 | 🏗️ Shell to TypeScript — Sub-spec J: Tests and final removal                                                            | closed | (none assigned)         | #1231 reference; search "1231 in:body"                  |
+| #1364 | 🐛 Extension release writes a CHANGELOG.md that fails lint-markdown and breaks main                                     | closed | (none assigned)         | #1231 reference                                         |
+| #1379 | 🐛 Release bot cannot push to main since ratchet and lint-typescript became required checks                             | closed | (none assigned)         | #1231 reference                                         |
+| #1387 | 🤝 Define multi-contributor ticket-assignment conventions                                                               | closed | @hcross                 | search "1231 in:body"                                   |
+| #1389 | 📏 Measure Antigravity CLI statusLine.command parsing on Windows (cli-matrix row 37e)                                   | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
+| #1392 | 🔒 Wire the Antigravity CLI status line on Windows without a current-directory interpreter lookup                       | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
+| #1398 | 🧪 Probe exit status 1 on the wired usage-capture events for Claude Code, Gemini CLI and Copilot CLI (spec 0243 R12)    | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
+| #1400 | ⚡️ Bring implementation-PR CI wall-clock back toward the spec 0147 budget (EPIC)                                        | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
+| #1401 | 🐛 check-test-strays.sh runs every test suite in CI because the bare base ref never resolves                            | closed | @gfourny-sfeir          | search "1231 in:body"                                   |
+| #1402 | 🐛 ci-changeset-coverage.sh diffs release/** pull requests against main                                                 | closed | @gfourny-sfeir          | search "1231 in:body"                                   |
+| #1405 | 🏗️ Replace the runtime changeset-coverage fail-safe with a static path-ownership check                                  | closed | @gfourny-sfeir          | search "1231 in:body"                                   |
+| #1422 | 🔍 Compare GitHub path filters with ci-capabilities.yml paths in check-ci-parity                                        | closed | @gfourny-sfeir          | #1231 reference                                         |
+| #1432 | ⚡️ Find why build-components --check costs ~35 s on a one-agent emission root                                           | closed | @gfourny-sfeir          | #1231 reference                                         |
+| #1437 | 💬 Make the spec 0243 R12 missing-dependency diagnostic visible on Copilot CLI and once per turn on Gemini CLI          | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
+| #1438 | 🐛 Replace the machine paths in spec 0243 delta-03 that fail check-no-machine-paths on the release branch               | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
+| #1440 | 🔍 Reconcile usage-pricing paths with the scripts its suite executes                                                    | closed | @gfourny-sfeir          | #1231 reference                                         |
+| #1441 | 📝 Record the lifecycle status of spec 0243 and its deltas on the release branch                                        | closed | @hcross                 | #1231 reference; search "1231 in:body"                  |
+| #1445 | ⚡️ Stop running changed test suites twice for the stray scan in test-wiring                                             | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
+| #1503 | 🐛 Remove the machine-path tokens (a home-directory placeholder) that turned release/1231-ts-migration red after row C3 | closed | @hcross                 | search "1231 in:body"                                   |
+| #1508 | 🐛 Run the repository-wide scans of the misc capability on every change, not only when their own script changes         | closed | @hcross                 | search "1231 in:body"                                   |
+| #1515 | 🐛 Remove the bash spawn of usage-mirror from the usage store (Windows parity gap, before J4)                           | closed | @gfourny-sfeir          | #1344 reference; search "1231 in:body"                  |
+| #1545 | 🔒 Decide whether the MCP switch should abort when an assistant configuration cannot be backed up                       | closed | @gfourny-sfeir          | #1231 reference                                         |
+| #1551 | 🔒 Fix the critical npm audit advisories before lock-only pull requests start failing                                   | closed | @hcross                 | search "1231 in:body"                                   |
+| #1563 | 🔀 Sync main into release/1231-ts-migration after row F2                                                                | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
+| #1564 | 📝 Record the implemented status of spec 0243 delta-04 on the release branch                                            | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
+| #1599 | 🐛 Keep a workspace install's node_modules out of the extension release archive                                         | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
+| #1601 | 🔬 Measure the plugin-root hook command lines of the four CLIs on Windows (follow-up of #1337)                          | open   | (none assigned)         | #1231 reference; #1344 reference; search "1231 in:body" |
+| #1611 | 🔧 Close the review ledger of row H (follow-up of #1337)                                                                | closed | @gfourny-sfeir          | #1231 reference; #1344 reference; search "1231 in:body" |
+| #1612 | 🔀 Sync main into release/1231-ts-migration after rows G2 and H                                                         | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
+| #1614 | ♻️ Decouple the setup goldens from the real package-lock.json                                                           | closed | @gfourny-sfeir          | #1231 reference; search "1231 in:body"                  |
+| #1693 | 🧪 Re-guard e2e-capture-versions and the publish-probe-verdict edge cases with TypeScript literal tests                 | open   | @gfourny-sfeir          | #1344 reference; search "1231 in:body"                  |
+| #1712 | 📝 Regenerate the rotate-token MemPalace diagram without the deleted switch-mempalace-http.sh name                      | open   | @gfourny-sfeir          | search "1231 in:body"                                   |
 
 ### Open follow-ups (accepted-gap candidates)
 
-| issue | title                                                                                                   | owner (assignee) |
-| ----- | ------------------------------------------------------------------------------------------------------- | ---------------- |
-| #961  | 📋 Findings ledger — deferred non-blocking findings                                                     | (none assigned)  |
-| #1601 | 🔬 Measure the plugin-root hook command lines of the four CLIs on Windows (follow-up of #1337)          | (none assigned)  |
-| #1693 | 🧪 Re-guard e2e-capture-versions and the publish-probe-verdict edge cases with TypeScript literal tests | @gfourny-sfeir   |
-| #1712 | 📝 Regenerate the rotate-token MemPalace diagram without the deleted switch-mempalace-http.sh name      | @gfourny-sfeir   |
+| issue | title                                                                                              | owner (assignee) |
+| ----- | -------------------------------------------------------------------------------------------------- | ---------------- |
+| #961  | 📋 Findings ledger — deferred non-blocking findings                                                | (none assigned)  |
+| #1601 | 🔬 Measure the plugin-root hook command lines of the four CLIs on Windows (follow-up of #1337)     | (none assigned)  |
+| #1712 | 📝 Regenerate the rotate-token MemPalace diagram without the deleted switch-mempalace-http.sh name | @gfourny-sfeir   |
+| #1717 | 🔬 Measure how the four CLIs treat a hook command that names a missing script file                 | @gfourny-sfeir   |
 
 Pull requests referenced (not follow-ups): #1239, #1355, #1356, #1357, #1359, #1362, #1365, #1376, #1380, #1381, #1383, #1384, #1385, #1386, #1388, #1390, #1391, #1393, #1395, #1396, #1399, #1408, #1409, #1411, #1412, #1414, #1415, #1418, #1419, #1420, #1423, #1424, #1425, #1428, #1430, #1431, #1433, #1434, #1435, #1436, #1439, #1442, #1443, #1444, #1446, #1447, #1448, #1449, #1450, #1451, #1452, #1453, #1455, #1457, #1458, #1459, #1460, #1470, #1471, #1476, #1479, #1480, #1482, #1483, #1486, #1487, #1490, #1491, #1492, #1496, #1497, #1500, #1502, #1504, #1505, #1506, #1507, #1511, #1512, #1513, #1514, #1516, #1517, #1518, #1520, #1521, #1522, #1524, #1525, #1527, #1528, #1529, #1530, #1531, #1532, #1533, #1534, #1535, #1536, #1537, #1538, #1539, #1540, #1541, #1542, #1543, #1544, #1546, #1548, #1549, #1550, #1552, #1553, #1554, #1555, #1556, #1557, #1558, #1559, #1560, #1561, #1562, #1565, #1566, #1567, #1568, #1569, #1570, #1571, #1572, #1573, #1574, #1575, #1576, #1577, #1578, #1579, #1580, #1581, #1582, #1583, #1584, #1586, #1587, #1588, #1589, #1590, #1591, #1592, #1593, #1594, #1595, #1596, #1597, #1598, #1600, #1602, #1603, #1604, #1605, #1606, #1607, #1608, #1609, #1610, #1613, #1633, #1637, #1675, #1680, #1683, #1684, #1685, #1688, #1689, #1690, #1692, #1694, #1698, #1699, #1702, #1704, #1706, #1708, #1711, #1713, #1714.
 
@@ -132,20 +132,18 @@ Evidence: the four cells above, copied from the file at audit time. Owner: the m
 
 ### Gap B: `docs/cli-matrix.md` row 42, missing-hook behaviour
 
-| CLI             | cell, verbatim                                                                                                                                                                                                                                                              | NOT MEASURED |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| Claude Code     | ❓ **NOT MEASURED** — follow-up to be opened by the coordinator.                                                                                                                                                                                                            | yes          |
-| Gemini CLI      | ❓ **NOT MEASURED** — follow-up to be opened by the coordinator.                                                                                                                                                                                                            | yes          |
-| Copilot CLI     | ❓ **NOT MEASURED** — only repo evidence: its `preToolUse` is fail-closed, so a missing guard script fails every tool call (see the row 29 [GAP] note on the guard registration); transcript and usage-capture lines unmeasured, follow-up to be opened by the coordinator. | yes          |
-| Antigravity CLI | ❓ **NOT MEASURED** — follow-up to be opened by the coordinator.                                                                                                                                                                                                            | yes          |
+| CLI             | cell, verbatim                                                                                                                                                                                                                                     | NOT MEASURED |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| Claude Code     | ❓ **NOT MEASURED** — tracked in #1717.                                                                                                                                                                                                            | yes          |
+| Gemini CLI      | ❓ **NOT MEASURED** — tracked in #1717.                                                                                                                                                                                                            | yes          |
+| Copilot CLI     | ❓ **NOT MEASURED** — only repo evidence: its `preToolUse` is fail-closed, so a missing guard script fails every tool call (see the row 29 [GAP] note on the guard registration); transcript and usage-capture lines unmeasured, tracked in #1717. | yes          |
+| Antigravity CLI | ❓ **NOT MEASURED** — tracked in #1717.                                                                                                                                                                                                            | yes          |
 
-Evidence: 4 of 4 cells read NOT MEASURED. Owner: not assigned in the repository (the cells say "follow-up to be opened by the coordinator"; no owner is invented here). Issue: none cited in the row.
+Evidence: 4 of 4 cells read NOT MEASURED. Owner: @gfourny-sfeir (assignee of #1717, the maintainer of the hook runtime). Issue: #1717 (open).
 
-### Gap C: #1693
+### Gap C: #1693 (closed)
 
-Issue 1693 is open: 🧪 Re-guard e2e-capture-versions and the publish-probe-verdict edge cases with TypeScript literal tests. Owner (forge assignee): @gfourny-sfeir. Evidence: `gh api repos/crewrig/crewrig/issues/1693` at audit time.
-
-Self-check: PASSED (no row 37g cell reads measured).
+The literal-value guards of `e2e-capture-versions` and `publish-probe-verdict` were restored by #1704 and #1693 is closed; it is no longer a gap.
 
 ## 4. Proof that no shell entry point remains
 
