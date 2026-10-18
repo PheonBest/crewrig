@@ -81,7 +81,7 @@ export function hookFilePath(cli: Cli, home: string): string {
       return path.join(home, ".gemini", "settings.json");
     case "copilot":
       // A dedicated file: merge_session_recording_hooks replaces
-      // copilot-transcript-hooks.json whole (usage-capture-optin.sh).
+      // copilot-transcript-hooks.json whole (the retired usage-capture-optin.sh, now scripts/lib/setup/session-recording-merge.ts).
       return path.join(home, ".copilot", "hooks", `${HOOK_NAME}.json`);
     case "antigravity":
       return path.join(home, ".gemini", "config", "hooks.json");

@@ -88,7 +88,7 @@ export function defaultEnsureHttpDeps(
       });
     },
     // `ensure_mempalace_http` takes no backup of its own (only the `switch-http` flow does,
-    // common.sh:1703): each setup backs the assistant's config up earlier in its own flow
+    // retired common.sh:1703): each setup backs the assistant's config up earlier in its own flow
     // (`backup_file ~/.claude.json`, the settings merge, the MCP config overwrite), which is the
     // backup that spec 0256 requirement 25 asks for. A second one here would add a `.bak.*` file the
     // shell never wrote. The seam stays so a flow can still inject one.

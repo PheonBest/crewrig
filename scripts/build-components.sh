@@ -2,8 +2,8 @@
 # build-components.sh — forwarding shim (spec 0250 R22). The build is
 # scripts/build-components.ts; this file remains so every caller that still runs
 # `bash scripts/build-components.sh` (the setup, manage and install scripts and the
-# Bash tests that have not migrated, the Taskfile before it was rewritten, and
-# scripts/lib/common.sh) reaches the TypeScript
+# Bash tests that have not migrated, and the Taskfile before it was rewritten;
+# the shell library scripts/lib/common.sh was retired in #1344) reaches the TypeScript
 # build until their own row migrates them.
 #
 # It runs the Node.js floor guard (scripts/lib/node-floor-guard.js), then the

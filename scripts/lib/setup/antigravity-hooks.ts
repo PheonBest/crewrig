@@ -54,7 +54,7 @@ const NOT_FOUND = (what: string): string =>
   `  ERROR: crewrig: Node.js was not found on PATH; ${what} requires Node.js >= 24. Install a supported release from https://nodejs.org/en/download`;
 
 /**
- * The floor guard of spec 0240 R1. `what` is `this step` (common.sh `require_node_floor`, which
+ * The floor guard of spec 0240 R1. `what` is `this step` (retired common.sh `require_node_floor`, which
  * also checks the guard file) or `usage capture` (the script's `agy_statusline_node_floor`).
  */
 export function requireNodeFloor(

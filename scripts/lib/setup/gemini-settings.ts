@@ -1,4 +1,4 @@
-// gemini-settings.ts — `gemini_settings_write` of scripts/lib/gemini-settings.sh (spec 0256
+// gemini-settings.ts — `gemini_settings_write` of the retired scripts/lib/gemini-settings.sh (spec 0256
 // requirements 27 and 31), and the exit mapping of scripts/setup-gemini-interactive.ts.
 //
 // The write is: the target's directory, the timestamped backup (printed, and made BEFORE any

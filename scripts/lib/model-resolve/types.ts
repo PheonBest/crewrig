@@ -17,7 +17,7 @@ export type Env = Readonly<Record<string, string | undefined>>;
 
 /**
  * "Extract the frontmatter text of a file", the shell's `extract_frontmatter`
- * (render-command.sh, sourced by model-resolve.sh:749). Injected so the entry
+ * (the retired render-command.sh, sourced by the retired model-resolve.sh:749). Injected so the entry
  * wires `render-command.ts` in. It may throw: an unreadable source reads as no
  * frontmatter, as `awk` on a missing file printed nothing.
  */

@@ -470,7 +470,6 @@ artifacts/
 
 hooks/                                # Shared hook scripts
 ├── mempalace-transcript.ts           # Session recording (opt-in; Node.js >= 24 when it fires)
-├── mempalace-transcript.sh           # Forwarding shim for installations not yet rewritten
 ├── gemini-transcript-hooks.json      # Gemini hook registration
 └── claude-transcript-hooks.json      # Claude Code hook registration
 
@@ -514,7 +513,7 @@ scripts/
 ├── unlink-component.ts               # Shim: forwards to unlink-component.ts (remove a component symlink)
 ├── unlink-extensions.ts              # Shim: forwards to unlink-extensions.ts (remove all extension symlinks)
 ├── lib/
-│   └── common.sh                     # Shared Bash helpers (sourced by scripts)
+│   └── mempalace-pin.json            # Single source of the MemPalace version pin (the shell libraries were retired in #1344)
 └── tests/
     ├── governance-suite-skill-versions.test.ts       # Tests for check-skill-versions (cases 4-7)
     ├── governance-suite-skill-versions-base.test.ts  # Tests for check-skill-versions (base-ref cases)

@@ -1,6 +1,6 @@
 // antigravity-tier.ts — `install_antigravity_tier_to_home` and the supersession migration of
 // scripts/setup-antigravity-interactive.ts (spec 0256 requirement 24, plan v2 step B2b.6). Twin of
-// scripts/lib/common.sh `install_antigravity_tier_to_home` (changed together; the messages are
+// the retired scripts/lib/common.sh `install_antigravity_tier_to_home` (the messages were
 // byte for byte). Both kinds are directory-shaped (`<name>/SKILL.md`, `<name>/AGENT.md`) and land
 // in `~/.gemini/config/{skills,agents}`; presence at the destination is asserted BEFORE the
 // `Installed ...` line is printed (R5), a shortfall is named (R4), and a kind that staged

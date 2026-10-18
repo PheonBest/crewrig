@@ -10,7 +10,7 @@ vocabulary is never presented as expressible on every target (R5).
 
 This artifact is one of **two independent representations** the R6 agreement
 check (`scripts/check-extension-hook-map.ts`) compares: this table, parsed as
-data, against `scripts/lib/extension-hooks.sh`'s translation, derived by
+data, against the translation of `scripts/lib/extension/hooks-emit.ts` (formerly `scripts/lib/extension-hooks.sh`, retired in #1344), derived by
 actually executing it against a synthetic probe extension. Editing either
 side alone turns the check red — see that script's own header for why a
 single shared source would make the check vacuous.

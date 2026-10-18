@@ -48,7 +48,7 @@ export function deleteDrawer(drawerId: string): Promise<McpResult>;
 /** The hardcoded `$HOME/.mempalace/server/<hash>/token` path call() reads its bearer token from; creates the palace's parent directory as a side effect (see this file's own header). */
 export function tokenPath(): string;
 
-/** The shared MemPalace MCP daemon endpoint: `MEMPALACE_MCP_HOST`/`MEMPALACE_MCP_PORT`, defaulting to `127.0.0.1`/`41893` (common.sh's own defaults). */
+/** The shared MemPalace MCP daemon endpoint: `MEMPALACE_MCP_HOST`/`MEMPALACE_MCP_PORT`, defaulting to `127.0.0.1`/`41893` (the retired common.sh's own defaults). */
 export function endpoint(): { host: string; port: string };
 
 /** `tokenPath()` without its mkdir side effect: resolving it creates no file and no directory (spec 0247 R14). */
