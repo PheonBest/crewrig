@@ -1,5 +1,5 @@
 // entry.ts — argument handling and orchestration of build-ci (spec 0262), twin of the
-// main section of scripts/build-ci.sh. Returns the outcome; the caller prints it.
+// main section of the retired scripts/build-ci.sh. Returns the outcome; the caller prints it.
 
 import fs from "node:fs";
 import path from "node:path";

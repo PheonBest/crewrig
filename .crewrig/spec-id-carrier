@@ -13,10 +13,10 @@
 # character is `#` are ignored; the first `carrier=` line wins.
 #
 # The value is constrained to a CLOSED PAIR. Anything else — including a near
-# miss such as `refs/spec-id/` — makes scripts/reserve-spec-id.sh exit 1 naming
+# miss such as `refs/spec-id/` — makes scripts/reserve-spec-id.ts exit 1 naming
 # the offending value, because a third namespace would be written by the push
 # and read by neither the allocation union nor
-# scripts/check-spec-id-reserved.sh:
+# scripts/check-spec-id-reserved.ts:
 #
 #   refs/spec-ids/        the default. Invisible in branch and tag listings.
 #   refs/tags/spec-id/    the alternative, for a remote that refuses a custom

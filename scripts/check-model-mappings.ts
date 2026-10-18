@@ -1,6 +1,6 @@
 // check-model-mappings.ts — hermetic checker for model-mappings/<target>.yml and its org
 // channel <target>.org.yml (spec 0197 R46-R51, spec 0199 R29-R36); TypeScript twin of
-// scripts/check-model-mappings.sh (spec 0262).
+// the retired scripts/check-model-mappings.sh (spec 0262).
 //
 // Usage: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-model-mappings.ts
 //          [--print-selection] [file ...]

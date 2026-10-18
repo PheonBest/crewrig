@@ -14,12 +14,12 @@ export interface ReserveOptions {
   maxAttempts: number;
 }
 
-const USAGE = `reserve-spec-id.sh — secure a spec id before the spec file exists (spec 0112).
+const USAGE = `reserve-spec-id.ts — secure a spec id before the spec file exists (spec 0112).
 
-  bash scripts/reserve-spec-id.sh --issue <N>
+  node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts --issue <N>
       Allocate and secure the next free UPSTREAM id.
 
-  bash scripts/reserve-spec-id.sh --id <ID> --issue <N> [--corpus upstream|org]
+  node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts --id <ID> --issue <N> [--corpus upstream|org]
       Secure one specific identifier, treated as an opaque string. Both the
       maintainer path of requirement 10 (securing a fork contribution's id
       before merge) and, generalised from <NNNN> to any string, requirement 14

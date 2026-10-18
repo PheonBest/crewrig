@@ -71,7 +71,7 @@ jobs:
         run: npm install
 
       - name: Validate the declaration channels, ledger, and rollups (no daemon)
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-attribution-channels.test.ts scripts/tests/usage-attribution-ledger-rollup.test.ts scripts/tests/usage-attribution-period-rollup.test.ts scripts/tests/usage-attribution-prune.test.ts scripts/tests/usage-attribution-mutations.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-attribution-channels.test.ts scripts/tests/usage-attribution-ledger-rollup.test.ts scripts/tests/usage-attribution-period-rollup.test.ts scripts/tests/usage-attribution-prune.test.ts scripts/tests/usage-attribution-mutations.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure

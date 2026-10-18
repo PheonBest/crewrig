@@ -222,7 +222,7 @@ unset variable is the empty string (falsy).
 | `parent_pipeline` | Created by a parent via `trigger:include` (child pipeline). |
 
 Mapping the neutral trigger vocabulary onto these is the job of
-`scripts/build-ci.sh` — see the cross-reference at the end.
+`scripts/build-ci.ts` — see the cross-reference at the end.
 
 ## Expression operators in `rules:if`
 
@@ -450,7 +450,7 @@ workflow:
 ## Cross-reference — this repository
 
 The generated `.gitlab-ci.yml` at the repo root is **derived**, not
-hand-authored: `scripts/build-ci.sh` (spec 0048) reads the neutral
+hand-authored: `scripts/build-ci.ts` (spec 0048) reads the neutral
 capability reference `ci/ci-capabilities.yml` and maps its
 engine-neutral trigger vocabulary — `push` / `pull-request` / `tag` /
 `scheduled` / `manual`, qualified by `branches` / `paths` /

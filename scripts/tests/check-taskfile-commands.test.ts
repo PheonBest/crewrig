@@ -13,6 +13,7 @@ import { load } from "js-yaml";
 import { parseExemptions } from "../lib/taskfile-command-exemption-file.ts";
 import { findForbidden, forbiddenIn } from "../lib/taskfile-commands.ts";
 
+const mirrors = path.resolve(import.meta.dirname, "..", "check-skill-mirrors.ts");
 const checker = path.resolve(import.meta.dirname, "..", "check-taskfile-commands.ts");
 const realRoot = path.resolve(import.meta.dirname, "..", "..");
 const roots: string[] = [];
@@ -162,5 +163,54 @@ describe("check-taskfile-commands", () => {
     const root = makeRoot(dirty, { exemptions: [] });
     rmSync(path.join(root, "Taskfile.yml"));
     assert.equal(run(root).status, 2);
+  });
+});
+
+describe("check-skill-mirrors (the node replacement of the skill:check task)", () => {
+  const skill = (name: string, version: boolean) =>
+    `---\nname: ${name}\n${version ? "metadata:\n  provenance:\n    version: 1.0.0\n" : ""}---\nbody\n`;
+
+  function mirrorRoot(withVersion: boolean): string {
+    const root = mkdtempSync(path.join(tmpdir(), "skill-mirrors-"));
+    roots.push(root);
+    for (const dir of [".claude", ".gemini", ".github"]) {
+      mkdirSync(path.join(root, dir, "skills", "x"), { recursive: true });
+      writeFileSync(path.join(root, dir, "skills", "x", "SKILL.md"), skill("x", withVersion));
+    }
+    return root;
+  }
+
+  function runMirrors(root: string, ...args: string[]) {
+    return spawnSync(
+      process.execPath,
+      ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", mirrors, ...args],
+      { encoding: "utf8", env: { ...process.env, CREWRIG_REPO_DIR: root } },
+    );
+  }
+
+  it("passes a complete mirror set and names the component", () => {
+    const res = runMirrors(mirrorRoot(true), "x");
+    assert.equal(res.status, 0, res.stderr);
+    assert.match(res.stdout, /^x: OK across/);
+  });
+
+  it("fails a mirror that lacks the provenance version, with a remediation line", () => {
+    const res = runMirrors(mirrorRoot(false), "x");
+    assert.equal(res.status, 1);
+    assert.match(res.stderr, /missing or empty YAML field metadata\.provenance\.version/);
+    assert.match(res.stderr, /Remediation: rebuild with/);
+  });
+
+  it("fails an asymmetric agent mirror set", () => {
+    const root = mirrorRoot(true);
+    mkdirSync(path.join(root, ".claude", "agents"), { recursive: true });
+    writeFileSync(path.join(root, ".claude", "agents", "x.md"), skill("x", true));
+    const res = runMirrors(root, "x");
+    assert.equal(res.status, 1);
+    assert.match(res.stderr, /asymmetric — present on 1\/3 paths/);
+  });
+
+  it("exits 2 without a name", () => {
+    assert.equal(runMirrors(mirrorRoot(true)).status, 2);
   });
 });

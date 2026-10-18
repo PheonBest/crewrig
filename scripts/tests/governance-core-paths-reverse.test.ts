@@ -35,7 +35,7 @@ describe("core-paths reverse direction (built output to manifest)", () => {
   test("case-g: an unclassifiable query fails closed, naming the build script", () => {
     const r = scenario(STUB_UNCLASSIFIABLE, "real.txt\tstrict\n");
     assert.notEqual(r.status, 0);
-    assert.ok(r.stderr.includes("build-components.sh"), r.stderr);
+    assert.ok(r.stderr.includes("build-components.ts"), r.stderr);
   });
 
   test("case-h: an excluded built-output directory is not a guarantee", () => {

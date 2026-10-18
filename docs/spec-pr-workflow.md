@@ -34,7 +34,7 @@ before the spec file exists. Run the tool as the first act of the SPECS
 stage, with nothing written yet:
 
 ```sh
-bash scripts/reserve-spec-id.sh --issue <related-issue>
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts --issue <related-issue>
 ```
 
 The first line of stdout is the id. Only then cut `spec/<NNNN>-<slug>` and
@@ -64,7 +64,7 @@ sibling ever runs `spec-author`. That claim is only true once the
 orchestrator has actually run:
 
 ```sh
-bash scripts/reserve-spec-id.sh --id <NNNN> --issue <sibling-issue>
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts --id <NNNN> --issue <sibling-issue>
 ```
 
 for that id, in the same step it creates the sibling's branch or spawns the
@@ -75,7 +75,7 @@ exists to close: `git ls-remote` at the time showed no reservation for
 either claimed id.
 
 Once secured this way, the sibling session's ordinary `spec-author`
-invocation — `reserve-spec-id.sh --issue <sibling-issue>`, with no `--id`,
+invocation — `reserve-spec-id.ts --issue <sibling-issue>`, with no `--id`,
 per its unchanged contract (`artifacts/core/skills/spec-author/SKILL.md` →
 *ID allocation*) — reuses that exact id instead of computing a new one, per
 spec 0112 delta-02 requirements 17-18. Nothing else has to change on the
@@ -95,7 +95,7 @@ unsecured-id: true
 
 Copy that line verbatim into the spec frontmatter. It is not optional and it
 is not cosmetic — it is the machine-readable statement that another session
-may still take the id, and it is what `scripts/check-spec-id-reserved.sh`
+may still take the id, and it is what `scripts/check-spec-id-reserved.ts`
 reads at pull-request time. That check discriminates by origin:
 
 - a pull request from a branch of the reference repository **fails** on an
@@ -107,7 +107,7 @@ reads at pull-request time. That check discriminates by origin:
 maintainer secures the id and removes the mark in the same act:
 
 ```sh
-bash scripts/reserve-spec-id.sh --id <NNNN> --issue <related-issue>
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts --id <NNNN> --issue <related-issue>
 ```
 
 Re-running that command for an id already secured for the same issue is a
@@ -149,7 +149,7 @@ upstream cannot compute the next free org identifier, and does not try. It
 secures an identifier the organization has already chosen:
 
 ```sh
-bash scripts/reserve-spec-id.sh --corpus org --id <ORG-IDENTIFIER> --issue <N>
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts --corpus org --id <ORG-IDENTIFIER> --issue <N>
 ```
 
 `--corpus org` **requires** `--id`; without it the command exits `1` saying so,

@@ -1,5 +1,5 @@
 // reserve-spec-id.ts — secure a spec id on the reference repository before the spec
-// file exists (spec 0112; TypeScript twin of scripts/reserve-spec-id.sh, spec 0262).
+// file exists (spec 0112; TypeScript twin of the retired scripts/reserve-spec-id.sh, spec 0262).
 //
 // Usage: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts
 //          --issue <N> | --id <ID> --issue <N> [--corpus upstream|org] [--offline] | --help

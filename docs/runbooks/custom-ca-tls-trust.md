@@ -147,7 +147,7 @@ require custom-CA trust behind an intercepting gateway:
 - **Package/dependency install:** `pipx install mempalace`,
   `pipx inject mempalace chromadb`, and any `npx -y <pkg>` MCP server (the first
   launch fetches the package from the npm registry).
-- **Build & CI phases** (`scripts/build-ci.sh` output): `wget` of the `yq`
+- **Build & CI phases** (`scripts/build-ci.ts` output): `wget` of the `yq`
   binary from GitHub, `curl https://taskfile.dev/install.sh`,
   `npm install -g markdownlint-cli`, and `apt-get … ca-certificates`.
 - **Runtime asset/model downloads:** the ChromaDB/MemPalace embedding model,

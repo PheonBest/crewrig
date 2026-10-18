@@ -99,7 +99,7 @@ jobs:
         run: npm install
 
       - name: Validate the usage dashboard's three delivery forms (no network, no daemon)
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-dashboard-agreement.test.ts scripts/tests/usage-dashboard-crosscheck.test.ts scripts/tests/usage-dashboard-buckets.test.ts scripts/tests/usage-dashboard-render.test.ts scripts/tests/usage-dashboard-empty.test.ts scripts/tests/usage-dashboard-page.test.ts scripts/tests/usage-dashboard-static.test.ts scripts/tests/usage-dashboard-home-marker.test.ts scripts/tests/usage-dashboard-server.test.ts scripts/tests/usage-dashboard-readonly.test.ts scripts/tests/usage-dashboard-mutations.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-dashboard-agreement.test.ts scripts/tests/usage-dashboard-crosscheck.test.ts scripts/tests/usage-dashboard-buckets.test.ts scripts/tests/usage-dashboard-render.test.ts scripts/tests/usage-dashboard-empty.test.ts scripts/tests/usage-dashboard-page.test.ts scripts/tests/usage-dashboard-static.test.ts scripts/tests/usage-dashboard-home-marker.test.ts scripts/tests/usage-dashboard-server.test.ts scripts/tests/usage-dashboard-readonly.test.ts scripts/tests/usage-dashboard-mutations.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure

@@ -69,7 +69,7 @@ export function homeDir(t: FixtureTree, name: string): string {
 }
 
 export function build(t: FixtureTree, target: string): Out {
-  return run(t, "scripts/build-components.sh", ["--target", target]);
+  return run(t, "scripts/build-components.ts", ["--target", target]);
 }
 
 const frontmatter = (kind: string, tier: string, name: string): string =>

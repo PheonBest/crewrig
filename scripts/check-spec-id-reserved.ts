@@ -1,6 +1,6 @@
 // check-spec-id-reserved.ts — fail a pull request whose new spec claims an id that was never
 // secured, or was secured for a different ticket (spec 0112 requirement 7 as replaced by
-// delta-01; TypeScript twin of scripts/check-spec-id-reserved.sh, spec 0262).
+// delta-01; TypeScript twin of the retired scripts/check-spec-id-reserved.sh, spec 0262).
 //
 // Usage: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-spec-id-reserved.ts [base-ref]
 // Exit codes: 0 clean, reported (fork) or namespace unreadable; 1 blocking finding;

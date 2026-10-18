@@ -11,7 +11,7 @@
 // `resolve_agent` or `mapping_merge_cleanup`, so no accessor stays behind.
 //
 // R2 (spec 0250): this slice of the shell library moved only because the step (b)
-// build depends on it; its other consumers (scripts/check-model-mappings.sh and the
+// build depends on it; its other consumers (the retired scripts/check-model-mappings.sh and the
 // Bash suites) are later rows, and this is not a precedent for them. The shell
 // library stays whole and byte-identical apart from comments (R23); a change to
 // either implementation must be made in both (conformance test, R21).

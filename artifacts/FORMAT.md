@@ -2,7 +2,7 @@
 
 This document specifies the single-source format for community components
 in `artifacts/community/`. Components written in this format are compiled by
-`scripts/build-components.ts` (run through the shim `scripts/build-components.sh`) into
+`scripts/build-components.ts` into
 tool-specific outputs for Gemini CLI
 and Claude Code.
 
@@ -163,7 +163,7 @@ is the gate that rejects any other (spec 0200 requirement 8).
 | `max-turns` | integer | at least `1` |
 
 A key outside these eight, or a `tuning:` key outside these five, is
-rejected at authoring time by `scripts/check-agent-profiles.sh` — a
+rejected at authoring time by `scripts/check-agent-profiles.ts` — a
 hermetic check over the source and these domains alone, consulting no
 mapping. A value outside a closed domain is rejected the same way; an
 unenumerated `specialization` value is not, because that axis is an open
@@ -184,7 +184,7 @@ asks of that organization is documented in
 [`docs/agent-profile-migration.md`](../docs/agent-profile-migration.md).
 
 **Obligation:** a later delta of spec 0195 that changes one of the domains
-above SHALL update this section and `scripts/check-agent-profiles.sh` in
+above SHALL update this section and `scripts/check-agent-profiles.ts` in
 the same change — the same obligation
 [`docs/model-mapping-format.md`](../docs/model-mapping-format.md) → *Domains*
 already carries for the mapping side.
@@ -489,8 +489,7 @@ backfill.
 
 ## Parser Requirements
 
-The build (`scripts/build-components.ts`, reached through the shim
-`scripts/build-components.sh`) requires:
+The build (`scripts/build-components.ts`) requires:
 
 - **Node.js 24** or later, checked by `scripts/lib/node-floor-guard.js` before
   anything is written.

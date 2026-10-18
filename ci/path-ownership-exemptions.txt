@@ -24,7 +24,7 @@
 #   ci/org/path-ownership-exemptions.txt<TAB><reason>
 #
 .agents/settings.local.json.example	Antigravity workspace-settings template, copied by hand to `settings.local.json`; no script or test under `scripts/` or `ci/` references it (classification deliberately unchanged by spec 0121).
-.crewrig/spec-id-carrier	Repository setting read only by `scripts/reserve-spec-id.sh` at authoring time; CI tests write a fixture carrier and never read this one.
+.crewrig/spec-id-carrier	Repository setting read only by `scripts/reserve-spec-id.ts` at authoring time; CI tests write a fixture carrier and never read this one.
 **/.gitkeep	Empty-directory placeholders; they contain no code or configuration.
 .gitattributes	Git line-ending attributes; no script or test reads the file.
 LICENSE	Licence text; no check reads it.

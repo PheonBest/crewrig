@@ -1,5 +1,5 @@
 // render-job.ts — emits one GitLab job (and its `rules:`) for one portable capability,
-// twin of `emit_job` / `emit_rules` in scripts/build-ci.sh (spec 0262).
+// twin of `emit_job` / `emit_rules` in the retired scripts/build-ci.sh (spec 0262).
 
 import { Capability } from "./reference.ts";
 import { blockItem, dqEntry, dqItem, nonEmptyLines } from "./render-yaml.ts";
@@ -9,6 +9,10 @@ import {
   toolInstallLines,
   BuildCiError,
 } from "./tools.ts";
+
+/** A command the cache guard wraps: a `bash scripts/` suite or a former forwarding-shim tool. */
+const GUARDED_COMMAND =
+  /^(?:bash scripts\/|node (?:--disable-warning=\S+ )?scripts\/(?:build-ci|build-components|check-agent-profiles|check-ci-parity|check-model-mappings|check-spec-id-reserved|ci-cache-guard|ci-changeset-coverage|reserve-spec-id)\.ts(?: |$))/;
 
 const CONDITIONS: Readonly<Record<string, string>> = {
   "pull-request": '$CI_PIPELINE_SOURCE == "merge_request_event"',
@@ -98,10 +102,10 @@ export function emitJob(cap: Capability): string[] {
       continue;
     }
     let emitted = cmd;
-    if (cacheFiles !== "" && guard !== "false" && cmd.startsWith("bash scripts/")) {
+    if (cacheFiles !== "" && guard !== "false" && GUARDED_COMMAND.test(cmd)) {
       const files = cacheFiles.replaceAll("\n", ",");
       const env = cacheEnv.replaceAll("\n", ",");
-      emitted = `bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files "${files}" --key-env "${env}" -- ${cmd}`;
+      emitted = `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "${files}" --key-env "${env}" -- ${cmd}`;
     }
     out.push(dqItem(4, emitted));
   }

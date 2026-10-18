@@ -99,7 +99,7 @@ spec 0200 already name and correct.
 | 3 | E2E LLM-judge backend model ids (versioned API ids, not agent tiers) | `docs/adr/0004-e2e-assertion-libs.md:230`, `docs/adr/0008-judge-oauth-auth-mode.md:130`, `tests/e2e/defaults.toml:119`, `tests/e2e/local.toml.example:57`, `tests/e2e/lib/llm_judge.sh:18,103,119,120`, `tests/e2e/lib/README.md:77` |
 | 4 | The deliberately model-bearing Copilot-routing probe fixture | `tests/e2e/scenarios/05-copilot-model-routing/agent-model-bearing.md.tmpl:4`, with `…/run.sh:21,360` and `tests/e2e/lib/probe_spawn_markers.sh:95` |
 | 5 | The Claude GitHub Action's own `model:` input | `.github/workflows/claude.yml:27` |
-| 6 | Test suites and fixtures | `scripts/tests/test-model-resolution.sh` (retired in row I2 of spec 0215; it held 37, including the one this change set's own refreshed `C2(b)` literal adds — see the note below), `check-model-mappings-*.test.ts` (replaced `test-check-model-mappings.sh`, 21), `test-e2e-*.sh` (**7** — `test-e2e-probes.sh` 4, `test-e2e-llm-judge-lib.sh` 2, `test-e2e-judge-config.sh` 1), `fixtures/probe-a-transcripts/model-bearing.stdout` (3), `test-setup-antigravity-transcript.sh` (2), `check-agent-profiles-*.test.ts` (replaced `test-check-agent-profiles.sh`, 1), `test-check-component-metadata-keys.sh` (4, new — the mutation fixtures exercising the legacy-key rejection this change set adds) |
+| 6 | Test suites and fixtures | `scripts/tests/test-model-resolution.sh` (retired in row I2 of spec 0215; it held 37, including the one this change set's own refreshed `C2(b)` literal adds — see the note below), `check-model-mappings-*.test.ts` (replaced `test-check-model-mappings.ts`, 21), `test-e2e-*.sh` (**7** — `test-e2e-probes.sh` 4, `test-e2e-llm-judge-lib.sh` 2, `test-e2e-judge-config.sh` 1), `fixtures/probe-a-transcripts/model-bearing.stdout` (3), `test-setup-antigravity-transcript.sh` (2), `check-agent-profiles-*.test.ts` (replaced `test-check-agent-profiles.ts`, 1), `test-check-component-metadata-keys.sh` (4, new — the mutation fixtures exercising the legacy-key rejection this change set adds) |
 | 7 | Specs and mapping files declaring the anchor table or their own offerings | `specs/0200-core-agent-profile-migration.md` (20), `specs/0197-model-mapping.md` (18), `specs/0195-agent-capability-profile.md` (11), `specs/0199-org-model-mapping-override.md` (4), `specs/0198-build-mapping-resolution.md` (3), `specs/0127-copilot-subagent-model-guard.md` (1), `specs/0143-copilot-subagent-model-fallback.md` (1), `model-mappings/claude.yml` (18), `model-mappings/antigravity.yml` (2) — 78 hits across 9 files |
 
 **Conclusion — unchanged from the audit's first pass, and now exhaustively
@@ -137,7 +137,7 @@ contradicting the conclusion above:
 Two statements in `docs/cli-matrix.md` are falsified by this change set and
 corrected in the same diff as this document: row 33's "nothing in the
 repository reads it yet" (requirement 27, part one — false since spec
-0198 merged), and the `[GAP]` note asserting that `build-components.sh`
+0198 merged), and the `[GAP]` note asserting that `build-components.ts`
 omits `model:` frontmatter from every compiled agent file (requirement
 27, adjacent accuracy — narrowed to the two surfaces Copilot CLI actually
 reads, `.claude/agents/` and `.github/agents/`, where it stays true).
@@ -186,7 +186,7 @@ requirement 22 obliges, and differ in no other byte.
 
 ## The diagnostic stream
 
-Measured on the migrated tree with all four targets built (run `node scripts/lib/node-floor-guard.js` first, as a separate step; the build needs Node.js 24 or newer, and `js-yaml` comes from the setup dependency step; the counts were first taken through `bash scripts/build-components.sh`, which forwards to the same build):
+Measured on the migrated tree with all four targets built (run `node scripts/lib/node-floor-guard.js` first, as a separate step; the build needs Node.js 24 or newer, and `js-yaml` comes from the setup dependency step; the counts were first taken through `node scripts/build-components.ts`, which forwards to the same build):
 
 | Invocation | Lines | Shapes |
 |---|---|---|

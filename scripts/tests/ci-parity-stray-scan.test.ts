@@ -19,7 +19,8 @@ import {
 } from "./lib/ci-parity-fixture.ts";
 import { yamlLib } from "./lib/yaml-lib.ts";
 
-const SCAN_PREFIX = "bash scripts/ci-cache-guard.sh --stray-scan -- ";
+const SCAN_PREFIX =
+  "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- ";
 const NODE_TEST = "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test";
 const NOTES_YML = (fx: string) => path.join(fx, ".github", "workflows", "release-notes.yml");
 const BUILD_YML = (fx: string) => path.join(fx, ".github", "workflows", "build.yml");
@@ -65,8 +66,9 @@ test("SC1: scanned steps, bare (release-notes) and inside a cache layer (docs-in
   );
   assert.equal(gotBare, wantBare, "the release-notes step is the declared scanned command, bare");
   assert.ok(
-    gotLayered.startsWith("bash scripts/ci-cache-guard.sh --cache-dir ") &&
-      gotLayered.endsWith(` -- ${wantLayered}`),
+    gotLayered.startsWith(
+      "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir ",
+    ) && gotLayered.endsWith(` -- ${wantLayered}`),
     `docs-index step is not a cache layer around the declared command (got '${gotLayered}')`,
   );
   const r = runCheck(fx);
@@ -91,7 +93,8 @@ test("SC3: a layered step missing the scan fails closed", () => {
   const fx = makeFixture();
   editYaml(BUILD_YML(fx), (doc) => {
     const s = stepOf(doc, "docs-index", /stray-scan/);
-    const inner = " -- bash scripts/ci-cache-guard.sh --stray-scan -- ";
+    const inner =
+      " -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- ";
     const run = String(s["run"]);
     assert.ok(run.includes(inner), "precondition: the layered step carries the scan");
     s["run"] = run.replace(inner, " -- ");

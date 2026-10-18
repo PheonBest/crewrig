@@ -1,6 +1,6 @@
-// model-ci-shims-wiring.test.ts — every CI job that runs one of the ten model/CI forwarding shims
-// (spec 0262 requirement 16), directly, through `ci-cache-guard.sh`, or through a Bash suite that
-// runs one, declares Node.js 24 (the shim's floor guard refuses 22) and, when the TypeScript entry
+// model-ci-shims-wiring.test.ts — every CI job that runs one of the model/CI tools that were forwarding
+// shims (spec 0262 requirement 16), directly, through `ci-cache-guard.ts`, or through a Bash suite
+// that runs one, declares Node.js 24 (the floor the TypeScript entries need) and, when the TypeScript entry
 // reads YAML through `js-yaml`, installs the production dependencies before the first call.
 //
 // The assertions are functions over the PARSED reference and workflows (`js-yaml`, via the suite
@@ -34,9 +34,9 @@ const NEEDS_DEPS = [
   "build-ci",
   "ci-changeset-coverage",
 ];
-const SHIM_RE = new RegExp(`scripts/(${SHIMS.join("|")})\\.sh`, "g");
-// A TypeScript test names a shim when its text spawns or mentions `<name>.sh`.
-const NAMED_RE = new RegExp(`\\b(${SHIMS.join("|")})\\.sh\\b`, "g");
+const SHIM_RE = new RegExp(`scripts/(${SHIMS.join("|")})\\.ts`, "g");
+// A TypeScript test names a tool when its text spawns or mentions `<name>.ts`.
+const NAMED_RE = new RegExp(`\\b(${SHIMS.join("|")})\\.ts\\b`, "g");
 const PROD_INSTALL = /^npm ci( --omit=dev( --workspaces=false)?)?$/;
 
 /** The shims one command line runs: named in it, or named by a script it runs (one level). */
@@ -48,7 +48,7 @@ function shimsRun(command: string): Set<string> {
   scan(command);
   for (const m of command.matchAll(/scripts\/[\w/.-]+\.sh/g)) {
     const file = path.join(REPO, m[0]);
-    if (/ci-cache-guard\.sh$/.test(m[0]) || !fs.existsSync(file)) continue;
+    if (/ci-cache-guard\.ts$/.test(m[0]) || !fs.existsSync(file)) continue;
     scan(fs.readFileSync(file, "utf8"));
   }
   // `node --test <files|globs>`: every test file that names a shim makes the command shim-running.
@@ -182,7 +182,17 @@ describe("the wiring assertions can go red", () => {
   });
 
   test("a job without setup-node 24 is reported", () => {
-    const wf: Workflow = { jobs: { j: { steps: [{ run: "bash scripts/build-ci.sh --check" }] } } };
+    const wf: Workflow = {
+      jobs: {
+        j: {
+          steps: [
+            {
+              run: "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts --check",
+            },
+          ],
+        },
+      },
+    };
     assert.match(workflowFaults("x.yml", wf).join("\n"), /no setup-node 24/);
   });
 
@@ -192,7 +202,9 @@ describe("the wiring assertions can go red", () => {
         j: {
           steps: [
             { uses: "actions/setup-node@v4", with: { "node-version": 24 } },
-            { run: "bash scripts/ci-cache-guard.sh --stray-scan -- true" },
+            {
+              run: "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- true",
+            },
           ],
         },
       },

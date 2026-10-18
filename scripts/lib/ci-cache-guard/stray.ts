@@ -14,7 +14,7 @@ import { fatal } from "../governance/report.ts";
 import { atLine, bashPath, NO_BASH } from "./shell.ts";
 
 const PHRASE = "command not found";
-/** The shell runs the command on this line of ci-cache-guard.sh (the diagnostic names it). */
+/** The shell runs the command on this line of ci-cache-guard.ts (the diagnostic names it). */
 const RUN_LINE = 143;
 
 function probeText(bash: string): string {

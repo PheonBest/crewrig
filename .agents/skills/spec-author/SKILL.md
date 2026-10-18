@@ -6,7 +6,7 @@ metadata:
   provenance:
     canonical: "https://github.com/crewrig/crewrig"
     feedback: "https://github.com/crewrig/crewrig"
-    version: "1.9.0"
+    version: "1.9.1"
 ---
 
 
@@ -386,7 +386,7 @@ the same session.
 ### ID allocation
 
 `<NNNN>` is **secured on the reference repository before the spec file is
-written**, by `scripts/reserve-spec-id.sh`. The skill SHALL NOT compute it
+written**, by `scripts/reserve-spec-id.ts`. The skill SHALL NOT compute it
 from the local working tree.
 
 What this replaces, and why (`specs/0112-spec-id-reservation.md`): an
@@ -402,7 +402,7 @@ frontmatter exist (requirement 2 — so that all three agree from the first
 commit):
 
 ```sh
-bash scripts/reserve-spec-id.sh --issue <related-issue>
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reserve-spec-id.ts --issue <related-issue>
 ```
 
 The first line of stdout is always the id. The exit code is the only thing
@@ -437,7 +437,7 @@ Three obligations, each closing a tempting shortcut:
   retry budget already exhausted by lost races.
 - On exit `3` the mark is **not optional**. It is the machine-readable
   statement that the id may still be taken by another session, and it is
-  what `scripts/check-spec-id-reserved.sh` reports at pull-request time —
+  what `scripts/check-spec-id-reserved.ts` reports at pull-request time —
   blocking for a pull request from the reference repository, non-blocking
   for one from a fork, where a maintainer secures the id and removes the
   mark before merge (requirement 10).

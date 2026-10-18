@@ -1,6 +1,6 @@
 // check-agent-profiles.ts — hermetic checker for an agent source's metadata.model:
 // capability profile (spec 0195 R23-R25, spec 0198 R36-R39); TypeScript twin of
-// scripts/check-agent-profiles.sh (spec 0262).
+// the retired scripts/check-agent-profiles.sh (spec 0262).
 //
 // Usage: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-agent-profiles.ts [file ...]
 // No file: every artifacts/*/agents/*/AGENT.md under CREWRIG_REPO_DIR (default: the repository).

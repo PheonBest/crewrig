@@ -1,5 +1,5 @@
 // agent-profiles-tuning.ts — assertion P8: the five tuning knobs and their ranges
-// (twin of `check_tuning_value` in scripts/check-agent-profiles.sh).
+// (twin of `check_tuning_value` in the retired scripts/check-agent-profiles.sh).
 
 import { get, type YqMap } from "../yq-accessors/index.ts";
 import { AgentProfilesError, type Fail, valueOf } from "./agent-profiles-yq.ts";

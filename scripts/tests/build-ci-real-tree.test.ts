@@ -102,7 +102,7 @@ describe("build-ci real tree (group R)", () => {
     ["F2a", "cache:", "cached capability emits cache:key:files"],
     ["F2b", "ci/ci-capabilities.yml", "cache key derived from declared files"],
     ["F2c", ".ci-cache/", "cache persists the .ci-cache/ dir"],
-    ["F2d", "ci-cache-guard.sh", "hermetic command wrapped in cache-guard"],
+    ["F2d", "ci-cache-guard.ts", "hermetic command wrapped in cache-guard"],
     ["F2e", "ci-parity-positive.test.ts", "cache-guard unwraps to the declared command"],
   ] as const) {
     it(`${label}: ${why}`, () => {

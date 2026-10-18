@@ -10,7 +10,7 @@ metadata:
   provenance:
     canonical: "https://github.com/crewrig/crewrig"
     feedback: "https://github.com/crewrig/crewrig"
-    version: "1.3.0"
+    version: "1.3.1"
 ---
 
 
@@ -113,7 +113,7 @@ already carries the project's platform-neutral capability reference
 produce the GitLab pipeline by **composing the generator**:
 
 ```bash
-bash scripts/build-ci.sh
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts
 ```
 
 This reads the existing reference and emits `.gitlab-ci.yml` (one job
@@ -131,7 +131,7 @@ that has **no** capability reference yet, that project first needs a
 reference authored **in the reference format** — a separate act that
 applies the documented format in that project. It is never done by
 editing this framework's `ci/ci-capabilities.yml`. Once a reference
-exists, compose `build-ci.sh` against it as above. If no reference
+exists, compose `build-ci.ts` against it as above. If no reference
 exists and authoring one is out of your scope, say so plainly rather
 than hand-rolling a `.gitlab-ci.yml` that will drift from the harness.
 
@@ -337,7 +337,7 @@ For a GitLab target you also confirm the pipeline is in sync with the
 reference — the derivation's own drift gate:
 
 ```bash
-bash scripts/build-ci.sh --check
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-ci.ts --check
 ```
 
 If any script reports violations, **fix the cause and rerun** — for the
@@ -361,7 +361,7 @@ resolution*). The rest of the message has three parts, in this order:
    `needs:` graph, the concurrency / `resource_group` strategy). The
    comments are part of the deliverable; they survive into the
    committed file. For a GitLab target this block is the derived
-   pipeline — present it as produced by `scripts/build-ci.sh`, not
+   pipeline — present it as produced by `scripts/build-ci.ts`, not
    hand-edited.
 
 2. **Decision table** — a Markdown table explaining each non-obvious

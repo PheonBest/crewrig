@@ -53,11 +53,10 @@ test("S3: drifted GHA business step", () => {
   fails(fx, "S3", ["capability 'build' (github-actions)"]);
 });
 
-test("S4: drifted .gitlab-ci.yml names gitlab and the composed build-ci.sh --check", () => {
+test("S4: drifted .gitlab-ci.yml names gitlab and the composed build-ci.ts --check", () => {
   const fx = makeFixture();
   fs.appendFileSync(path.join(fx, ".gitlab-ci.yml"), "\n# hand-edited drift\n");
-  // J4: the twin still prints the shim name `build-ci.sh --check`; change with the shims.
-  fails(fx, "S4", ["(gitlab)", "build-ci.sh --check"]);
+  fails(fx, "S4", ["(gitlab)", "build-ci.ts --check"]);
 });
 
 test("S5: an engine omits a portable capability (R6)", () => {

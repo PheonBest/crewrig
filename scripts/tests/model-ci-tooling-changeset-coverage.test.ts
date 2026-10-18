@@ -16,7 +16,7 @@ import {
 } from "./lib/bash-suite-differential.ts";
 
 const posix = process.platform === "win32" ? { skip: "shell legs need bash" } : {};
-const CASE: DiffCase = { script: "scripts/ci-changeset-coverage.sh" };
+const CASE: DiffCase = { script: "scripts/ci-changeset-coverage.ts" };
 
 const REFERENCE = `capabilities:
   - id: alpha
@@ -149,7 +149,7 @@ describe("ci-changeset-coverage twin", posix, () => {
   - id: scanned
     changeset-gated: true
     command:
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash -c 'bogus_cmd_q || true'
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- bash -c 'bogus_cmd_q || true'
 `;
     const r = agree(ref);
     assert.equal(r.ts.status, 1);

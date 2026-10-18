@@ -223,7 +223,7 @@ node scripts/build-components.ts
 
 Run the two commands as separate steps, not chained with `&&`. The build needs
 Node.js 24 or newer; `js-yaml` comes from the setup dependency step.
-`bash scripts/build-components.sh` still works and forwards to the same build.
+`node scripts/build-components.ts` still works and forwards to the same build.
 
 **Expected outcome:** The script exits zero and populates the following
 output directories:
