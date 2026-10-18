@@ -31,6 +31,7 @@ on:
       - "scripts/tests/usage-storage-journal.test.ts"
       - "scripts/tests/usage-storage-query.test.ts"
       - "scripts/tests/usage-storage-gate.test.ts"
+      - "scripts/tests/usage-mirror-spawn.test.ts"
       - "scripts/tests/usage-storage-wing.test.ts"
       - "scripts/tests/usage-storage-drain.test.ts"
       - "scripts/tests/usage-storage-prune.test.ts"
@@ -81,6 +82,7 @@ on:
       - "scripts/tests/usage-storage-journal.test.ts"
       - "scripts/tests/usage-storage-query.test.ts"
       - "scripts/tests/usage-storage-gate.test.ts"
+      - "scripts/tests/usage-mirror-spawn.test.ts"
       - "scripts/tests/usage-storage-wing.test.ts"
       - "scripts/tests/usage-storage-drain.test.ts"
       - "scripts/tests/usage-storage-prune.test.ts"
@@ -129,7 +131,7 @@ jobs:
         run: npm install
 
       - name: Validate the usage-record storage contract (no daemon)
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-storage-journal.test.ts scripts/tests/usage-storage-query.test.ts scripts/tests/usage-storage-gate.test.ts scripts/tests/usage-storage-wing.test.ts scripts/tests/usage-storage-drain.test.ts scripts/tests/usage-storage-prune.test.ts
+        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-storage-journal.test.ts scripts/tests/usage-storage-query.test.ts scripts/tests/usage-storage-gate.test.ts scripts/tests/usage-mirror-spawn.test.ts scripts/tests/usage-storage-wing.test.ts scripts/tests/usage-storage-drain.test.ts scripts/tests/usage-storage-prune.test.ts
 
       - name: Validate the usage-record mirror against a fake daemon
         run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/usage-mirror-catchup.test.ts scripts/tests/usage-mirror-prune.test.ts scripts/tests/usage-mirror-failures.test.ts scripts/tests/usage-mirror-mutants.test.ts

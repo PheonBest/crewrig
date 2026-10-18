@@ -7,7 +7,8 @@
 // its token file under the REAL home, this rig never does. The rig sets the
 // process environment of the test process itself (journal.js is driven in-process),
 // so a test file creates exactly one rig and its tests run one after the other.
-// POSIX-only: the write-time detached spawn is `bash usage-mirror.sh --from-write`.
+// The write-time detached spawn is `process.execPath scripts/usage-mirror.ts --from-write`
+// (spec 0253 delta-04); the suites below stay POSIX-only for their bash shims and lock mtime.
 
 import { type ChildProcess, spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
@@ -23,9 +24,7 @@ export { makeRecord, type RecordOpts };
 const require = createRequire(import.meta.url);
 const FIXTURE = path.join(REPO, "scripts/tests/fixtures/usage-storage/fake-mempalace-mcp.js");
 export const SUITE_WING = "usage-storage-mirror-suite";
-export const SKIP_REASON = WINDOWS
-  ? "SKIP: POSIX-only (detached bash spawn, bash shims, lock mtime)"
-  : false;
+export const SKIP_REASON = WINDOWS ? "SKIP: POSIX-only (bash shims, lock mtime)" : false;
 
 export interface Rig {
   readonly root: string;

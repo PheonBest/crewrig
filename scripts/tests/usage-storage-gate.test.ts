@@ -24,7 +24,7 @@ import {
   type Sandbox,
 } from "./lib/usage-storage-rig.ts";
 import { mutated } from "./lib/usage-mutants.ts";
-import { makePathDir, REPO, SKIP_POSIX, which } from "./lib/worktree-fixtures.ts";
+import { REPO, which } from "./lib/worktree-fixtures.ts";
 
 const boxes: Sandbox[] = [];
 const fresh = (repo?: string): Sandbox => {
@@ -46,15 +46,20 @@ async function waitFor(file: string, ms: number): Promise<boolean> {
   return fs.existsSync(file);
 }
 
-/** A `bash` on PATH that only records a usage-mirror.sh spawn (never runs a real mirror). */
-function stubBash(sb: Sandbox): { sentinel: string; env: Record<string, string> } {
+/**
+ * A `--require` preload that only records the detached `--from-write` spawn (it exits before
+ * the real mirror entry runs). Spec 0253 delta-04: the spawn is `process.execPath` on
+ * scripts/usage-mirror.ts, so no `bash` is involved.
+ */
+function stubSpawn(sb: Sandbox): { sentinel: string; env: Record<string, string> } {
   const sentinel = path.join(sb.home, "mirror-spawned.sentinel");
-  const dir = makePathDir({
-    scripts: {
-      bash: `case "$*" in\n  *usage-mirror.sh*) touch "${sentinel}" ;;\n  *) exec /bin/bash "$@" ;;\nesac`,
-    },
-  });
-  return { sentinel, env: { PATH: `${dir}${path.delimiter}${process.env.PATH ?? ""}` } };
+  const preload = path.join(sb.home, "stub-spawn.cjs");
+  fs.writeFileSync(
+    preload,
+    `if (process.argv.includes('--from-write')) {\n` +
+      `  require('fs').writeFileSync(${JSON.stringify(sentinel)}, '');\n  process.exit(0);\n}\n`,
+  );
+  return { sentinel, env: { NODE_OPTIONS: `--require ${preload.replace(/\\/g, "/")}` } };
 }
 
 function placeToken(sb: Sandbox): string {
@@ -64,16 +69,16 @@ function placeToken(sb: Sandbox): string {
   return token;
 }
 
-describe("(g1) no-MemPalace gate", { skip: SKIP_POSIX }, () => {
+describe("(g1) no-MemPalace gate", () => {
   test("no token: no mirror dir, no spawn", async () => {
     const sb = fresh();
-    const stub = stubBash(sb);
+    const stub = stubSpawn(sb);
     const rec = makeRecord({ session: "gate-session-1", idem: "gate-key-1" });
     const out = writeRecord(sb, rec, { ...stub.env, CREWRIG_USAGE_MIRROR: "" });
     assert.equal(out.state, "stored", out.stdout);
     assert.equal(fs.existsSync(path.join(sb.root, "mirror")), false, "mirror/ was created");
     await sleep(500);
-    assert.equal(fs.existsSync(stub.sentinel), false, "usage-mirror.sh was spawned without token");
+    assert.equal(fs.existsSync(stub.sentinel), false, "the mirror was spawned without token");
   });
 
   test("token present: 1 pending marker, 0 mirrored (MIRROR=0 blocks the spawn)", () => {
@@ -131,11 +136,11 @@ describe("(h) token path", () => {
   });
 });
 
-describe("(g2) backoff: unreachable.stamp", { skip: SKIP_POSIX }, () => {
+describe("(g2) backoff: unreachable.stamp", () => {
   test("a fresh unreachable.stamp suppresses the spawn", async () => {
     const sb = fresh();
     placeToken(sb);
-    const stub = stubBash(sb);
+    const stub = stubSpawn(sb);
     fs.mkdirSync(path.join(sb.root, "mirror"), { recursive: true });
     fs.writeFileSync(path.join(sb.root, "mirror", "unreachable.stamp"), "");
     const rec = makeRecord({ session: "backoff-session-1", idem: "backoff-key-1" });
@@ -150,7 +155,7 @@ describe("(g2) backoff: unreachable.stamp", { skip: SKIP_POSIX }, () => {
   test("a stale (15 min) unreachable.stamp allows the spawn", async () => {
     const sb = fresh();
     placeToken(sb);
-    const stub = stubBash(sb);
+    const stub = stubSpawn(sb);
     const stamp = path.join(sb.root, "mirror", "unreachable.stamp");
     fs.mkdirSync(path.dirname(stamp), { recursive: true });
     fs.writeFileSync(stamp, "");

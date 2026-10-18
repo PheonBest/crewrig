@@ -229,13 +229,13 @@ function readOrRepairSidecar(cli, per, recordId, record) {
 // present ⇒ one pending marker, then a detached catch-up unless a fresh
 // unreachable stamp or CREWRIG_USAGE_MIRROR=0 forbids it.
 //
-// The detached spawn passes `--from-write`, which keeps catchUp() on its
-// original NON-BLOCKING single lock attempt (contended ⇒ `{ ran: false }`
+// The detached spawn (`process.execPath` on `usage-mirror.ts`) passes
+// `--from-write`, which keeps catchUp() on its original NON-BLOCKING single lock attempt (contended ⇒ `{ ran: false }`
 // immediately — another child already holds the lock and the next write's
 // spawn will retry). Whichever child DOES acquire the lock drains pending/
 // in a loop (drainPending(), below) rather than a single pass, so markers
 // created by sibling writes while it runs are not stranded for "the next
-// write" to pick up. An operator or CI invocation of `usage-mirror.sh`
+// write" to pick up. An operator or CI invocation of `usage-mirror.ts`
 // WITHOUT `--from-write` is treated as explicit (catchUp({ explicit: true
 // })): on a contended lock it waits with bounded polling instead of giving
 // up (see acquireLockWaiting()), so its post-condition — every marker
@@ -272,9 +272,22 @@ function onWrite(record, entryPath, wingInfo) {
     return;
   }
 
-  const scriptPath = path.join(__dirname, '..', '..', 'usage-mirror.sh');
-  const child = spawn('bash', [scriptPath, '--from-write'], { detached: true, stdio: 'ignore' });
-  child.unref();
+  // `process.execPath` on the TypeScript entry: no `bash`, no shell, so the
+  // spawn works on Windows. The error listener (attached before unref) and the
+  // try/catch keep a failed spawn from ever changing the outcome of the write:
+  // the pending marker written above is the recovery.
+  const scriptPath = path.join(__dirname, '..', '..', 'usage-mirror.ts');
+  try {
+    const child = spawn(process.execPath, [scriptPath, '--from-write'], {
+      detached: true,
+      stdio: 'ignore',
+      windowsHide: true,
+    });
+    child.on('error', () => {});
+    child.unref();
+  } catch (err) {
+    // a synchronous spawn failure is swallowed for the same reason
+  }
 }
 
 // --- Locking (mirror.lock — same shape as journal.js's drain.lock) --------
@@ -527,7 +540,7 @@ async function drainPending() {
 //   - explicit: false (write-time detached spawn, `--from-write`) — a
 //     single non-blocking lock attempt; contended ⇒ `{ ran: false }`
 //     immediately, the peer already in progress owns the drain.
-//   - explicit: true (operator/CI run of usage-mirror.sh with no flag, or
+//   - explicit: true (operator/CI run of usage-mirror.ts with no flag, or
 //     `--reconcile`) — waits on a contended lock (acquireLockWaiting())
 //     instead of giving up, so its post-condition holds: every marker
 //     pending at call time gets attempted.
