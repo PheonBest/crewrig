@@ -15,7 +15,6 @@ import { fileURLToPath } from "node:url";
 export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 export const LIB_DIR = path.join(REPO, "scripts", "lib");
 export const PIN_MODULE = path.join(LIB_DIR, "mempalace_pin.py");
-export const COMMON_SH = path.join(LIB_DIR, "common.sh");
 export const PIN_FILE = path.join(LIB_DIR, "mempalace-pin.json");
 export const PYTHON_BIN = process.env.CREWRIG_TEST_PYTHON ?? "python3";
 const FIXTURES = path.join(REPO, "scripts", "tests", "fixtures", "mempalace-pin");
@@ -143,18 +142,11 @@ function canImportPackaging(rig: Rig, python: string): boolean {
 
 /**
  * An interpreter that can import the REAL `packaging`: the primary interpreter first,
- * then the one the framework's own detector returns (POSIX only). Undefined when none.
+ * Undefined when it cannot.
  */
 export function findPackagingPython(rig: Rig): string | undefined {
   if (canImportPackaging(rig, PYTHON_BIN)) return PYTHON_BIN;
-  if (process.platform === "win32") return undefined;
-  const res = spawnSync("bash", ["-c", `. "${COMMON_SH}"; detect_mempalace_python`], {
-    env: scratchEnv(rig.home, undefined),
-    encoding: "utf8",
-    timeout: 60_000,
-  });
-  const detected = res.stdout.trim();
-  return detected !== "" && canImportPackaging(rig, detected) ? detected : undefined;
+  return undefined;
 }
 
 export const PACKAGING_HINT =

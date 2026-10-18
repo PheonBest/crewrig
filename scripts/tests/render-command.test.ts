@@ -2,13 +2,12 @@
 //
 // Real sources (every SKILL.md, AGENT.md, commands/*.md, plus the hello-world command)
 // are checked structurally; synthetic ones carry the edge cases with the exact string the
-// shell printed. The shell is the oracle (R14): where it disagrees with R10's prose
-// (no line-1 fence, yet a body after the second `---`) the SHELL is pinned.
-// A small parity set runs the shell on Linux (the exhaustive one is the conformance
-// suite's). Strings carry no trailing LF; an unreadable source throws.
+// shell printed. The shell was the oracle (R14): where it disagreed with R10's prose
+// (no line-1 fence, yet a body after the second `---`) the SHELL is pinned. The shell parity leg
+// went with render-command.sh (spec 0266); build-components-conformance-render replays its recording.
+// Strings carry no trailing LF; an unreadable source throws.
 
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -44,19 +43,6 @@ const realSources = fs
   .sort()
   .map((rel) => path.join(REPO, rel));
 realSources.push(hello);
-
-const yq = spawnSync("yq", ["--version"], { encoding: "utf8" }).stdout ?? "";
-const parityOk =
-  (process.platform === "linux" || process.env["CREWRIG_SHELL_PARITY"] === "1") &&
-  yq.includes("mikefarah") &&
-  spawnSync("bash", ["--version"]).status === 0;
-const noShell = parityOk ? undefined : "skipped: needs Linux with bash and mikefarah yq";
-/** A library function as the shell printed it; helpers lose trailing LFs as `$(...)` did. */
-function sh(fn: string, ...args: string[]): string {
-  const script = `. "${REPO}/scripts/lib/render-command.sh"; out=$(${fn} "$@"; printf x); printf '%s' "\${out%x}"`;
-  const r = spawnSync("bash", ["-c", script, "x", ...args], { encoding: "utf8" });
-  return /_(gemini|claude)$/.test(fn) ? r.stdout : r.stdout.replace(/\n+$/, "");
-}
 
 const FENCED = "---\ndescription: f\n---\nintro\n```\n---\nx: y\n---\n```\nend\n";
 const FENCED_BODY = "intro\n```\n---\nx: y\n---\n```\nend";
@@ -259,42 +245,4 @@ describe("real sources", () => {
       );
       assert.ok(claude.endsWith(`\n---\n\n${body}`));
     });
-});
-
-describe("parity with the shell library", { skip: noShell }, () => {
-  const tools = (list: string): string =>
-    `---\nname: t\ndescription: d\nclaude:\n  allowed-tools:${list}\n---\nb\n`;
-  const synthetic = [
-    ...rows.map((r) => r[1]),
-    ...provRows.map((r) => r[1]),
-    ...noProvRows.map((r) => r[1]),
-    tools('\n    - Read\n    - ""\n    - Write'),
-    tools("\n    a: x\n    b: y"),
-  ];
-  test("each synthetic source above through all six functions (CRLF and BOM against the LF original)", () => {
-    for (const text of synthetic) {
-      const lf = text.replace(BOM, "").replace(/\r\n/g, "\n");
-      const file = src(text);
-      const oracle = src(lf);
-      const fm = sh("extract_frontmatter", oracle);
-      const pairs: readonly (readonly [string, string])[] = [
-        [extractFrontmatter(file), fm],
-        [extractBody(file), sh("extract_body", oracle)],
-        [R.yamlField(file, "description"), sh("yaml_field", oracle, "description")],
-        [
-          R.renderCommandTomlProvenanceComment(fm),
-          sh("render_command_toml_provenance_comment", fm),
-        ],
-        [R.renderCommandGemini(file), sh("render_command_gemini", oracle)],
-        [R.renderCommandClaude(file), sh("render_command_claude", oracle)],
-      ];
-      for (const [got, want] of pairs) assert.equal(got, want, JSON.stringify(text));
-    }
-  });
-  test("the hello-world command and a real skill", () => {
-    for (const file of [hello, realSources[0] ?? hello]) {
-      assert.equal(R.renderCommandGemini(file), sh("render_command_gemini", file));
-      assert.equal(R.renderCommandClaude(file), sh("render_command_claude", file));
-    }
-  });
 });

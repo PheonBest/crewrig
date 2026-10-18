@@ -3,8 +3,8 @@
 // Replaces scripts/tests/test-build-extension.sh (cases 1-5, 15).
 //
 // Case 1 renders into the SANDBOX `build/`; the checkout is never written. The sourced-Bash
-// oracle leg is dropped: `build-components-conformance-render.test.ts` already sources
-// `render-command.sh` against the TypeScript renderer.
+// oracle leg is dropped: `build-components-conformance-render.test.ts` replays the recorded
+// `render-command.sh` outputs against the TypeScript renderer.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
