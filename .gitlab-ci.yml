@@ -1077,8 +1077,6 @@ governance-checks-ts:
         - "scripts/tests/governance-*"
         - "scripts/tests/lib/governance-*"
         - "scripts/tests/check-agents-size.test.ts"
-        - "scripts/check-*.sh"
-        - "scripts/tests/test-check-*.sh"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/check-*.ts"
@@ -1087,8 +1085,6 @@ governance-checks-ts:
         - "scripts/tests/governance-*"
         - "scripts/tests/lib/governance-*"
         - "scripts/tests/check-agents-size.test.ts"
-        - "scripts/check-*.sh"
-        - "scripts/tests/test-check-*.sh"
 
 model-ci-tooling-ts:
   image: node:24
@@ -1898,7 +1894,6 @@ e2e:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
-        - "scripts/tests/test-e2e-*.sh"
         - "scripts/tests/e2e-*.test.ts"
         - "scripts/tests/lib/e2e-*.ts"
         - "scripts/tests/fixtures/e2e-oracle/**"
@@ -1909,7 +1904,6 @@ e2e:
         - ".gitignore"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
-        - "scripts/tests/test-e2e-*.sh"
         - "scripts/tests/e2e-*.test.ts"
         - "scripts/tests/lib/e2e-*.ts"
         - "scripts/tests/fixtures/e2e-oracle/**"
@@ -1938,7 +1932,6 @@ setup:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
-        - "scripts/tests/test-setup-*.sh"
         - "scripts/tests/setup-common-*.test.ts"
         - "scripts/tests/setup-identity-flow.test.ts"
         - "scripts/tests/setup-legacy-gemini-md-declaration.test.ts"
@@ -1955,7 +1948,6 @@ setup:
         - "scripts/tests/setup-gemini-settings-seeds.test.ts"
         - "scripts/tests/lib/gemini-settings-rig.ts"
         - "scripts/tests/lib/worktree-fixtures.ts"
-        - "scripts/setup-*.sh"
         - "scripts/setup-*-interactive.ts"
         - "scripts/tls-delegation.ts"
         - "scripts/usage-capture-optin.ts"
@@ -1973,7 +1965,6 @@ setup:
         - "scripts/tests/setup-flow-fixtures.ts"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
-        - "scripts/tests/test-setup-*.sh"
         - "scripts/tests/setup-common-*.test.ts"
         - "scripts/tests/setup-identity-flow.test.ts"
         - "scripts/tests/setup-legacy-gemini-md-declaration.test.ts"
@@ -1990,7 +1981,6 @@ setup:
         - "scripts/tests/setup-gemini-settings-seeds.test.ts"
         - "scripts/tests/lib/gemini-settings-rig.ts"
         - "scripts/tests/lib/worktree-fixtures.ts"
-        - "scripts/setup-*.sh"
         - "scripts/setup-*-interactive.ts"
         - "scripts/tls-delegation.ts"
         - "scripts/usage-capture-optin.ts"

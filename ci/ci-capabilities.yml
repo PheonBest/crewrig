@@ -691,7 +691,7 @@ capabilities:
   # Spec 0256 requirement 10 (ticket #1335), PR C: the parity proof. Every golden cell that runs on both
   # legs is run on the unchanged shell setup and on the TypeScript entry and the two results are
   # compared directly through the tagged deviations (one shard file per CLI), and each TypeScript twin of
-  # a shell library function is compared with its original. Linux only (needs bash and jq); retired
+  # a shell library function is compared with its original. Linux only (it needed the shell and jq); retired
   # with the shell setups.
   - id: setup-differential
     name: "Run the shell-against-TypeScript parity proof of the four setups and the twin differential suites"
@@ -1426,8 +1426,6 @@ capabilities:
           - "scripts/tests/governance-*"
           - "scripts/tests/lib/governance-*"
           - "scripts/tests/check-agents-size.test.ts"
-          - "scripts/check-*.sh"
-          - "scripts/tests/test-check-*.sh"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -1437,8 +1435,6 @@ capabilities:
           - "scripts/tests/governance-*"
           - "scripts/tests/lib/governance-*"
           - "scripts/tests/check-agents-size.test.ts"
-          - "scripts/check-*.sh"
-          - "scripts/tests/test-check-*.sh"
     portability: portable
     requires:
       runtime: node@24
@@ -2389,7 +2385,6 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/tests/test-e2e-*.sh"
           - "scripts/tests/e2e-*.test.ts"
           - "scripts/tests/lib/e2e-*.ts"
           - "scripts/tests/fixtures/e2e-oracle/**"
@@ -2401,7 +2396,6 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/tests/test-e2e-*.sh"
           - "scripts/tests/e2e-*.test.ts"
           - "scripts/tests/lib/e2e-*.ts"
           - "scripts/tests/fixtures/e2e-oracle/**"
@@ -2429,7 +2423,6 @@ capabilities:
       - on: pull-request
         branches: [main, "release/**"]
         paths:
-          - "scripts/tests/test-setup-*.sh"
           - "scripts/tests/setup-common-*.test.ts"
           - "scripts/tests/setup-identity-flow.test.ts"
           - "scripts/tests/setup-legacy-gemini-md-declaration.test.ts"
@@ -2446,7 +2439,6 @@ capabilities:
           - "scripts/tests/setup-gemini-settings-seeds.test.ts"
           - "scripts/tests/lib/gemini-settings-rig.ts"
           - "scripts/tests/lib/worktree-fixtures.ts"
-          - "scripts/setup-*.sh"
           - "scripts/setup-*-interactive.ts"
           - "scripts/tls-delegation.ts"
           - "scripts/usage-capture-optin.ts"
@@ -2465,7 +2457,6 @@ capabilities:
       - on: push
         branches: [main, "release/**"]
         paths:
-          - "scripts/tests/test-setup-*.sh"
           - "scripts/tests/setup-common-*.test.ts"
           - "scripts/tests/setup-identity-flow.test.ts"
           - "scripts/tests/setup-legacy-gemini-md-declaration.test.ts"
@@ -2482,7 +2473,6 @@ capabilities:
           - "scripts/tests/setup-gemini-settings-seeds.test.ts"
           - "scripts/tests/lib/gemini-settings-rig.ts"
           - "scripts/tests/lib/worktree-fixtures.ts"
-          - "scripts/setup-*.sh"
           - "scripts/setup-*-interactive.ts"
           - "scripts/tls-delegation.ts"
           - "scripts/usage-capture-optin.ts"
@@ -2580,13 +2570,13 @@ capabilities:
       # node@24 is the PRIMARY runtime on purpose (finding i1-F16): the
       # GitLab image is derived from the FIRST entry, so the job runs on the
       # pinned node:24 image like every other Node job, instead of piping an
-      # unpinned NodeSource script into bash on a python:3.12 image.
-      # check-gemini-overlay-enrollment.ts runs on Node.js 24 and the Bash
-      # suites reach the check shims, which fail closed below Node.js 24. No
+      # unpinned NodeSource script on a python:3.12 image.
+      # check-gemini-overlay-enrollment.ts runs on Node.js 24, and the check
+      # entries fail closed below Node.js 24. No
       # python runtime is declared: check-markdown-links was the only
       # python3 consumer and it is TypeScript now. The GitLab leg cannot be
-      # run locally; it is covered by build-ci.sh --check and
-      # check-ci-parity.sh only.
+      # run locally; it is covered by build-ci.ts --check and
+      # check-ci-parity.ts only.
       runtime: node@24
     command:
       - npm ci --omit=dev --workspaces=false
@@ -2599,8 +2589,8 @@ capabilities:
   # repository-scan runs the checks whose verdict depends on files anywhere in
   # the repository (spec 0251 R1-R4): check-no-machine-paths.ts scans every
   # tracked file, check-markdown-links.ts every tracked *.md and the target of
-  # every relative link, and check-core-paths.sh every path the manifest names
-  # plus the output directories of build-components.sh. No filter can enumerate
+  # every relative link, and check-core-paths.ts every path the manifest names
+  # plus the output directories of build-components.ts. No filter can enumerate
   # those inputs in advance, so the capability has NO `paths:` filter and runs
   # on every pull request and push to main and release/**. It is deliberately
   # NOT filtered with a catch-all `**` glob (R4): that would make every tracked
@@ -2609,7 +2599,7 @@ capabilities:
   # stay in misc, markdown-links and core-paths, under their own filters.
   # The three scans are TypeScript entries on Node.js 24: no python runtime is
   # declared (check-markdown-links was its only consumer), and check-core-paths
-  # needs no yq because `build-components.sh --list-output-dirs` exits in its
+  # needs no yq because `build-components.ts --list-output-dirs` exits in its
   # list_output_dirs guard (scripts/build-components.ts:64-117) before the yq
   # prerequisite check (scripts/build-components.ts:120).
   - id: repository-scan
@@ -2621,9 +2611,8 @@ capabilities:
         branches: [main, "release/**"]
     portability: portable
     requires:
-      # check-core-paths.ts runs build-components.sh through
-      # `--list-output-dirs`; on the release branch that is a shim over the
-      # TypeScript build, which fails closed below Node.js 24 (spec 0215 R31
+      # check-core-paths.ts runs build-components.ts through
+      # `--list-output-dirs`, through the TypeScript build, which fails closed below Node.js 24 (spec 0215 R31
       # follow-up noted in #1550).
       runtime: node@24
     command:
@@ -3069,12 +3058,12 @@ capabilities:
       # the win32-only suites (service-windows*.test.ts) run in `windows-service-task`.
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/service-backend.test.ts scripts/tests/service-bundle-closure.test.ts scripts/tests/service-exec.test.ts scripts/tests/service-file-size.test.ts scripts/tests/service-install.test.ts scripts/tests/service-launchd-systemd.test.ts scripts/tests/service-launcher-child.test.ts scripts/tests/service-launcher-record.test.ts scripts/tests/service-launcher-token.test.ts scripts/tests/service-launcher-palace-path.test.ts scripts/tests/service-listener-pid.test.ts scripts/tests/service-names.test.ts scripts/tests/service-os-inspect.test.ts scripts/tests/service-owner-check.test.ts scripts/tests/service-probe.test.ts scripts/tests/service-process-tree.test.ts scripts/tests/service-program-install.test.ts scripts/tests/service-schtasks.test.ts scripts/tests/service-schtasks-uninstall.test.ts scripts/tests/service-snapshot-failure.test.ts scripts/tests/service-task-ownership.test.ts scripts/tests/service-task-snapshot.test.ts scripts/tests/service-task-state.test.ts scripts/tests/service-token-argv.test.ts scripts/tests/service-trust-wrapper.test.ts scripts/tests/service-unit-render.test.ts scripts/tests/service-windows-task-xml.test.ts scripts/tests/mcp-launcher-lifecycle.test.ts
       # Spec 0258 R15, R28, R34 (ticket #1337): the calendar-trigger renderers and backends of the
-      # service layer, the harness-curator differential (the shell leg is skipped: the three `.sh` are
+      # service layer, the harness-curator differential (the shell leg was retired with the three `.sh`
       # forwarding shims, spec 0258 R32) and its callers guard. No `paths:` filter: the job already runs on
       # every change, which covers the curator and schedule paths.
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/service-schedule-launchd-systemd.test.ts scripts/tests/service-schedule-names.test.ts scripts/tests/service-schedule-render.test.ts scripts/tests/service-schedule-schtasks.test.ts scripts/tests/harness-curator-differential.test.ts scripts/tests/harness-curator-callers.test.ts
       # Spec 0252 PR C (issue #1330): the ChromaDB trio, black-box through the
-      # TypeScript entries and the bash shims, and the open-file floor (needs python3;
+      # TypeScript entries, and the open-file floor (needs python3;
       # the Windows-capable parts also run in `windows-chroma-trio`).
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/chroma-lifecycle.test.ts scripts/tests/chroma-launch.test.ts scripts/tests/chroma-launch-env.test.ts
       # Spec 0252 PR D (issue #1330): the MCP daemon status report, black-box through
@@ -3085,12 +3074,12 @@ capabilities:
       # token-bearing config backup (review i1-F38), unit level.
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/service-token.test.ts scripts/tests/switch-transaction.test.ts scripts/tests/switch-replace.test.ts scripts/tests/service-backup-config.test.ts
       # Spec 0252 PR E (issue #1330): the switch residue repair, black-box through the
-      # TypeScript entry and the bash shim (POSIX stubs), and its platform-neutral
+      # TypeScript entry (POSIX stubs), and its platform-neutral
       # oracle (TypeScript entry only, also run in `windows-doctor-repair`).
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/repair-verbs.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/repair-windows.test.ts
       # Spec 0252 PR E (issue #1330): the doctor report, black-box through the TypeScript
-      # entry and the bash shim; the Windows fourth section through the os-inspect seam.
+      # entry; the Windows fourth section through the os-inspect seam.
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/doctor-sections.test.ts scripts/tests/doctor-sections-windows.test.ts
 
   # Spec 0237 (issue #1322): the Windows hook command-line parsing probe's
@@ -3318,7 +3307,7 @@ capabilities:
   # chroma-mcp) do not replace. `jq` is declared for the differential test of
   # the payload chain (R5), which is skipped with an explicit line where `jq`
   # is absent. Deliberately NOT changeset-gated, mirroring usage-capture above:
-  # the fail-safe job (ci-changeset-coverage.sh) provisions python@3.12, yq and
+  # the fail-safe job (ci-changeset-coverage.ts) provisions python@3.12, yq and
   # node@24 only and carries no `jq`.
   - id: worktree-guard
     name: "Validate the worktree git guard and worktree claim tool (TypeScript)"
@@ -3534,10 +3523,10 @@ capabilities:
   # NO `tools:` KEY, deliberately. The generated GitLab job runs on the default
   # `debian:stable-slim` image, which ships no git, so git is installed
   # CONDITIONALLY as the first line of `command:` — a business step, not setup.
-  # Declaring `tools: [git]` instead would still fail check-ci-parity.sh Arm 2
+  # Declaring `tools: [git]` instead would still fail check-ci-parity.ts Arm 2
   # (reference↔GitLab): `git`/`diff` have no `tool_install_lines` recipe in
-  # build-ci.sh, so a GitLab job needing either hard-errors at generation time.
-  # Arm 1 (GitHub Actions) no longer blocks this — since #1216, check-ci-parity.sh
+  # build-ci.ts, so a GitLab job needing either hard-errors at generation time.
+  # Arm 1 (GitHub Actions) no longer blocks this — since #1216, check-ci-parity.ts
   # treats `git`/`diff` as preinstalled on ubuntu-latest, the same as `jq`, so
   # neither an `install_recipe_tool` pattern nor a hand-authored GHA install
   # step is needed there anymore. This shape still needs none of it — the one
@@ -3656,7 +3645,7 @@ capabilities:
       - npm audit --audit-level=critical
 
   # usage-record-schema validates the usage record contract (spec 0205).
-  # Deliberately NOT changeset-gated: the fail-safe job (ci-changeset-coverage.sh)
+  # Deliberately NOT changeset-gated: the fail-safe job (ci-changeset-coverage.ts)
   # provisions python@3.12 + yq + node@24, so a node@22 capability must never
   # enter its execution set.
   - id: usage-record-schema
@@ -3739,9 +3728,9 @@ capabilities:
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/monorepo-release-notes-real-engine.test.ts
 
   # usage-capture validates the spec 0206 capture-adapter module tree and the
-  # spec 0211 per-CLI usage-capture opt-in (scripts/lib/usage-capture-optin.sh).
+  # spec 0211 per-CLI usage-capture opt-in (scripts/usage-capture-optin.ts).
   # Deliberately NOT changeset-gated, mirroring usage-record-schema above:
-  # the fail-safe job (ci-changeset-coverage.sh) provisions node@24 only, so a
+  # the fail-safe job (ci-changeset-coverage.ts) provisions node@24 only, so a
   # node@22 capability must never enter it.
   - id: usage-capture
     name: "Validate usage capture adapters and fixtures"
@@ -4240,7 +4229,7 @@ capabilities:
   # registered as a portable capability (spec 0049 R11) so the verification
   # surface is itself contract-described and parity-checked — symmetric with
   # gitlab-ci-check above. It shells `yq` to read the reference and the
-  # pipelines, and composes `build-ci.sh --check` (which also needs yq) for the
+  # pipelines, and composes `build-ci.ts --check` (which also needs yq) for the
   # reference↔GitLab arm; hence `tools: [yq]` (delta-02 R12).
   - id: check-ci-parity
     name: "Verify the reference, GitHub Actions, and GitLab pipelines agree"
@@ -4637,7 +4626,7 @@ capabilities:
   # token with api + write_repository, allowed to push to the protected
   # release branch and to create tags); its GitHub value is
   # secrets.GITHUB_TOKEN. yq is required by the packager's render step
-  # (scripts/build-extension.sh). Full history: the engine reads every tag.
+  # (scripts/build-extension.ts). Full history: the engine reads every tag.
   # The business steps diverge on one point, inside the driver (issue #1379,
   # docs/github-release-pr.md): on GitHub the release commit goes through a
   # release PR (branch release-pr/main, required checks dispatched through
@@ -4689,7 +4678,7 @@ capabilities:
   # token with api + write_repository, allowed to push to the protected
   # release branch and to create tags); its GitHub value is
   # secrets.GITHUB_TOKEN. yq is required by the packager's render step
-  # (scripts/build-extension.sh). Full history: the engine reads every tag.
+  # (scripts/build-extension.ts). Full history: the engine reads every tag.
   # The business steps diverge on one point, inside the driver (issue #1379,
   # docs/github-release-pr.md): on GitHub the release commit goes through a
   # release PR (branch release-pr/main, required checks dispatched through

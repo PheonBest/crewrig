@@ -362,8 +362,6 @@ jobs:
               - 'scripts/tests/governance-*'
               - 'scripts/tests/lib/governance-*'
               - 'scripts/tests/check-agents-size.test.ts'
-              - 'scripts/check-*.sh'
-              - 'scripts/tests/test-check-*.sh'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.governance-checks-ts == 'true'
         with:
@@ -1567,7 +1565,6 @@ jobs:
         with:
           filters: |
             e2e:
-              - 'scripts/tests/test-e2e-*.sh'
               - 'scripts/tests/e2e-*.test.ts'
               - 'scripts/tests/lib/e2e-*.ts'
               - 'scripts/tests/fixtures/e2e-oracle/**'
@@ -1611,7 +1608,6 @@ jobs:
         with:
           filters: |
             setup:
-              - 'scripts/tests/test-setup-*.sh'
               - 'scripts/tests/setup-common-*.test.ts'
               - 'scripts/tests/setup-identity-flow.test.ts'
               - 'scripts/tests/setup-legacy-gemini-md-declaration.test.ts'
@@ -1628,7 +1624,6 @@ jobs:
               - 'scripts/tests/setup-gemini-settings-seeds.test.ts'
               - 'scripts/tests/lib/gemini-settings-rig.ts'
               - 'scripts/tests/lib/worktree-fixtures.ts'
-              - 'scripts/setup-*.sh'
               - 'scripts/setup-*-interactive.ts'
               - 'scripts/tls-delegation.ts'
               - 'scripts/usage-capture-optin.ts'
@@ -3261,7 +3256,7 @@ jobs:
         # vs 1), but Task collapses any non-zero status into its own 201, so only
         # the `[ERROR]` line survives this wrapper. Kept behind `task` on purpose
         # — `ci/ci-capabilities.yml` declares this command for both engines
-        # (check-ci-parity.sh enforces the agreement, and .gitlab-ci.yml is
+        # (check-ci-parity.ts enforces the agreement, and .gitlab-ci.yml is
         # generated from it), and nothing here reads the exit code beyond
         # pass/fail, so bypassing the wrapper would cost symmetry and buy no
         # observable distinction.
