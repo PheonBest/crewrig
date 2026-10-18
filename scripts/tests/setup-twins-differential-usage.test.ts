@@ -71,12 +71,14 @@ describe("usageCaptureRequireNodeFloor", { skip: SKIP }, () => {
     assert.deepEqual(twin(dir), { ok: false, err: "crewrig: requires Node.js >= 24 (stub)" });
   });
 
-  test("the guard missing from the checkout: the line, with and without node", () => {
+  test("the guard missing from the checkout: the guard line with node, the node line without", () => {
     const guard = path.join(tmp(), "scripts", "lib", "node-floor-guard.js");
-    for (const pathEnv of [path.dirname(process.execPath), tmp()]) {
-      const got = twin(pathEnv, guard);
-      assert.equal(got.ok, false, pathEnv);
-      assert.match(got.err, /Node\.js floor guard not found at /);
-    }
+    const withNode = twin(path.dirname(process.execPath), guard);
+    assert.equal(withNode.ok, false);
+    assert.match(withNode.err, /Node\.js floor guard not found at /);
+    // The shell library recorded the same outcome as the twin without node: the node line comes first.
+    const withoutNode = twin(tmp(), guard);
+    assert.equal(withoutNode.ok, false);
+    assert.match(withoutNode.err, /Node\.js was not found on PATH/);
   });
 });

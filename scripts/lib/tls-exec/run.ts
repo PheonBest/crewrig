@@ -103,7 +103,7 @@ export function runTlsExec(argv: readonly string[], deps: RunDeps = processDeps)
     spawn: () => deps.spawnChild(program, command.slice(1), trust.env as NodeJS.ProcessEnv),
     onSignal: deps.onSignal,
     exit: deps.exit,
-    log: (line) => deps.stdout(`${line}\n`),
+    log: (line) => deps.stderr(`${line}\n`), // stdout is the MCP protocol channel
     endNonzeroOnChildExit: flagged,
   });
 }
