@@ -1,11 +1,11 @@
 // release-package.ts — the one place a versioned release artifact's shape is decided (spec 0183
 // R17/R21/R22; ported by spec 0257 R9, R10, decision D1). Replaced
-// the body of the former scripts/release-package-extension.sh: the five assertions in the shell's order with its messages
+// the body of the former scripts/release-package-extension.ts: the five assertions in the shell's order with its messages
 // and its stdout lines, then the archive.
 //
 // The fresh render is a SPAWNED `node scripts/build-extension.ts --target gemini <name>` with
 // inherited streams, not an in-process call: a sandbox can replace that one file to prove the
-// packager refuses a tree that does not build, as the shell's stub of build-extension.sh did.
+// packager refuses a tree that does not build, as the shell's stub of build-extension.ts did.
 // Nothing here exits the process; the caller gets the exit status.
 
 import fs from "node:fs";
@@ -39,7 +39,7 @@ function shapeErrors(repoDir: string, extDir: string): string[] {
   const manifestPath = `${extDir}/extension.json`;
   if (!fs.existsSync(manifestPath) || !fs.statSync(manifestPath).isFile()) {
     return [
-      `Error: no extension.json found in ${extDir} — run scripts/migrate-extension.sh if this is an old-shape extension.`,
+      `Error: no extension.json found in ${extDir} — run scripts/migrate-extension.ts if this is an old-shape extension.`,
     ];
   }
   try {

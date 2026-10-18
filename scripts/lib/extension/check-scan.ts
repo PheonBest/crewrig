@@ -1,5 +1,5 @@
 // check-scan.ts — the two `--check` path scans (spec 0254 R14).
-// Twins `ext_name_axis_scan` / `_ext_name_axis_matches` (scripts/build-extension.sh:163-212):
+// Twins `ext_name_axis_scan` / `_ext_name_axis_matches` (scripts/build-extension.ts:163-212):
 // a path names a tool when ANY `/`-separated segment, after stripping at most one leading dot
 // and lowercasing, STARTS with one of the CLI tokens (a prefix rule: "regeminate.md" is not
 // charged, ".geminiignore" and "GEMINI.md" are). `classScan` is `ext_class_scan`, which

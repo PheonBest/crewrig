@@ -1,5 +1,5 @@
 // package-all-main.ts — `package-extensions`: package every upstream extension (spec 0257 R12).
-// Replaced the shell script of the same name (scripts/package-extensions.sh, now a forwarding shim): tiers core and library, plus org when `--include-org` is
+// Replaced the shell script of the same name (scripts/package-extensions.ts, now a forwarding shim): tiers core and library, plus org when `--include-org` is
 // the first argument or `INCLUDE_ORG` is non-empty; each directory in byte order is packaged as a
 // `package-extension` run, and the first failure ends the run with its status (the shell's
 // `set -e`).
@@ -19,7 +19,7 @@ export async function main(input: EntryInput): Promise<number> {
   }
   for (const tier of tiers) {
     for (const dir of listTier(repoDir, tier)) {
-      // The shell ran `EXT=<dir> bash package-extension.sh`: the variable reaches that one run only.
+      // The shell ran `EXT=<dir> bash package-extension.ts`: the variable reaches that one run only.
       const status = await packageOne({
         ...input,
         argv: [],

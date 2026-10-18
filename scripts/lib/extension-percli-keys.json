@@ -27,6 +27,6 @@
   {
     "key": "gemini.themes",
     "reason": "cli-only-concept",
-    "evidence": "consumed by scripts/build-extension.sh's render — no Claude/Copilot/Antigravity theme concept"
+    "evidence": "consumed by scripts/build-extension.ts's render — no Claude/Copilot/Antigravity theme concept"
   }
 ]

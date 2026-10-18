@@ -1,6 +1,6 @@
 // tiers.ts — the three extension source tiers and the lookup of one extension over them (spec 0257
-// R9). Replaced the `for tier in core library org` loops of the former scripts/release-package-extension.sh
-// and scripts/package-extension.sh; the two shell texts differ only in the not-found line, so the
+// R9). Replaced the `for tier in core library org` loops of the former scripts/release-package-extension.ts
+// and scripts/package-extension.ts; the two shell texts differ only in the not-found line, so the
 // caller passes its own.
 
 import fs from "node:fs";

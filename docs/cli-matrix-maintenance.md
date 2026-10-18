@@ -89,7 +89,7 @@ issue. Agent-initiated deferral of a symmetric script is prohibited.
 `specs/0042-extension-pivot-render.delta-01.md` and spec 0173).** Extension
 components are rendered to their per-CLI consumed forms by a CLI-split pair
 that shares `scripts/lib/render-command.sh`, both dispatched from the single
-entry point `scripts/build-extension.ts` (the `scripts/build-extension.sh`
+entry point `scripts/build-extension.ts` (the `scripts/build-extension.ts`
 shim forwards to it; run `node scripts/lib/node-floor-guard.js` first, then the
 `node scripts/*.ts` command; Node.js 24 or later, `js-yaml` from the setup
 dependency step):

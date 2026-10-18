@@ -298,7 +298,7 @@ jobs:
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-extension.ts --check
       - name: Test the TypeScript extension and plugin builders
         if: steps.filter.outputs.extension-builders-ts == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/create-extension-differential.test.ts scripts/tests/create-extension-prompt.test.ts scripts/tests/create-extension-skeleton-toolchain.test.ts scripts/tests/extension-args.test.ts scripts/tests/extension-check-scan.test.ts scripts/tests/extension-check.test.ts scripts/tests/extension-ci-wiring.test.ts scripts/tests/extension-cli.test.ts scripts/tests/extension-conformance.test.ts scripts/tests/extension-context-declared.test.ts scripts/tests/extension-context.test.ts scripts/tests/extension-descriptors.test.ts scripts/tests/extension-entry-ctx.test.ts scripts/tests/extension-entry-form.test.ts scripts/tests/extension-file-size.test.ts scripts/tests/extension-gap-record.test.ts scripts/tests/extension-golden.test.ts scripts/tests/extension-hooks-antigravity-guard.test.ts scripts/tests/extension-hooks-differential.test.ts scripts/tests/extension-hooks-entry-form.test.ts scripts/tests/extension-hooks-layouts.test.ts scripts/tests/extension-hook-static-reads.test.ts scripts/tests/extension-hooks.test.ts scripts/tests/extension-json-corpus.test.ts scripts/tests/extension-json.test.ts scripts/tests/extension-manifest.test.ts scripts/tests/extension-mcp-delivery.test.ts scripts/tests/extension-migrate.test.ts scripts/tests/extension-org-mcp.test.ts scripts/tests/extension-plugin-antigravity.test.ts scripts/tests/extension-plugin-claude.test.ts scripts/tests/extension-plugin-common.test.ts scripts/tests/extension-plugin-copilot.test.ts scripts/tests/extension-render-gemini.test.ts scripts/tests/extension-render-plugins.test.ts scripts/tests/extension-resolve.test.ts scripts/tests/extension-shape-guard.test.ts scripts/tests/extension-shim.test.ts scripts/tests/extension-tree-copy.test.ts scripts/tests/extension-validate-all.test.ts scripts/tests/extension-validate.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/create-extension-differential.test.ts scripts/tests/create-extension-prompt.test.ts scripts/tests/create-extension-skeleton-toolchain.test.ts scripts/tests/extension-args.test.ts scripts/tests/extension-check-scan.test.ts scripts/tests/extension-check.test.ts scripts/tests/extension-cli.test.ts scripts/tests/extension-conformance.test.ts scripts/tests/extension-context-declared.test.ts scripts/tests/extension-context.test.ts scripts/tests/extension-descriptors.test.ts scripts/tests/extension-entry-ctx.test.ts scripts/tests/extension-entry-form.test.ts scripts/tests/extension-file-size.test.ts scripts/tests/extension-gap-record.test.ts scripts/tests/extension-golden.test.ts scripts/tests/extension-hooks-antigravity-guard.test.ts scripts/tests/extension-hooks-differential.test.ts scripts/tests/extension-hooks-entry-form.test.ts scripts/tests/extension-hooks-layouts.test.ts scripts/tests/extension-hook-static-reads.test.ts scripts/tests/extension-hooks.test.ts scripts/tests/extension-json-corpus.test.ts scripts/tests/extension-json.test.ts scripts/tests/extension-manifest.test.ts scripts/tests/extension-mcp-delivery.test.ts scripts/tests/extension-migrate.test.ts scripts/tests/extension-org-mcp.test.ts scripts/tests/extension-plugin-antigravity.test.ts scripts/tests/extension-plugin-claude.test.ts scripts/tests/extension-plugin-common.test.ts scripts/tests/extension-plugin-copilot.test.ts scripts/tests/extension-render-gemini.test.ts scripts/tests/extension-render-plugins.test.ts scripts/tests/extension-resolve.test.ts scripts/tests/extension-shape-guard.test.ts scripts/tests/extension-tree-copy.test.ts scripts/tests/extension-validate-all.test.ts scripts/tests/extension-validate.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -856,7 +856,6 @@ jobs:
               - 'scripts/tests/lib/release-main-fixture.ts'
               - 'scripts/tests/fixtures/release/**'
               - 'scripts/monorepo-release.ts'
-              - 'scripts/monorepo-release.sh'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.release-driver-modules-ts == 'true'
         with:
@@ -902,9 +901,6 @@ jobs:
               - 'scripts/tests/lib/docs-index-trees.ts'
               - 'scripts/tests/lib/extension-trees.ts'
               - 'scripts/build-extension.ts'
-              - 'scripts/release-package-extension.sh'
-              - 'scripts/package-extension.sh'
-              - 'scripts/package-extensions.sh'
               - 'scripts/lib/extension/**'
               - 'scripts/lib/worktree-claim/**'
               - 'scripts/lib/mempalace-python.ts'
@@ -928,7 +924,6 @@ jobs:
               - 'scripts/package-extensions.ts'
               - 'scripts/release-package-extension.ts'
               - 'scripts/release-sync-manifests.ts'
-              - 'scripts/tests/packaging-release-differential.test.ts'
               - 'scripts/tests/packaging-release-golden-portable.test.ts'
               - 'scripts/tests/fixtures/packaging-release/**'
               - 'scripts/tests/lib/packaging-release-*.ts'
@@ -947,7 +942,7 @@ jobs:
         run: node scripts/lib/node-floor-guard.js
       - name: Test the TypeScript archive writer, documentation index and release packaging modules
         if: steps.filter.outputs.packaging-modules-ts == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/build-docs-index-entry.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/release-sync-manifests.test.ts scripts/tests/packaging-release-differential.test.ts scripts/tests/packaging-release-golden-portable.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/build-docs-index-entry.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/release-sync-manifests.test.ts scripts/tests/packaging-release-golden-portable.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -998,7 +993,6 @@ jobs:
         with:
           filters: |
             extension-render:
-              - 'scripts/build-extension.sh'
               - 'scripts/build-extension.ts'
               - 'scripts/lib/extension/**'
               - 'scripts/lib/org-mcp.ts'
@@ -1025,8 +1019,6 @@ jobs:
               - 'scripts/lib/extension-targets.json'
               - 'docs/extension-hook-events.md'
               - 'extension-skeleton/**'
-              - 'scripts/create-extension.sh'
-              - 'scripts/build-claude-plugin.sh'
               - 'scripts/build-claude-plugin.ts'
               - 'scripts/build-copilot-plugin.ts'
               - 'scripts/build-antigravity-extension.ts'
@@ -1042,9 +1034,7 @@ jobs:
               - 'scripts/lib/antigravity-migrate.ts'
               - 'scripts/lib/render-command.sh'
               - 'scripts/lib/extension-legacy-shape.json'
-              - 'scripts/migrate-extension.sh'
               - 'scripts/migrate-extension.ts'
-              - 'scripts/release-package-extension.sh'
               - 'scripts/release-package-extension.ts'
               - 'scripts/lib/packaging/**'
               - 'scripts/lib/extension-install.sh'
@@ -1169,7 +1159,6 @@ jobs:
               - 'scripts/tests/install-claude-plugin-marketplace.test.ts'
               - 'scripts/tests/install-extension-all-real.test.ts'
               - 'scripts/tests/lib/yaml-lib.ts'
-              - 'scripts/build-claude-plugin.sh'
               - 'scripts/build-claude-plugin.ts'
               - 'scripts/lib/extension/**'
               - 'scripts/lib/org-mcp.ts'

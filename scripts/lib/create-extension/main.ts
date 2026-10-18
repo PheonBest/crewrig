@@ -1,5 +1,5 @@
 // main.ts — the order of operations of `create-extension` (spec 0258 R23-R25).
-// Twin of the main flow of scripts/create-extension.sh. Returns the exit status and never exits
+// Twin of the main flow of scripts/create-extension.ts. Returns the exit status and never exits
 // the process; an error that escapes is the entry's to report.
 
 import fs from "node:fs";

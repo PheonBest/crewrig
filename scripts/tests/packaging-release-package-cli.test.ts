@@ -78,7 +78,7 @@ function capture(): { io: Io; out: string[]; err: string[] } {
   };
 }
 
-const USAGE = "Usage: release-package-extension.sh <name> --version <v> --out <dir>";
+const USAGE = "Usage: release-package-extension.ts <name> --version <v> --out <dir>";
 
 async function parse(argv: string[]): Promise<{ status: number; out: string[]; err: string[] }> {
   const cap = capture();

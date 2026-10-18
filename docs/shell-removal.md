@@ -73,6 +73,14 @@ their rows here.
 | `scripts/check-extension-manifest-version.sh` | `node scripts/check-extension-manifest-version.ts` | #1344 slice 3c |
 | `scripts/check-extension-pivot.sh` | `node scripts/check-extension-pivot.ts` | #1344 slice 3c |
 | `scripts/build-docs-index.sh` | `node scripts/build-docs-index.ts` | #1344 slice 3c |
+| `scripts/build-extension.sh` | `node scripts/build-extension.ts` | #1344 slice 3c |
+| `scripts/build-claude-plugin.sh` | `node scripts/build-claude-plugin.ts` | #1344 slice 3c |
+| `scripts/migrate-extension.sh` | `node scripts/migrate-extension.ts` | #1344 slice 3c |
+| `scripts/create-extension.sh` | `node scripts/create-extension.ts` | #1344 slice 3c |
+| `scripts/package-extension.sh` | `node scripts/package-extension.ts` | #1344 slice 3c |
+| `scripts/package-extensions.sh` | `node scripts/package-extensions.ts` | #1344 slice 3c |
+| `scripts/release-package-extension.sh` | `node scripts/release-package-extension.ts` | #1344 slice 3c |
+| `scripts/monorepo-release.sh` | `node scripts/monorepo-release.ts` | #1344 slice 3c |
 
 From a built skill directory the same commands read `node scripts/curate.ts`,
 `node scripts/schedule-curator.ts` and `node scripts/setup-labels.ts`; the

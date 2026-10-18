@@ -1,6 +1,6 @@
 // extension-args.test.ts — argument parsing of the extension entries (spec 0254 R5).
-// Expected messages are the literal text of scripts/build-extension.sh:60-106 and the
-// `${1:?Usage: ...}` lines of the plugin builders and migrate-extension.sh.
+// Expected messages are the literal text of scripts/build-extension.ts:60-106 and the
+// `${1:?Usage: ...}` lines of the plugin builders and migrate-extension.ts.
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
@@ -74,10 +74,10 @@ describe("parsePluginArgs", () => {
     const expected = {
       ok: false,
       status: 1,
-      message: "Usage: build-claude-plugin.sh <extension-dir-or-name> [output-dir]",
+      message: "Usage: build-claude-plugin.ts <extension-dir-or-name> [output-dir]",
     };
-    assert.deepEqual(parsePluginArgs([], "build-claude-plugin.sh"), expected);
-    assert.deepEqual(parsePluginArgs([""], "build-claude-plugin.sh"), expected);
+    assert.deepEqual(parsePluginArgs([], "build-claude-plugin.ts"), expected);
+    assert.deepEqual(parsePluginArgs([""], "build-claude-plugin.ts"), expected);
   });
 });
 
@@ -89,7 +89,7 @@ describe("parseMigrateArgs", () => {
     assert.deepEqual(parseMigrateArgs([]), {
       ok: false,
       status: 1,
-      message: "Usage: migrate-extension.sh <extension-dir-or-name>",
+      message: "Usage: migrate-extension.ts <extension-dir-or-name>",
     });
   });
 });

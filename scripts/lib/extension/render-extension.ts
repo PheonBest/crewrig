@@ -1,5 +1,5 @@
 // render-extension.ts — render one extension for the requested targets (spec 0254 R15, R19).
-// Twin of `render_extension` (scripts/build-extension.sh:383-458): validation first, then the
+// Twin of `render_extension` (scripts/build-extension.ts:383-458): validation first, then the
 // targets in the order gemini, claude, copilot, antigravity (a failing one never stops the next),
 // then the observed-gap file, written only when all four targets were requested.
 

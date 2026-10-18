@@ -1,12 +1,12 @@
 // release-package-main.ts — argument handling of `release-package-extension` (spec 0257 R9).
-// Replaced the argument handling of the former scripts/release-package-extension.sh (:51-79): `<name> --version <v> --out <dir>`, the
+// Replaced the argument handling of the former scripts/release-package-extension.ts (:51-79): `<name> --version <v> --out <dir>`, the
 // flags in any order, `--version` and `--out` taking a non-empty value (the shell's `${2:?...}`).
 
 import { repoDirOf } from "../extension/entry-ctx.ts";
 import type { EntryInput } from "../extension/entry-ctx.ts";
 import { releasePackage } from "./release-package.ts";
 
-const USAGE = "Usage: release-package-extension.sh <name> --version <v> --out <dir>";
+const USAGE = "Usage: release-package-extension.ts <name> --version <v> --out <dir>";
 
 type Parsed =
   | { readonly ok: true; readonly name: string; readonly version: string; readonly outDir: string }

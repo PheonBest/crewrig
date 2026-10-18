@@ -13,7 +13,7 @@ import { parseJson } from "../lib/extension/json-ordered.ts";
 
 const LIB = path.resolve(import.meta.dirname, "../lib");
 const scratch: string[] = [];
-const TAIL = "run scripts/migrate-extension.sh, see docs/adoption-guide.md";
+const TAIL = "run scripts/migrate-extension.ts, see docs/adoption-guide.md";
 
 function manifestOf(value: unknown): Manifest {
   return parseJson(JSON.stringify(value), "m.json") as Manifest;

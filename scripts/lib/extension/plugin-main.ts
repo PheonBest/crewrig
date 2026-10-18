@@ -10,7 +10,7 @@ import type { ExtCtx, PluginTarget } from "./types.ts";
 type Builder = (ctx: ExtCtx, extArg: string, outArg: string | undefined) => number;
 
 const SCRIPTS: Readonly<Record<PluginTarget, string>> = {
-  claude: "build-claude-plugin.sh",
+  claude: "build-claude-plugin.ts",
   copilot: "build-copilot-plugin.ts",
   antigravity: "build-antigravity-extension.ts",
 };

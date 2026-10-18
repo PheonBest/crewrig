@@ -1,8 +1,8 @@
 // gap-record.ts — the in-memory observed-gap channel (spec 0254 R13).
-// Replaces the shell's fd 3 NDJSON wire (scripts/build-extension.sh:401-455): records are
+// Replaces the shell's fd 3 NDJSON wire (scripts/build-extension.ts:401-455): records are
 // appended in emission order and written once, as the pretty JSON array
 // `jq -R -s 'split("\n") | ... | map(fromjson)'` produced. `gapKey` is `GAP_KEY_FILTER`
-// (scripts/build-extension.sh:530), applied to a `Gap` or to a record read back from a file.
+// (scripts/build-extension.ts:530), applied to a `Gap` or to a record read back from a file.
 
 import fs from "node:fs";
 import path from "node:path";

@@ -148,7 +148,7 @@ describe("Case 9 — no subject declared stays valid; the retired shape fails lo
     assert.equal(res.status, 0, res.combined);
   });
 
-  test("Case 9b — an old-shape manifest (retired 'components' object) fails loudly, naming scripts/migrate-extension.sh", () => {
+  test("Case 9b — an old-shape manifest (retired 'components' object) fails loudly, naming scripts/migrate-extension.ts", () => {
     writeManifest(
       root,
       "strayhooks",
@@ -158,10 +158,10 @@ describe("Case 9 — no subject declared stays valid; the retired shape fails lo
     );
     const res = check(root, "strayhooks");
     assert.notEqual(res.status, 0);
-    has(res.combined, "migrate-extension.sh");
+    has(res.combined, "migrate-extension.ts");
   });
 
-  test("Case 9c — a tree carrying only gemini-extension.json fails, naming scripts/migrate-extension.sh", () => {
+  test("Case 9c — a tree carrying only gemini-extension.json fails, naming scripts/migrate-extension.ts", () => {
     const dir = path.join(root, "extensions", "core", "geminionly");
     writeFile(
       dir,
@@ -171,7 +171,7 @@ describe("Case 9 — no subject declared stays valid; the retired shape fails lo
     const out = path.join(root, "dist-claude-plugin", "geminionly");
     const res = runEntry(root, "build-claude-plugin.ts", [dir, out]);
     assert.notEqual(res.status, 0);
-    has(res.combined, "migrate-extension.sh");
+    has(res.combined, "migrate-extension.ts");
   });
 });
 

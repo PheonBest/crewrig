@@ -1,7 +1,7 @@
 // args.ts — argument parsing of the extension entries (spec 0254 R5).
-// Twins `build-extension.sh:60-106` (`--check`, `--target`), the `${1:?Usage: ...}` lines of the
-// three plugin builders (build-claude-plugin.sh:32, build-copilot-plugin.ts:38,
-// build-antigravity-extension.ts:35) and migrate-extension.sh:50. Pure: no output, no exit.
+// Twins `build-extension.ts:60-106` (`--check`, `--target`), the `${1:?Usage: ...}` lines of the
+// three plugin builders (build-claude-plugin.ts:32, build-copilot-plugin.ts:38,
+// build-antigravity-extension.ts:35) and migrate-extension.ts:50. Pure: no output, no exit.
 
 export type BuildArgs =
   | {
@@ -68,14 +68,14 @@ export function parsePluginArgs(argv: readonly string[], script: string): Plugin
   return { ok: true, extArg, outArg: out === undefined || out === "" ? undefined : out };
 }
 
-/** `migrate-extension.sh <extension-dir-or-name>`; further words are ignored. */
+/** `migrate-extension.ts <extension-dir-or-name>`; further words are ignored. */
 export function parseMigrateArgs(argv: readonly string[]): MigrateArgs {
   const extArg = argv[0];
   if (extArg === undefined || extArg === "") {
     return {
       ok: false,
       status: 1,
-      message: "Usage: migrate-extension.sh <extension-dir-or-name>",
+      message: "Usage: migrate-extension.ts <extension-dir-or-name>",
     };
   }
   return { ok: true, extArg };

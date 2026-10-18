@@ -1,5 +1,5 @@
 // plugin-claude.ts — the Claude Code plugin renderer (spec 0254 R11, R17, R18).
-// Twin of scripts/build-claude-plugin.sh :84-287 (everything after the shared start, which
+// Twin of scripts/build-claude-plugin.ts :84-287 (everything after the shared start, which
 // lives in plugin-common.ts): manifest, MCP, context, skills, commands, flattened agents,
 // hooks directory, settings, LSP, `bin/` and the two closing lines.
 

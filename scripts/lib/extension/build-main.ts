@@ -1,5 +1,5 @@
 // build-main.ts — the order of operations of `build-extension` (spec 0254 R5, R19).
-// Twin of the argument handling and the main block of scripts/build-extension.sh (:80-132,
+// Twin of the argument handling and the main block of scripts/build-extension.ts (:80-132,
 // :702-747). Returns the exit status and never exits the process; an error that escapes is the
 // entry's to report.
 

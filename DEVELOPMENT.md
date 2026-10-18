@@ -15,7 +15,7 @@ for the complete manifest specification.
 
 Always use the scaffolding task. It runs the Node.js floor guard, then
 `node scripts/create-extension.ts` (the scaffolder is TypeScript since spec
-0258; `scripts/create-extension.sh` remains as a forwarding shim):
+0258; `scripts/create-extension.ts` remains as a forwarding shim):
 
 ```bash
 task create-extension NAME=my-extension
@@ -137,7 +137,7 @@ node dist/index.js
 
 ### Plugin Build Contract
 
-`scripts/build-claude-plugin.ts` (behind the forwarding shim `build-claude-plugin.sh`) propagates `dist/` and `package.json` into the plugin output directory because the declared MCP command typically points inside it (`${extensionRoot}/dist/index.js` — the one neutral path token, spec 0180), and Node requires both to load an ESM MCP server at runtime. The generated `.mcp.json` carries `${CLAUDE_PLUGIN_ROOT}` (the neutral token rewritten to Claude's own spelling), which Claude Code itself resolves when it LOADS the installed plugin — not a render-time (build-time) resolution baked into the file (spec 0180 R8).
+`scripts/build-claude-plugin.ts` (behind the forwarding shim `build-claude-plugin.ts`) propagates `dist/` and `package.json` into the plugin output directory because the declared MCP command typically points inside it (`${extensionRoot}/dist/index.js` — the one neutral path token, spec 0180), and Node requires both to load an ESM MCP server at runtime. The generated `.mcp.json` carries `${CLAUDE_PLUGIN_ROOT}` (the neutral token rewritten to Claude's own spelling), which Claude Code itself resolves when it LOADS the installed plugin — not a render-time (build-time) resolution baked into the file (spec 0180 R8).
 
 Implications for contributors:
 
@@ -159,7 +159,7 @@ Claude Code does not auto-discover plugins placed under `~/.claude/plugins/`. Pl
 
 `scripts/install-claude-plugin.ts` handles this in four steps:
 
-1. Calls the Claude plugin builder (`scripts/build-claude-plugin.ts`, through the shim `build-claude-plugin.sh`) → produces `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/local-marketplace/<name>/` (a shared home outside the working tree, so multiple extensions coexist and installs survive branch switches)
+1. Calls the Claude plugin builder (`scripts/build-claude-plugin.ts`, through the shim `build-claude-plugin.ts`) → produces `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/local-marketplace/<name>/` (a shared home outside the working tree, so multiple extensions coexist and installs survive branch switches)
 2. Generates `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/local-marketplace/.claude-plugin/marketplace.json` with a marketplace named `<repo-basename>-local` (e.g. `crewrig-local`). This is a SHARED manifest: each installed extension is upserted by name, so it accumulates every extension installed under that config root
 3. Runs `claude plugin marketplace add ${CLAUDE_CONFIG_DIR:-$HOME/.claude}/local-marketplace --scope user`
 4. Runs `claude plugin install <name>@<marketplace-name> --scope user`
@@ -333,7 +333,7 @@ trigger a release.
 4. `semantic-release-gitmoji` determines the version bump from the emoji.
 5. A tag `my-extension-vX.Y.Z` is created.
 6. `scripts/release-package-extension.ts` (reached through the forwarding
-   shim `scripts/release-package-extension.sh`) renders the extension
+   shim `scripts/release-package-extension.ts`) renders the extension
    (`--target gemini`), asserts the built manifest's version matches the
    release version, and archives the rendered tree — `package.json` and
    `extension.json` (never `gemini-extension.json`, a build output that is

@@ -161,25 +161,25 @@
     "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'gemini.😀' (not in <K>)"
   ],
   "legacy: components with subjects": [
-    "VALIDATION-ERROR: <M> — declares the retired 'components' object  — run scripts/migrate-extension.sh, see docs/adoption-guide.md"
+    "VALIDATION-ERROR: <M> — declares the retired 'components' object  — run scripts/migrate-extension.ts, see docs/adoption-guide.md"
   ],
   "legacy: components empty object": [
-    "VALIDATION-ERROR: <M> — declares the retired 'components' object  — run scripts/migrate-extension.sh, see docs/adoption-guide.md"
+    "VALIDATION-ERROR: <M> — declares the retired 'components' object  — run scripts/migrate-extension.ts, see docs/adoption-guide.md"
   ],
   "legacy: components null": [],
   "legacy: components string": [
-    "VALIDATION-ERROR: <M> — declares the retired 'components' object  — run scripts/migrate-extension.sh, see docs/adoption-guide.md"
+    "VALIDATION-ERROR: <M> — declares the retired 'components' object  — run scripts/migrate-extension.ts, see docs/adoption-guide.md"
   ],
   "legacy: claude.skills": [
-    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.skills' — run scripts/migrate-extension.sh, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.skills' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
     "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.skills' (not in <K>)"
   ],
   "legacy: every retired per-CLI key": [
-    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.skills' — run scripts/migrate-extension.sh, see docs/adoption-guide.md",
-    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.agents' — run scripts/migrate-extension.sh, see docs/adoption-guide.md",
-    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.rules' — run scripts/migrate-extension.sh, see docs/adoption-guide.md",
-    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'copilot.pluginName' — run scripts/migrate-extension.sh, see docs/adoption-guide.md",
-    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'antigravity.pluginName' — run scripts/migrate-extension.sh, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.skills' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.agents' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.rules' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'copilot.pluginName' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'antigravity.pluginName' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
     "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.agents' (not in <K>)",
     "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.rules' (not in <K>)",
     "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.skills' (not in <K>)",
@@ -187,9 +187,9 @@
     "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'antigravity.pluginName' (not in <K>)"
   ],
   "legacy: components and claude.skills": [
-    "VALIDATION-ERROR: <M> — declares the retired 'components' object  — run scripts/migrate-extension.sh, see docs/adoption-guide.md",
-    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.skills' — run scripts/migrate-extension.sh, see docs/adoption-guide.md",
-    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.agents' — run scripts/migrate-extension.sh, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired 'components' object  — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.skills' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
+    "VALIDATION-ERROR: <M> — declares the retired per-CLI key 'claude.agents' — run scripts/migrate-extension.ts, see docs/adoption-guide.md",
     "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.agents' (not in <K>)",
     "VALIDATION-ERROR: <M> — inadmissible per-CLI key 'claude.skills' (not in <K>)"
   ]

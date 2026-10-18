@@ -86,37 +86,3 @@ describe(
     }
   },
 );
-
-describe(
-  "shim — the Bash forwarder on the env channel ignores a stub fzf",
-  { skip: process.platform === "win32" ? "POSIX shim" : false, timeout: BUDGET_MS },
-  () => {
-    test("combinations::mask 63 through the shim with CREWRIG_TEST_FZF_SELECTION", () => {
-      const root = cloneTemplate(template);
-      const stubDir = fs.mkdtempSync(path.join(os.tmpdir(), "fzf-stub-"));
-      after(() => fs.rmSync(stubDir, { recursive: true, force: true }));
-      const stub = path.join(stubDir, "fzf");
-      fs.writeFileSync(stub, "#!/bin/sh\ncat >/dev/null\nprintf 'mcp-server'\n");
-      fs.chmodSync(stub, 0o755);
-      const env: NodeJS.ProcessEnv = {
-        ...process.env,
-        LC_ALL: "C",
-        GIT_CONFIG_NOSYSTEM: "1",
-        NAME: "combo63",
-        TIER: "org",
-        CREWRIG_TEST_FZF_SELECTION: selectionOf(63),
-        PATH: `${stubDir}${path.delimiter}${process.env["PATH"] ?? ""}`,
-      };
-      delete env["CI"];
-      delete env["NODE_TEST_CONTEXT"];
-      const shim = path.join("scripts", `create-extension${".sh"}`);
-      const run = spawnSync("bash", [shim], { cwd: root, encoding: "utf8", env });
-      assert.equal(run.status, 0, `${run.stdout}${run.stderr}`);
-      // All six components were added: the env selection won, the stub was not consulted.
-      for (const comp of selectionOf(63).split("\n"))
-        assert.ok(`${run.stdout}${run.stderr}`.includes(`Added: ${comp}`), `missing ${comp}`);
-      const res = check(root, "combo63");
-      assert.equal(res.status, 0, res.combined);
-    });
-  },
-);

@@ -1,5 +1,5 @@
 // plugin-common.ts — the part shared by the three plugin renderers (spec 0254 R11, R17, R18).
-// Twins the identical sections of scripts/build-claude-plugin.sh :32-160, :162-217, :259-262,
+// Twins the identical sections of scripts/build-claude-plugin.ts :32-160, :162-217, :259-262,
 // scripts/build-copilot-plugin.ts and scripts/build-antigravity-extension.ts.
 //
 // API (kept small and stable; every printed line goes to `plan.ctx.io`):
@@ -114,7 +114,7 @@ export function startPlugin(
   const manifestPath = path.join(extDir, "extension.json");
   if (!isFile(manifestPath)) {
     ctx.io.out(
-      `Error: No extension.json found in ${extDir} — run scripts/migrate-extension.sh if this is an old-shape extension (see docs/adoption-guide.md).`,
+      `Error: No extension.json found in ${extDir} — run scripts/migrate-extension.ts if this is an old-shape extension (see docs/adoption-guide.md).`,
     );
     return null;
   }

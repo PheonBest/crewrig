@@ -1,5 +1,5 @@
 // monorepo-release-notes-real-engine.test.ts — Replaces scripts/tests/test-monorepo-release-notes.sh.
-// Regression test for issue #1225: the release note scripts/monorepo-release.sh produces for an
+// Regression test for issue #1225: the release note scripts/monorepo-release.ts produces for an
 // extension must be non-empty and carry that extension's own gitmoji commit subjects (and #1227:
 // the heading carries a single `v`).
 //
@@ -10,7 +10,7 @@
 //
 // Hermetic harness: a throwaway git repository with one extension, a local bare remote (so the
 // engine's push-permission probe runs offline) and gitmoji commits inside and outside the extension.
-// The REAL scripts/monorepo-release.sh runs against it in GitHub PUBLISH mode and generates the REAL
+// The REAL scripts/monorepo-release.ts runs against it in GitHub PUBLISH mode and generates the REAL
 // .releaserc.json; only `npx` is stubbed, so a Node driver (written from a string at runtime, never a
 // stored .mjs) runs the engine programmatically in dry-run mode with that exact configuration. The
 // only override is `verifyConditions: []` (the GitHub plugin would call the API with a token).
@@ -131,7 +131,7 @@ describe("monorepo-release notes: real engine, gitmoji steps (#1225, #1227)", { 
       RELEASE_TOKEN: "fixture-placeholder",
       PATH: `${bin}${path.delimiter}${cleanEnv(home).PATH}`,
     });
-    const res = spawnSync("bash", [path.join(REPO, "scripts", "monorepo-release.sh")], {
+    const res = spawnSync(process.execPath, [path.join(REPO, "scripts", "monorepo-release.ts")], {
       cwd: fixture,
       env,
       encoding: "utf8",
@@ -152,7 +152,7 @@ describe("monorepo-release notes: real engine, gitmoji steps (#1225, #1227)", { 
   });
 
   it("notes::driver run exits 0", () => {
-    assert.equal(rc, 0, `monorepo-release.sh dry run exits 0 (rc=${rc})\n${log}`);
+    assert.equal(rc, 0, `monorepo-release.ts dry run exits 0 (rc=${rc})\n${log}`);
   });
 
   it("notes::monorepo wrapper resolves every gitmoji step", () => {

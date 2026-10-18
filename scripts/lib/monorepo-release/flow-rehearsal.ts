@@ -1,5 +1,5 @@
 // flow-rehearsal.ts — the rehearsal flow (spec 0257 R14, R17). Replaced release_rehearse of
-// the former scripts/monorepo-release.sh: the engine runs against a throwaway clone whose forge URL is the
+// the former scripts/monorepo-release.ts: the engine runs against a throwaway clone whose forge URL is the
 // local mirror, with every credential stripped from its environment, and the extension is packaged
 // exactly as the exec plugin would. Nothing is ever published.
 

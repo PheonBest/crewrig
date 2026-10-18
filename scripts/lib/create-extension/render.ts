@@ -1,5 +1,5 @@
 // render.ts — derive the scaffold's gap declaration from one real render (spec 0258 R23).
-// Twin of create-extension.sh :213-241: run `node scripts/build-extension.ts --target all <NAME>`
+// Twin of create-extension.ts :213-241: run `node scripts/build-extension.ts --target all <NAME>`
 // from the repository root with its output discarded, copy a non-empty observed gap set to
 // `accepted-gaps.json` with the review banner, then sweep the three plugin staging directories.
 

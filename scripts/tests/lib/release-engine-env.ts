@@ -138,7 +138,7 @@ export interface DriverFixture {
 }
 
 /**
- * Run the REAL `scripts/monorepo-release.sh` in the fixture checkout, fully clean env plus `env`.
+ * Run the REAL `scripts/monorepo-release.ts` in the fixture checkout, fully clean env plus `env`.
  * `gitconfig` defaults to the fixture's own global config (the `origin` redirect); pass `"-"` for none.
  */
 export function runDriver(
@@ -147,7 +147,7 @@ export function runDriver(
   gitconfig?: string,
 ): DriverRun {
   const config = gitconfig === "-" ? undefined : (gitconfig ?? fx.gitconfig);
-  const res = spawnSync("bash", [path.join(fx.fix, "scripts", "monorepo-release.sh")], {
+  const res = spawnSync(process.execPath, [path.join(fx.fix, "scripts", "monorepo-release.ts")], {
     cwd: fx.fix,
     env: cleanEnv(fx.home, config, env),
     encoding: "utf8",

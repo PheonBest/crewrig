@@ -122,8 +122,8 @@ describe("11c GitLab publish happy path (R7/R8/R9/R11/R17/R18)", opts, () => {
 
     const out = path.join(p.fx.root, "fresh-render-11c");
     const fresh = spawnSync(
-      "bash",
-      ["scripts/release-package-extension.sh", "foo", "--version", "1.3.0", "--out", out],
+      process.execPath,
+      ["scripts/release-package-extension.ts", "foo", "--version", "1.3.0", "--out", out],
       { cwd: p.fx.fix, env: cleanEnv(p.fx.home), encoding: "utf8" },
     );
     const archive = path.join(out, "foo-1.3.0.tar.gz");

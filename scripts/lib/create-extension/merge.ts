@@ -1,5 +1,5 @@
 // merge.ts — merge each selected component's fragment into `extension.json` (spec 0258 R23).
-// Twin of `jq -s '.[0] * .[1]'` (create-extension.sh :99-186): objects merge recursively, any
+// Twin of `jq -s '.[0] * .[1]'` (create-extension.ts :99-186): objects merge recursively, any
 // other value (arrays included) is replaced by the fragment's, the base's key order is kept and
 // new keys are appended in the fragment's order; the result is written with two-space
 // indentation and one final line feed. The reader and writer are those of the extension builders

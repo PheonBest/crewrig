@@ -2,7 +2,7 @@
 // Reads the files the retired shell libraries read: scripts/lib/extension-manifest.sh:24-25 (the
 // targets and legacy-shape paths), :383 (`ext_mcp_delivery`, fail-closed), :84-117
 // (`ext_assert_current_shape`, which consumes the legacy-shape enumeration), and
-// scripts/build-extension.sh `ext_class_scan` (the generated-output class).
+// scripts/build-extension.ts `ext_class_scan` (the generated-output class).
 
 import { readTextLf } from "../line-endings.ts";
 import { parseJson } from "./json-ordered.ts";

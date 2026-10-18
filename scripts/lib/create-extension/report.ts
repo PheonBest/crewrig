@@ -1,4 +1,4 @@
-// report.ts — the progress and closing lines of the scaffolder, verbatim from create-extension.sh.
+// report.ts — the progress and closing lines of the scaffolder, verbatim from create-extension.ts.
 
 import type { Io } from "../extension/types.ts";
 

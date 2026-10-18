@@ -120,7 +120,7 @@ describe("loadManifest", () => {
     const { io, out, err } = recorder();
     assert.equal(loadManifest(dir, LIB_DIR, io), null);
     assert.deepEqual(out, [
-      `Error: No extension.json found in ${dir} — run scripts/migrate-extension.sh if this is an old-shape extension (see docs/adoption-guide.md).`,
+      `Error: No extension.json found in ${dir} — run scripts/migrate-extension.ts if this is an old-shape extension (see docs/adoption-guide.md).`,
     ]);
     assert.deepEqual(err, []);
   });
