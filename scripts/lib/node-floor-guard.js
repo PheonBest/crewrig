@@ -21,10 +21,10 @@
 // Admitted to the JavaScript ratchet through ci/js-exceptions.txt, category
 // `node-floor-guard` (spec 0238 R3).
 
-'use strict';
+"use strict";
 
 var FLOOR = 24;
-var DOWNLOAD_URL = 'https://nodejs.org/en/download';
+var DOWNLOAD_URL = "https://nodejs.org/en/download";
 
 /**
  * Decide whether a `process.version`-style string meets the floor.
@@ -35,23 +35,23 @@ function evaluate(versionString) {
   var match = /^v?(\d+)\./.exec(String(versionString));
   var major = match ? parseInt(match[1], 10) : NaN;
   if (major >= FLOOR) {
-    return { ok: true, message: '' };
+    return { ok: true, message: "" };
   }
   return {
     ok: false,
     message:
-      'crewrig: Node.js ' +
+      "crewrig: Node.js " +
       versionString +
-      ' detected; crewrig requires Node.js >= ' +
+      " detected; crewrig requires Node.js >= " +
       FLOOR +
-      '. Install a supported release from ' +
-      DOWNLOAD_URL
+      ". Install a supported release from " +
+      DOWNLOAD_URL,
   };
 }
 
 var verdict = evaluate(process.version);
 if (!verdict.ok) {
-  process.stderr.write(verdict.message + '\n');
+  process.stderr.write(verdict.message + "\n");
   process.exit(1);
 }
 

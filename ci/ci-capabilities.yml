@@ -3208,7 +3208,8 @@ capabilities:
 
   # Spec 0238 R4-R8, R12, R13: type-check, erasable syntax, Oxlint type-aware
   # strict typing (max-lines as a non-blocking warning) and Oxfmt check mode
-  # on every tracked *.ts outside the built-copy trees. No `paths:` filter: a
+  # on every tracked *.ts outside the built-copy trees (Oxfmt also checks the
+  # JavaScript admitted by ci/js-exceptions.txt, spec 0266 R16). No `paths:` filter: a
   # lockfile, tsconfig.json or lint-config change must re-run it too.
   - id: lint-typescript
     name: "TypeScript type-check, erasable syntax, lint and format"

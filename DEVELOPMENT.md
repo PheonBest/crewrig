@@ -194,12 +194,20 @@ The Taskfile runs exactly the commands CI runs:
 | `task typecheck-ts` | `tsc` strict type-check (`tsconfig.json`) |
 | `task erasable-ts` | no `enum`, runtime `namespace`, parameter property, decorator or `import =` |
 | `task oxlint-ts` | Oxlint type-aware: no `any`, no `@ts-ignore`/`@ts-nocheck`, justified `@ts-expect-error` only, no unsafe `any` flow; files over 300 lines warn without failing |
-| `task format-ts` | Oxfmt check mode on `*.ts` |
+| `task format-ts` | Oxfmt check mode on `*.ts` and on the JavaScript admitted by `ci/js-exceptions.txt` |
 | `task format-ts:fix` | rewrite every tracked `*.ts` with Oxfmt (local convenience) |
 
 Run `task lint-bootstrap` once to install the toolchain. The four built
 trees (`.claude/`, `.gemini/`, `.github/`, `.agents/`) are excluded from
 every check.
+
+**JavaScript formatting scope (spec 0266 R16).** `oxfmt --check` covers every
+tracked `*.js`, `*.mjs` or `*.cjs` file listed in `ci/js-exceptions.txt` (today
+the Node.js floor guard). The rule is: formatted unless the third-party tool
+that consumes the file defines its own formatting; no admitted file is
+excluded. The legacy files in `ci/js-baseline.txt` are not formatted, because
+each leaves the tree when its migration row lands. After editing an admitted
+file, run `node_modules/.bin/oxfmt --write <that file>` with the literal path.
 
 **The ratchet.** `ci/shell-allowlist.txt` and `ci/js-baseline.txt` list the
 shell and JavaScript files tracked when spec 0238 landed. They are
