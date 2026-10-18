@@ -1,6 +1,6 @@
 // mempalace-guard-fixture.ts — shared fixture for the launch-time MemPalace
 // version-guard tests (spec 0108 R1-R6, spec 0263 row E): per-test fixture trees
-// holding COPIES of the real wrapper, mempalace_pin.py and common.sh, plus stub
+// holding COPIES of the real wrapper, mempalace_pin.py and mempalace-pin.json, plus stub
 // `chromadb` and `mempalace` packages and a fake dist-info on PYTHONPATH, so a
 // full launch is drivable with no venv, no network and no MemPalace installed.
 //
@@ -18,7 +18,7 @@ export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 export const LIB_DIR = path.join(REPO, "scripts", "lib");
 export const WRAPPER = path.join(LIB_DIR, "mempalace-http-wrapper.py");
 export const PIN_MODULE = path.join(LIB_DIR, "mempalace_pin.py");
-export const COMMON_SH = path.join(LIB_DIR, "common.sh");
+export const PIN_FILE = path.join(LIB_DIR, "mempalace-pin.json");
 export const SENTINEL = "MEMPALACE_STUB_IS_SERVING";
 export const BELOW_FLOOR = "3.3.5";
 export const PYTHON_BIN =
@@ -29,16 +29,18 @@ export interface Pin {
   max: string;
 }
 
-/** Reads both bounds from common.sh with an independent regex (not the TS reader). */
-export function readPin(commonSh: string): Pin {
-  const text = fs.readFileSync(commonSh, "utf8");
-  const min = /^MEMPALACE_MIN_VERSION="([^"]*)"$/m.exec(text)?.[1];
-  const max = /^MEMPALACE_MAX_VERSION_EXCLUSIVE="([^"]*)"$/m.exec(text)?.[1];
-  assert.ok(min && max, `could not read the pin from ${commonSh}`);
+/** Reads both bounds from the pin file with a plain JSON parse (not the TS reader). */
+export function readPin(pinFile: string): Pin {
+  const doc = JSON.parse(fs.readFileSync(pinFile, "utf8")) as {
+    min?: string;
+    maxExclusive?: string;
+  };
+  const { min, maxExclusive: max } = doc;
+  assert.ok(min && max, `could not read the pin from ${pinFile}`);
   return { min, max };
 }
 
-export const PIN = readPin(COMMON_SH);
+export const PIN = readPin(PIN_FILE);
 export const EXPECTED_RANGE = `>=${PIN.min},<${PIN.max}`;
 export const EXPECTED_REMEDY = `pipx install --force 'mempalace>=${PIN.min},<${PIN.max}'`;
 
@@ -145,7 +147,7 @@ export function buildFixture(o: FixtureOptions): string {
   fs.mkdirSync(path.join(site, "chromadb"), { recursive: true });
   fs.copyFileSync(WRAPPER, path.join(root, "lib", "mempalace-http-wrapper.py"));
   fs.copyFileSync(PIN_MODULE, path.join(root, "lib", "mempalace_pin.py"));
-  fs.copyFileSync(COMMON_SH, path.join(root, "lib", "common.sh"));
+  fs.copyFileSync(PIN_FILE, path.join(root, "lib", "mempalace-pin.json"));
   fs.writeFileSync(path.join(site, "chromadb", "__init__.py"), CHROMADB_STUB);
   const init = o.attr === null ? "" : `__version__ = "${o.attr}"\n`;
   fs.writeFileSync(path.join(site, "mempalace", "__init__.py"), init);

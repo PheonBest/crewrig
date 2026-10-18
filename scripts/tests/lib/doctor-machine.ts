@@ -5,20 +5,20 @@
 //
 // STABLE API (importers: mempalace-doctor-divergence/report/launch/shell-wrappers tests):
 //
-//   Constants   REPO, POSIX, OLD_VERSION ("3.0.0"), PIN (read from scripts/lib/common.sh
+//   Constants   REPO, POSIX, OLD_VERSION ("3.0.0"), PIN (read from scripts/lib/mempalace-pin.json
 //               through scripts/lib/mempalace-pin.ts: {min, maxExclusive}), GOOD_VERSION
 //               (= PIN.min), SECOND_GOOD_VERSION (= `${PIN.min}.1`, inside the pin),
 //               PYTHON_ABS (absolute python3, or CREWRIG_TEST_PYTHON resolved; throws if
 //               none: a missing interpreter FAILS, never skips), COMPARATOR /
 //               HAS_PACKAGING (what PYTHON_ABS answers for the doctor's verdict lines),
-//               WRAPPER, PIN_MODULE, COMMON_SH, TLS_EXEC (paths in the repository).
+//               WRAPPER, PIN_MODULE, PIN_FILE, TLS_EXEC (paths in the repository).
 //   Scratch     scratchDir(label): real-path mkdtemp dir (fs.realpathSync).
 //               freePortSync(): an OS-assigned loopback port nothing listens on.
 //   Builders    makeFakesite(dir, version, attr = version)      fake dist-info + package
 //               makeInterpreter(file, siteDir)                  sh shim over PYTHON_ABS
 //               makeAbsentInterpreter(file)                     shim resolving no mempalace
-//               makeCheckout(dir)                               wrapper + common.sh + pin module
-//               rewriteMaxPin(checkoutDir, value)               alternate ceiling in common.sh
+//               makeCheckout(dir)                               wrapper + pin file + pin module
+//               rewriteMaxPin(checkoutDir, value)               alternate ceiling in the pin file
 //               makeConsoleScript(file, interpreter)            `#!<interpreter>` text only
 //               makeToolbin(dir)                                symlinks of the externals the
 //                                                               doctor needs (never jq/curl)
@@ -49,7 +49,7 @@ export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 export const POSIX = process.platform !== "win32";
 export const WRAPPER = path.join(REPO, "scripts", "lib", "mempalace-http-wrapper.py");
 export const PIN_MODULE = path.join(REPO, "scripts", "lib", "mempalace_pin.py");
-export const COMMON_SH = path.join(REPO, "scripts", "lib", "common.sh");
+export const PIN_FILE = path.join(REPO, "scripts", "lib", "mempalace-pin.json");
 export const TLS_EXEC = path.join(REPO, "scripts", "lib", "tls-exec.sh");
 const DOCTOR = path.join(REPO, "scripts", "doctor-mempalace.ts");
 
@@ -128,25 +128,21 @@ export function makeAbsentInterpreter(file: string): void {
   );
 }
 
-/** A fake checkout carrying the wrapper, common.sh and the pin module. */
+/** A fake checkout carrying the wrapper, the pin file and the pin module. */
 export function makeCheckout(dir: string): void {
   const lib = path.join(dir, "scripts", "lib");
   fs.mkdirSync(lib, { recursive: true });
   fs.copyFileSync(WRAPPER, path.join(lib, "mempalace-http-wrapper.py"));
-  fs.copyFileSync(COMMON_SH, path.join(lib, "common.sh"));
+  fs.copyFileSync(PIN_FILE, path.join(lib, "mempalace-pin.json"));
   fs.copyFileSync(PIN_MODULE, path.join(lib, "mempalace_pin.py"));
 }
 
-/** Make the checkout declare a different pin ceiling (edits the copied common.sh). */
+/** Make the checkout declare a different pin ceiling (edits the copied pin file). */
 export function rewriteMaxPin(checkout: string, value: string): void {
-  const file = path.join(checkout, "scripts", "lib", "common.sh");
-  const text = fs.readFileSync(file, "utf8");
-  const next = text.replace(
-    /^MEMPALACE_MAX_VERSION_EXCLUSIVE=.*$/m,
-    `MEMPALACE_MAX_VERSION_EXCLUSIVE="${value}"`,
-  );
-  assert.notEqual(next, text, "the copied common.sh declares no ceiling to rewrite");
-  fs.writeFileSync(file, next);
+  const file = path.join(checkout, "scripts", "lib", "mempalace-pin.json");
+  const doc = JSON.parse(fs.readFileSync(file, "utf8")) as { min: string; maxExclusive: string };
+  assert.notEqual(doc.maxExclusive, value, "the copied pin file already declares that ceiling");
+  fs.writeFileSync(file, `${JSON.stringify({ ...doc, maxExclusive: value }, null, 2)}\n`);
 }
 
 /** A console script whose SHEBANG names the interpreter: the only part the doctor reads. */

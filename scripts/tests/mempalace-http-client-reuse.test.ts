@@ -5,7 +5,7 @@
 // Unit under test: the real, unmodified wrapper, run for real as a `python3`
 // subprocess with `--transport http` (so the spec-0029 orphan-reaper thread
 // never starts — it is irrelevant to this fix and would otherwise linger).
-// `scripts/lib/mempalace_pin.py` and `scripts/lib/common.sh` also run from
+// `scripts/lib/mempalace_pin.py` and `scripts/lib/mempalace-pin.json` also run from
 // their real repository paths, unmodified, so the spec-0108 version guard
 // exercises the real pin.
 //
@@ -40,7 +40,7 @@ import { fileURLToPath } from "node:url";
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WRAPPER = path.join(REPO, "scripts", "lib", "mempalace-http-wrapper.py");
-const COMMON_SH = path.join(REPO, "scripts", "lib", "common.sh");
+const PIN_FILE = path.join(REPO, "scripts", "lib", "mempalace-pin.json");
 const PYTHON_BIN = process.env.CREWRIG_TEST_PYTHON ?? "python3";
 
 const MAX_CONNECTIONS = "6";
@@ -48,10 +48,9 @@ const MAX_KEEPALIVE_CONNECTIONS = "3";
 
 // The real pin's floor — in range by construction, so the fixture's fake
 // dist-info and `__version__` never trip the spec-0108 runtime guard.
-const commonSh = fs.readFileSync(COMMON_SH, "utf8");
-const pinMatch = commonSh.match(/^MEMPALACE_MIN_VERSION="([^"]+)"$/m);
-assert.ok(pinMatch, `could not read MEMPALACE_MIN_VERSION from ${COMMON_SH}`);
-const PIN_VERSION = pinMatch[1];
+const pinDoc = JSON.parse(fs.readFileSync(PIN_FILE, "utf8")) as { min?: string };
+assert.ok(pinDoc.min, `could not read the minimum version from ${PIN_FILE}`);
+const PIN_VERSION = pinDoc.min;
 
 const FAKE_CHROMADB = `"""Minimal chromadb stand-in for mempalace-http-client-reuse.test.ts.
 

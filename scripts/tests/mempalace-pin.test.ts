@@ -1,6 +1,6 @@
 // mempalace-pin.test.ts — hermetic tests of scripts/lib/mempalace-pin.ts
 // (spec 0252 requirement 4): the pin is read from the two declaration lines of
-// common.sh by the rules of scripts/lib/mempalace_pin.py, never redeclared.
+// mempalace-pin.json by the rules of scripts/lib/mempalace_pin.py, never redeclared.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -19,47 +19,51 @@ after(() => {
   for (const dir of temps) fs.rmSync(dir, { recursive: true, force: true });
 });
 
-/** A throwaway repo root whose scripts/lib/common.sh holds `text`. */
+/** A throwaway repo root whose scripts/lib/mempalace-pin.json holds `text`. */
 function fixtureRoot(text: string): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "mempalace-pin-"));
   temps.push(root);
   fs.mkdirSync(path.join(root, "scripts", "lib"), { recursive: true });
-  fs.writeFileSync(path.join(root, "scripts", "lib", "common.sh"), text);
+  fs.writeFileSync(path.join(root, "scripts", "lib", "mempalace-pin.json"), text);
   return root;
 }
 
-const DECLARED = 'MEMPALACE_MIN_VERSION="3.6.0"\nMEMPALACE_MAX_VERSION_EXCLUSIVE="3.7"\n';
+const DECLARED = '{\n  "min": "3.6.0",\n  "maxExclusive": "3.7"\n}\n';
 
 describe("readMempalacePin", () => {
   test("reads both bounds from a fixture", () => {
-    assert.deepEqual(readMempalacePin(fixtureRoot(`#!/bin/bash\n${DECLARED}echo ok\n`)), {
+    assert.deepEqual(readMempalacePin(fixtureRoot(DECLARED)), {
       min: "3.6.0",
       maxExclusive: "3.7",
     });
   });
 
-  test("ignores interpolated consumer forms and indented or unquoted lines", () => {
-    const text =
-      `${DECLARED}` +
-      "  echo \"pipx install 'mempalace>=${MEMPALACE_MIN_VERSION},<${MEMPALACE_MAX_VERSION_EXCLUSIVE}'\"\n" +
-      '  MEMPALACE_MIN_VERSION="9.9"\n' +
-      "MEMPALACE_MAX_VERSION_EXCLUSIVE=9.9\n" +
-      'export MEMPALACE_MIN_VERSION="9.9"\n';
+  test("ignores keys it does not know", () => {
+    const text = '{"min": "3.6.0", "maxExclusive": "3.7", "note": {"min": "9.9"}}\n';
     assert.deepEqual(readMempalacePin(fixtureRoot(text)), { min: "3.6.0", maxExclusive: "3.7" });
   });
 
-  test("a name declared twice is refused, naming the variable and the count", () => {
+  test("a missing key is refused, naming the key", () => {
     assert.throws(
-      () => readMempalacePin(fixtureRoot(`${DECLARED}MEMPALACE_MIN_VERSION="3.5"\n`)),
-      /MEMPALACE_MIN_VERSION must be declared exactly once.*found 2 declaration/,
+      () => readMempalacePin(fixtureRoot('{"min": "3.6.0"}\n')),
+      /"maxExclusive" must be declared as a non-empty string/,
     );
   });
 
-  test("a missing name is refused", () => {
+  test("a non-string or empty bound is refused", () => {
     assert.throws(
-      () => readMempalacePin(fixtureRoot('MEMPALACE_MIN_VERSION="3.6.0"\n')),
-      /MEMPALACE_MAX_VERSION_EXCLUSIVE must be declared exactly once.*found 0 declaration/,
+      () => readMempalacePin(fixtureRoot('{"min": 3.6, "maxExclusive": "3.7"}\n')),
+      /"min" must be declared as a non-empty string/,
     );
+    assert.throws(
+      () => readMempalacePin(fixtureRoot('{"min": "3.6.0", "maxExclusive": ""}\n')),
+      /"maxExclusive" must be declared as a non-empty string/,
+    );
+  });
+
+  test("a file that is not a JSON object is refused", () => {
+    assert.throws(() => readMempalacePin(fixtureRoot("[1, 2]\n")), /"min" must be declared/);
+    assert.throws(() => readMempalacePin(fixtureRoot("min=3.6.0\n")), /is not valid JSON/);
   });
 
   test("a CRLF file reads the same pin, as mempalace_pin.py does in text mode", () => {
@@ -72,13 +76,13 @@ describe("readMempalacePin", () => {
     assert.deepEqual(pin, readMempalacePin(fixtureRoot(DECLARED)));
   });
 
-  test("an unreadable common.sh throws the file-system error", () => {
+  test("an unreadable pin file throws the file-system error", () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), "mempalace-pin-"));
     temps.push(root);
     assert.throws(() => readMempalacePin(root), { code: "ENOENT" });
   });
 
-  test("the real common.sh agrees with mempalace_pin.py --print-pin", () => {
+  test("the real pin file agrees with mempalace_pin.py --print-pin", () => {
     const pin = readMempalacePin(REPO);
     assert.match(pin.min, /^\d+(\.\d+)*$/);
     assert.match(pin.maxExclusive, /^\d+(\.\d+)*$/);
@@ -87,8 +91,8 @@ describe("readMempalacePin", () => {
       [
         "-I",
         path.join(REPO, "scripts", "lib", "mempalace_pin.py"),
-        "--common-sh",
-        path.join(REPO, "scripts", "lib", "common.sh"),
+        "--pin-file",
+        path.join(REPO, "scripts", "lib", "mempalace-pin.json"),
         "--print-pin",
       ],
       { encoding: "utf8" },
@@ -110,9 +114,7 @@ describe("installSpec", () => {
   });
 
   test("takes the pin as read", () => {
-    const pin = readMempalacePin(
-      fixtureRoot('MEMPALACE_MIN_VERSION="1.2"\nMEMPALACE_MAX_VERSION_EXCLUSIVE="2"\n'),
-    );
+    const pin = readMempalacePin(fixtureRoot('{"min": "1.2", "maxExclusive": "2"}\n'));
     // Built from parts: the single-source range guard flags any literal numeric range.
     assert.equal(installSpec(pin), ["mempalace", ">=", "1.2", ",<", "2"].join(""));
   });

@@ -16,6 +16,7 @@ export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 export const LIB_DIR = path.join(REPO, "scripts", "lib");
 export const PIN_MODULE = path.join(LIB_DIR, "mempalace_pin.py");
 export const COMMON_SH = path.join(LIB_DIR, "common.sh");
+export const PIN_FILE = path.join(LIB_DIR, "mempalace-pin.json");
 export const PYTHON_BIN = process.env.CREWRIG_TEST_PYTHON ?? "python3";
 const FIXTURES = path.join(REPO, "scripts", "tests", "fixtures", "mempalace-pin");
 
@@ -24,13 +25,15 @@ export interface Pin {
   readonly max: string;
 }
 
-/** Reads both bounds of the pin from a common.sh, independently of the TS reader. */
-export function readPin(commonSh: string = COMMON_SH): Pin {
-  const text = fs.readFileSync(commonSh, "utf8");
-  const min = /^MEMPALACE_MIN_VERSION="([^"]*)"$/m.exec(text)?.[1];
-  const max = /^MEMPALACE_MAX_VERSION_EXCLUSIVE="([^"]*)"$/m.exec(text)?.[1];
+/** Reads both bounds of the pin from a pin file, independently of the TS reader. */
+export function readPin(pinFile: string = PIN_FILE): Pin {
+  const doc = JSON.parse(fs.readFileSync(pinFile, "utf8")) as {
+    min?: string;
+    maxExclusive?: string;
+  };
+  const { min, maxExclusive: max } = doc;
   if (min === undefined || max === undefined || min === "" || max === "")
-    throw new Error(`could not read the pin from ${commonSh}`);
+    throw new Error(`could not read the pin from ${pinFile}`);
   return { min, max };
 }
 
@@ -101,22 +104,22 @@ export function runPython(
 export interface CheckOptions {
   readonly pythonpath?: string;
   readonly python?: string;
-  readonly commonSh?: string;
+  readonly pinFile?: string;
 }
 
-/** `mempalace_pin.py --common-sh <path> --check <version>`. */
+/** `mempalace_pin.py --pin-file <path> --check <version>`. */
 export function checkVersion(rig: Rig, version: string, options: CheckOptions = {}): Result {
   return runPython(
     rig,
     options.python ?? PYTHON_BIN,
-    [PIN_MODULE, "--common-sh", options.commonSh ?? COMMON_SH, "--check", version],
+    [PIN_MODULE, "--pin-file", options.pinFile ?? PIN_FILE, "--check", version],
     options.pythonpath,
   );
 }
 
-/** `mempalace_pin.py --common-sh <path> --print-pin`. */
-export function printPin(rig: Rig, commonSh: string): Result {
-  return runPython(rig, PYTHON_BIN, [PIN_MODULE, "--common-sh", commonSh, "--print-pin"]);
+/** `mempalace_pin.py --pin-file <path> --print-pin`. */
+export function printPin(rig: Rig, pinFile: string): Result {
+  return runPython(rig, PYTHON_BIN, [PIN_MODULE, "--pin-file", pinFile, "--print-pin"]);
 }
 
 /** Runs one committed driver; `args` are the driver's own argv after the script. */

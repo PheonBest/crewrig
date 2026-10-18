@@ -30,12 +30,12 @@ const RECORDED = [
   "SSL_CERT_FILE",
 ] as const;
 
-/** Read one `NAME=value` pin line of scripts/lib/common.sh. */
-function pin(name: string): string {
-  const text = fs.readFileSync(path.join(REPO, "scripts", "lib", "common.sh"), "utf8");
-  const match = new RegExp(`^${name}="([^"]+)"`, "m").exec(text);
-  assert.ok(match?.[1], `pin ${name} found in common.sh`);
-  return match[1];
+/** Read one bound of scripts/lib/mempalace-pin.json. */
+function pin(name: "min" | "maxExclusive"): string {
+  const text = fs.readFileSync(path.join(REPO, "scripts", "lib", "mempalace-pin.json"), "utf8");
+  const value = (JSON.parse(text) as Record<string, string | undefined>)[name];
+  assert.ok(value, `pin ${name} found in mempalace-pin.json`);
+  return value;
 }
 
 /** `YYYY-MM-DD` of local today minus `days`, by local calendar arithmetic. */
@@ -109,7 +109,7 @@ describe("prune-transcripts oracle", { skip: process.platform === "win32" }, () 
     assert.equal(recorded(r, "PROJECT_FILTER"), "");
     assert.equal(
       recorded(r, "MEMPALACE_INSTALL_SPEC"),
-      `mempalace>=${pin("MEMPALACE_MIN_VERSION")},<${pin("MEMPALACE_MAX_VERSION_EXCLUSIVE")}`,
+      `mempalace>=${pin("min")},<${pin("maxExclusive")}`,
     );
     // Accept either side of a midnight crossing during the run.
     assert.ok(

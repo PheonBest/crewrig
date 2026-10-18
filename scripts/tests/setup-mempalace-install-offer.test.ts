@@ -153,14 +153,14 @@ describe("pipx present on win32", { skip: POSIX }, () => {
 });
 
 describe("the pin", () => {
-  it("is read from scripts/lib/common.sh of the repository by default", async () => {
+  it("is read from scripts/lib/mempalace-pin.json of the repository by default", async () => {
     // Interpolated on purpose: a literal numeric range here would trip the single-source range guard.
     const min = "1.2.3";
     const max = "1.3";
     fs.mkdirSync(path.join(dir, "scripts", "lib"), { recursive: true });
     fs.writeFileSync(
-      path.join(dir, "scripts", "lib", "common.sh"),
-      `MEMPALACE_MIN_VERSION="${min}"\nMEMPALACE_MAX_VERSION_EXCLUSIVE="${max}"\n`,
+      path.join(dir, "scripts", "lib", "mempalace-pin.json"),
+      JSON.stringify({ min, maxExclusive: max }),
     );
     const result = await offerMempalaceInstall({
       ctx: {
