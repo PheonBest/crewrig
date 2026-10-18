@@ -1,5 +1,5 @@
 // Replaces artifacts/library/skills/harness-curator/scripts/test.sh groups G5, G6, G9 and the argv
-// half of G10 (spec 0265 row J2): `python3 apply.py --dry-run-apply` fed by the curate.sh output
+// half of G10 (spec 0265 row J2): `python3 apply.py --dry-run-apply` fed by the curate.ts output
 // on the sample fixture and by one-cluster payload builders. Runs under a scratch HOME and a stub
 // `gh` (logs every call, fails `issue create`): --dry-run-apply must never reach a forge binary.
 // POSIX only. The unit half of G10 (dedup, _match_existing, fail-open) lives in apply-units.
@@ -86,7 +86,7 @@ describe("G5/G6 apply.py --dry-run-apply on the curate output", { skip }, () => 
         input: Buffer.from(SAMPLE).toString("latin1"),
         tools: ["python3", "node"],
       },
-      "shell",
+      "entry",
     );
     curated = JSON.parse(utf8(o.stdout)) as typeof curated;
     out = apply(utf8(o.stdout));

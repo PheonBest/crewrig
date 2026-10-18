@@ -1,4 +1,4 @@
-# curate.sh — Harness Curator entry point
+# curate.ts — Harness Curator entry point
 #
 # Reads friction reports from MemPalace `wing="harness-friction"` (or from
 # stdin in test mode), clusters them by subcategory/room, composes issue
@@ -10,7 +10,7 @@
 # auto-fix mode tracked in #42, and closes the issue.
 #
 # Usage:
-#   bash scripts/curate.sh [--dry-run | --apply]
+#   node scripts/curate.ts [--dry-run | --apply]
 #                          [--from-stdin]
 #                          [--target-repo <url>]
 #                          [--threshold <n>]

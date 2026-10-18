@@ -1,4 +1,4 @@
-# setup-labels.sh — Bootstrap the GitHub labels used by the Harness Curator.
+# setup-labels.ts — Bootstrap the GitHub labels used by the Harness Curator.
 #
 # `gh issue create --label <name>` fails if the label does not exist on
 # the target repo, so every fork that may receive curator output must
@@ -8,7 +8,7 @@
 # are safe, see `gh label create --force` semantics).
 #
 # Usage:
-#   bash scripts/setup-labels.sh [--repo <owner/repo>] [--dry-run]
+#   node scripts/setup-labels.ts [--repo <owner/repo>] [--dry-run]
 #
 # Options:
 #   --repo <owner/repo>  Target repo. Omit to let `gh` resolve from the

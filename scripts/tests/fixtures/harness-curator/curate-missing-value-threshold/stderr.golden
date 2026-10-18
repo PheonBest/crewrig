@@ -1,1 +1,2 @@
-<SCRIPTS>/curate: line 73: $2: unbound variable
+Error: --threshold requires a value
+Run '<SCRIPTS>/curate --help' for usage.
