@@ -23,6 +23,11 @@ request 1 to request 8).
 
 ## Requirements
 
+Paths: `spec-author` and `pr-reviewer` live under
+`artifacts/core/skills/<name>/`; `user-validate` and `harness-report` live
+under `artifacts/library/skills/<name>/`. Every `references/` path below is
+relative to the skill's own directory in that layer.
+
 1. The `user-validate` skill SHALL keep the `plannotator` backend text,
    including its *Contrast-safety and theme support* and *Substance-embedding*
    subsections, in `artifacts/library/skills/user-validate/references/plannotator-backend.md`,
@@ -35,7 +40,10 @@ request 1 to request 8).
    step at which it is loaded.
 3. The `spec-author` skill SHALL NOT instruct the agent to re-read
    `docs/spec-format.md` before writing; its self-validation step SHALL
-   instruct the agent to run the spec linter and fix what it reports.
+   instruct the agent to run the spec linter and fix what it reports. This
+   is the only intended change of meaning in this spec and is an explicit
+   exception to requirement 14, justified because the spec linter enforces
+   the format mechanically.
 4. The `pr-reviewer` skill SHALL keep the detailed *Protocol* sub-steps in
    `references/protocol.md` and SHALL keep the ordered checklist of those
    steps inline in `SKILL.md`.
@@ -47,11 +55,15 @@ request 1 to request 8).
    file that carries them by a single-line link to one designated canonical
    source per topic. The canonical source for the taxonomy SHALL be one of
    `docs/plan-review-protocol.md` or `docs/retroactive-loop.md`, the same one
-   in every file, and the choice SHALL be recorded in the implementation
-   logbook.
+   in every file. The canonical source for grounding discipline SHALL be
+   the single full statement of it, retained in
+   `artifacts/core/skills/architect/SKILL.md`, which is the only place the
+   text is stated in full today; every other file SHALL link to it. Both
+   choices SHALL be recorded in the implementation logbook.
 7. A spec or R-number citation that is provenance rather than instruction
    SHALL be authored as an HTML comment of the form
-   `<!-- provenance: spec 0080 R12 -->` or in frontmatter. The citations in
+   `<!-- provenance: spec 0080 R12 -->`; frontmatter is not a provenance
+   carrier. The citations in
    the sources touched by this spec SHALL be relocated by hand, and no
    automated rewrite of prose parentheses SHALL be performed.
 8. `scripts/build-components.ts` SHALL strip provenance comments from every
@@ -72,16 +84,20 @@ request 1 to request 8).
     exist, the instruction SHALL be kept for that CLI and the gap SHALL be
     recorded in `docs/cli-matrix.md` with the evidence of absence, so no
     asymmetry is silent.
-11. The `description` of every skill and agent source SHALL be at most 300
-    characters and SHALL retain the trigger words present in the current
-    description.
+11. The `description` of every skill and agent source under `artifacts/` (the
+    intended blast radius: all 16 sources currently over the limit, not only
+    the four skills above) SHALL be at most 300 characters, in the source and
+    in every compiled output, and SHALL retain the trigger words present in
+    the current description.
 12. After this spec is implemented, the `SKILL.md` body sizes SHALL be at most
     12 KB for `spec-author`, 10 KB for `pr-reviewer`, 8 KB for `user-validate`
-    and 5 KB for `harness-report`, measured with `wc -c`.
+    and 5 KB for `harness-report`, measured with `wc -c`. Any reference file
+    loaded unconditionally at activation, rather than at a later step or
+    under a condition, SHALL count toward its skill's budget.
 13. Text SHALL be moved verbatim from `SKILL.md` into its destination in one
     commit, and trimmed or reworded only in a later, separate commit, so a
     reviewer can diff the moved text against the original.
-14. No rule, obligation, prohibition or condition in any touched skill or
+14. Except for the exception stated in requirement 3, no rule, obligation, prohibition or condition in any touched skill or
     agent SHALL change meaning; every rule present before the change SHALL be
     reachable from the touched `SKILL.md` or `AGENT.md` through an explicit
     load instruction naming its new location.
@@ -94,7 +110,9 @@ request 1 to request 8).
     evidence that the mechanism is missing in the target CLI.
 17. The deterministic checks `check-skill-versions.ts`, `check-skill-mirrors.ts`,
     the spec linter, the markdown-link check, the typecheck and the test suite
-    SHALL pass, and none SHALL be disabled or loosened.
+    SHALL pass, and none SHALL be disabled or loosened. A new check,
+    `scripts/check-description-length.ts`, SHALL fail on any source or
+    compiled description over 300 characters and SHALL run in CI.
 18. The implementation logbook SHALL record the epic's indicators Q1 to Q4 and
     E1 to E4 before and after the change, with E3 measured on comparable
     tickets per section 4.4 of the epic.
@@ -155,6 +173,7 @@ Then  the finding is `tech` class and the trim commit is corrected before merge
 ## Open questions
 
 - [AUTO-PARKED] Which of `docs/plan-review-protocol.md` and `docs/retroactive-loop.md` is the single canonical taxonomy source? Default: `docs/retroactive-loop.md`, since it covers all three classes and their loop targets; the plan stage records the final choice.
-- [AUTO-PARKED] Whether the sub-300-character description limit applies to the compiled description of each CLI or only to the source; default: the source, checked again on compiled outputs.
+- Resolved (AUTO): grounding discipline has no doc home; its canonical source is the architect skill section (requirement 6). The plan stage MAY instead extract it to a new doc if it records why.
+- Resolved (AUTO): the 300-character cap applies to the source and every compiled output, enforced by a new check (requirements 11 and 17).
 - [AUTO-PARKED] The outcome of requirement 9 per CLI is unknown at authoring time; requirement 10 is deliberately conditional and the plan stage records the verified result.
 - Decision (AUTO): issue line references were checked against the current tree. The `plannotator` backend is at lines 77 to 297 of `user-validate/SKILL.md` and the self-check at `spec-author/SKILL.md` line 526, both still accurate; sizes (30,739, 19,663, 19,008 and 11,841 bytes) match.
