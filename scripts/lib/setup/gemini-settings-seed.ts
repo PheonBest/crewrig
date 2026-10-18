@@ -1,6 +1,6 @@
 // gemini-settings-seed.ts — the template side of the Gemini settings merge (spec 0256 requirements
 // 27 and 31): the seed document, the reserved MCP entries of one run (`gemini_framework_mcp` of
-// scripts/lib/gemini-settings.sh) and the few object helpers `gemini-settings-merge.ts` shares.
+// retired scripts/lib/gemini-settings.sh) and the few object helpers `gemini-settings-merge.ts` shares.
 // Pure functions: no input, no output, no environment.
 
 import type { JsonValue } from "../extension/types.ts";
@@ -48,9 +48,9 @@ export function toJson(value: unknown): JsonValue | undefined {
   return out;
 }
 
-/** The default stdio wrapper of the shell: `bash <repo>/scripts/lib/tls-exec.sh <words...>`. */
+/** The default stdio wrapper: `node <repo>/scripts/tls-exec.ts <words...>`. */
 export function shellWrap(repoDir: string): WrapStdio {
-  return (words) => ["bash", `${repoDir}/scripts/lib/tls-exec.sh`, ...words];
+  return (words) => ["node", `${repoDir}/scripts/tls-exec.ts`, ...words];
 }
 
 /** The template minus what the merge owns: `context.fileName` and the reserved MCP names. */

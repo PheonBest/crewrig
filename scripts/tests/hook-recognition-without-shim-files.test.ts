@@ -73,8 +73,19 @@ before(() => {
     fs.mkdirSync(dest, { recursive: true });
     fs.cpSync(path.join(REPO, "hooks"), path.join(dest, "hooks"), {
       recursive: true,
-      filter: (src) => dest === full || dest === spacedFull || !src.endsWith(".sh"),
+      filter: (src) => !src.endsWith(".sh"),
     });
+    // The shims are deleted from the repository: the "full" trees model the legacy layout with stubs.
+    if (dest === full || dest === spacedFull) {
+      for (const name of [
+        "mempalace-transcript",
+        "usage-capture",
+        "worktree-git-guard",
+        "antigravity-statusline-shim",
+      ]) {
+        fs.writeFileSync(path.join(dest, "hooks", `${name}.sh`), "");
+      }
+    }
   }
 });
 after(() => {

@@ -1,5 +1,5 @@
 // json-secure.ts — `write_json_config_secure` and `write_json_config_secure_from` of
-// scripts/lib/common.sh (spec 0256 requirements 27 and 31, deviations (j) and (p)).
+// retired scripts/lib/common.sh (spec 0256 requirements 27 and 31, deviations (j) and (p)).
 //
 // A JSON document is written to `file`: the target is backed up first when it exists (the
 // `<file>.bak.<YYYYMMDD-HHMMSS>[.NN]` rule of `backup_file`), the text goes to a fresh exclusive

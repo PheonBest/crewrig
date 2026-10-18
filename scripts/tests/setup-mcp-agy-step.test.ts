@@ -52,7 +52,7 @@ beforeEach(() => {
   fs.mkdirSync(path.dirname(path.join(repo, rel)), { recursive: true });
   fs.copyFileSync(path.join(realRepo, rel), path.join(repo, rel));
   fs.mkdirSync(path.join(repo, "scripts/lib"), { recursive: true });
-  fs.writeFileSync(path.join(repo, "scripts/lib/tls-exec.sh"), "#!/bin/sh\n");
+  fs.writeFileSync(path.join(repo, "scripts/tls-exec.ts"), "#!/bin/sh\n");
   fs.mkdirSync(path.dirname(python), { recursive: true });
   fs.writeFileSync(python, "#!/bin/sh\n");
 });
@@ -174,9 +174,9 @@ describe("antigravity mcp steps", { skip: !posix }, () => {
     assert.equal(r.err, "");
     assert.deepEqual(Object.keys(entries()), ["mempalace", "sequentialthinking"]);
     assert.deepEqual(entries()["mempalace"], {
-      command: "bash",
+      command: "node",
       args: [
-        path.join(repo, "scripts/lib/tls-exec.sh"),
+        path.join(repo, "scripts/tls-exec.ts"),
         python,
         path.join(repo, "scripts/lib/mempalace-http-wrapper.py"),
       ],

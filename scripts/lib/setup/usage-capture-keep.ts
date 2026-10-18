@@ -1,4 +1,4 @@
-// usage-capture-keep.ts — `usage_capture_keep` of scripts/lib/usage-capture-optin.sh (spec 0256
+// usage-capture-keep.ts — `usage_capture_keep` of retired scripts/lib/usage-capture-optin.sh (spec 0256
 // requirement 30, plan v2 step B3a.3b): on the R5 events of the CLI's capture fragment, keep one
 // capture handler per event (usage-capture-rank.ts), re-point in place a kept handler whose path
 // vanished, quote a spaced path, add the fragment's handler to an event that has none. Writes

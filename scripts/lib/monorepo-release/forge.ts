@@ -1,6 +1,6 @@
 // forge.ts — which forge the run is on, and the variables that forge must provide (spec 0213
 // R10, spec 0257 R13). Replaced release_detect_forge, release_forge_url and the forge-variable
-// check of the former scripts/monorepo-release.sh.
+// check of the former scripts/monorepo-release.ts.
 
 import { ReleaseRefusal } from "./refusal.ts";
 

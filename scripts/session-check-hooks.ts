@@ -103,7 +103,7 @@ const pad = (n: number): string => String(n).padStart(2, "0");
 
 /**
  * Copy `file` to `<file>.bak.<YYYYMMDD-HHMMSS>[.NN]`, created exclusively at
- * 0600 (the file may hold the bearer token), as backup_file in common.sh names
+ * 0600 (the file may hold the bearer token), as backup_file in the retired common.sh named
  * it. Returns the backup path.
  */
 function backupFile(file: string, now: Date = new Date()): string {

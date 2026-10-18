@@ -5,7 +5,7 @@
 // same-path predicate, so every class is decided by a total function the tests
 // can drive directly. The shapes mirror each assistant's `sequentialthinking`
 // registration, which spec 0084 already routes through the trust wrapper:
-//   - Gemini CLI (scripts/lib/gemini-settings.sh `gemini_framework_mcp`) and
+//   - Gemini CLI (the retired scripts/lib/gemini-settings.sh `gemini_framework_mcp`, now scripts/lib/setup/gemini-settings.ts) and
 //     Antigravity CLI (scripts/setup-antigravity-interactive.ts): `command` +
 //     `args`, no other field;
 //   - GitHub Copilot CLI (config/copilot/mcp-config.json.template): the same
@@ -16,6 +16,8 @@
 // Standard library only (spec 0240 R16).
 
 import path from "node:path";
+
+import { endsWithRelative, isLegacyWrapperLine } from "./tls-exec/legacy.ts";
 
 /** The four supported assistants, in the order the task processes them. */
 export type Cli = "claude" | "gemini" | "copilot" | "antigravity";
@@ -29,7 +31,7 @@ export const SERVER_NAME = "playwright";
 export const PLAYWRIGHT_PACKAGE = "@playwright/mcp@latest";
 
 /** The trust wrapper's path relative to a checkout root. */
-export const WRAPPER_RELATIVE = "scripts/lib/tls-exec.sh";
+export const WRAPPER_RELATIVE = "scripts/tls-exec.ts";
 
 /**
  * Fields an assistant adds on its own when a server is registered with no
@@ -76,7 +78,7 @@ export function wrapperPath(repoRoot: string): string {
 /** The native entry this task writes for `cli`, wrapping through `wrapper`. */
 export function wrappedEntry(cli: Cli, wrapper: string): Record<string, unknown> {
   const entry: Record<string, unknown> = {
-    command: "bash",
+    command: "node",
     args: [wrapper, "npx", PLAYWRIGHT_PACKAGE],
   };
   if (cli === "copilot") return { type: "stdio", ...entry };
@@ -85,7 +87,7 @@ export function wrappedEntry(cli: Cli, wrapper: string): Record<string, unknown>
 
 /** The `claude mcp add` argv tail that registers the wrapped form. */
 export function wrappedLaunch(wrapper: string): readonly string[] {
-  return ["bash", wrapper, "npx", PLAYWRIGHT_PACKAGE];
+  return ["node", wrapper, "npx", PLAYWRIGHT_PACKAGE];
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -120,13 +122,9 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((x) => typeof x === "string");
 }
 
-/** A wrapper path of some checkout: absolute and ending in `scripts/lib/tls-exec.sh`. */
+/** A wrapper path of some checkout: absolute and ending in `scripts/tls-exec.ts`. */
 function isCheckoutWrapper(candidate: string): boolean {
-  if (!path.isAbsolute(candidate) && !path.posix.isAbsolute(candidate)) return false;
-  const segments = candidate.split(/[\\/]+/);
-  const tail = WRAPPER_RELATIVE.split("/");
-  if (segments.length <= tail.length) return false;
-  return tail.every((seg, i) => segments[segments.length - tail.length + i] === seg);
+  return endsWithRelative(candidate, WRAPPER_RELATIVE);
 }
 
 /**
@@ -149,15 +147,13 @@ export function classify(
   if (command === "npx" && args.length === 1 && args[0] === PLAYWRIGHT_PACKAGE) {
     return { kind: "legacy" };
   }
-  if (
-    command === "bash" &&
-    args.length === 3 &&
-    args[1] === "npx" &&
-    args[2] === PLAYWRIGHT_PACKAGE
-  ) {
-    const stored = args[0] as string;
+  const tail = args.length === 3 && args[1] === "npx" && args[2] === PLAYWRIGHT_PACKAGE;
+  const stored = args[0] as string;
+  if (tail && command === "node") {
     if (stored === wrapper || samePath(stored, wrapper)) return { kind: "wrapped-current" };
     if (isCheckoutWrapper(stored)) return { kind: "relocated", oldPath: stored };
   }
+  // The retired shell form (spec 0266 R9): no file backs it any more, so it is always converged.
+  if (tail && isLegacyWrapperLine(command, args)) return { kind: "relocated", oldPath: stored };
   return { kind: "custom" };
 }

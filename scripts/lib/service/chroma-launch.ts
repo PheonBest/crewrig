@@ -125,7 +125,7 @@ export function chromaBinaryFor(
 export interface StartOptions {
   readonly env: EnvLike;
   readonly platform: NodeJS.Platform;
-  /** The repository root, whose `scripts/lib/common.sh` carries the MemPalace pin. */
+  /** The repository root, whose `retired scripts/lib/common.sh` carries the MemPalace pin. */
   readonly repoRoot: string;
   readonly io: Io;
   readonly home?: string;

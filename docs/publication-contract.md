@@ -162,7 +162,7 @@ page blocks directly rather than relying on the manifest.
 
 ## The generator — `scripts/build-docs-index.ts`
 
-`scripts/build-docs-index.ts` (behind the forwarding shim `scripts/build-docs-index.sh`, on the Node.js 24 floor) scans `docs/**/*.md`, parses each page's
+`scripts/build-docs-index.ts` (behind the forwarding shim `scripts/build-docs-index.ts`, on the Node.js 24 floor) scans `docs/**/*.md`, parses each page's
 metadata block, and emits `docs/index.json`.
 
 | Invocation | Behavior |

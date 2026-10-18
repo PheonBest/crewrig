@@ -4,7 +4,7 @@
 //
 // `hooks.json` is a map of named hooks. The framework owns
 // `crewrig-mempalace-transcript` (the transcript) and `crewrig-worktree-git-guard`
-// (the guard, written by common.sh's shallow merge, never here). This module
+// (the guard, written by the shallow merge of the retired common.sh, now scripts/lib/setup/antigravity-hooks.ts, never here). This module
 // writes only the transcript named hook, and leaves every other named hook,
 // key and key order byte-identical.
 //

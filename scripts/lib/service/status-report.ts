@@ -6,7 +6,6 @@
 // Each section returns the exit contribution (0 or 1) and prints through
 // `write`. Nothing here spawns except through exec.ts and task-snapshot.ts.
 
-import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { reportArrangements } from "./assistant-arrangement.ts";
@@ -21,19 +20,11 @@ import type { Snapshot } from "./task-snapshot.ts";
 export type Write = (line: string) => void;
 type Env = NodeJS.ProcessEnv;
 
-/** `scripts/lib/mcp-daemon-launcher.sh`, the source of the shell form. */
-function shellLauncherSha(repoRoot: string): string | null {
-  try {
-    return createHash("sha256")
-      .update(readFileSync(path.join(repoRoot, "scripts", "lib", "mcp-daemon-launcher.sh")))
-      .digest("hex");
-  } catch {
-    return null;
-  }
-}
-
-function currentSha(program: string | null, repoRoot: string): string | null {
-  if (program === null) return shellLauncherSha(repoRoot);
+/**
+ * The hash the repository's launcher source has now. A launcher still in the retired shell form
+ * (no program) is compared against it too: its recorded hash never equals it, so it reads DRIFTED.
+ */
+function currentSha(_program: string | null, repoRoot: string): string | null {
   try {
     return launcherSourceSha(path.join(repoRoot, "scripts", "lib"));
   } catch {

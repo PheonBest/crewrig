@@ -1,4 +1,4 @@
-// worktree-warning.ts — `warn_if_linked_worktree` of scripts/lib/common.sh (spec 0206 plan v3, issue
+// worktree-warning.ts — `warn_if_linked_worktree` of retired scripts/lib/common.sh (spec 0206 plan v3, issue
 // #1169): the usage-capture and statusline shims are wired by an in-repo absolute path, so an install
 // run from a linked git worktree is told that `git worktree remove` would break the wired hook.
 // `git -C <repo> rev-parse --git-common-dir` prints the literal `.git` from the main checkout and an

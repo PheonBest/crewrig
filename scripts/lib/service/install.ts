@@ -2,7 +2,7 @@
 // plan v2 D1 `install.ts`): ensure the MemPalace home, materialise the unit,
 // register it through the backend, then poll the health function for 15
 // seconds in 0.3 second steps, with the wording of `install_daemon_supervisor`
-// and `ensure_mempalace_home` in scripts/lib/common.sh.
+// and `ensure_mempalace_home` in retired scripts/lib/common.sh.
 //
 // The health function is a parameter, and so is the rollback: macOS and Linux
 // keep the shell's behaviour (no rollback); the Windows path passes one that

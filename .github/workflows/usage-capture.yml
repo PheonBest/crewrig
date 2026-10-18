@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: [main, "release/**"]
     paths:
-      - "hooks/usage-capture.sh"
       - "hooks/claude-transcript-hooks.json"
       - "hooks/gemini-transcript-hooks.json"
       - "hooks/copilot-transcript-hooks.json"
@@ -15,9 +14,7 @@ on:
       - "hooks/claude-usage-capture-hooks.json"
       - "hooks/gemini-usage-capture-hooks.json"
       - "hooks/copilot-usage-capture-hooks.json"
-      - "scripts/lib/usage-capture-optin.sh"
       - "scripts/usage-capture-optin.ts"
-      - "scripts/lib/common.sh"
       - "scripts/setup-claude-interactive.ts"
       - "scripts/setup-gemini-interactive.ts"
       - "scripts/setup-copilot-interactive.ts"
@@ -55,7 +52,6 @@ on:
   push:
     branches: [main, "release/**"]
     paths:
-      - "hooks/usage-capture.sh"
       - "hooks/claude-transcript-hooks.json"
       - "hooks/gemini-transcript-hooks.json"
       - "hooks/copilot-transcript-hooks.json"
@@ -66,9 +62,7 @@ on:
       - "hooks/claude-usage-capture-hooks.json"
       - "hooks/gemini-usage-capture-hooks.json"
       - "hooks/copilot-usage-capture-hooks.json"
-      - "scripts/lib/usage-capture-optin.sh"
       - "scripts/usage-capture-optin.ts"
-      - "scripts/lib/common.sh"
       - "scripts/setup-claude-interactive.ts"
       - "scripts/setup-gemini-interactive.ts"
       - "scripts/setup-copilot-interactive.ts"

@@ -1,5 +1,6 @@
-// setup-org-mcp-wiring.test.ts — the shipped org manifest and the gemini fold order (spec 0263,
-// ported from test-setup-org-mcp.sh group 1 tail and group 7). Group 6 (the declared sub-step order
+// setup-org-mcp-wiring.test.ts — the shipped org manifest (spec 0263,
+// ported from test-setup-org-mcp.sh group 1 tail; the gemini fold order of group 7 is pinned by
+// setup-gemini-settings.test.ts, the shell text it read being gone, spec 0266). Group 6 (the declared sub-step order
 // per CLI) is NOT re-asserted: setup-retarget-others.test.ts "org fold per CLI" pins all four pairs.
 // Runs on every platform: a JSON read, a text read.
 
@@ -11,7 +12,6 @@ import { describe, test } from "node:test";
 import { REPO } from "./lib/worktree-fixtures.ts";
 
 const SHIPPED = path.join(REPO, "mcp-servers.org.json");
-const GEMINI_LIB = path.join(REPO, "scripts", "lib", "gemini-settings.sh");
 
 function strings(value: unknown, into: string[] = []): string[] {
   if (typeof value === "string") into.push(value);
@@ -33,20 +33,5 @@ describe("the shipped mcp-servers.org.json is an empty operational channel (R9)"
     assert.ok(all.length > 0, "vacuity guard: the walk saw no string");
     const leaks = all.filter((s) => /Bearer [A-Za-z0-9]{12,}/.test(s));
     assert.deepEqual(leaks, []);
-  });
-});
-
-describe("lib/gemini-settings.sh folds the org servers after the 0089 merge", () => {
-  const lines = fs.readFileSync(GEMINI_LIB, "utf8").split("\n");
-  // Call sites only (a quoted first argument), never a comment naming the function.
-  const first = (needle: string) => lines.findIndex((l) => l.includes(needle)) + 1;
-  test("apply_org_mcp_servers is named", () => {
-    assert.ok(lines.some((l) => l.includes("apply_org_mcp_servers")));
-  });
-  test("the first quoted org fold call comes strictly after the first quoted merge call", () => {
-    const merge = first('merge_preexisting_mcp_servers "');
-    const apply = first('apply_org_mcp_servers "');
-    assert.ok(merge > 0 && apply > 0, `merge=${merge} apply=${apply}`);
-    assert.ok(apply > merge, `org fold (l${apply}) must follow the 0089 merge (l${merge})`);
   });
 });

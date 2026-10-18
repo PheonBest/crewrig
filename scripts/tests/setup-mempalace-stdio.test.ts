@@ -21,9 +21,9 @@ const win: WrapperEnv = {
 const PY = "/usr/bin/python3";
 const WIN_PY = "C:\\Python 3\\python.exe";
 
-// The shell text, copied: `$REPO_DIR/scripts/lib/tls-exec.sh`, `$py`, the wrapper path, and the
+// The shell text, copied: `$REPO_DIR/scripts/tls-exec.ts`, `$py`, the wrapper path, and the
 // sequential-thinking words of setup-*-interactive.sh and gemini_framework_mcp.
-const TLS = `${posix.repoDir}/scripts/lib/tls-exec.sh`;
+const TLS = `${posix.repoDir}/scripts/tls-exec.ts`;
 const WRAPPER = `${posix.repoDir}/scripts/lib/mempalace-http-wrapper.py`;
 const SEQ = ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking"];
 
@@ -31,11 +31,11 @@ function shellMempalace(cli: Cli): string {
   const args = [TLS, PY, WRAPPER];
   switch (cli) {
     case "claude":
-      return JSON.stringify({ type: "stdio", command: "bash", args, env: {} });
+      return JSON.stringify({ type: "stdio", command: "node", args, env: {} });
     case "copilot":
-      return JSON.stringify({ type: "stdio", command: "bash", args });
+      return JSON.stringify({ type: "stdio", command: "node", args });
     default:
-      return JSON.stringify({ command: "bash", args });
+      return JSON.stringify({ command: "node", args });
   }
 }
 
@@ -43,11 +43,11 @@ function shellSeq(cli: Cli): string {
   const args = [TLS, ...SEQ];
   switch (cli) {
     case "claude":
-      return JSON.stringify({ type: "stdio", command: "bash", args, env: {} });
+      return JSON.stringify({ type: "stdio", command: "node", args, env: {} });
     case "copilot":
-      return JSON.stringify({ type: "stdio", command: "bash", args });
+      return JSON.stringify({ type: "stdio", command: "node", args });
     default:
-      return JSON.stringify({ command: "bash", args });
+      return JSON.stringify({ command: "node", args });
   }
 }
 
@@ -58,8 +58,8 @@ test("npxName: npx on POSIX, npx.cmd on win32", () => {
 });
 
 test("POSIX commands equal the shell argv", () => {
-  assert.deepEqual(mempalaceStdioCommand(posix, PY), ["bash", TLS, PY, WRAPPER]);
-  assert.deepEqual(sequentialThinkingCommand(posix, "npx"), ["bash", TLS, ...SEQ]);
+  assert.deepEqual(mempalaceStdioCommand(posix, PY), ["node", TLS, PY, WRAPPER]);
+  assert.deepEqual(sequentialThinkingCommand(posix, "npx"), ["node", TLS, ...SEQ]);
 });
 
 for (const cli of CLIS) {

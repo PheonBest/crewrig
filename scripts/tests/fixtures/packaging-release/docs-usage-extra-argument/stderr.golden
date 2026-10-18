@@ -1,1 +1,1 @@
-Drift: docs/index.json is missing. Run: bash scripts/build-docs-index.sh
+Drift: docs/index.json is missing. Run: bash scripts/build-docs-index.ts

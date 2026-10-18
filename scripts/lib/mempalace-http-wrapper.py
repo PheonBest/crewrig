@@ -39,7 +39,7 @@ An out-of-range MemPalace is the same class of unmet precondition as an
 unreachable daemon and is treated the same way: this process determines, before
 it begins serving, the MemPalace version *its own interpreter* resolves, and
 refuses to serve when that version lies outside the range pinned in
-``scripts/lib/common.sh``. Two independent gates, both of which must pass:
+``scripts/lib/mempalace-pin.json``. Two independent gates, both of which must pass:
 
 - **Phase A** (Step 1, before ``chromadb`` is even imported) range-checks
   ``importlib.metadata.version("mempalace")`` — the in-process resolution, the
@@ -117,7 +117,7 @@ if not _transport_is_http():
 import importlib.metadata  # noqa: E402
 
 _LIB_DIR = os.path.dirname(os.path.realpath(__file__))
-_COMMON_SH = os.path.join(_LIB_DIR, "common.sh")
+_PIN_FILE = os.path.join(_LIB_DIR, "mempalace-pin.json")
 
 # R4: every operator-facing output of the guard says this, because a session
 # that is already up keeps serving what it loaded at start.
@@ -140,7 +140,7 @@ def _refuse(found, source, bounds, comparator, extra="", remedy=None):
     ``remedy`` overrides the action line a caller would otherwise inherit from
     ``bounds``. The bound-less default — re-run the framework setup from a
     complete checkout — is the right repair for a checkout that is *missing* the
-    guard module, and the wrong one for a checkout whose ``common.sh`` is
+    guard module, and the wrong one for a checkout whose ``mempalace-pin.json`` is
     present and malformed: re-running setup rewrites no declaration in it. That
     branch therefore names its own remedy rather than pointing the operator at a
     step that would change nothing.
@@ -207,7 +207,7 @@ finally:
         sys.path.remove(_LIB_DIR)
 
 try:
-    _MP_BOUNDS = mempalace_pin.read_pin(_COMMON_SH)
+    _MP_BOUNDS = mempalace_pin.read_pin(_PIN_FILE)
 except (OSError, ValueError) as _pin_read_error:
     _refuse(
         "not determined",
@@ -215,16 +215,14 @@ except (OSError, ValueError) as _pin_read_error:
         None,
         None,
         extra="the supported-version pin could not be read from {0}: {1}".format(
-            _COMMON_SH, _pin_read_error
+            _PIN_FILE, _pin_read_error
         ),
         # NOT the bound-less default: this checkout is complete, so re-running
         # setup rewrites nothing. The declaration itself is what needs repair.
         remedy=(
-            "repair the pin declaration in {0} so that each of "
-            'MEMPALACE_MIN_VERSION and MEMPALACE_MAX_VERSION_EXCLUSIVE is '
-            'declared exactly once, at line start, as NAME="<version>"'.format(
-                _COMMON_SH
-            )
+            "repair the pin declaration in {0} so that it is a JSON object "
+            'holding a non-empty string for each of "min" and '
+            '"maxExclusive"'.format(_PIN_FILE)
         ),
     )
 

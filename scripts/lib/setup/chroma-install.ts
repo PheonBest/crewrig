@@ -1,4 +1,4 @@
-// chroma-install.ts — `install_chroma_daemon` and `install_daemon_supervisor` of scripts/lib/common.sh
+// chroma-install.ts — `install_chroma_daemon` and `install_daemon_supervisor` of retired scripts/lib/common.sh
 // in TypeScript (spec 0256 requirement 25 as replaced by delta-01, deviation (n)). The dispatcher prints
 // the shell's header, creates the MemPalace home, then installs the supervisor unit of the platform:
 // a launchd LaunchAgent on macOS, a systemd user unit on Linux, and on win32 the scheduled task of

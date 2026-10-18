@@ -2,45 +2,13 @@
 # Regenerate with: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-ratchet.ts --write
 # Entries may only ever be removed: delete a line in the same PR that
 # deletes or migrates its file. See DEVELOPMENT.md (TypeScript toolchain and ratchet).
-hooks/mempalace-transcript.sh
-hooks/usage-capture.sh
-hooks/worktree-git-guard.sh
 scripts/build-ci.sh
-scripts/build-claude-plugin.sh
 scripts/build-components.sh
-scripts/build-docs-index.sh
-scripts/build-extension.sh
 scripts/check-agent-profiles.sh
 scripts/check-ci-parity.sh
-scripts/check-claude-agent-layout.sh
-scripts/check-component-metadata-keys.sh
-scripts/check-core-paths.sh
-scripts/check-extension-hook-map.sh
-scripts/check-extension-hook-tokens.sh
-scripts/check-extension-manifest-version.sh
-scripts/check-extension-pivot.sh
 scripts/check-model-mappings.sh
 scripts/check-spec-id-reserved.sh
 scripts/ci-cache-guard.sh
 scripts/ci-changeset-coverage.sh
-scripts/create-extension.sh
-scripts/lib/common.sh
-scripts/lib/extension-hooks.sh
-scripts/lib/extension-install.sh
-scripts/lib/gemini-settings.sh
-scripts/lib/mcp-daemon-launcher.sh
-scripts/lib/render-command.sh
-scripts/lib/tls-delegation.sh
-scripts/lib/tls-exec.sh
-scripts/lib/usage-capture-optin.sh
-scripts/merge-spec-pr.sh
-scripts/migrate-extension.sh
-scripts/monorepo-release.sh
-scripts/package-extension.sh
-scripts/package-extensions.sh
-scripts/release-package-extension.sh
 scripts/reserve-spec-id.sh
-scripts/status-chroma-server.sh
-scripts/sweep-en-us.sh
-scripts/usage-mirror.sh
 tests/e2e/lib/test-gemini-headless.sh

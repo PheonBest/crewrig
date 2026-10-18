@@ -1,5 +1,5 @@
 // build-claude-plugin.ts — generate a Claude Code plugin from extension.json (spec 0254).
-// `build-claude-plugin.sh` forwards to it as a shim.
+// (The `build-claude-plugin.sh` forwarding shim was retired in #1344.)
 //
 // Usage: node scripts/build-claude-plugin.ts <extension-dir-or-name> [output-dir]
 // Run `node scripts/lib/node-floor-guard.js` first on an unverified Node.js: the tool needs

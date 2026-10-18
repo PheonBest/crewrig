@@ -2,7 +2,7 @@
 // delta-01, R16 (issue #1410; plan v4 step 8; seat findings v4-F5, v4-F6).
 //
 // Two readers classify a CLI's `mempalace` registration:
-//   - the shell `mcp_assistant_arrangement` (scripts/lib/common.sh), which
+//   - the shell `mcp_assistant_arrangement` (retired scripts/lib/common.sh), which
 //     `task mempalace:status` runs under the operator's `jq`;
 //   - the check's `parseStrict` + `classifyStrict`
 //     (scripts/lib/mempalace-registration.ts), which never runs `jq`.
@@ -17,22 +17,18 @@
 // Homebrew's jq-1.8.2 together, and CI covers its own.
 
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { describe, test } from "node:test";
 
 import {
-  COMMON_SH,
   CLIS,
   type Cli,
-  JQ_BINARIES,
   REPO,
   SENTINEL,
   STATUS_LISTENER_SEAM,
   assertNoCliInvoked,
   assertStatusProbesStubbed,
-  bashLib,
   emittedWarning,
   makeSandbox,
   run,
@@ -56,31 +52,6 @@ import {
 /** The expected endpoint every strict fixture is classified against. */
 const E = "http://127.0.0.1:41999/mcp";
 const WRONG = "http://u:SE@NT@127.0.0.1:41000/mcp?k=SECRET";
-
-const STATUS_OF: Record<Classification["class"], string> = {
-  ok: "http",
-  "wrong-endpoint": "http",
-  stdio: "stdio",
-  absent: "none",
-  unrecognised: "unknown",
-};
-
-// --- the jq binaries the shell side runs under -------------------------------
-
-interface JqVariant {
-  /** Absolute path of the binary. */
-  bin: string;
-  version: string;
-}
-
-function jqVariants(): JqVariant[] {
-  return JQ_BINARIES.map((bin) => {
-    const v = spawnSync(bin, ["--version"], { encoding: "utf8" });
-    return { bin, version: (v.stdout || v.stderr).trim() };
-  });
-}
-
-const JQS = jqVariants();
 
 // --- fixtures -------------------------------------------------------------------
 
@@ -212,86 +183,7 @@ function configRel(cli: Cli): string {
   }[cli];
 }
 
-/** `<id> <cli> <arrangement> <endpoint-check line or ->` for every case, under one jq. */
-function shellReadings(
-  sb: Sandbox,
-  cases: Case[],
-  jq: JqVariant,
-): Map<string, { state: string; check: string }> {
-  const script = `
-. ${shq(COMMON_SH)}
-printf 'JQ\\t%s\\n' "$(jq --version 2>&1)"
-while IFS='\t' read -r id home; do
-  for cli in claude gemini copilot antigravity; do
-    st="$(HOME="$home" mcp_assistant_arrangement "$cli")"
-    chk="-"
-    if [ "$st" = http ]; then chk="$(HOME="$home" _mcp_endpoint_check "$cli" ${shq(E)})"; fi
-    printf '%s\\t%s\\t%s\\t%s\\n' "$id" "$cli" "$st" "$chk"
-  done
-done`;
-  const input = cases.map((c) => `${c.id}\t${c.home}\n`).join("");
-  const r = spawnSync("bash", ["-c", script], {
-    env: sb.env({ PATH: sb.pathWithJq(jq.bin) }),
-    input,
-    encoding: "utf8",
-    cwd: sb.root,
-    maxBuffer: 16 * 1024 * 1024,
-  });
-  assert.equal(r.status, 0, r.stderr);
-  const out = new Map<string, { state: string; check: string }>();
-  for (const line of r.stdout.split("\n")) {
-    if (line === "") continue;
-    if (line.startsWith("JQ\t")) {
-      assert.equal(line.slice(3), jq.version, `the shell ran another jq than ${jq.bin}`);
-      continue;
-    }
-    const [id, cli, state, ...rest] = line.split("\t");
-    out.set(`${id}/${cli}`, { state: state ?? "", check: rest.join("\t") });
-  }
-  return out;
-}
-
-/** What `_mcp_endpoint_check` must print for the check's classification. */
-function expectedCheckLine(c: Classification): string {
-  if (c.class === "ok") return `match\t${E}`;
-  if (c.class === "wrong-endpoint") return `mismatch\t${c.registered}`;
-  return "-";
-}
-
 describe("R4 agreement over strict fixtures (delta-01)", () => {
-  test("the jq binaries under test, by absolute path", (t) => {
-    assert.ok(JQS.length > 0, "no jq on PATH: the shell reader cannot run");
-    for (const jq of JQS) t.diagnostic(`jq --version (${jq.bin}): ${jq.version}`);
-  });
-
-  for (const jq of JQS) {
-    test(`both readers agree on every strict fixture, for all four CLIs, under ${jq.version}`, (t) => {
-      const sb = makeSandbox();
-      const cases = buildCases(sb, STRICT);
-      t.diagnostic(`jq --version: ${jq.version}; ${cases.length} files x ${CLIS.length} CLIs`);
-
-      const shell = shellReadings(sb, cases, jq);
-
-      const disagreements: string[] = [];
-      for (const c of cases) {
-        assert.ok(parseStrict(c.bytes).strict, `fixture "${c.fixture}" is meant to be strict`);
-        for (const cli of CLIS) {
-          // What the check itself runs: Gemini's file goes through comment removal (delta-02 R4).
-          const cls = classifyFile({ kind: "ok", bytes: c.bytes }, E, cli);
-          const got = shell.get(`${c.id}/${cli}`);
-          const want = { state: STATUS_OF[cls.class], check: expectedCheckLine(cls) };
-          if (got === undefined || got.state !== want.state || got.check !== want.check) {
-            disagreements.push(
-              `${c.fixture} [${c.key}] ${cli}: check ${JSON.stringify(cls)} -> ${JSON.stringify(want)}, status ${JSON.stringify(got)}`,
-            );
-          }
-        }
-      }
-      assert.deepEqual(disagreements, []);
-      assertNoCliInvoked(sb);
-    });
-  }
-
   test("the strict corpus reaches every class and both unrecognised entry shapes", () => {
     const classes = new Set<string>();
     for (const f of STRICT) {
@@ -612,21 +504,12 @@ describe("a Gemini file with comments is classified on its content after comment
       );
     }
   });
-
-  test("status reads a commented Gemini file as unknown, unchanged (delta-02 Out of scope)", () => {
-    const sb = makeSandbox();
-    writeConfig(sb, "gemini", wrap(`{"mcpServers":{"mempalace":${json(httpEntry("url", E))}}}`));
-
-    const st = bashLib(sb, "mcp_assistant_arrangement gemini").stdout.trim();
-
-    assert.equal(st, "unknown");
-  });
 });
 
 // --- content: strict file, unknown entry shape (delta-01 R5) ---------------------
 
 describe("a strict file with an unknown entry shape points at the repair (delta-01 R5)", () => {
-  test('entries "s", 0, [], true and {} warn with task mempalace:repair and status reads unknown', () => {
+  test('entries "s", 0, [], true and {} warn with task mempalace:repair', () => {
     const sb = makeSandbox();
     for (const entry of ['"s"', "0", "[]", "true", "{}"]) {
       for (const cli of CLIS) {
@@ -640,7 +523,6 @@ describe("a strict file with an unknown entry shape points at the repair (delta-
           expected: E,
           config: `~/${configRel(cli)}`,
         });
-        const st = bashLib(sb, `mcp_assistant_arrangement ${cli}`).stdout.trim();
 
         assert.deepEqual(cls, { class: "unrecognised", reason: "content" }, `${cli} ${entry}`);
         assert.ok(
@@ -648,7 +530,6 @@ describe("a strict file with an unknown entry shape points at the repair (delta-
           `${cli} ${entry}: ${w}`,
         );
         assert.ok(!w.includes("not a single strict JSON document"), w);
-        assert.equal(st, "unknown", `${cli} ${entry}`);
       }
     }
     assertNoCliInvoked(sb);
@@ -657,8 +538,8 @@ describe("a strict file with an unknown entry shape points at the repair (delta-
 
 // --- wrong endpoint against a non-default launcher (R4, R16) ------------------
 
-describe("a launcher on a non-default port: both readers report wrong-endpoint (R4)", () => {
-  test("the check and task mempalace:status agree, with the same redacted URL, whatever MEMPALACE_MCP_PORT says", async () => {
+describe("a launcher on a non-default port: the check reports wrong-endpoint (R4)", () => {
+  test("the check reports the registered and expected URLs, whatever MEMPALACE_MCP_PORT says", async () => {
     const server = await startFakeServer("auth-refusal");
     try {
       const sb = makeSandbox();
@@ -672,23 +553,7 @@ describe("a launcher on a non-default port: both readers report wrong-endpoint (
           },
         });
 
-      const report = bashLib(
-        sb,
-        `mcp_report_assistant_arrangements serving "$(mcp_installed_endpoint)"`,
-        { env },
-      );
-
       const expected = `http://127.0.0.1:${server.port}/mcp`;
-      for (const cli of CLIS) {
-        assert.match(
-          report.stdout,
-          new RegExp(
-            `^  ${cli} +http \\(WRONG ENDPOINT: registered ${escapeRe(registered)}, expected ${escapeRe(expected)}\\)$`,
-            "m",
-          ),
-          report.stdout,
-        );
-      }
       for (const cli of ["claude", "gemini", "copilot"] as const) {
         const r = await runCheck(sb, cli, { env });
         const w = emittedWarning(r.stdout);
@@ -708,7 +573,7 @@ describe("a launcher on a non-default port: both readers report wrong-endpoint (
     }
   });
 
-  test("status-mcp-server.ts reports the launcher's endpoint, not the environment's", async () => {
+  test("status-mcp-server reports the launcher's endpoint, not the environment's", async () => {
     const server = await startFakeServer("auth-refusal");
     try {
       const sb = makeSandbox();
@@ -748,7 +613,7 @@ describe("a launcher on a non-default port: both readers report wrong-endpoint (
   // Otherwise the host falls back to the environment/default one; the port
   // still comes from the launcher (R4: the installed endpoint).
   for (const host of ["example.invalid", "127.999.0.1", "127.0.0.256", "127.1", "127.0.0.01"]) {
-    test(`status-mcp-server.ts never targets non-loopback launcher host ${host}`, async () => {
+    test(`status-mcp-server never targets non-loopback launcher host ${host}`, async () => {
       const server = await startFakeServer("auth-refusal");
       try {
         const sb = makeSandbox();
@@ -785,7 +650,7 @@ describe("a launcher on a non-default port: both readers report wrong-endpoint (
     });
   }
 
-  test("status-mcp-server.ts keeps a loopback launcher host", async () => {
+  test("status-mcp-server keeps a loopback launcher host", async () => {
     const server = await startFakeServer("auth-refusal");
     try {
       const sb = makeSandbox();
@@ -869,13 +734,11 @@ const LAUNCHERS: Array<[string, string | Buffer]> = [
   ["placeholder host, real port", 'MCP_HOST="__MCP_HOST__"\nMCP_PORT="41893"\n'],
   [
     "the repository template verbatim",
-    fs.readFileSync(path.join(REPO, "scripts", "lib", "mcp-daemon-launcher.sh")),
+    Buffer.from('MCP_HOST="__MCP_HOST__"\nMCP_PORT="__MCP_PORT__"\n'),
   ],
   [
     "the repository template with only the port substituted",
-    fs
-      .readFileSync(path.join(REPO, "scripts", "lib", "mcp-daemon-launcher.sh"), "utf8")
-      .replace("__MCP_PORT__", "41893"),
+    'MCP_HOST="__MCP_HOST__"\nMCP_PORT="41893"\n',
   ],
   ["host with a leading underscore", hostCase("_h")],
   ["host with a trailing underscore", hostCase("h_")],
@@ -883,41 +746,15 @@ const LAUNCHERS: Array<[string, string | Buffer]> = [
   ["U+2029 before the key", 'MCP_HOST="h"\nX=1\u2029MCP_PORT="2"\n'],
 ];
 
-describe("parseLauncher and mcp_installed_endpoint read the same endpoint (R1, R4)", () => {
-  test("every launcher case gives the same endpoint, or none, in both readers", () => {
+describe("parseLauncher reads the installed endpoint (R1, R4)", () => {
+  test("every launcher case gives its endpoint, or none", () => {
     const sb = makeSandbox();
-    const files = LAUNCHERS.map(([name, text], i) => {
-      const file = path.join(sb.root, "launchers", `${i}.sh`);
-      fs.mkdirSync(path.dirname(file), { recursive: true });
-      fs.writeFileSync(file, text);
-      return { name, file, bytes: fs.readFileSync(file) };
-    });
-    const script =
-      `. ${shq(COMMON_SH)}\n` +
-      `while IFS= read -r f; do printf '%s\\n' "$(MEMPALACE_MCP_LAUNCHER_PATH="$f" mcp_installed_endpoint)"; done`;
-
-    const r = spawnSync("bash", ["-c", script], {
-      env: sb.env(),
-      input: files.map((f) => `${f.file}\n`).join(""),
-      encoding: "utf8",
-      cwd: sb.root,
-    });
-
-    assert.equal(r.status, 0, r.stderr);
-    const shell = r.stdout.split("\n").slice(0, files.length);
-    const diffs = files
-      .map(
-        (f, i) =>
-          [f.name, parseLauncher(f.bytes.toString("utf8"))?.url ?? "", shell[i] ?? ""] as const,
-      )
-      .filter(([, ts, sh]) => ts !== sh)
-      .map(
-        ([name, ts, sh]) =>
-          `${name}: parseLauncher ${JSON.stringify(ts)}, mcp_installed_endpoint ${JSON.stringify(sh)}`,
-      );
-    assert.deepEqual(diffs, []);
-    // The table must exercise both outcomes, or agreement proves nothing.
-    assert.ok(shell.some((u) => u !== "") && shell.some((u) => u === ""));
+    const files = LAUNCHERS.map(([name, text]) => ({
+      name,
+      url: parseLauncher(Buffer.isBuffer(text) ? text.toString("utf8") : text)?.url ?? "",
+    }));
+    // The table must exercise both outcomes, or the reading proves nothing.
+    assert.ok(files.some((f) => f.url !== "") && files.some((f) => f.url === ""));
     for (const name of [
       "port 0",
       "port 99999",
@@ -925,8 +762,11 @@ describe("parseLauncher and mcp_installed_endpoint read the same endpoint (R1, R
       "host my_host (underscore)",
       "unsubstituted placeholders",
     ]) {
-      const i = LAUNCHERS.findIndex(([n]) => n === name);
-      assert.equal(shell[i], "", `${name} must mean no installed daemon`);
+      assert.equal(
+        files.find((f) => f.name === name)?.url,
+        "",
+        `${name} must mean no installed daemon`,
+      );
     }
     assertNoCliInvoked(sb);
   });
@@ -952,44 +792,27 @@ const VECTORS = (
 ).vectors;
 
 describe("one redaction, two implementations (redaction-vectors.json)", () => {
-  for (const jq of JQS) {
-    test(`_mcp_endpoint_check prints every vector byte-identical to the check, under ${jq.version}`, () => {
-      const sb = makeSandbox();
-      const fixtures = VECTORS.map((v) =>
-        s(v.name, json({ mcpServers: { mempalace: { type: "http", url: v.input } } })),
-      );
-      // A non-string URL prints the shared placeholder on both sides (seat DEV note).
-      fixtures.push(
-        s("url not a string", json({ mcpServers: { mempalace: { type: "http", url: 5 } } })),
-      );
-      const cases = buildCases(sb, fixtures);
-
-      const shell = shellReadings(sb, cases, jq);
-
-      const diffs: string[] = [];
-      for (const c of cases) {
-        const parsed = parseStrict(c.bytes);
-        assert.ok(parsed.strict, c.fixture);
-        const cls = classifyStrict(parsed.value, E);
-        const vector = VECTORS.find((v) => v.name === c.fixture);
-        if (vector !== undefined) {
-          assert.deepEqual(
-            cls,
-            { class: "wrong-endpoint", registered: vector.expected },
-            c.fixture,
-          );
-        }
-        const got = shell.get(`${c.id}/copilot`);
-        if (got?.check !== expectedCheckLine(cls))
-          diffs.push(
-            `${c.fixture}: check ${JSON.stringify(expectedCheckLine(cls))}, status ${JSON.stringify(got?.check)}`,
-          );
+  test("every vector classifies as wrong-endpoint with the redacted URL the check prints", () => {
+    const sb = makeSandbox();
+    const fixtures = VECTORS.map((v) =>
+      s(v.name, json({ mcpServers: { mempalace: { type: "http", url: v.input } } })),
+    );
+    // A non-string URL prints the shared placeholder (seat DEV note).
+    fixtures.push(
+      s("url not a string", json({ mcpServers: { mempalace: { type: "http", url: 5 } } })),
+    );
+    for (const c of buildCases(sb, fixtures)) {
+      const parsed = parseStrict(c.bytes);
+      assert.ok(parsed.strict, c.fixture);
+      const cls = classifyStrict(parsed.value, E);
+      const vector = VECTORS.find((v) => v.name === c.fixture);
+      if (vector !== undefined) {
+        assert.deepEqual(cls, { class: "wrong-endpoint", registered: vector.expected }, c.fixture);
       }
-      assert.deepEqual(diffs, []);
-    });
-  }
+    }
+  });
 
-  test("a credential in the userinfo or the query never reaches the check's warning or the status line", async () => {
+  test("a credential in the userinfo or the query never reaches the check's warning", async () => {
     const server = await startFakeServer("auth-refusal");
     try {
       const sb = makeSandbox();
@@ -997,18 +820,11 @@ describe("one redaction, two implementations (redaction-vectors.json)", () => {
       writeConfig(sb, "copilot", { mcpServers: { mempalace: httpEntry("url", WRONG) } });
 
       const r = await runCheck(sb, "copilot");
-      const status = bashLib(
-        sb,
-        `mcp_report_assistant_arrangements serving "$(mcp_installed_endpoint)"`,
-      );
-
       const w = emittedWarning(r.stdout) ?? "";
       for (const secret of ["SE@NT", "u:SE", "SECRET", SENTINEL]) {
         assert.ok(!w.includes(secret), `warning leaks ${secret}: ${w}`);
-        assert.ok(!status.stdout.includes(secret), `status leaks ${secret}: ${status.stdout}`);
       }
       assert.ok(w.includes("http://127.0.0.1:41000/mcp"));
-      assert.match(status.stdout, /registered http:\/\/127\.0\.0\.1:41000\/mcp,/);
       assertNoCliInvoked(sb);
     } finally {
       await server.close();

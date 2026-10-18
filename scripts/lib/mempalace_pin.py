@@ -5,9 +5,9 @@ One home for the two operations shared by the memory-server launch guard in
 ``mempalace-http-wrapper.py`` and the operator diagnostic
 ``scripts/doctor-mempalace.ts``:
 
-* :func:`read_pin` — extract ``MEMPALACE_MIN_VERSION`` and
-  ``MEMPALACE_MAX_VERSION_EXCLUSIVE`` from ``scripts/lib/common.sh``, the single
-  executable declaration of the supported range (spec 0108 R5). Neither bound is
+* :func:`read_pin` — read the ``min`` and ``maxExclusive`` bounds from
+  ``scripts/lib/mempalace-pin.json``, the single declaration of the supported
+  range (spec 0108 R5; moved out of ``common.sh`` by spec 0266). Neither bound is
   written into this file, and no shell is spawned to obtain them.
 * :func:`check` — decide whether a found version lies in ``[min, max)``, and
   report which comparator produced the verdict so a caller can name it.
@@ -30,6 +30,7 @@ and every ``sys.argv`` access therefore lives under ``if __name__ ==
 "__main__":`` — a stray module-scope write would corrupt the MCP handshake of
 the process that imports it.
 """
+import json
 import os
 import re
 import sys
@@ -38,15 +39,7 @@ import sys
 COMPARATOR_PACKAGING = "packaging"
 COMPARATOR_FALLBACK = "stdlib-whitelist"
 
-_PIN_NAMES = ("MEMPALACE_MIN_VERSION", "MEMPALACE_MAX_VERSION_EXCLUSIVE")
-
-# Line-anchored, so the interpolated consumer forms further down common.sh
-# (e.g. `mempalace>=${MEMPALACE_MIN_VERSION},<${...}` inside a message) never
-# match. Exactly one declaration per name is required; see read_pin.
-_PIN_RE = re.compile(
-    r'^(MEMPALACE_MIN_VERSION|MEMPALACE_MAX_VERSION_EXCLUSIVE)="([^"]*)"$',
-    re.M,
-)
+_PIN_KEYS = ("min", "maxExclusive")
 
 # --- The degraded-mode comparator's closed whitelist grammar -----------------
 #
@@ -82,30 +75,31 @@ _FALLBACK_RE = re.compile(
 _RELEASE_RE = re.compile(r"^[0-9]+(?:\.[0-9]+)*$")
 
 
-def read_pin(common_sh_path):
-    """Return ``(min_version, max_version_exclusive)`` read from *common_sh_path*.
+def read_pin(pin_path):
+    """Return ``(min_version, max_version_exclusive)`` read from *pin_path*.
 
-    Raises ``OSError`` when the file cannot be read, and ``ValueError`` when
-    either name is absent or declared more than once. The pin is a
+    Raises ``OSError`` when the file cannot be read, and ``ValueError`` when it
+    is not a JSON object or either bound is absent or not a string. The pin is a
     single-declaration contract (spec 0108 R5); an ambiguous file is a refusal,
     never a guess between candidates.
     """
-    with open(os.fspath(common_sh_path), "r", encoding="utf-8") as handle:
+    with open(os.fspath(pin_path), "r", encoding="utf-8") as handle:
         text = handle.read()
-    seen = {}
-    for name, value in _PIN_RE.findall(text):
-        seen.setdefault(name, []).append(value)
+    try:
+        doc = json.loads(text)
+    except ValueError as exc:
+        raise ValueError(
+            "{0} is not valid JSON: {1}".format(os.fspath(pin_path), exc)
+        )
     bounds = []
-    for name in _PIN_NAMES:
-        values = seen.get(name, [])
-        if len(values) != 1:
+    for key in _PIN_KEYS:
+        value = doc.get(key) if isinstance(doc, dict) else None
+        if not isinstance(value, str) or value == "":
             raise ValueError(
-                '{0} must be declared exactly once as {0}="<version>" at line '
-                "start; found {1} declaration(s) in {2}".format(
-                    name, len(values), os.fspath(common_sh_path)
-                )
+                '"{0}" must be declared as a non-empty string in the JSON object '
+                "{1}".format(key, os.fspath(pin_path))
             )
-        bounds.append(values[0])
+        bounds.append(value)
     return bounds[0], bounds[1]
 
 
@@ -183,14 +177,14 @@ if __name__ == "__main__":
     _parser = argparse.ArgumentParser(
         description=(
             "MemPalace supported-range pin parser and comparator (spec 0108). "
-            "Reads the pin from a given scripts/lib/common.sh; carries no bound "
+            "Reads the pin from a given scripts/lib/mempalace-pin.json; carries no bound "
             "of its own."
         )
     )
     _parser.add_argument(
-        "--common-sh",
+        "--pin-file",
         metavar="PATH",
-        help="path to the scripts/lib/common.sh that declares the pin",
+        help="path to the scripts/lib/mempalace-pin.json that declares the pin",
     )
     _modes = _parser.add_mutually_exclusive_group(required=True)
     _modes.add_argument(
@@ -223,7 +217,7 @@ if __name__ == "__main__":
             _dist = "absent"
         # A bare `import mempalace` is a strictly narrower probe than the one
         # the framework's own detect_mempalace_python already performs on every
-        # setup run (`python -c "import mempalace.mcp_server"`, common.sh), and
+        # setup run (`python -c "import mempalace.mcp_server"`, the setup), and
         # it runs in a throwaway process that never serves a session.
         try:
             import mempalace as _mempalace
@@ -243,15 +237,15 @@ if __name__ == "__main__":
         print("packaging={0}".format(_has_packaging))
         sys.exit(0)
 
-    if not _args.common_sh:
+    if not _args.pin_file:
         print(
-            "ERROR: --common-sh is required with --check and --print-pin",
+            "ERROR: --pin-file is required with --check and --print-pin",
             file=sys.stderr,
         )
         sys.exit(2)
 
     try:
-        _min, _max = read_pin(_args.common_sh)
+        _min, _max = read_pin(_args.pin_file)
     except (OSError, ValueError) as _exc:
         print("PIN_ERROR {0}".format(_exc), file=sys.stderr)
         sys.exit(2)

@@ -1,8 +1,6 @@
 // setup-hooks-rewrite.test.ts — the pre-question rewrite of the installed guard and transcript
-// commands (spec 0256 requirements 29 and 31; plan v2 step B3a.1). The differential legs run the
-// Bash functions (`guard_rewrite_installed`, `transcript_rewrite_installed`,
-// `report_unused_transcript_copy`) and the TypeScript twin over two copies of one configuration
-// and compare the files and the messages; they need bash, jq and a POSIX host.
+// commands (spec 0256 requirements 29 and 31; plan v2 step B3a.1). The Bash oracle went with
+// retired scripts/lib/usage-capture-optin.sh (spec 0266); each case asserts the TypeScript outcome.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -15,7 +13,6 @@ import {
   rewriteInstalledHooks,
   type HooksCtx,
 } from "../lib/setup/hooks-rewrite.ts";
-import { bashLibs } from "./lib/bash-libs.ts";
 import {
   configOf,
   directCmd,
@@ -23,7 +20,6 @@ import {
   HOME_DIR,
   legacyForms,
   makeTranscriptCheckout,
-  q,
   WIRED,
   type TranscriptCheckout,
   type WiredCli,
@@ -85,17 +81,12 @@ function pair(
   return { co, a, b };
 }
 
-describe("the rewrite does what the shell does", { skip: SKIP }, () => {
+describe("the rewrite", { skip: SKIP }, () => {
   for (const cli of WIRED) {
     test(`${cli}: legacy guard and consented transcript commands move to the direct form`, () => {
       const home = homeWithCopies();
       const copy = path.join(home, HOME_DIR[cli], "hooks", "mempalace-transcript.sh");
-      const { co, a, b } = pair(cli, (c) => installed(cli, c, home));
-      const sh = bashLibs(
-        `guard_rewrite_installed ${cli} ${q(co.repo)} ${q(a)}; echo "g=$?"
-         transcript_rewrite_installed ${cli} ${q(co.repo)} ${q(a)}; echo "t=$?"
-         report_unused_transcript_copy ${q(copy)}`,
-      );
+      const { co, b } = pair(cli, (c) => installed(cli, c, home));
       const run = makeCtx(co.repo);
       const spawn: Spawner = () => OK;
       const res = rewriteInstalledHooks({
@@ -106,14 +97,9 @@ describe("the rewrite does what the shell does", { skip: SKIP }, () => {
         unusedCopy: copy,
       });
       assert.deepEqual(res, { guard: 0, transcript: 0 });
-      assert.equal(read(b), read(a), "file bytes");
-      assert.equal(fs.statSync(b).mode & 0o777, fs.statSync(a).mode & 0o777);
-      const shellOut = norm(sh.stdout, a)
-        .filter((l) => !/^[gt]=\d$/.test(l))
-        .map((l) => l.replace(/\ba\.json\b/g, "<N>"));
-      const tsOut = norm(run.out.join("\n"), b).map((l) => l.replace(/\bb\.json\b/g, "<N>"));
-      assert.deepEqual(tsOut, shellOut);
-      assert.ok(shellOut.some((l) => l.includes("No longer used (left on disk)")));
+      assert.equal(fs.statSync(b).mode & 0o777, 0o600);
+      const tsOut = norm(run.out.join("\n"), b);
+      assert.ok(tsOut.some((l) => l.includes("No longer used (left on disk)")));
       assert.ok(read(b).includes(directCmd(co, cli)) || read(b).includes(co.guard));
     });
   }
@@ -203,7 +189,7 @@ describe("below the floor, with nothing registered, with a broken file", () => {
       run.err.join("\n"),
     );
   });
-  test("no node on PATH prints the shell-authored line", () => {
+  test("no node on PATH prints its diagnostic line", () => {
     const run = makeCtx(homeWithCopies());
     const none: Spawner = () => ({ status: 127, stdout: "", stderr: "" });
     assert.equal(requireNodeFloor(run.ctx, none), false);

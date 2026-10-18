@@ -1,7 +1,7 @@
 // daemon-replace.ts — leave the running MCP daemon process honouring the CURRENT
 // token (spec 0252 requirement 18; spec 0139 R1, R2, R5). Ports
 // `mcp_daemon_replace_process` and `_mcp_daemon_probe_accepts` of
-// scripts/lib/common.sh with their wording kept.
+// retired scripts/lib/common.sh with their wording kept.
 //
 // The probe is the bounded `tools/list` POST of probe.ts to the daemon's own
 // endpoint with the bearer header built in this process, and only to a loopback

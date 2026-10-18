@@ -1,5 +1,5 @@
 // flow-github.ts — the GitHub publish flow, the release-PR flow of issue #1379 (spec 0257 R14).
-// Replaced release_github and release_engine_run of the former scripts/monorepo-release.sh. The `main-protected`
+// Replaced release_github and release_engine_run of the former scripts/monorepo-release.ts. The `main-protected`
 // ruleset rejects any runner-made commit on the release branch, so the flow works in a throwaway
 // clone: it classifies every extension, publishes the ones a merged release PR committed, prepares
 // the pending ones as commits in the clone, force-pushes those to the release PR branch and lets

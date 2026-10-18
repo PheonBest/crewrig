@@ -1,0 +1,47 @@
+{
+ "hello": [
+  "name: hello\ndescription: \"Quick greeting from the hello-world extension\"\ntype: command",
+  "\nSay hello! This prompt comes from the hello-world extension.",
+  "hello",
+  "Quick greeting from the hello-world extension",
+  "",
+  "description = \"Quick greeting from the hello-world extension\"\n\nprompt = \"\"\"\n\nSay hello! This prompt comes from the hello-world extension.\n\"\"\"",
+  "---\nname: hello\ndescription: \"Quick greeting from the hello-world extension\"\nuser-invocable: true\n---\n\n\nSay hello! This prompt comes from the hello-world extension."
+ ],
+ "synthetic numbers.md": [
+  "name: 1.0\ndescription: True\nmetadata:\n  provenance:\n    version: 0\n    canonical: false",
+  "body",
+  "1.0",
+  "True",
+  "# crewrig-provenance: version=\"0\" canonical=\"\" feedback=\"\"",
+  "# crewrig-provenance: version=\"0\" canonical=\"\" feedback=\"\"\ndescription = \"True\"\n\nprompt = \"\"\"\nbody\n\"\"\"",
+  "---\nname: 1.0\ndescription: \"True\"\nuser-invocable: true\n---\n\nbody"
+ ],
+ "synthetic tools.md": [
+  "name: t\ndescription: >\n  folded\n  text\nclaude:\n  allowed-tools:\n    - Read\n    - Bash(git *)",
+  "A body\n\n```\n---\nnested: yes\n---\n```\nend",
+  "t",
+  "folded text",
+  "",
+  "description = \"folded text\"\n\nprompt = \"\"\"\nA body\n\n```\n---\nnested: yes\n---\n```\nend\n\"\"\"",
+  "---\nname: t\ndescription: \"folded text\"\nuser-invocable: true\nallowed-tools:\n  - Read\n  - Bash(git *)\n---\n\nA body\n\n```\n---\nnested: yes\n---\n```\nend"
+ ],
+ "synthetic x.md": [
+  "name: x\ndescription: \"Synthetic command carrying provenance\"\ntype: command\nmetadata:\n  provenance:\n    version: \"1.0.0\"\n    canonical: \"https://example.com/owner/repo\"\n    feedback: \"https://example.com/owner/repo\"",
+  "\nDo the synthetic thing.",
+  "x",
+  "Synthetic command carrying provenance",
+  "# crewrig-provenance: version=\"1.0.0\" canonical=\"https://example.com/owner/repo\" feedback=\"https://example.com/owner/repo\"",
+  "# crewrig-provenance: version=\"1.0.0\" canonical=\"https://example.com/owner/repo\" feedback=\"https://example.com/owner/repo\"\ndescription = \"Synthetic command carrying provenance\"\n\nprompt = \"\"\"\n\nDo the synthetic thing.\n\"\"\"",
+  "---\nname: x\ndescription: \"Synthetic command carrying provenance\"\nuser-invocable: true\n---\n\n\nDo the synthetic thing."
+ ],
+ "synthetic y.md": [
+  "name: y\ndescription: \"Plain command, no provenance\"\ntype: command",
+  "\nJust a plain prompt.",
+  "y",
+  "Plain command, no provenance",
+  "",
+  "description = \"Plain command, no provenance\"\n\nprompt = \"\"\"\n\nJust a plain prompt.\n\"\"\"",
+  "---\nname: y\ndescription: \"Plain command, no provenance\"\nuser-invocable: true\n---\n\n\nJust a plain prompt."
+ ]
+}

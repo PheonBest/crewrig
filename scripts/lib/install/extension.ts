@@ -1,7 +1,7 @@
 // extension.ts — install or link extensions into the Gemini home (spec 0255 R9, R13, R18). Twin
 // of scripts/install-extension.ts and scripts/link-extensions.ts. One extension: resolve its
 // source through the three tiers, render the Gemini tree IN PROCESS (the shell ran
-// build-extension.sh with its standard output sent to standard error), then replace
+// build-extension.ts with its standard output sent to standard error), then replace
 // `<home>/.gemini/extensions/<name>` with a link to, or a copy of, the build directory. With no
 // name the loop is one process, so it prints at most one aggregated fallback notice at its end.
 

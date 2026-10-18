@@ -130,31 +130,6 @@ export async function limited<T>(tasks: readonly (() => Promise<T>)[], n = 6): P
 
 /** `%{` stands for the shell's dollar-brace, which a template literal would interpolate. */
 export const sh = (s: TemplateStringsArray): string => s.raw.join("").replaceAll("%{", "${");
-const RESOLVE_DRIVER = sh`
-REPO="$1"; CASES="$2"; ERRS="$3"
-. "$REPO/scripts/lib/render-command.sh"
-. "$REPO/scripts/lib/model-resolve.sh"
-count_derived() { local n=0 d; for d in "$TMPDIR"/crewrig-mapping-*; do [ -e "$d" ] && n=$((n+1)); done; printf '%s' "$n"; }
-i=0
-while IFS= read -r -d '' repo && IFS= read -r -d '' mmd && IFS= read -r -d '' tmp \
-  && IFS= read -r -d '' cl && IFS= read -r -d '' agent && IFS= read -r -d '' src && IFS= read -r -d '' target; do
-  export REPO_DIR="$repo"
-  if [ -n "$mmd" ]; then export MAPPING_MERGE_DIR="$mmd"; else unset MAPPING_MERGE_DIR; fi
-  if [ -n "$tmp" ]; then export TMPDIR="$tmp"; else unset TMPDIR; fi
-  resolve_agent "$agent" "$src" "$target" 2>"$ERRS/$i"
-  handle=$(mapping_in_force "$target" 2>>"$ERRS/$i")
-  before=$(count_derived)
-  if [ "$cl" = 1 ]; then mapping_merge_cleanup; fi
-  after=$(count_derived)
-  printf '%s\0' "$RESOLVED_OFFERING_ID" "$RESOLVED_NATIVE_VALUE" "%{#EMIT_FM_LINES[@]}"
-  for l in "%{EMIT_FM_LINES[@]+"%{EMIT_FM_LINES[@]}"}"; do printf '%s\0' "$l"; done
-  printf '%s\0' "$EMIT_PROSE" "%{#DIAG_LINES[@]}"
-  for l in "%{DIAG_LINES[@]+"%{DIAG_LINES[@]}"}"; do printf '%s\0' "$l"; done
-  printf '%s\0' "$handle" "$before" "$after"
-  i=$((i+1))
-done < "$CASES"
-`;
-
 /**
  * The shell side of a case group, REPLAYED from the goldens (spec 0262 R17); only the regen
  * container (`MODEL_RESOLVE_GOLDEN_REGEN=1`) runs the shell and records it. `id` is `<file>/<group>`.
@@ -164,70 +139,9 @@ export async function runShellResolve(
   id: string,
 ): Promise<Outcome[]> {
   if (!recording()) return replay(cases, id);
-  const outcomes = await runShellLive(cases);
-  record(cases, id, outcomes);
-  return outcomes;
-}
-
-/** `resolve_agent` then `mapping_in_force` per case, in one `bash` that sources the library. */
-async function runShellLive(cases: readonly ResolveCase[]): Promise<Outcome[]> {
-  requireShellLibrary(REPO, "scripts/lib/model-resolve.sh");
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "conformance-shell-"));
-  try {
-    const row = (c: ResolveCase): string[] => [
-      c.repoDir,
-      c.mergeDir ?? "",
-      c.tmpDir ?? "",
-      c.cleanup ? "1" : "0",
-      c.agent,
-      c.source,
-      c.target,
-    ];
-    const file = path.join(dir, "cases");
-    fs.writeFileSync(
-      file,
-      cases
-        .map((c) =>
-          row(c)
-            .map((f) => `${f}\0`)
-            .join(""),
-        )
-        .join(""),
-    );
-    const f = fields(await runBash(RESOLVE_DRIVER, [REPO, file, dir]));
-    let at = 0;
-    const next = (): string => f[at++] ?? "";
-    const list = (): string[] => Array.from({ length: Number(next()) }, next);
-    return cases.map((c, i) => {
-      const [offeringId, nativeValue, fmLines, prose, diagLines] = [
-        next(),
-        next(),
-        list(),
-        next(),
-        list(),
-      ];
-      const [handle, derivedBefore, derivedAfter] = [
-        scrub(c)(next()),
-        Number(next()),
-        Number(next()),
-      ];
-      const text = fs.readFileSync(path.join(dir, String(i)), "utf8");
-      const stderr = text === "" ? [] : text.replace(/\n$/, "").split("\n").map(scrub(c));
-      return {
-        offeringId,
-        nativeValue,
-        fmLines,
-        prose,
-        diagLines,
-        handle,
-        stderr,
-        derivedBefore,
-        derivedAfter,
-      };
-    });
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
+  throw new Error(
+    "the shell libraries are removed (spec 0266): the goldens can no longer be recorded here",
+  );
 }
 
 /** The twin side: `resolveAgent` then `mappingInForce` per case, `Twin` swappable for a mutant. */

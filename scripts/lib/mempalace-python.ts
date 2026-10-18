@@ -3,7 +3,7 @@
 //
 // The TypeScript counterpart of `detect_mempalace_python`,
 // `mempalace_python_candidates`, `mempalace_pipx_home`, `console_script_python`
-// and `resolve_symlink` in scripts/lib/common.sh. Synchronous, standard library
+// and `resolve_symlink` in retired scripts/lib/common.sh. Synchronous, standard library
 // only (spec 0240 R16). Candidate ORDER only is decided by
 // `mempalacePythonCandidates`; nothing is probed there. `detectMempalacePython`
 // walks the list and returns the first candidate that imports

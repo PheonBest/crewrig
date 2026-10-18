@@ -64,7 +64,7 @@ function globSpecs(targetPath) {
 
 // loadCorePathsManifest() — reads .crewrig/core-paths.txt and returns its
 // entries as { path, policy } objects. Mirrors the parsing rules in
-// scripts/check-core-paths.sh:41-54: blank/`#` lines are skipped, the path is
+// scripts/check-core-paths.ts:41-54: blank/`#` lines are skipped, the path is
 // the first whitespace-delimited field, the policy is the next token
 // (defaulting to `strict`). A missing manifest resolves to an empty list
 // rather than throwing, so a checkout without the file still lints normally.

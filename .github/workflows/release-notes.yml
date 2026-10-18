@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: [main, "release/**"]
     paths:
-      - "scripts/monorepo-release.sh"
       - "scripts/monorepo-release.ts"
       - "scripts/release-sync-manifests.ts"
       - "scripts/release-package-extension.ts"
@@ -23,7 +22,6 @@ on:
   push:
     branches: [main, "release/**"]
     paths:
-      - "scripts/monorepo-release.sh"
       - "scripts/monorepo-release.ts"
       - "scripts/release-sync-manifests.ts"
       - "scripts/release-package-extension.ts"

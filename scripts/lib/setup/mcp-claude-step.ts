@@ -23,6 +23,7 @@ import {
   removeLegacyMcpJson,
   removeUser,
 } from "./mcp-claude-flow.ts";
+import { upgradeLegacyClaudeEntries } from "./mcp-claude-upgrade.ts";
 import { runMempalaceStep } from "./mempalace-callsite.ts";
 import { mempalaceStdioCommand, sequentialThinkingCommand } from "./mempalace-stdio.ts";
 import { orgMcpClaudeArgvs, readOrgMcpManifest, reservedOrgWarning } from "./org-mcp-fold.ts";
@@ -121,6 +122,7 @@ export async function run(env: StepEnv): Promise<void> {
   io.out("Configuring MCP servers via 'claude mcp add --scope user'...");
   prepareTrustWrapper(env);
   backupClaudeJson(ctx);
+  upgradeLegacyClaudeEntries(ctx, spawn);
   await registerSequentialThinking({ ctx, session, spawn, command: sequentialThinkingCommand });
 
   io.out("MemPalace MCP server (persistent agent memory):");

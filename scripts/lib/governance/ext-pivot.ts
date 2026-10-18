@@ -1,5 +1,5 @@
 // ext-pivot.ts — logic of check-extension-pivot (spec 0259, twin of
-// scripts/check-extension-pivot.sh). Paths are cwd-relative, as in the shell.
+// scripts/check-extension-pivot.ts). Paths are cwd-relative, as in the shell.
 //
 // Usage: const { lines, code } = checkPivot();
 // Reuses nothing from walk.ts for directories (it lists files only); command

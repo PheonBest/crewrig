@@ -80,6 +80,6 @@ Active rule files:
 <HOME>/.claude/rules/00-soul.md
 
 MCP servers (from 'claude mcp list'):
-  sequentialthinking: bash <REPO>/scripts/lib/tls-exec.sh npx -y @modelcontextprotocol/server-sequential-thinking - ✓ Connected
+  sequentialthinking: node <REPO>/scripts/tls-exec.ts npx -y @modelcontextprotocol/server-sequential-thinking - ✓ Connected
 
 Restart any running Claude Code session to pick up the new MCP servers.

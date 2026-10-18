@@ -44,7 +44,7 @@ export function detectShape(manifest: Manifest, shape: LegacyShape): ShapeDetect
   return { hasComponents, componentsSubjects, perCliHits };
 }
 
-const TAIL = "run scripts/migrate-extension.sh, see docs/adoption-guide.md";
+const TAIL = "run scripts/migrate-extension.ts, see docs/adoption-guide.md";
 
 /**
  * The `VALIDATION-ERROR` lines `ext_assert_current_shape` prints to stderr (none when the

@@ -1,5 +1,5 @@
 // migrate-main.ts — the migration entry's order of operations (spec 0254 R20, R25).
-// Twin of the head of scripts/migrate-extension.sh (:41-50): arguments, then the tool. The tool
+// Twin of the head of scripts/migrate-extension.ts (:41-50): arguments, then the tool. The tool
 // needs no YAML library, so the context is not built here: the repository root and the descriptor
 // directory come from the entry file's physical location (`scripts/<entry>.ts` -> its grandparent).
 

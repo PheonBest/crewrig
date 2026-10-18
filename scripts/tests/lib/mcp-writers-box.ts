@@ -56,16 +56,16 @@ export function box(): Box {
     err: (l: string) => void out.push(`ERR ${l}`),
     errRaw: () => {},
   };
-  const tls = `${repo}/scripts/lib/tls-exec.sh`;
+  const tls = `${repo}/scripts/tls-exec.ts`;
   const entries: McpEntries = {
     mempalace: {
       type: "stdio",
-      command: "bash",
+      command: "node",
       args: [tls, PY, `${repo}/scripts/lib/mempalace-http-wrapper.py`],
     },
     sequentialThinking: {
       type: "stdio",
-      command: "bash",
+      command: "node",
       args: [tls, "npx", "-y", "@modelcontextprotocol/server-sequential-thinking"],
     },
   };

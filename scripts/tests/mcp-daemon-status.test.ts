@@ -1,10 +1,10 @@
 // mcp-daemon-status.test.ts — group G17 of the former scripts/tests/test-mcp-daemon.sh
-// (spec 0263, row D): the `status-mcp-server.ts` shim. Sections 13a-13d are pinned by
+// (spec 0263, row D): the `status-mcp-server.ts` entry. Sections 13a-13d are pinned by
 // status-mcp-lifecycle.test.ts; one cross-reference test per section fails if that
 // suite loses its literal. Sections 13e and 13f (spec 0172) are asserted here, through
-// the shipped shim, against the shared rig (scratch HOME, free loopback port).
+// the shipped entry, against the shared rig (scratch HOME, free loopback port).
 //
-// The shim leg is POSIX-only (it runs `node scripts/status-mcp-server.ts`).
+//
 
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
@@ -13,11 +13,10 @@ import path from "node:path";
 import { after, before, describe, test } from "node:test";
 
 import { type FakeMcp, makeRig, type Rig, startFakeMcp } from "./lib/mcp-daemon-rig.ts";
-import { cleanupAll, REPO, SKIP_POSIX, which } from "./lib/worktree-fixtures.ts";
+import { cleanupAll, REPO, SKIP_POSIX } from "./lib/worktree-fixtures.ts";
 
 const PINNED_BY = path.join(REPO, "scripts", "tests", "status-mcp-lifecycle.test.ts");
-const SHIM = path.join(REPO, "scripts", "status-mcp-server.ts");
-const BASH = which("bash") ?? "/bin/bash";
+const ENTRY = path.join(REPO, "scripts", "status-mcp-server.ts");
 
 const GEMINI_STDIO = {
   mcpServers: {
@@ -52,7 +51,7 @@ describe("mcp-daemon status: sections 13a-13d stay pinned by status-mcp-lifecycl
   }
 });
 
-describe("mcp-daemon status: the shim against a serving daemon", { skip: SKIP_POSIX }, () => {
+describe("mcp-daemon status: the entry against a serving daemon", { skip: SKIP_POSIX }, () => {
   let rig: Rig;
   let fake: FakeMcp;
 
@@ -77,11 +76,15 @@ describe("mcp-daemon status: the shim against a serving daemon", { skip: SKIP_PO
   // would starve it and the probe would time out against a dead event loop.
   const status = (owner: Record<string, string>): Promise<{ status: number | null; out: string }> =>
     new Promise((resolve) => {
-      const child = spawn(process.execPath, [SHIM], {
-        cwd: rig.home,
-        env: { ...rig.env, MEMPALACE_MCP_HOST: "127.0.0.1", ...owner },
-        stdio: ["ignore", "pipe", "pipe"],
-      });
+      const child = spawn(
+        process.execPath,
+        ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", ENTRY],
+        {
+          cwd: rig.home,
+          env: { ...rig.env, MEMPALACE_MCP_HOST: "127.0.0.1", ...owner },
+          stdio: ["ignore", "pipe", "pipe"],
+        },
+      );
       let out = "";
       child.stdout.on("data", (chunk: Buffer) => (out += chunk.toString()));
       child.stderr.on("data", (chunk: Buffer) => (out += chunk.toString()));

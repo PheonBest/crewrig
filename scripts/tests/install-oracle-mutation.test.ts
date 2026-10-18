@@ -36,8 +36,6 @@ const TIER = named([
   "tier-resolution-three-tiers",
 ]);
 const AGY = named([
-  "antigravity-common-sh",
-  "antigravity-common-sh-migrate",
   "antigravity-manage-sandbox",
   "antigravity-tier-twin",
   "print-manage-declarations", // G17/G18: the declarations the sandbox suite does not read
@@ -141,7 +139,7 @@ describe("install oracle mutation", { skip: !hasBash }, () => {
       if (run === undefined) return;
       if (mutant === null) {
         // Non-vacuity: a green baseline must have run tests, not skipped them all.
-        if (run.status !== 0 || run.fails.length > 0 || passed(run.out) < 10) {
+        if (run.status !== 0 || run.fails.length > 0 || passed(run.out) < 5) {
           problems.push(`baseline of ${suite} is not green: ${run.fails.join("; ") || run.status}`);
         }
         return;

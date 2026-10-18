@@ -2,7 +2,7 @@
 // rename (spec 0240 R10, R11).
 //
 // The TypeScript counterpart of `_mktemp_secret_file` and
-// `write_json_config_secure` in scripts/lib/common.sh: the temporary file is
+// `write_json_config_secure` in retired scripts/lib/common.sh: the temporary file is
 // created next to its target (same directory, so the final rename never
 // crosses a file system), exclusively (`wx`, so a concurrent caller can never
 // open the same file), with mode 0o600 where the platform honours POSIX modes,

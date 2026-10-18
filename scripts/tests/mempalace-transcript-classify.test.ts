@@ -1,7 +1,7 @@
 // mempalace-transcript-classify.test.ts — the entry a hook event becomes
 // (spec 0247 R10): types, templates, precedence with both unguarded overrides,
 // the harness-injection test of `_is_harness_injection`
-// (hooks/mempalace-transcript.sh:148-159 at a7468111) and the 2000-character
+// (retired hooks/mempalace-transcript.sh:148-159 at a7468111) and the 2000-character
 // cut of model responses.
 //
 // Unit tests over scripts/lib/mempalace-transcript/classify.ts; the Stop

@@ -30,8 +30,6 @@ function run(cmd: string, args: string[], cwd: string, env: NodeJS.ProcessEnv = 
   const r = spawnSync(cmd, args, { cwd, env, encoding: "utf8" });
   return { stdout: r.stdout, stderr: r.stderr, status: r.status };
 }
-const sh = (cwd: string, args: string[], env?: NodeJS.ProcessEnv): Out =>
-  run("bash", ["scripts/sweep-en-us.sh", ...args], cwd, env);
 const ts = (cwd: string, args: string[], env?: NodeJS.ProcessEnv): Out =>
   run(
     "node",
@@ -129,10 +127,6 @@ function git(cwd: string, ...args: string[]): void {
 function makeRepo(extra: Record<string, string> = {}): string {
   const dir = path.join(work, `r${(seq += 1)}`);
   fs.mkdirSync(path.join(dir, "scripts", "lib"), { recursive: true });
-  fs.copyFileSync(
-    path.join(REPO, "scripts", "sweep-en-us.sh"),
-    path.join(dir, "scripts", "sweep-en-us.sh"),
-  );
   fs.copyFileSync(
     path.join(REPO, "scripts", "sweep-en-us.ts"),
     path.join(dir, "scripts", "sweep-en-us.ts"),

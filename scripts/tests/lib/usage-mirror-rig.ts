@@ -245,7 +245,16 @@ export function setMarkerMtime(file: string, epochMs: number): void {
   fs.utimesSync(file, t, t);
 }
 
-/** `usage-mirror` through its bash shim, `usage-prune` through its TypeScript entry, synchronously. */
+/** The command line of `<repo>/scripts/<name>`: the TypeScript entry through this Node.js, else the shim. */
+function entryCommand(repo: string, name: string, args: string[]): [string, string[]] {
+  const ts = path.join(repo, "scripts", `${name}.ts`);
+  if (fs.existsSync(ts)) {
+    return [process.execPath, ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", ts, ...args]];
+  }
+  return ["bash", [path.join(repo, "scripts", `${name}.sh`), ...args]];
+}
+
+/** `node <repo>/scripts/<name>.ts args`, synchronously. */
 export function runShim(
   rig: Rig,
   name: "usage-mirror" | "usage-prune",
@@ -253,9 +262,8 @@ export function runShim(
   extra: Record<string, string | undefined> = {},
   repo = REPO,
 ): Run {
-  const [bin, entry] =
-    name === "usage-prune" ? [process.execPath, `${name}.ts`] : ["bash", `${name}.sh`];
-  const r = spawnSync(bin, [path.join(repo, "scripts", entry), ...args], {
+  const [cmd, argv] = entryCommand(repo, name, args);
+  const r = spawnSync(cmd, argv, {
     env: childEnv(rig, extra),
     encoding: "utf8",
   });
@@ -271,7 +279,8 @@ export function spawnShim(
   repo = REPO,
 ): Promise<Run> {
   return new Promise((resolve) => {
-    const c = spawn("bash", [path.join(repo, "scripts", `${name}.sh`), ...args], {
+    const [cmd, argv] = entryCommand(repo, name, args);
+    const c = spawn(cmd, argv, {
       env: childEnv(rig, extra),
       stdio: ["ignore", "pipe", "pipe"],
     });

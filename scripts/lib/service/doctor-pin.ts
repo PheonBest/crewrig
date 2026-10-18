@@ -60,7 +60,7 @@ export interface EvaluateInput {
   label: string;
   interp: string;
   pinModule: string;
-  commonSh: string;
+  pinFile: string;
   probeCapture: string;
   home: string;
   env: NodeJS.ProcessEnv;
@@ -72,22 +72,22 @@ export interface EvaluateInput {
  * the pin for the cross-source check and note a failure when out of range.
  */
 export function evaluate(i: EvaluateInput, state: DoctorState, write: Write): void {
-  const { label, interp, commonSh } = i;
+  const { label, interp, pinFile } = i;
   const dist = probeGet(i.probeCapture, "dist");
   const attr = probeGet(i.probeCapture, "attr");
   const hasPackaging = probeGet(i.probeCapture, "packaging");
 
   const pinRun = runPython(
     interp,
-    [i.pinModule, "--common-sh", commonSh, "--print-pin"],
+    [i.pinModule, "--pin-file", pinFile, "--print-pin"],
     i.env,
     true,
   );
   const pinLine = trimNewlines(pinRun.text);
   if (pinRun.status !== 0) {
-    field(write, "pin:", `UNREADABLE from ${tildify(commonSh, i.home)} — ${pinLine}`);
+    field(write, "pin:", `UNREADABLE from ${tildify(pinFile, i.home)} — ${pinLine}`);
     state.noteFailure(
-      `${label}: the supported-version pin could not be read from ${tildify(commonSh, i.home)}`,
+      `${label}: the supported-version pin could not be read from ${tildify(pinFile, i.home)}`,
     );
     return;
   }
@@ -96,7 +96,7 @@ export function evaluate(i: EvaluateInput, state: DoctorState, write: Write): vo
   const maxAt = pinLine.lastIndexOf("max=");
   const pinMax = maxAt === -1 ? pinLine : pinLine.slice(maxAt + 4);
   field(write, "supported range:", `>=${pinMin},<${pinMax}`);
-  field(write, "pin declared by:", tildify(commonSh, i.home));
+  field(write, "pin declared by:", tildify(pinFile, i.home));
   state.recordPin(label, `${pinMin},${pinMax}`);
 
   field(write, "version served:", `${dist}  (dist-info, resolved in-process)`);
@@ -125,7 +125,7 @@ export function evaluate(i: EvaluateInput, state: DoctorState, write: Write): vo
 
   const check = runPython(
     interp,
-    [i.pinModule, "--common-sh", commonSh, "--check", dist],
+    [i.pinModule, "--pin-file", pinFile, "--check", dist],
     i.env,
     true,
   );

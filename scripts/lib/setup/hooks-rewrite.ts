@@ -1,6 +1,6 @@
 // hooks-rewrite.ts — the pre-question step of the three hook-file setups and of Antigravity CLI
 // (spec 0256 requirements 29 and 31; plan v2 step B3a.1): `guard_rewrite_installed`,
-// `transcript_rewrite_installed` and `report_unused_transcript_copy` of scripts/lib/common.sh.
+// `transcript_rewrite_installed` and `report_unused_transcript_copy` of retired scripts/lib/common.sh.
 // Every run, declined or not, brings the installed guard and transcript commands to the direct
 // `node "<path>/<script>.ts"` form (spec 0248 R30, spec 0247 R23) through the modules of
 // `hook-wiring.ts` (hook-rewrite.ts, hook-transcript-cli.ts, hook-antigravity-write.ts). A step

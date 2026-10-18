@@ -3,19 +3,19 @@
 // primitives, and the only module mirror.js imports for daemon access.
 //
 // `endpoint()` and `tokenPath()` (and its no-mkdir twin `tokenPathNoCreate()`,
-// which hooks/mempalace-transcript.ts reads, spec 0247 R13-R14) port scripts/lib/common.sh's own
+// which hooks/mempalace-transcript.ts reads, spec 0247 R13-R14) port retired scripts/lib/common.sh's own
 // MCP_DAEMON_HOST_DEFAULT/MCP_DAEMON_PORT_DEFAULT (l. 757, l. 763) and
 // mcp_token_path() (l. 1695-1711) — verified byte-identical against
-// `bash -c '. scripts/lib/common.sh; mcp_token_path'` under a fixed HOME
+// `bash -c '. retired scripts/lib/common.sh; mcp_token_path'` under a fixed HOME
 // (see scripts/tests/usage-mirror-*.test.ts, step 10 entry criteria).
 // The mkdir under tokenPath()'s "does not yet exist" branch is the one
-// intentional departure common.sh's own function also makes: a side effect
+// intentional departure the retired common.sh's own function also made: a side effect
 // on an otherwise pure path computation, kept for parity, and unobservable —
 // it changes no returned string, only whether an ancestor directory exists.
 //
 // `call(tool, args)` posts exactly ONE bearer-authenticated JSON-RPC
 // `tools/call` object — no `initialize`, no session header, no SSE — the
-// shape `_mcp_daemon_probe_accepts` (common.sh l. 948-999) contracts for.
+// shape `_mcp_daemon_probe_accepts` (retired common.sh l. 948-999) contracts for.
 // It NEVER throws, not even from its response handler: every outcome
 // resolves to one of three not-ok kinds, or to `{ok:true, result}` where
 // `result` is the tool's PARSED payload, decoded by decodeToolResult() from
@@ -116,7 +116,7 @@ function resolveTokenPath(createParent) {
       try {
         fs.mkdirSync(parent, { recursive: true });
       } catch (err) {
-        // best-effort, mirrors common.sh's `mkdir -p ... || true`
+        // best-effort, mirrors the retired common.sh's `mkdir -p ... || true`
       }
     }
     let parentResolved;

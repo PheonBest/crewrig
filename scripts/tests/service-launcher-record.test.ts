@@ -66,23 +66,6 @@ test("fields the readers would not take back are refused", () => {
   assert.throws(() => renderRecord({ ...FIELDS, program: 'a"b' }), RangeError);
 });
 
-test("mcp_installed_endpoint (the real shell function) reads the rendered record", posix, () => {
-  const dir = mkdtempSync(path.join(tmpdir(), "launcher-record-"));
-  try {
-    const record = path.join(dir, "mcp-daemon-launcher.sh");
-    writeFileSync(record, renderRecord(FIELDS));
-    const run = spawnSync("bash", ["-c", ". scripts/lib/common.sh; mcp_installed_endpoint"], {
-      cwd: REPO,
-      encoding: "utf8",
-      env: { ...process.env, MEMPALACE_MCP_LAUNCHER_PATH: record },
-    });
-    assert.equal(run.status, 0, run.stderr);
-    assert.equal(run.stdout.trim(), "http://127.0.0.1:41893/mcp");
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
-});
-
 test("the record body fails loudly and names the program", posix, () => {
   const dir = mkdtempSync(path.join(tmpdir(), "launcher-record-"));
   try {

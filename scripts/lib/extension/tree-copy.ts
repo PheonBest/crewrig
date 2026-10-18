@@ -1,6 +1,6 @@
 // tree-copy.ts — tree copy, emptying and generated-output removal (spec 0254 R6, R14).
 // Twin of `cp -a "$src"/. "$dst"/` (dotfiles included; links reproduced, not followed; modes
-// kept) and of the `ext_class_scan` predicate (scripts/build-extension.sh:140-165) used as a
+// kept) and of the `ext_class_scan` predicate (scripts/build-extension.ts:140-165) used as a
 // remover. Emptying is guarded: a wrong root is data loss, so the filesystem root, the user's
 // home and the repository (or any ancestor of it) are refused.
 
@@ -134,7 +134,7 @@ function walkFiles(root: string, rel: string, out: string[]): void {
 
 /**
  * A shell `case` pattern as a regular expression: `*` matches any run of characters,
- * `/` included, and `?` any one character (`ext_class_scan`, scripts/build-extension.sh:155).
+ * `/` included, and `?` any one character (`ext_class_scan`, scripts/build-extension.ts:155).
  * This is not the pathname expansion of a `for` loop, where `*` stops at `/`.
  */
 export function caseGlobRegExp(glob: string): RegExp {

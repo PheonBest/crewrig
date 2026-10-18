@@ -15,7 +15,7 @@ import {
   BELOW_FLOOR,
   buildFixture,
   cleanupScratch,
-  COMMON_SH,
+  PIN_FILE,
   EXPECTED_RANGE,
   expectedComparator,
   interpreterAvailable,
@@ -34,7 +34,7 @@ after(cleanupScratch);
 const comparator = expectedComparator();
 
 function pinCheck(version: string): number | null {
-  return spawnSync(PYTHON_BIN, [PIN_MODULE, "--common-sh", COMMON_SH, "--check", version], {
+  return spawnSync(PYTHON_BIN, [PIN_MODULE, "--pin-file", PIN_FILE, "--check", version], {
     stdio: "ignore",
   }).status;
 }
@@ -74,12 +74,7 @@ describe("G4 in-range serves unchanged (R6)", () => {
 describe("G5-G6 the two bound-less refusal paths", () => {
   test("pin unreadable: names the cause and the declaration repair", () => {
     const root = buildFixture({ name: "pin-unreadable", dist: PIN.min, attr: PIN.min });
-    const common = path.join(root, "lib", "common.sh");
-    const kept = fs
-      .readFileSync(common, "utf8")
-      .split("\n")
-      .filter((l) => !l.startsWith("MEMPALACE_MIN_VERSION="));
-    fs.writeFileSync(common, kept.join("\n"));
+    fs.writeFileSync(path.join(root, "lib", "mempalace-pin.json"), '{"maxExclusive": "3.7"}\n');
     const run = runGuard(root);
     assert.notEqual(run.rc, 0, "an unverifiable install began serving");
     assert.ok(run.stderr.includes("the supported-version pin could not be read"), run.stderr);

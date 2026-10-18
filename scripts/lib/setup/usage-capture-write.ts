@@ -1,6 +1,6 @@
 // usage-capture-write.ts — the three writers of the usage-capture opt-in (spec 0256 requirement 30,
 // plan v2 step B3a.2b): `usage_capture_enable`, `usage_capture_remove` and `usage_capture_reinject` of
-// scripts/lib/usage-capture-optin.sh. Messages are the shell's, byte for byte. Every write is atomic and
+// retired scripts/lib/usage-capture-optin.sh. Messages are the shell's, byte for byte. Every write is atomic and
 // ends at 0600 (`writeJsonConfig`); a failed write leaves the file as it was. The strip and the add are
 // the jq definitions `uc_strip_by` and `uc_add` already ported in session-recording-merge.ts. Layer 2.
 

@@ -22,7 +22,7 @@ export function loadManifest(extDir: string, libDir: string, io: Io): Manifest |
   const file = path.join(extDir, "extension.json");
   if (!fs.existsSync(file) || !fs.statSync(file).isFile()) {
     io.out(
-      `Error: No extension.json found in ${extDir} — run scripts/migrate-extension.sh if this is an old-shape extension (see docs/adoption-guide.md).`,
+      `Error: No extension.json found in ${extDir} — run scripts/migrate-extension.ts if this is an old-shape extension (see docs/adoption-guide.md).`,
     );
     return null;
   }

@@ -1,6 +1,6 @@
 // metadata-keys.ts — closed-key check logic for the `metadata:` block of an
 // upstream-owned component source (spec 0259; replaces the logic of
-// scripts/check-component-metadata-keys.sh, spec 0200 R8-R12).
+// scripts/check-component-metadata-keys.ts, spec 0200 R8-R12).
 //
 // Usage: checkMetadataKeys({ args, repoDir, yamlNamespace }) -> { code, stdout, stderr }
 // Reused: scripts/lib/build-components/frontmatter.ts (createFrontmatter), scripts/lib/

@@ -1,5 +1,5 @@
 // scaffold.ts — copy the skeleton into the target (spec 0258 R23).
-// Twin of create-extension.sh :49-69: `extension-skeleton/base/.` first, then each selected
+// Twin of create-extension.ts :49-69: `extension-skeleton/base/.` first, then each selected
 // component directory that exists, later files replacing earlier ones.
 
 import fs from "node:fs";

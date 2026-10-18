@@ -1,5 +1,5 @@
 // Shared fixtures for the tier-resolution suites (spec 0119, ported by spec 0263).
-// Retires with scripts/lib/common.sh (row J4) only for the shell shims it drives.
+// Retires with retired scripts/lib/common.sh (row J4) only for the shell shims it drives.
 
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";

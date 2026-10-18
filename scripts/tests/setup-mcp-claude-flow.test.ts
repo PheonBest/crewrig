@@ -168,10 +168,10 @@ describe("registerSequentialThinking", () => {
         cancel: "abort",
       },
     ]);
-    const wrapper = path.posix.join(repo, "scripts", "lib", "tls-exec.sh");
+    const wrapper = path.posix.join(repo, "scripts", "tls-exec.ts");
     assert.deepEqual(events, [
       "claude mcp list",
-      `claude mcp add --scope user sequentialthinking -- bash ${wrapper} npx -y @modelcontextprotocol/server-sequential-thinking`,
+      `claude mcp add --scope user sequentialthinking -- node ${wrapper} npx -y @modelcontextprotocol/server-sequential-thinking`,
     ]);
     assert.deepEqual(out, [
       "",

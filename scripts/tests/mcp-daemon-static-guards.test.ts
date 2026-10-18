@@ -1,11 +1,11 @@
 // mcp-daemon-static-guards.test.ts — groups G6, G7, G12 (structural), G13, G14
 // (static) and G22 (structural) of the former scripts/tests/test-mcp-daemon.sh
-// (spec 0263, row D): text guards over scripts/lib/common.sh, the unit files,
+// (spec 0263, row D): text guards over the unit files,
 // the setup declarations and the HTTP wrapper. They read files and run no
 // supervisor, so they run on every platform.
 //
 // G6 is the argv-credential static guard (spec 0149 R1, R2, issue #1247). Its
-// sweep covers scripts/lib/common.sh, hooks/mempalace-transcript.sh and this
+// sweep covers hooks/mempalace-transcript.ts and this
 // suite's own files (the glob below, never empty), because a static guard
 // belongs next to the dynamic argv-stub test (mempalace-transcript-hook.test.ts)
 // that already exercises the same regression on that file. The one deliberate
@@ -24,7 +24,6 @@ import { after, describe, test } from "node:test";
 import { REPO } from "./lib/worktree-fixtures.ts";
 
 const read = (rel: string): string => fs.readFileSync(path.join(REPO, rel), "utf8");
-const COMMON = "scripts/lib/common.sh";
 
 // --- G6 ---------------------------------------------------------------------
 const scheme = "Bea" + "rer";
@@ -99,8 +98,7 @@ describe("G6 argv credential static guard (R8, spec 0149, #1247)", () => {
     .filter((n) => /^mcp-daemon-.*\.test\.ts$/.test(n))
     .map((n) => path.join(REPO, "scripts", "tests", n));
   const swept = [
-    path.join(REPO, COMMON),
-    path.join(REPO, "hooks", "mempalace-transcript.sh"),
+    path.join(REPO, "hooks", "mempalace-transcript.ts"),
     path.join(REPO, "scripts", "tests", "lib", "mcp-daemon-rig.ts"),
     ...testFiles,
   ];
@@ -136,35 +134,6 @@ describe("G7 unit files carry no credential (R8)", () => {
   }
 });
 
-// --- bodies of common.sh functions -------------------------------------------
-/** Lines of `<name>() {` up to the closing `}` at column 0. */
-function fnBody(source: string, name: string): string[] {
-  const lines = source.split("\n");
-  const start = lines.findIndex((l) => l.startsWith(`${name}() {`));
-  if (start < 0) return [];
-  const end = lines.findIndex((l, i) => i > start && l === "}");
-  return lines.slice(start + 1, end < 0 ? undefined : end);
-}
-
-describe("G12 structural: the rollback list is built before the attempt", () => {
-  test('`applied="$applied $cli"` precedes `if register_mempalace_mcp` in the switch loop', () => {
-    const lines = read(COMMON).split("\n");
-    // Several loops iterate `$present`; the one holding the attempt is the switch loop.
-    let body: string[] = [];
-    lines.forEach((l, i) => {
-      if (l !== "  for cli in $present; do") return;
-      const end = lines.findIndex((x, j) => j > i && x === "  done");
-      const candidate = lines.slice(i, end);
-      if (candidate.some((x) => x.includes("if register_mempalace_mcp"))) body = candidate;
-    });
-    assert.ok(body.length > 0, "the switch loop is missing");
-    const attempt = body.findIndex((l) => l.includes("if register_mempalace_mcp"));
-    const track = body.findIndex((l) => l.includes('applied="$applied $cli"'));
-    assert.ok(attempt >= 0 && track >= 0, "both anchors must exist");
-    assert.ok(track < attempt, "an assistant is only tracked after a SUCCESSFUL switch");
-  });
-});
-
 // --- G13 --------------------------------------------------------------------
 const PRINTER = path.join(REPO, "scripts", "tests", "lib", "print-setup-declarations.ts");
 const CLIS = ["claude", "gemini", "copilot", "antigravity"] as const;
@@ -187,9 +156,6 @@ describe("G13 setup scripts wire ensure_mempalace_http (delta-02 R17)", () => {
     });
     assert.deepEqual(missing, [], "a declaration is empty or dropped the HTTP-by-default wiring");
   });
-  test("mempalace is still a reserved name", () => {
-    assert.ok(read(COMMON).includes("MCP_RESERVED_NAMES=(mempalace"));
-  });
   test("ensure-mempalace-http is ordered against its stdio write per CLI", () => {
     const anchors: Record<string, readonly [string, "before" | "after"]> = {
       claude: ["register-stdio-fallback", "before"],
@@ -209,21 +175,6 @@ describe("G13 setup scripts wire ensure_mempalace_http (delta-02 R17)", () => {
     }
     assert.deepEqual(failures, []);
   });
-  const body = fnBody(read(COMMON), "ensure_mempalace_http").filter((l) => !/^\s*#/.test(l));
-  test("the serving gate is the authenticated accept probe, not /healthz", () => {
-    assert.ok(body.length > 0, "ensure_mempalace_http body not found");
-    const text = body.join("\n");
-    assert.ok(text.includes("_mcp_daemon_probe_accepts"));
-    assert.ok(!text.includes("_health_mcp_daemon"));
-  });
-  test("the pre-probe token read carries no short-circuit", () => {
-    const probe = body.findIndex((l) => l.includes("_mcp_daemon_probe_accepts"));
-    const before = body
-      .slice(0, probe < 0 ? 0 : probe)
-      .filter((l) => l.includes("mcp_token_read_or_create"));
-    assert.ok(before.length > 0, "no pre-probe token read found");
-    for (const line of before) assert.doesNotMatch(line, /\|\| *(return|exit)/);
-  });
 });
 
 // --- G14 static -------------------------------------------------------------
@@ -233,18 +184,4 @@ describe("G14 static: the orphan reaper is not armed under HTTP", () => {
       read("scripts/lib/mempalace-http-wrapper.py").includes("if not _transport_is_http():"),
     );
   });
-});
-
-// --- G22 structural ---------------------------------------------------------
-describe("G22 structural: the home exists before the supervisor starts (#1196)", () => {
-  for (const fn of ["install_chroma_daemon", "install_mcp_daemon"]) {
-    test(`${fn} calls ensure_mempalace_home before install_daemon_supervisor`, () => {
-      const body = fnBody(read(COMMON), fn);
-      assert.ok(body.length > 0, `${fn} body not found`);
-      const ensure = body.findIndex((l) => /^\s*ensure_mempalace_home(\s|$)/.test(l));
-      const sup = body.findIndex((l) => /^\s*install_daemon_supervisor(\s|$)/.test(l));
-      assert.ok(ensure >= 0 && sup >= 0, "both calls must exist");
-      assert.ok(ensure < sup);
-    });
-  }
 });

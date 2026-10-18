@@ -35,7 +35,7 @@ reported success.
 
 ## Setup
 
-- Candidate archive: the output of `scripts/release-package-extension.sh` (now a forwarding shim to `scripts/release-package-extension.ts`) for the
+- Candidate archive: the output of `scripts/release-package-extension.ts` (now a forwarding shim to `scripts/release-package-extension.ts`) for the
   reference extension (`hello-world`), version `1.7.0` — the archive form
   spec 0183 R17/R22 mandate (Ruling A: `build/extensions/hello-world`,
   single-tool).
@@ -85,7 +85,7 @@ is exactly the kind of vendor-documentation mismatch R20 exists to catch
 before the path is documented as default, and it is a **live, reproducible
 disagreement with the documentation**, not a hypothetical one.
 
-**Fix applied to `scripts/release-package-extension.sh`:** the archive is
+**Fix applied to `scripts/release-package-extension.ts`:** the archive is
 now built as `tar -czf archive.tar.gz -C build/extensions/hello-world .` —
 every file (including `gemini-extension.json`) placed directly at the
 archive root, with NO wrapper directory. This is a real, load-bearing

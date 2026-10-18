@@ -1,5 +1,5 @@
 // args.ts — argument and environment parsing of `scripts/create-extension.ts` (spec 0258 R23-R25).
-// Twin of the first lines of scripts/create-extension.sh (:7-29), plus the additive `--components`
+// Twin of the first lines of scripts/create-extension.ts (:7-29), plus the additive `--components`
 // option and the `NAME` validation of deviation (h). Pure: no output, no exit.
 
 import type { Env } from "../extension/types.ts";

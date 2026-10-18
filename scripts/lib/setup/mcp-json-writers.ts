@@ -2,7 +2,7 @@
 // 0256 requirement 27, delta-01): `~/.copilot/mcp-config.json` and `~/.gemini/config/mcp_config.json`.
 // Both setups overwrite the file from the framework's own content, so the operator's servers are
 // captured BEFORE the overwrite (`backupAndCapture`) and folded back afterwards, as
-// `merge_preexisting_mcp_servers` of scripts/lib/common.sh does (spec 0089): every non-reserved
+// `merge_preexisting_mcp_servers` of retired scripts/lib/common.sh does (spec 0089): every non-reserved
 // pre-existing server wins, verbatim, over a same-named framework entry; a reserved name
 // (`mempalace`, `sequentialthinking`) keeps the framework's entry, with a warning that names the
 // backup. The organisation MCP fold and the MemPalace HTTP registration stay with the caller; the
@@ -18,7 +18,9 @@ import type { JsonValue } from "../extension/types.ts";
 import { MCP_RESERVED_NAMES } from "../org-mcp.ts";
 import { backupFile } from "./backup.ts";
 import type { BackupOptions } from "./backup.ts";
+import { upgradeLegacyEntry } from "../tls-exec/legacy.ts";
 import type { InstallCtx } from "./context.ts";
+import { trustWrapperPrefix } from "./trust-wrapper.ts";
 
 /** Writes `value` as `jq .` does, atomically, owner-only where the platform has modes. */
 export type WriteJson = (file: string, value: JsonValue) => void;
@@ -28,6 +30,14 @@ export interface McpEntries {
   readonly mempalace: object | undefined;
   readonly sequentialThinking: object | undefined;
 }
+
+/** The words of the current trust wrapper, for the legacy-line rewrite. */
+const prefixOf = (
+  ctx: Pick<InstallCtx, "repoDir"> & Partial<Pick<InstallCtx, "home" | "platform">>,
+): readonly string[] | undefined =>
+  ctx.platform === undefined || ctx.home === undefined
+    ? undefined
+    : trustWrapperPrefix({ platform: ctx.platform, home: ctx.home, repoDir: ctx.repoDir });
 
 /** What was in the target before the overwrite, and the backup that holds it byte for byte. */
 export interface McpCapture {
@@ -43,7 +53,7 @@ export interface McpWriteResult {
 }
 
 interface WriterArgs {
-  readonly ctx: Pick<InstallCtx, "io" | "repoDir">;
+  readonly ctx: Pick<InstallCtx, "io" | "repoDir"> & Partial<Pick<InstallCtx, "home" | "platform">>;
   readonly entries: McpEntries;
   readonly writeJson: WriteJson;
   readonly target: string;
@@ -106,6 +116,7 @@ export function mergePreexistingMcpServers(
   ctx: Pick<InstallCtx, "io">,
   captured: McpCapture,
   config: Map<string, JsonValue>,
+  wrapperPrefix?: readonly string[],
 ): Map<string, JsonValue> {
   const current = config.get("mcpServers");
   const servers = current instanceof Map ? new Map(current) : new Map<string, JsonValue>();
@@ -133,6 +144,13 @@ export function mergePreexistingMcpServers(
   for (const [name, server] of pre) {
     if (!MCP_RESERVED_NAMES.includes(name)) servers.set(name, server);
   }
+  // Spec 0266 R9: an installed playwright entry that still names the retired shell wrapper is
+  // rewritten to the node form; any other entry is the operator's and stays untouched.
+  const playwright =
+    wrapperPrefix === undefined
+      ? undefined
+      : upgradeLegacyEntry(servers.get("playwright"), wrapperPrefix);
+  if (playwright !== undefined) servers.set("playwright", playwright);
   const merged = new Map(config);
   merged.set("mcpServers", servers);
   return merged;
@@ -174,7 +192,7 @@ export function writeCopilotMcpConfig(args: WriterArgs): McpWriteResult {
     servers.set("sequentialthinking", toJsonValue(entries.sequentialThinking));
   }
 
-  const merged = mergePreexistingMcpServers(ctx, captured, config);
+  const merged = mergePreexistingMcpServers(ctx, captured, config, prefixOf(ctx));
   writeJson(target, merged);
   return { config: merged, mempalaceInstalled };
 }
@@ -197,7 +215,7 @@ export function writeAntigravityMcpConfig(args: WriterArgs): McpWriteResult {
     ctx.io.out("  sequentialthinking MCP server configured.");
   }
   const base = new Map<string, JsonValue>([["mcpServers", servers]]);
-  const merged = mergePreexistingMcpServers(ctx, captured, base);
+  const merged = mergePreexistingMcpServers(ctx, captured, base, prefixOf(ctx));
   writeJson(target, merged);
   return { config: merged, mempalaceInstalled: entries.mempalace !== undefined };
 }

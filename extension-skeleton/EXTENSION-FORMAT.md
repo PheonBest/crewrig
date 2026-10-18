@@ -99,7 +99,7 @@ other generated-output-class member.
   // MCP SERVERS (optional) — a generic declaration subject (spec 0180,
   // issue #1006). Declare each server ONCE, in the SAME neutral vocabulary
   // the org-level channel of spec 0091 already uses (spec 0180 requirement 2) — the
-  // shared translator (scripts/lib/common.sh's org_mcp_to_native) derives
+  // shared translator (`orgMcpToNative` of scripts/lib/org-mcp.ts) derives
   // every target's native shape from this one declaration (spec 0180
   // requirement 3). No per-CLI top-level section may carry an MCP server
   // key (spec 0180 requirement 3);
@@ -649,7 +649,7 @@ per-target correspondence — which neutral event maps to which target event,
 the hook file, the matcher form, the time unit and the extension-root
 token — is the normative, evidence-backed
 [`docs/extension-hook-events.md`](../docs/extension-hook-events.md), kept
-honest against the translator by `scripts/check-extension-hook-map.sh`.
+honest against the translator by `scripts/check-extension-hook-map.ts`.
 
 ## Fragment Merging
 

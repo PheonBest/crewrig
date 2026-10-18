@@ -1,5 +1,5 @@
 // plugin-delegate.ts — the plugin delegation of `build-extension` (spec 0254 R15).
-// Twin of `_plugin_default_out_dir` and `render_plugin` (scripts/build-extension.sh:339-381):
+// Twin of `_plugin_default_out_dir` and `render_plugin` (scripts/build-extension.ts:339-381):
 // the target's builder runs in-process with its standard output sent to standard error, then
 // the hook file lands in the builder's default output root, then the MCP gap decision.
 

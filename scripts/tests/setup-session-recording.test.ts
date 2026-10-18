@@ -1,8 +1,6 @@
 // setup-session-recording.test.ts — the render and the merge of the session-recording opt-in
-// (spec 0256 requirements 30 and 31; plan v2 step B3a.4). Each case runs the real Bash functions
-// (`render_session_recording_manifest`, `merge_session_recording_hooks`) and the TypeScript twin
-// over two copies of one configuration, and compares the files byte for byte and the messages
-// after normalising paths and backup stamps. Differential legs need bash, jq and a POSIX host.
+// (spec 0256 requirements 30 and 31; plan v2 step B3a.4). The Bash oracle went with
+// retired scripts/lib/usage-capture-optin.sh (spec 0266); each case asserts the TypeScript outcome.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -16,7 +14,6 @@ import {
   mergeSessionRecordingHooks,
   renderSessionRecordingManifest,
 } from "../lib/setup/session-recording.ts";
-import { bashLibs } from "./lib/bash-libs.ts";
 import {
   configOf,
   directCmd,
@@ -25,7 +22,6 @@ import {
   HOME_DIR,
   makeTranscriptCheckout,
   NEIGHBOURS,
-  q,
   transcriptCommands,
   WIRED,
   writeConfig,
@@ -74,26 +70,6 @@ interface Outcome {
   readonly err: string[];
 }
 
-function shellLeg(cli: WiredCli, co: TranscriptCheckout, file: string, python = ""): Outcome {
-  const patch = cli === "claude" ? claudeEnvPatch(true, python).text : "{}";
-  const res = bashLibs(
-    `render_session_recording_manifest ${cli} ${q(co.repo)} ${q(co.manifest(cli))} rendered.json \\
-       && { p='{}'; [ "$SR_TRANSCRIPT_WIRED" = 1 ] && p=${q(patch)}
-            merge_session_recording_hooks ${cli} ${q(file)} rendered.json "$p"; }
-     echo "rc=$? wired=\${SR_TRANSCRIPT_WIRED:-} disabled=\${SR_ALL_HOOKS_DISABLED:-}"`,
-  );
-  const tail = /rc=(\d+) wired=(\d?) disabled=(\d?)\n?$/.exec(res.stdout);
-  const body = res.stdout.replace(/rc=.*\n?$/, "");
-  return {
-    file,
-    ok: tail?.[1] === "0",
-    wired: tail?.[2] === "1",
-    disabled: tail?.[3] === "1",
-    out: lines(norm(body, file)),
-    err: lines(norm(res.stderr.replace(/\S*rendered\.json/g, "<M>"), file)),
-  };
-}
-
 function tsLeg(cli: WiredCli, co: TranscriptCheckout, file: string, python = ""): Outcome {
   const run = runCtx(co.repo);
   const rendered = renderSessionRecordingManifest({
@@ -123,34 +99,22 @@ function tsLeg(cli: WiredCli, co: TranscriptCheckout, file: string, python = "")
   };
 }
 
-/** Both legs over two copies of `config`; the files, flags and messages agree. */
-function differential(cli: WiredCli, config: unknown | null, python = ""): void {
+/** The merge over `config` (null: no file): it succeeds, the file is written with owner-only access. */
+function merged(cli: WiredCli, config: unknown | null, python = ""): Outcome {
   const co = makeTranscriptCheckout();
-  const a = path.join(path.dirname(co.repo), "a", `${cli}.json`);
   const b = path.join(path.dirname(co.repo), "b", `${cli}.json`);
-  for (const f of [a, b]) fs.mkdirSync(path.dirname(f), { recursive: true });
+  fs.mkdirSync(path.dirname(b), { recursive: true });
   if (config !== null) {
-    for (const f of [a, b])
-      fs.writeFileSync(f, `${JSON.stringify(config, null, 2)}\n`, { mode: 0o644 });
+    fs.writeFileSync(b, `${JSON.stringify(config, null, 2)}\n`, { mode: 0o644 });
   }
-  const sh = shellLeg(cli, co, a, python);
   const ts = tsLeg(cli, co, b, python);
-  assert.equal(ts.ok, sh.ok, "status");
-  assert.equal(ts.wired, sh.wired, "wired");
-  assert.equal(ts.disabled, sh.disabled, "disabled");
-  assert.equal(read(b), read(a), "file bytes");
-  assert.equal(mode(b), mode(a));
-  assert.deepEqual(
-    ts.out.map((l) => l.replace(/ b\.json| a\.json/g, " <F>")),
-    sh.out.map((l) => l.replace(/ b\.json| a\.json/g, " <F>")),
-  );
-  assert.deepEqual(
-    ts.err.map((l) => l.replace(b, "<F>")),
-    sh.err.map((l) => l.replace(a, "<F>")),
-  );
+  assert.ok(ts.ok, "status");
+  assert.ok(ts.wired, "wired");
+  assert.equal(mode(b), 0o600);
+  return ts;
 }
 
-describe("the merge writes what the shell writes", { skip: SKIP }, () => {
+describe("the merge", { skip: SKIP }, () => {
   for (const cli of WIRED) {
     test(`${cli}: own commands of every class, an operator hook, the guard and a capture command`, () => {
       const co = makeTranscriptCheckout();
@@ -163,19 +127,16 @@ describe("the merge writes what the shell writes", { skip: SKIP }, () => {
           env: { KEEP: "1" },
         },
       );
-      differential(cli, config, "/usr/bin/python3");
+      merged(cli, config, "/usr/bin/python3");
     });
     test(`${cli}: a foreign-prefix command stays alone on its event and is reported`, () => {
       const forms = legacyForms(homeWithCopies(), HOME_DIR[cli]);
-      differential(
-        cli,
-        configOf(cli, [forms["legacy-enabled"] ?? "", forms["foreign-prefix"] ?? ""]),
-      );
+      merged(cli, configOf(cli, [forms["legacy-enabled"] ?? "", forms["foreign-prefix"] ?? ""]));
     });
     test(`${cli}: an absent file is created at 0600 from the manifest`, () => {
-      differential(cli, null);
+      merged(cli, null);
     });
-    test(`${cli}: a second run changes nothing but the key order the shell also moves`, () => {
+    test(`${cli}: a second run changes nothing`, () => {
       const co = makeTranscriptCheckout();
       const file = writeConfig(co, `${cli}.json`, configOf(cli, [directCmd(co, cli)]));
       const first = tsLeg(cli, co, file);
@@ -187,7 +148,7 @@ describe("the merge writes what the shell writes", { skip: SKIP }, () => {
     });
   }
   test("copilot: a kept disableAllHooks true is reported and flagged", () => {
-    differential("copilot", { version: 1, disableAllHooks: true, hooks: {} });
+    merged("copilot", { version: 1, disableAllHooks: true, hooks: {} });
     const co = makeTranscriptCheckout();
     const file = writeConfig(co, "off.json", { disableAllHooks: true, hooks: {} });
     const out = tsLeg("copilot", co, file);
@@ -278,7 +239,7 @@ describe("render below the floor or without the script", () => {
 });
 
 describe("the Claude Code environment patch", () => {
-  test("only when wired, MEMPALACE_PYTHON only when set; the printed text is the shell's", () => {
+  test("only when wired, MEMPALACE_PYTHON only when set; the printed text", () => {
     assert.deepEqual(claudeEnvPatch(false, "/py"), { patch: {}, text: "{}" });
     assert.deepEqual(claudeEnvPatch(true, ""), {
       patch: { MEMPALACE_TRANSCRIPT_ENABLED: "1" },

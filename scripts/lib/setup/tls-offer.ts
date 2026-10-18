@@ -104,7 +104,7 @@ export async function offerTlsDelegation(args: {
 
   io.out(`  Custom CA trust configured -> ${written.path}`);
   io.out(`  Delegated to CA bundle: ${bundle}`);
-  io.out("  Applied for this setup run and, via scripts/lib/tls-exec.sh, for the");
+  io.out("  Applied for this setup run and, via scripts/tls-exec.ts, for the");
   io.out("  framework's runtime paths (MCP servers, the ChromaDB daemon).");
   io.out("  Your shell profile was NOT modified. Remove with: rm " + written.path);
   io.out("");

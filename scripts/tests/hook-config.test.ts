@@ -1,6 +1,6 @@
 // hook-config.test.ts — tests for scripts/lib/hook-config.ts (spec 0243 R23, v1-F4).
 //
-// The backup mirrors `backup_file` of scripts/lib/common.sh: owner-only whatever
+// The backup mirrors `backup_file` of retired scripts/lib/common.sh: owner-only whatever
 // the target's mode, earlier backups narrowed, symlinks never followed or
 // chmod-ed, same-second collisions probed with a capped `.NN` suffix.
 

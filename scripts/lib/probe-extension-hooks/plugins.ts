@@ -1,5 +1,5 @@
 // plugins.ts — the synthetic plugins the Copilot arm installs through --plugin-dir. File bytes
-// match the shell heredocs of probe-extension-hooks.sh exactly.
+// match the shell heredocs of the retired probe-extension-hooks.sh exactly.
 
 import fs from "node:fs";
 import path from "node:path";

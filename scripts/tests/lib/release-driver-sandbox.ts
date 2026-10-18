@@ -65,7 +65,6 @@ after(() => {
 /** Port 1 is never listened on: connecting is refused at once, on this machine only. */
 export const OFFLINE_API_URL = "http://127.0.0.1:1";
 
-const SHELL_ENTRY = path.join("scripts", "monorepo-release.sh");
 const TS_ENTRY = path.join("scripts", "monorepo-release.ts");
 
 function git(cwd: string, args: readonly string[], env: Record<string, string>): void {
@@ -190,13 +189,10 @@ export function createReleaseSandbox(opts: ReleaseSandboxOptions = {}): ReleaseS
     env,
     run(entry, extraEnv = {}) {
       const childEnv = env(extraEnv);
-      const [cmd, args] =
-        entry === "shell"
-          ? (["bash", [SHELL_ENTRY]] as const)
-          : ([
-              process.execPath,
-              ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", TS_ENTRY],
-            ] as const);
+      const [cmd, args] = [
+        process.execPath,
+        ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", TS_ENTRY],
+      ] as const;
       const res = spawnSync(cmd, args, { cwd: root, env: childEnv, encoding: "utf8" });
       return { status: res.status, stdout: res.stdout, stderr: res.stderr };
     },

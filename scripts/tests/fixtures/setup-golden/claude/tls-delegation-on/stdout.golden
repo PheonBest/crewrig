@@ -15,7 +15,7 @@ User-gate validation backend (spec 0080):
 
   Custom CA trust configured -> <HOME>/.crewrig/tls-env.sh
   Delegated to CA bundle: package.json
-  Applied for this setup run and, via scripts/lib/tls-exec.sh, for the
+  Applied for this setup run and, via scripts/tls-exec.ts, for the
   framework's runtime paths (MCP servers, the ChromaDB daemon).
   Your shell profile was NOT modified. Remove with: rm <HOME>/.crewrig/tls-env.sh
 
@@ -124,6 +124,6 @@ Active rule files:
 <HOME>/.claude/rules/65-org-tools.md
 
 MCP servers (from 'claude mcp list'):
-  sequentialthinking: bash <REPO>/scripts/lib/tls-exec.sh npx -y @modelcontextprotocol/server-sequential-thinking - ✓ Connected
+  sequentialthinking: node <REPO>/scripts/tls-exec.ts npx -y @modelcontextprotocol/server-sequential-thinking - ✓ Connected
 
 Restart any running Claude Code session to pick up the new MCP servers.

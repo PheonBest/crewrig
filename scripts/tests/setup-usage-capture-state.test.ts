@@ -1,5 +1,5 @@
 // setup-usage-capture-state.test.ts — the readers of scripts/lib/setup/usage-capture-state.ts
-// against the decisions of scripts/lib/usage-capture-optin.sh (spec 0256 requirement 30).
+// against the decisions of retired scripts/lib/usage-capture-optin.sh (spec 0256 requirement 30).
 // The shared recognition corpus is the oracle the Bash suite uses for `uc_is_capture`.
 
 import assert from "node:assert/strict";

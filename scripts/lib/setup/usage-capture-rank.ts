@@ -1,6 +1,6 @@
 // usage-capture-rank.ts — the deduplication of the usage-capture opt-in's `keep` (spec 0256
 // requirement 30, plan v2 step B3a.3a): `uc_rank`, `uc_event_handlers`, `uc_dedup_event` and
-// `uc_keep_dedup` of scripts/lib/usage-capture-optin.sh, and the path classification loop of
+// `uc_keep_dedup` of retired scripts/lib/usage-capture-optin.sh, and the path classification loop of
 // `usage_capture_keep` that feeds them. Pure: every function returns a new value and reads nothing
 // but its arguments (the file probe is injected).
 //

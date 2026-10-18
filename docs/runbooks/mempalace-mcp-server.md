@@ -38,7 +38,7 @@ task mempalace:switch-http
 
 1. Provisions a bearer token if one does not already exist for this palace
    — this happens **first**: the daemon launcher refuses to start without
-   one, by design (`install_mcp_daemon`, `scripts/lib/common.sh:927`).
+   one, by design (`scripts/lib/service/daemon-install.ts`; formerly `install_mcp_daemon` in the retired `scripts/lib/common.sh`).
 2. Installs the daemon launcher and starts it under the supervisor (launchd
    on macOS, systemd user unit on Linux), which waits for the daemon to
    report healthy.
@@ -329,7 +329,7 @@ and ends with *No assistant has been changed*. Fix that CLI, then run
 `switch-http` again.
 
 The refusals live in `switch_assistants_to_http`, in
-`scripts/lib/common.sh`:
+the retired `scripts/lib/common.sh`:
 
 | Refusal | Lines | Repair |
 |---|---|---|
@@ -369,11 +369,12 @@ new credential.
 ![Four ordered steps to replace the shared MCP daemon's bearer token: delete the old token file, run switch-mempalace-http.ts to mint a new token and replace the daemon process, delete each CLI's stale backup config that still holds the old token, then restart every running session.](../assets/mempalace-mcp/rotate-token.png)
 
 1. **Delete the current token file.** Its path is derived from the palace
-   path the same way the daemon derives it (`scripts/lib/common.sh`,
-   `mcp_token_path`); from the repository root:
+   path the same way the daemon derives it (`tokenPath` in
+   `scripts/lib/usage-store/mcp.js`, which replaced `mcp_token_path` of the
+   retired `scripts/lib/common.sh`); from the repository root:
 
    ```sh
-   rm -f "$(source scripts/lib/common.sh && mcp_token_path)"
+   rm -f "$(node -e 'import("./scripts/lib/usage-store/mcp.js").then((m) => console.log(m.tokenPath()))')"
    ```
 
 2. **Re-run the conversion:**
@@ -415,4 +416,4 @@ new credential.
    using the value it started with.
 
 To decommission a palace's token entirely instead of rotating it, remove its
-whole server directory: `rm -rf "$(dirname "$(source scripts/lib/common.sh && mcp_token_path)")"`.
+whole server directory: `rm -rf "$(dirname "$(node -e 'import("./scripts/lib/usage-store/mcp.js").then((m) => console.log(m.tokenPath()))')")"`.

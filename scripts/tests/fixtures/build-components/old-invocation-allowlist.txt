@@ -10,7 +10,6 @@
 scripts/build-components.sh
 
 # Spec 0250 R23: the unmigrated shell scripts that still reach the entry through the shim.
-scripts/lib/common.sh
 
 # Spec 0262 R17: the golden record of the component-resolve shell leg holds the shell's own
 # diagnostics, which name the invocation; it outlives the library it was recorded from.

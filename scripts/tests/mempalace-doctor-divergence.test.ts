@@ -10,7 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { after, before, describe, test } from "node:test";
 import {
-  COMMON_SH,
+  PIN_FILE,
   GOOD_VERSION,
   OLD_VERSION,
   PIN,
@@ -207,7 +207,7 @@ describe("G6: version divergence alone", { skip }, () => {
   test("the second version is inside the committed pin (guards the derivation)", () => {
     const check = spawnSync(
       PYTHON_ABS,
-      [PIN_MODULE, "--common-sh", COMMON_SH, "--check", SECOND_GOOD_VERSION],
+      [PIN_MODULE, "--pin-file", PIN_FILE, "--check", SECOND_GOOD_VERSION],
       { encoding: "utf8" },
     );
     assert.equal(

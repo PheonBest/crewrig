@@ -5,7 +5,7 @@
 // the TypeScript recognition (scripts/lib/hook-recognition.ts with the guard's
 // descriptor) and through the Bash predicate that classifies framework-owned
 // session-recording handlers (`sr_is_guard` and `sr_is_transcript` in
-// scripts/lib/usage-capture-optin.sh). They accept and reject the same
+// retired scripts/lib/usage-capture-optin.sh). They accept and reject the same
 // commands. The one exception is stated in the corpus: the Antigravity CLI
 // guarded form is recognised by the TypeScript descriptor only (its flag
 // `guardedPrefix`); no Bash path ever sees it. v1-F5: `bash
@@ -21,7 +21,6 @@ import { after, describe, test } from "node:test";
 
 import { WORKTREE_GIT_GUARD } from "../lib/hook-descriptor.ts";
 import { isHookCommand } from "../lib/hook-recognition.ts";
-import { bashLibs } from "./lib/bash-libs.ts";
 import { guardCommands, makeCheckout, wiring } from "./lib/guard-wiring-fixtures.ts";
 import { cleanupAll, read, REPO, SKIP_POSIX } from "./lib/worktree-fixtures.ts";
 
@@ -67,47 +66,6 @@ describe("the TypeScript recognition", () => {
   }
 });
 
-describe("the Bash predicate agrees with it", { skip: SKIP_POSIX }, () => {
-  const run = (predicate: string): string[] => {
-    const res = bashLibs(
-      `jq -c '.[]' ${JSON.stringify(CORPUS_FILE)} | while IFS= read -r row; do
-         c="$(jq -r .command <<< "$row")"
-         jq -n --arg shape grouped --arg c "$c" "$_UC_JQ_DEFS {type: \\"command\\", command: \\$c} | ${predicate}"
-       done`,
-    );
-    assert.equal(res.status, 0, res.stderr);
-    return res.stdout.trim().split("\n");
-  };
-
-  test("sr_is_guard gives the corpus verdict for every row that is not TypeScript-only", () => {
-    const got = run("sr_is_guard");
-    assert.equal(got.length, CORPUS.length);
-    CORPUS.forEach((row, i) => {
-      assert.equal(got[i], String(row.guard), `${JSON.stringify(row.command)} (${row.note})`);
-    });
-  });
-
-  test("sr_is_transcript accepts exactly the mempalace-transcript rows the framework owns (row C3, spec 0247 R24)", () => {
-    const got = run("sr_is_transcript");
-    CORPUS.forEach((row, i) => {
-      assert.equal(
-        got[i],
-        String(row.transcript === true),
-        `${JSON.stringify(row.command)} (${row.note})`,
-      );
-    });
-  });
-
-  test("a legacy and a direct guard are both owned, so the merge strips both and adds the manifest's one", () => {
-    const got = bashLibs(
-      `printf '%s\\n' '{"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"bash \\"/a/hooks/worktree-git-guard.sh\\""},{"type":"command","command":"node \\"/a/hooks/worktree-git-guard.ts\\""}]}]}}' > cfg.json
-       jq -c --arg shape grouped "$_UC_JQ_DEFS sr_strip | .hooks" cfg.json`,
-    );
-    assert.equal(got.status, 0, got.stderr);
-    assert.equal(got.stdout.trim(), "null");
-  });
-});
-
 describe("a guarded command in a Claude Code, Gemini CLI or Copilot CLI configuration (D3; v1-F5)", () => {
   const GUARDED =
     "set NoDefaultCurrentDirectoryInExePath=1&& node C:/work/x/crewrig/hooks/worktree-git-guard.ts";
@@ -125,28 +83,4 @@ describe("a guarded command in a Claude Code, Gemini CLI or Copilot CLI configur
     assert.equal(read(file), claude(), "byte-identical");
     assert.match(res.stdout, /left .*already the direct form/);
   });
-
-  test(
-    "the session-recording merge does not own it either: it survives beside the manifest's guard",
-    { skip: SKIP_POSIX },
-    () => {
-      const co = makeCheckout();
-      const cfg = path.join(path.dirname(co.repo), "claude-merge.json");
-      fs.writeFileSync(cfg, claude());
-      const res = bashLibs(
-        `render_session_recording_manifest claude ${JSON.stringify(co.repo)} ${JSON.stringify(co.manifest("claude"))} rendered.json \\
-         && merge_session_recording_hooks claude ${JSON.stringify(cfg)} rendered.json`,
-      );
-      assert.equal(res.status, 0, res.stdout + res.stderr);
-      const commands = guardCommands(JSON.parse(read(cfg)));
-      assert.ok(
-        commands.includes(GUARDED),
-        "the guarded command is an operator's command to the Bash twin",
-      );
-      assert.ok(
-        commands.includes(`node "${co.guard}"`),
-        "and the manifest's guard is merged beside it",
-      );
-    },
-  );
 });

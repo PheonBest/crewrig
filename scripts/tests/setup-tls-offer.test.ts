@@ -159,7 +159,7 @@ describe("consent", () => {
     assert.deepEqual(out.slice(start, start + 7), [
       `  Custom CA trust configured -> ${file}`,
       `  Delegated to CA bundle: ${bundle}`,
-      "  Applied for this setup run and, via scripts/lib/tls-exec.sh, for the",
+      "  Applied for this setup run and, via scripts/tls-exec.ts, for the",
       "  framework's runtime paths (MCP servers, the ChromaDB daemon).",
       `  Your shell profile was NOT modified. Remove with: rm ${file}`,
       "",

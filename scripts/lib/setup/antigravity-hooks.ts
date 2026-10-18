@@ -1,6 +1,6 @@
 // antigravity-hooks.ts — the Antigravity hook steps of setup-antigravity-interactive.ts (spec 0256
 // requirements 29 and 30, plan v2 step B3a.5): the transcript-hook deployment of
-// `deploy_antigravity_transcript_hooks` (scripts/lib/common.sh), the per-run rewrites of an
+// `deploy_antigravity_transcript_hooks` (retired scripts/lib/common.sh), the per-run rewrites of an
 // installed registration, and the paths and Node.js floor the statusline channel
 // (antigravity-statusline.ts) shares. Every step runs the TypeScript modules in-process
 // (hook-guard-manifest.ts, hook-transcript-manifest.ts, hook-antigravity-transcript.ts,
@@ -54,7 +54,7 @@ const NOT_FOUND = (what: string): string =>
   `  ERROR: crewrig: Node.js was not found on PATH; ${what} requires Node.js >= 24. Install a supported release from https://nodejs.org/en/download`;
 
 /**
- * The floor guard of spec 0240 R1. `what` is `this step` (common.sh `require_node_floor`, which
+ * The floor guard of spec 0240 R1. `what` is `this step` (retired common.sh `require_node_floor`, which
  * also checks the guard file) or `usage capture` (the script's `agy_statusline_node_floor`).
  */
 export function requireNodeFloor(

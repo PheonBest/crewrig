@@ -168,22 +168,3 @@ describe("C4 — R12 growth mutation: one enumeration read by the reader and the
     assert.equal(Object.hasOwn(claude, "syntheticGrowthKey"), false);
   });
 });
-
-describe(
-  "shim — the forwarding script reaches the same result as C1",
-  { skip: process.platform === "win32" },
-  () => {
-    test("C1 through the Bash shim exits 0 and the tree passes --check", () => {
-      const root = cloneTemplate(template);
-      const dir = oldShape(root);
-      const env: NodeJS.ProcessEnv = { ...process.env, LC_ALL: "C", GIT_CONFIG_NOSYSTEM: "1" };
-      delete env["CI"];
-      delete env["NODE_TEST_CONTEXT"];
-      const shim = path.join("scripts", `migrate-extension${".sh"}`);
-      const run = spawnSync("bash", [shim, dir], { cwd: root, encoding: "utf8", env });
-      assert.equal(run.status, 0, `${run.stdout}${run.stderr}`);
-      assert.equal(check(root, "oldshape").status, 0);
-      assert.equal(fs.existsSync(extDir(root, "oldshape")), true);
-    });
-  },
-);

@@ -1,6 +1,6 @@
 // usage-capture-fragment.ts — the floor guard, the capture script path and the rendered fragment of
 // the usage-capture opt-in (spec 0256 requirement 30, plan v2 step B3a.2b): `usage_capture_require_node_floor`,
-// `usage_capture_abs` and `usage_capture_fragment` of scripts/lib/usage-capture-optin.sh, with the
+// `usage_capture_abs` and `usage_capture_fragment` of retired scripts/lib/usage-capture-optin.sh, with the
 // render of `hook-wiring.ts render`. Messages are the shell's, byte for byte. Layer 2.
 
 import fs from "node:fs";
@@ -84,8 +84,11 @@ export function usageCaptureAbs(
     ctx.io.err(unsafeMessage(repoDir));
     return null;
   }
-  if (!isRegularFile(src)) {
-    ctx.io.err(`  ERROR: capture script not found at ${src}.`);
+  // The `.sh` form names a legacy shim that no checkout ships any more (spec 0266): it is a name only, so
+  // it needs no file; its directory is the one the `.ts` entry lives in.
+  const named = ext === "sh" ? `${repoDir}/hooks/usage-capture.ts` : src;
+  if (!isRegularFile(named)) {
+    ctx.io.err(`  ERROR: capture script not found at ${named}.`);
     return null;
   }
   const dir = fs.realpathSync.native(path.dirname(src));

@@ -153,9 +153,9 @@ function populate(cli: Cli, tail: readonly string[]): { spawn: Spawner } {
 }
 
 function pin(): void {
-  const file = path.join(sandbox.tmp, "scripts", "lib", "common.sh");
+  const file = path.join(sandbox.tmp, "scripts", "lib", "mempalace-pin.json");
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, 'MEMPALACE_MIN_VERSION="3.6.0"\nMEMPALACE_MAX_VERSION_EXCLUSIVE="3.7"\n');
+  fs.writeFileSync(file, '{"min": "3.6.0", "maxExclusive": "3.7"}\n');
 }
 
 function setup(installed: boolean, lines = 0): Record<string, StepFn> {

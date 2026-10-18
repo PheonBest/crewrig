@@ -26,7 +26,6 @@ import {
 } from "./worktree-fixtures.ts";
 
 export const HOOK_TS = path.join(REPO, "hooks", "mempalace-transcript.ts");
-export const HOOK_SH = path.join(REPO, "hooks", "mempalace-transcript.sh");
 export const STUB = path.join(
   REPO,
   "scripts",

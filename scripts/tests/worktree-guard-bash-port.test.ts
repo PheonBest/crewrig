@@ -152,32 +152,10 @@ function meets(row: Row, res: Result): boolean {
 
 const procCwd = (row: Row): string => (row.proc === "wt" ? fx.wt : bare);
 
-function viaShim(row: Row): Result {
-  const res = spawnSync(which("bash") ?? "/bin/bash", [GUARD_SH], {
-    cwd: procCwd(row),
-    env: cleanEnv(),
-    input: row.payload(fx.wt, elsewhere),
-    encoding: "utf8",
-  });
-  return { status: res.status, signal: res.signal, stdout: res.stdout, stderr: res.stderr };
-}
-
 describe("TypeScript entry", () => {
   for (const row of ROWS) {
     test(`case ${row.id}: ${row.name}`, () => {
       const res = runGuard(row.payload(fx.wt, elsewhere), { cwd: procCwd(row) });
-      assert.equal(res.status, row.expected, `${res.stdout}${res.stderr}`);
-      assert.ok(meets(row, res), `contract of case ${row.id}`);
-    });
-  }
-});
-
-describe("shell shim", { skip: SKIP_POSIX }, () => {
-  for (const row of ROWS) {
-    test(`case ${row.id}: ${row.name} (shim)`, (t) => {
-      if (!requireOrSkip(t, which("bash") !== null, "bash is required", { posixOnly: true }))
-        return;
-      const res = viaShim(row);
       assert.equal(res.status, row.expected, `${res.stdout}${res.stderr}`);
       assert.ok(meets(row, res), `contract of case ${row.id}`);
     });

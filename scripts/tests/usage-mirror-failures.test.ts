@@ -63,7 +63,7 @@ describe("usage mirror failures", { skip: SKIP_REASON }, () => {
         assert.equal(pendingCount(rig), 2, "setup: pending/ holds exactly the two (h) markers");
         await toolFailure(rig, ADD, shape);
         const r = runShim(rig, "usage-mirror");
-        assert.equal(r.status, 0, `[${shape}] usage-mirror.sh exits 0`);
+        assert.equal(r.status, 0, `[${shape}] usage-mirror exits 0`);
         assert.equal(callCount(rig, ADD), expectedCalls, `[${shape}] add_drawer call count`);
         for (const rid of rids) {
           assert.ok(fs.existsSync(pendingPath(rig, cli, "2019-04", rid)), "marker stays pending");
@@ -155,11 +155,7 @@ describe("usage mirror failures", { skip: SKIP_REASON }, () => {
       const [rid] = seedOpts("fault", cli, "2019-07-01T00:00:00.000Z", 1).map((o) =>
         writeRecord(o),
       );
-      const copy = copyLibTree([
-        "scripts/usage-mirror.ts",
-        "scripts/usage-mirror.sh",
-        "scripts/lib/node-floor-guard.js",
-      ]);
+      const copy = copyLibTree(["scripts/usage-mirror.ts", "scripts/lib/node-floor-guard.js"]);
       try {
         applyMutation(
           copy,

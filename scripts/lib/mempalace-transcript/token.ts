@@ -7,7 +7,7 @@
 //       scripts/lib/usage-store/mcp.js holds (`tokenPathNoCreate()`, decision
 //       Q3) and, only under (c) and only when that file does not exist, the
 //       first `<home>/.mempalace/server/*/token` in byte order of the
-//       directory name (hooks/mempalace-transcript.sh:270-275).
+//       directory name (retired hooks/mempalace-transcript.sh:270-275).
 // Resolving the token creates no file and no directory.
 //
 // Standard library only.

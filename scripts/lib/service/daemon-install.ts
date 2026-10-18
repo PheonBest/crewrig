@@ -1,6 +1,6 @@
 // daemon-install.ts — install the shared MCP daemon and its launcher (spec 0252
 // requirements 8, 9, 10 and 18). Ports `install_mcp_daemon` of
-// scripts/lib/common.sh: ensure the MemPalace home, provision the token BEFORE the
+// retired scripts/lib/common.sh: ensure the MemPalace home, provision the token BEFORE the
 // launcher exists (it refuses to serve without one), install the launcher program
 // (program-install.ts), then materialise and register the supervisor definition
 // through install.ts and the backend and poll `/healthz`.

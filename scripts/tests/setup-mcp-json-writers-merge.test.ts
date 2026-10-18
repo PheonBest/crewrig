@@ -1,5 +1,5 @@
 // setup-mcp-json-writers-merge.test.ts — the tolerant capture and the merge rules of the MCP
-// writers (spec 0256 requirement 27, merge_preexisting_mcp_servers of scripts/lib/common.sh).
+// writers (spec 0256 requirement 27, merge_preexisting_mcp_servers of retired scripts/lib/common.sh).
 
 import assert from "node:assert/strict";
 import fs from "node:fs";

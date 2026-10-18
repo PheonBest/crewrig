@@ -1,5 +1,5 @@
 // core-paths-manifest.ts — the `.crewrig/core-paths.txt` grammar and the
-// `dir_is_governed` rule of scripts/check-core-paths.sh (spec 0259 req 12).
+// `dir_is_governed` rule of scripts/check-core-paths.ts (spec 0259 req 12).
 //
 // Grammar (identical to the shell and to sync-from-upstream.ts): one entry per line,
 // first whitespace field = path, second token = policy (default `strict`), blank and

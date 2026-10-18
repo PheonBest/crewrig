@@ -1,6 +1,6 @@
 // check-arms.ts — the `--check` arms of `build-extension` (spec 0254 R14, R19).
 // Twins `check_extension`, `declared_outputs`, `check_gaps`, `check_version_drift`,
-// `check_skeleton_name_axis` and `cleanup_stray_plugin_dist` (scripts/build-extension.sh:462-700).
+// `check_skeleton_name_axis` and `cleanup_stray_plugin_dist` (scripts/build-extension.ts:462-700).
 // Every line goes to `ctx.io.out`; each arm function returns its failure count.
 
 import fs from "node:fs";

@@ -1,9 +1,11 @@
 // build-components-conformance-render.test.ts — the command renderer and the collision
 // pre-pass of the shell/TypeScript conformance (spec 0250 R21, requirements 17 and 18).
-// Linux only, spawning `bash` and `yq`; it retires with the shell libraries (rows F2, G1b).
+// The shell side is REPLAYED from the goldens under fixtures/component-resolve-oracle (spec 0262 R17); only
+// the Linux golden container (COMPONENT_RESOLVE_GOLDEN_REGEN=1) ran the shell, and the shell libraries are
+// gone (spec 0266), so the goldens can no longer be re-recorded here.
 //
-// Renderer: for every command source of `artifacts/`, `extensions/core/hello-world/` and the
-// synthetic commands `build-extension-suite-render.test.ts` renders (one carrying provenance, one plain),
+// Renderer: for the command of `extensions/core/hello-world/` and the four synthetic commands
+// (one carrying provenance, one plain, one with tools, one with scalar-typed values),
 // the three extraction helpers, two field reads, the TOML provenance comment and the Gemini
 // and Claude forms are compared with the shell's. The shell's `render_command_toml_provenance_comment`
 // prints a trailing line feed that every shell caller strips with `$(...)`, so it is compared
@@ -24,10 +26,9 @@ import {
 } from "../lib/component-resolve.ts";
 import { createRenderCommand, extractBody, extractFrontmatter } from "../lib/render-command.ts";
 import { frozenAsync } from "./lib/component-resolve-golden.ts";
-import { fields, parityGate, REPO, runBash, sh } from "./lib/shell-resolve-harness.ts";
+import { fields, REPO, runBash, sh } from "./lib/shell-resolve-harness.ts";
 import { yamlText } from "./lib/yaml-lib.ts";
 
-const skip = parityGate();
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "conformance-render-"));
 after(() => fs.rmSync(tmp, { recursive: true, force: true }));
 const write = (rel: string, text = "x"): string => {
@@ -56,10 +57,21 @@ const RENDER_FIELDS = [
   "claude",
 ];
 
-async function shellRender(sources: readonly string[]): Promise<string[][]> {
-  const f = fields(await runBash(RENDER_DRIVER, [REPO, ...sources]));
-  return sources.map((_, i) => f.slice(i * RENDER_FIELDS.length, (i + 1) * RENDER_FIELDS.length));
-}
+/** Frozen: the shell leg of render-command.sh is replayed, keyed by the source's id. */
+const shellRender = (ids: readonly string[], files: readonly string[]): Promise<string[][]> =>
+  Promise.all(
+    files.map((file, i) =>
+      frozenAsync(
+        "render-command",
+        ids[i] as string,
+        { "<TMP>": tmp, "<REPO>": REPO },
+        async () => {
+          const f = fields(await runBash(RENDER_DRIVER, [REPO, file]));
+          return f.slice(0, RENDER_FIELDS.length);
+        },
+      ),
+    ),
+  );
 function twinRender(source: string): string[] {
   const r = createRenderCommand(yamlText);
   const fm = extractFrontmatter(source);
@@ -118,14 +130,8 @@ const synthetic = [
     `---\nname: 1.0\ndescription: True\nmetadata:\n  provenance:\n    version: 0\n    canonical: false\n---\nbody\n`,
   ),
 ];
-const sources = [
-  ...fs
-    .globSync("artifacts/*/commands/*.md", { cwd: REPO })
-    .sort()
-    .map((r) => path.join(REPO, r)),
-  ext,
-  ...synthetic,
-];
+const sources = [ext, ...synthetic];
+const sourceIds = sources.map((s) => (s === ext ? "hello" : `synthetic ${path.basename(s)}`));
 
 /** A tree under `tmp`: `path` lines, `name` content, `-> target` skipped (the shell and twin share one reader). */
 function tree(name: string, entries: Record<string, string>): string {
@@ -187,73 +193,69 @@ const trees = {
   "missing directory": path.join(tmp, "absent"),
 };
 
-const [shellStrings, shellReports] =
-  skip === undefined
-    ? await Promise.all([shellRender(sources), shellCollisions(Object.values(trees))])
-    : [[], []];
+const [shellStrings, shellReports] = await Promise.all([
+  shellRender(sourceIds, sources),
+  shellCollisions(Object.values(trees)),
+]);
 
-describe(
-  "renderer and collision pre-pass: the shell libraries and their twins agree",
-  skip === undefined ? {} : { skip },
-  () => {
-    sources.forEach((source, i) => {
-      test(`render ${source.startsWith(REPO) ? path.relative(REPO, source) : `synthetic ${path.basename(source)}`}`, () => {
-        const [shell, twin] = [shellStrings[i] as string[], twinRender(source)];
-        assert.deepEqual(
-          RENDER_FIELDS.map((f, k) => [f, twin[k]]),
-          RENDER_FIELDS.map((f, k) => [f, shell[k]]),
-        );
-      });
+describe("renderer and collision pre-pass: the recorded shell outcomes and the twins agree", () => {
+  sources.forEach((source, i) => {
+    test(`render ${sourceIds[i]}`, () => {
+      const [shell, twin] = [shellStrings[i] as string[], twinRender(source)];
+      assert.deepEqual(
+        RENDER_FIELDS.map((f, k) => [f, twin[k]]),
+        RENDER_FIELDS.map((f, k) => [f, shell[k]]),
+      );
     });
+  });
 
-    test("the renderer corpus is not vacuous", (t) => {
-      assert.ok(sources.length >= 7, `${sources.length} sources`);
-      const all = shellStrings.flat();
-      assert.ok(
-        shellStrings.some((s) => (s[4] ?? "").startsWith("# crewrig-provenance:")),
-        "a provenance comment",
-      );
-      assert.ok(
-        shellStrings.some((s) => (s[6] ?? "").includes("allowed-tools:")),
-        "an allowed-tools list",
-      );
-      assert.ok(
-        shellStrings.every((s) => !(s[5] ?? "").endsWith("\n") && !(s[6] ?? "").endsWith("\n")),
-      );
-      assert.ok(
-        shellStrings.some((s) => (s[5] ?? "").startsWith("# crewrig-provenance:")),
-        "provenance above description",
-      );
-      t.diagnostic(`${sources.length} sources, ${all.length} strings compared`);
-    });
+  test("the renderer corpus is not vacuous", (t) => {
+    assert.ok(sources.length >= 5, `${sources.length} sources`);
+    const all = shellStrings.flat();
+    assert.ok(
+      shellStrings.some((s) => (s[4] ?? "").startsWith("# crewrig-provenance:")),
+      "a provenance comment",
+    );
+    assert.ok(
+      shellStrings.some((s) => (s[6] ?? "").includes("allowed-tools:")),
+      "an allowed-tools list",
+    );
+    assert.ok(
+      shellStrings.every((s) => !(s[5] ?? "").endsWith("\n") && !(s[6] ?? "").endsWith("\n")),
+    );
+    assert.ok(
+      shellStrings.some((s) => (s[5] ?? "").startsWith("# crewrig-provenance:")),
+      "provenance above description",
+    );
+    t.diagnostic(`${sources.length} sources, ${all.length} strings compared`);
+  });
 
-    Object.entries(trees).forEach(([label, dir], i) => {
-      test(`pre-pass over ${label}`, () => {
-        const [shell, twin] = [shellReports[i] as CollisionReport, twinCollisions(dir)];
-        assert.deepEqual(twin, shell);
-      });
+  Object.entries(trees).forEach(([label, dir], i) => {
+    test(`pre-pass over ${label}`, () => {
+      const [shell, twin] = [shellReports[i] as CollisionReport, twinCollisions(dir)];
+      assert.deepEqual(twin, shell);
     });
+  });
 
-    test("the pre-pass corpus is not vacuous, and the display name pins the shell", () => {
-      const by = (label: string): CollisionReport =>
-        shellReports[Object.keys(trees).indexOf(label)] as CollisionReport;
-      assert.equal(by("real artifacts/").status, 0);
-      assert.ok(
-        by("real artifacts/").records.split("\n").length >= 100,
-        "the real tree has many targets",
-      );
-      assert.ok(by("overlay fixture").records !== "" && by("synthetic clean tree").status === 0);
-      assert.equal(by("synthetic collisions").status, 1);
-      const refusals = [...by("synthetic collisions").stderr.matchAll(/^Refusing '(.*)'/gm)].map(
-        (m) => m[1],
-      );
-      assert.ok(refusals.length >= 15, `${refusals.length} refusals`);
-      // R17 prose says the `mcpServers.` prefix comes off; the shell's `basename` keeps `claude:mcpServers.srv` whole.
-      assert.ok(
-        refusals.includes("claude:mcpServers.srv") && refusals.includes("foo"),
-        `${refusals}`,
-      );
-      assert.ok(by("empty tree").records === "" && by("missing directory").records === "");
-    });
-  },
-);
+  test("the pre-pass corpus is not vacuous, and the display name pins the shell", () => {
+    const by = (label: string): CollisionReport =>
+      shellReports[Object.keys(trees).indexOf(label)] as CollisionReport;
+    assert.equal(by("real artifacts/").status, 0);
+    assert.ok(
+      by("real artifacts/").records.split("\n").length >= 100,
+      "the real tree has many targets",
+    );
+    assert.ok(by("overlay fixture").records !== "" && by("synthetic clean tree").status === 0);
+    assert.equal(by("synthetic collisions").status, 1);
+    const refusals = [...by("synthetic collisions").stderr.matchAll(/^Refusing '(.*)'/gm)].map(
+      (m) => m[1],
+    );
+    assert.ok(refusals.length >= 15, `${refusals.length} refusals`);
+    // R17 prose says the `mcpServers.` prefix comes off; the shell's `basename` keeps `claude:mcpServers.srv` whole.
+    assert.ok(
+      refusals.includes("claude:mcpServers.srv") && refusals.includes("foo"),
+      `${refusals}`,
+    );
+    assert.ok(by("empty tree").records === "" && by("missing directory").records === "");
+  });
+});

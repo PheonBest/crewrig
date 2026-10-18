@@ -1,8 +1,7 @@
 # MCP Tools Reference
 
 MemPalace's MCP tool surface is pinned to the supported range `>=3.6.0,<3.7`
-(the single source of truth is `scripts/lib/common.sh`;
-`MEMPALACE_MIN_VERSION` / `MEMPALACE_MAX_VERSION_EXCLUSIVE`). The tool inventory
+(the single source of truth is `scripts/lib/mempalace-pin.json`). The tool inventory
 below was verified live against a **MemPalace 3.6.0** server — the e2e sidecar
 image built from `docker/e2e/mempalace.Dockerfile` — during issue #566, not
 carried forward from an earlier pass. Tools used by the cross-tool handoff
@@ -31,7 +30,7 @@ Notable facts (MemPalace 3.6.0) that shape the protocol above:
   `wing` on `mempalace_diary_read` restricts the read to that wing: a
   matching explicit `wing` finds the entry, a different explicit `wing`
   finds nothing (verified live during issue #416 and confirmed still
-  present on 3.6.0). The pin rationale in `scripts/lib/common.sh` records
+  present on 3.6.0). The pin (`scripts/lib/mempalace-pin.json`) rests on the fact
   that the `wing` parameter on the diary tools is one of the capabilities
   the framework relies on across the 3.3.x→3.6.x transition. What the tool
   falls back to when `wing` is **omitted** remains unresolved: the

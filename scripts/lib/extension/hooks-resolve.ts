@@ -1,5 +1,5 @@
 // hooks-resolve.ts — command resolution, resolved entries and gap records of the hook translator
-// (spec 0254 R10). Twins of `_ext_hooks_resolve_command` (scripts/lib/extension-hooks.sh:241-254),
+// (spec 0254 R10). Twins of `_ext_hooks_resolve_command` (retired scripts/lib/extension-hooks.sh:241-254),
 // `_ext_hooks_resolved_entries` (:271-308) and `ext_hooks_gaps` (:191-232).
 
 import {

@@ -1,5 +1,5 @@
 // service-backup-config.test.ts — `backupConfig` of scripts/lib/service/assistant-config.ts
-// against the shell's `backup_file` (scripts/lib/common.sh): the copy carries the bearer
+// against the shell's `backup_file` (retired scripts/lib/common.sh): the copy carries the bearer
 // token, so it is created exclusively and at 0600 from the first byte, never through a
 // symlink planted at the backup name (spec 0252 requirement 27, review i1-F38). POSIX only.
 

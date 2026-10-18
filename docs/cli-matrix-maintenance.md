@@ -88,9 +88,8 @@ issue. Agent-initiated deferral of a symmetric script is prohibited.
 **Extension render symmetric pair (spec 0042, as amended by
 `specs/0042-extension-pivot-render.delta-01.md` and spec 0173).** Extension
 components are rendered to their per-CLI consumed forms by a CLI-split pair
-that shares `scripts/lib/render-command.sh`, both dispatched from the single
-entry point `scripts/build-extension.ts` (the `scripts/build-extension.sh`
-shim forwards to it; run `node scripts/lib/node-floor-guard.js` first, then the
+that shares `scripts/lib/render-command.ts`, both dispatched from the single
+entry point `scripts/build-extension.ts` (run `node scripts/lib/node-floor-guard.js` first, then the
 `node scripts/*.ts` command; Node.js 24 or later, `js-yaml` from the setup
 dependency step):
 
@@ -104,10 +103,10 @@ dependency step):
   extension installed from that build tree, and the tree it loads has no
   install-time render hook of its own (cli-matrix row 13).
 
-A change to either renderer, or to the shared `render-command.sh`
-library, MUST keep this pair in sync in the same PR; the
+A change to either renderer, or to the shared `render-command.ts`
+module, MUST keep this pair in sync in the same PR; the
 `node scripts/build-extension.ts --check` guard and
-`scripts/check-extension-pivot.sh` (R1/R7 guard) enforce that no
+`scripts/check-extension-pivot.ts` (R1/R7 guard) enforce that no
 generated Gemini output is ever committed, that a fresh render matches
 the declared set, and that no extension component is authored CLI-native
 instead of pivot. Copilot has no extension command/agent surface (rows

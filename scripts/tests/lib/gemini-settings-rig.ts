@@ -42,18 +42,18 @@ export function canon(value: Json): string {
 }
 
 const reserved = (py: string): Record<string, Json> => {
-  const tls = `${FAKE_REPO}/scripts/lib/tls-exec.sh`;
+  const tls = `${FAKE_REPO}/scripts/tls-exec.ts`;
   return {
     ...(py === ""
       ? {}
       : {
           mempalace: {
-            command: "bash",
+            command: "node",
             args: [tls, py, `${FAKE_REPO}/scripts/lib/mempalace-http-wrapper.py`],
           },
         }),
     sequentialthinking: {
-      command: "bash",
+      command: "node",
       args: [tls, "npx", "-y", "@modelcontextprotocol/server-sequential-thinking"],
     },
   };

@@ -1,4 +1,4 @@
-// render-command.ts — TypeScript twin of scripts/lib/render-command.sh, the shared
+// render-command.ts — TypeScript twin of retired scripts/lib/render-command.sh, the shared
 // command renderer (spec 0042; spec 0250 R18).
 //
 // Twin of the shell library: change both, and keep them equal. The conformance

@@ -1,5 +1,5 @@
 // Spec 0119 requirements 3, 6, 16-18 (ported from test-component-tier-resolution.sh cases 14-17).
-// Retires with scripts/lib/common.sh (row J4): POSIX-only, the shims run under bash.
+// Retires with retired scripts/lib/common.sh (row J4): POSIX-only, the shims run under bash.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";

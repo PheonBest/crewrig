@@ -1,0 +1,31 @@
+{
+  "gemini": [
+    "",
+    "System-context store access (spec 0068):",
+    "  The framework installs a shared rule store at ~/.crewrig/system-context.",
+    "  When a rule from the store is needed, the CLI reads it on demand.",
+    "  Setup writes NO durable trust config; where the read still cannot be",
+    "  satisfied, the store surfaces its explicit fallback signal (spec 0068).",
+    "  Gemini gates tool use on workspace trust. Make the store path",
+    "  trusted for the invocation with one of:",
+    "    gemini --include-directories ~/.crewrig/system-context",
+    "    GEMINI_CLI_TRUST_WORKSPACE=true gemini ...",
+    "    gemini --skip-trust ...",
+    "  or approve the directory interactively when prompted."
+  ],
+  "copilot": [
+    "",
+    "System-context store access (spec 0068):",
+    "  The framework installs a shared rule store at ~/.crewrig/system-context.",
+    "  When a rule from the store is needed, the CLI reads it on demand.",
+    "  Setup writes NO durable trust config; where the read still cannot be",
+    "  satisfied, the store surfaces its explicit fallback signal (spec 0068).",
+    "  Copilot denies the out-of-workspace read unless the path is",
+    "  granted. Grant it per-invocation with one of:",
+    "    copilot --add-dir ~/.crewrig/system-context",
+    "    copilot --allow-all-paths",
+    "  or approve the read interactively when prompted.",
+    "  Note: trustedFolders in ~/.copilot/config.json does NOT durably",
+    "  authorize this cross-project read."
+  ]
+}

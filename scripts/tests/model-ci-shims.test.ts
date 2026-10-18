@@ -1,4 +1,4 @@
-// Contract of the ten model/CI forwarding shims (spec 0262 requirement 16): each scripts/<name>.sh
+// Contract of the eight model/CI forwarding shims (spec 0262 requirement 16): each scripts/<name>.sh
 // forwards arguments, stdin and the exit status to its TypeScript twin, and fails closed without node.
 import { spawnSync } from "node:child_process";
 import {
@@ -28,8 +28,6 @@ const NAMES = [
   "ci-cache-guard",
   "ci-changeset-coverage",
   "reserve-spec-id",
-  "merge-spec-pr",
-  "sweep-en-us",
 ];
 
 function which(cmd: string): string | undefined {

@@ -4,7 +4,7 @@
 // The record sits at the legacy launcher path and is not a program: it carries
 // the lines `MCP_HOST="…"`, `MCP_PORT="…"`, `LAUNCHER_SOURCE_SHA="…"` and
 // `LAUNCHER_PROGRAM="…"`, then a body that names the program on standard error
-// and exits 1. `parseLauncher` and `mcp_installed_endpoint` (common.sh) take
+// and exits 1. `parseLauncher` and `mcp_installed_endpoint` (retired common.sh) take
 // the first `NAME="…"` line of each name, so extra lines and a failing body
 // are invisible to them.
 

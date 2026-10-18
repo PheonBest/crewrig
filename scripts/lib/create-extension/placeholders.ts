@@ -1,5 +1,5 @@
 // placeholders.ts — the placeholder set and the survivor check (spec 0258 R23).
-// Twin of create-extension.sh :92-97 and :188-211: the set is derived by scanning
+// Twin of create-extension.ts :92-97 and :188-211: the set is derived by scanning
 // `extension-skeleton/` for every `${SKELETON_*}` token, so a later addition to the family needs
 // no change here; after every merge, a token surviving in a text file of the produced tree
 // removes the partly written target and fails.

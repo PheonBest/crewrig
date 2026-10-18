@@ -193,11 +193,7 @@ describe("validateManifest against the real descriptors", () => {
   const lines = (text: string): string[] =>
     validateManifest(P, manifest(text), { libDir: LIB_DIR });
 
-  test("the reserved set is exactly the shell's MCP_RESERVED_NAMES", () => {
-    const common = fs.readFileSync(path.join(LIB_DIR, "common.sh"), "utf8");
-    const declared = /^MCP_RESERVED_NAMES=\(([^)]*)\)/m.exec(common);
-    assert.ok(declared);
-    assert.deepEqual([...MCP_RESERVED_NAMES], declared[1].trim().split(/\s+/));
+  test("the reserved set is exactly the two framework names", () => {
     assert.deepEqual([...MCP_RESERVED_NAMES], ["mempalace", "sequentialthinking"]);
   });
   test("every reserved name yields a reserved-name line", () => {

@@ -19,7 +19,7 @@ banned because they silently swallow `ImportError`, `KeyboardInterrupt`,
 
 ### Why
 
-The session-transcript hook (`hooks/mempalace-transcript.sh`, then a Bash
+The session-transcript hook (the retired `hooks/mempalace-transcript.sh`, then a Bash
 script with an embedded Python heredoc; a TypeScript hook since spec 0247)
 silently dropped every entry for **months** after the MemPalace v3.x upgrade. A broad
 `except` was hiding an `ImportError` for a class that no longer existed
@@ -74,7 +74,7 @@ months of "looks fine" with zero data flowing.
 
 ### Why
 
-The transcript hook (then the Bash script `hooks/mempalace-transcript.sh`)
+The transcript hook (then the Bash script the retired `hooks/mempalace-transcript.sh`)
 printed `mempalace-transcript: persisted ...` to stderr on **every**
 invocation, including the ones where the underlying Python
 heredoc had crashed during import. The success line lived outside the

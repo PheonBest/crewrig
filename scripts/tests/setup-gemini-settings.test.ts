@@ -1,6 +1,6 @@
-// Differential test of the Gemini settings merge (spec 0256 requirements 27 and 31): the pure
-// `mergeGeminiSettings` against `gemini_settings_write` of scripts/lib/gemini-settings.sh over a
-// fixture matrix: same file bytes, same warning lines on stdout, same return code.
+// Test of the Gemini settings merge (spec 0256 requirements 27 and 31): the pure `mergeGeminiSettings` over a
+// fixture matrix, replayed against fixtures/setup-gemini-settings/merge-matrix.golden.json, the file bytes and
+// warning lines recorded from the retired shell merge `gemini_settings_write` (spec 0266).
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -10,7 +10,6 @@ import path from "node:path";
 import { after, describe, test } from "node:test";
 
 import { mergeGeminiSettings, readAndMerge } from "../lib/setup/gemini-settings-merge.ts";
-import { bashLibs } from "./lib/bash-libs.ts";
 import { REPO, WINDOWS } from "./lib/worktree-fixtures.ts";
 
 const HAS_JQ = spawnSync("jq", ["--version"]).status === 0;
@@ -114,53 +113,57 @@ function normalise(text: string, target: string): string {
   return text.split(target).join("<T>").replace(stamp, ".bak.<STAMP>");
 }
 
-function viaShell(c: Case): { bytes: string; stdout: string; rc: number; target: string } {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "crewrig-gs-"));
-  roots.push(dir);
-  const target = path.join(dir, "settings.json");
-  if (c.file !== undefined) fs.writeFileSync(target, c.file);
-  const src = path.join(REPO, "scripts", "lib", "gemini-settings.sh");
-  const res = bashLibs(
-    [
-      `source ${JSON.stringify(src)}`,
-      `gemini_settings_write ${JSON.stringify(target)} ${JSON.stringify(SEED_PATH)} ${FAKE_REPO} "$PY" "$ORG" `,
-      'echo "__RC__$?"',
-    ].join("\n"),
-    { ...process.env, PY: c.py ?? "", ORG: c.org ?? "" },
-  );
-  const rcMatch = /__RC__(\d+)\s*$/.exec(res.stdout);
-  const stdout = res.stdout.replace(/__RC__\d+\s*$/, "");
-  return { bytes: fs.readFileSync(target, "utf8"), stdout, rc: Number(rcMatch?.[1] ?? 99), target };
+interface Golden {
+  readonly name: string;
+  readonly bytes: string;
+  readonly lines: readonly string[];
 }
+const GOLDEN = JSON.parse(
+  fs.readFileSync(
+    path.join(
+      REPO,
+      "scripts",
+      "tests",
+      "fixtures",
+      "setup-gemini-settings",
+      "merge-matrix.golden.json",
+    ),
+    "utf8",
+  ),
+) as Golden[];
 
-describe("differential against gemini_settings_write", { skip: SKIP }, () => {
+describe("the merge replays the recorded shell outcomes", { skip: SKIP }, () => {
+  test("every case has a recorded outcome", () => {
+    assert.deepEqual(
+      GOLDEN.map((g) => g.name),
+      CASES.map((c) => c.name),
+    );
+  });
   for (const c of CASES) {
     test(c.name, () => {
-      const shell = viaShell(c);
+      const gold = GOLDEN.find((g) => g.name === c.name);
+      assert.ok(gold !== undefined);
+      const target = "/scratch/settings.json";
       const result = mergeGeminiSettings({
         current: c.file,
         seed: SEED,
         repoDir: FAKE_REPO,
         python: c.py,
         orgNative: c.org,
-        target: shell.target,
-        backupRef: `${shell.target}.bak.<STAMP>`,
+        target,
+        backupRef: `${target}.bak.<STAMP>`,
       });
-      assert.equal(shell.rc, 0);
       assert.ok(result.ok);
-      assert.equal(result.text, shell.bytes);
-      const lines = normalise(shell.stdout, shell.target)
-        .split("\n")
-        .filter((line) => line !== "" && !line.startsWith("  Backed up"));
+      assert.equal(result.text, gold.bytes);
       assert.deepEqual(
-        result.warnings.map((line) => normalise(line, shell.target)),
-        lines,
+        result.warnings.map((line) => normalise(line, target)),
+        gold.lines,
       );
     });
   }
 });
 
-describe("the differential is not vacuous", () => {
+describe("the merge produces its warnings", () => {
   test("repair, replacement and org warnings are all produced", () => {
     const warn = (current: string, org?: string): string => {
       const result = mergeGeminiSettings({

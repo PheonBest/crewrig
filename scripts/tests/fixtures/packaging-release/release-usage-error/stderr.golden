@@ -1,1 +1,1 @@
-Usage: release-package-extension.sh <name> --version <v> --out <dir>
+Usage: release-package-extension.ts <name> --version <v> --out <dir>

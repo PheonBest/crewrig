@@ -39,7 +39,7 @@ const MCP = "scripts/lib/usage-store/mcp.js";
 const BREAKER = "CREWRIG_USAGE_MIRROR_TOOL_ERROR_BREAKER";
 const EXTRA = [
   "scripts/usage-mirror.ts",
-  "scripts/usage-mirror.sh",
+  "scripts/usage-prune.ts",
   "scripts/lib/node-floor-guard.js",
 ];
 

@@ -1,5 +1,5 @@
 // migrate.ts — the extension migration tool (spec 0254 R20).
-// Twin of the whole of scripts/migrate-extension.sh (spec 0183 R15): detect the retired
+// Twin of the whole of scripts/migrate-extension.ts (spec 0183 R15): detect the retired
 // declaration forms, convert a temporary copy, replace the source tree only on full success.
 // Errors go to stderr, the `Already migrated:` / `Migrated:` summary to stdout; the status
 // is returned, never exited with.

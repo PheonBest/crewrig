@@ -1,4 +1,4 @@
-// modes.ts — the modes of scripts/sweep-en-us.ts (twin of scripts/sweep-en-us.sh,
+// modes.ts — the modes of scripts/sweep-en-us.ts (twin of scripts/sweep-en-us.ts,
 // spec 0023): --apply, --check, --scope-test, --list, --aspell. Output goes
 // through `out`/`err` so a caller can buffer it; the return value is the exit status.
 

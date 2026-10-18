@@ -1,7 +1,7 @@
 // extension-org-mcp.test.ts — `org_mcp_to_native` and `MCP_RESERVED_NAMES` twins (spec 0254 R3).
 //
 // Added beside scripts/tests/setup-common-org-mcp.test.ts (the shell-library port of the retired
-// Bash suite, spec 0263), which keeps its assertions. Expected shapes are taken from the jq program of scripts/lib/common.sh:263-310.
+// Bash suite, spec 0263), which keeps its assertions. Expected shapes are taken from the jq program of retired scripts/lib/common.sh:263-310.
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";

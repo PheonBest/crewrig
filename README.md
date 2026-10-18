@@ -470,7 +470,6 @@ artifacts/
 
 hooks/                                # Shared hook scripts
 ├── mempalace-transcript.ts           # Session recording (opt-in; Node.js >= 24 when it fires)
-├── mempalace-transcript.sh           # Forwarding shim for installations not yet rewritten
 ├── gemini-transcript-hooks.json      # Gemini hook registration
 └── claude-transcript-hooks.json      # Claude Code hook registration
 
@@ -490,10 +489,10 @@ tests/
 
 scripts/
 ├── build-components.sh               # Shim: forwards to build-components.ts (the TypeScript build)
-├── build-claude-plugin.sh            # Shim: forwards to build-claude-plugin.ts (the TypeScript plugin generator)
+├── build-claude-plugin.ts            # Shim: forwards to build-claude-plugin.ts (the TypeScript plugin generator)
 ├── check-skill-versions.ts           # CI gate: enforces version bump on modified sources
-├── create-extension.sh               # Shim: forwards to create-extension.ts (the TypeScript extension scaffolder)
-├── migrate-extension.sh              # Shim: forwards to migrate-extension.ts (converts an extension off the retired declaration shape, spec 0183)
+├── create-extension.ts               # Shim: forwards to create-extension.ts (the TypeScript extension scaffolder)
+├── migrate-extension.ts              # Shim: forwards to migrate-extension.ts (converts an extension off the retired declaration shape, spec 0183)
 ├── import-claude-history.ts          # Claude transcript import
 ├── import-gemini-history.ts          # Gemini transcript import
 ├── install-claude-plugin.ts          # Shim: forwards to install-claude-plugin.ts (Claude Code plugin installer)
@@ -503,18 +502,18 @@ scripts/
 ├── link-extensions.ts                # Shim: forwards to link-extensions.ts (symlink extensions for local dev)
 ├── manage-claude-component.ts        # Shim: forwards to manage-claude-component.ts (Claude Code component manager)
 ├── manage-workspace-component.ts     # Shim: forwards to manage-workspace-component.ts (Gemini component manager)
-├── monorepo-release.sh               # Shim: forwards to monorepo-release.ts (monorepo release driver — bumps versions, calls release-package-extension.ts, publishes the release (GitHub: through a release PR, docs/github-release-pr.md))
-├── release-package-extension.sh      # Shim: forwards to release-package-extension.ts (the ONE place a release artifact's shape is decided: renders, asserts, archives; spec 0183)
+├── monorepo-release.ts               # Shim: forwards to monorepo-release.ts (monorepo release driver — bumps versions, calls release-package-extension.ts, publishes the release (GitHub: through a release PR, docs/github-release-pr.md))
+├── release-package-extension.ts      # Shim: forwards to release-package-extension.ts (the ONE place a release artifact's shape is decided: renders, asserts, archives; spec 0183)
 ├── release-pr.ts                     # Opens/updates/closes the GitHub release PR and dispatches its required checks (issue #1379)
-├── package-extension.sh              # Shim: forwards to package-extension.ts (manually package a single extension at its current committed version)
-├── package-extensions.sh             # Shim: forwards to package-extensions.ts (manually package every extension)
+├── package-extension.ts              # Shim: forwards to package-extension.ts (manually package a single extension at its current committed version)
+├── package-extensions.ts             # Shim: forwards to package-extensions.ts (manually package every extension)
 ├── prune-transcripts.ts              # Remove old transcript archives
 ├── setup-claude-interactive.ts       # Shim: forwards to setup-claude-interactive.ts (Claude Code setup, interactive)
 ├── setup-gemini-interactive.ts       # Shim: forwards to setup-gemini-interactive.ts (Gemini CLI setup, interactive)
 ├── unlink-component.ts               # Shim: forwards to unlink-component.ts (remove a component symlink)
 ├── unlink-extensions.ts              # Shim: forwards to unlink-extensions.ts (remove all extension symlinks)
 ├── lib/
-│   └── common.sh                     # Shared Bash helpers (sourced by scripts)
+│   └── mempalace-pin.json            # Single source of the MemPalace version pin (the shell libraries were retired in #1344)
 └── tests/
     ├── governance-suite-skill-versions.test.ts       # Tests for check-skill-versions (cases 4-7)
     ├── governance-suite-skill-versions-base.test.ts  # Tests for check-skill-versions (base-ref cases)

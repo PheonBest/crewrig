@@ -1,5 +1,5 @@
 // ext-manifest-version.ts — logic of check-extension-manifest-version (spec 0259; replaces
-// scripts/check-extension-manifest-version.sh, spec 0044 R5/R6 as amended by delta-01).
+// scripts/check-extension-manifest-version.ts, spec 0044 R5/R6 as amended by delta-01).
 //
 // Usage: evaluateVersions(cwd, libDir) -> { code, stdout, stderr }
 // Walks `extensions/{core,library}/*/package.json` under `cwd` (the shell's relative roots; the
@@ -111,8 +111,8 @@ export function evaluateVersions(cwd: string, libDir: string): VersionOutcome {
       "\nPer spec 0044 (as amended by delta-01), an extension's package.json version\n" +
       "is authoritative; its committed extension.json sibling MUST declare the SAME\n" +
       "version (gemini-extension.json is a build output, asserted separately by\n" +
-      "'bash scripts/build-extension.sh --check'). The release driver\n" +
-      "(scripts/monorepo-release.sh) syncs both in lockstep, so post-release drift\n" +
+      "'node scripts/build-extension.ts --check'). The release driver\n" +
+      "(scripts/monorepo-release.ts) syncs both in lockstep, so post-release drift\n" +
       "means a manual edit fell out of step.\n";
     return { code: 1, stdout, stderr };
   }

@@ -1,5 +1,5 @@
 // gemini-render.ts — the Gemini CLI render of `build-extension` (spec 0254 R14, R17).
-// Twin of `render_gemini` (scripts/build-extension.sh:214-337): the verbatim copy with the
+// Twin of `render_gemini` (scripts/build-extension.ts:214-337): the verbatim copy with the
 // generated-class and release debris removed, `gemini-extension.json`, the context, the
 // `.toml` commands and the hook file. Returns 0, or 1 when any file failed.
 

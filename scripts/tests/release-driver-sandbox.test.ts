@@ -29,7 +29,7 @@ describe("release driver sandbox", () => {
     for (const rel of [
       ".git",
       "package.json",
-      "scripts/monorepo-release.sh",
+      "scripts/monorepo-release.ts",
       "extensions/core/hello-world/extension.json",
       "extensions/core/second-ext/extension.json",
     ]) {

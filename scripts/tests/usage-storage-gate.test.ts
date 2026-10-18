@@ -96,31 +96,6 @@ describe("(g1) no-MemPalace gate", () => {
 });
 
 describe("(h) token path", () => {
-  // The Bash cases compared tokenPath() with `bash -c '. scripts/lib/common.sh; mcp_token_path'`.
-  // common.sh is a sourced library retired by row J4: these two tests spawn bash to source it
-  // (a migration, not a retirement) and J4 deletes them with the library; the same property is
-  // also asserted at consumer level by service-launcher-token.test.ts.
-  const bashTokenPath = (sb: ReturnType<typeof fresh>, palace: string): string => {
-    const r = spawnSync("bash", ["-c", `. '${REPO}/scripts/lib/common.sh'; mcp_token_path`], {
-      encoding: "utf8",
-      env: { ...sb.env({ MEMPALACE_PALACE_PATH: palace }), PATH: process.env.PATH },
-    });
-    assert.equal(r.status, 0, r.stderr);
-    return r.stdout.trim();
-  };
-  for (const [name, exists] of [
-    ["existing MEMPALACE_PALACE_PATH", true],
-    ["not-yet-existing MEMPALACE_PALACE_PATH", false],
-  ] as const) {
-    test(`tokenPath() matches mcp_token_path (${name})`, (t) => {
-      if (!requireOrSkip(t, which("bash") !== null, "needs bash", { posixOnly: true })) return;
-      const sb = fresh();
-      const palace = exists ? sb.palace : path.join(path.dirname(sb.palace), "does-not-exist-yet");
-      const node = drive(sb, ["token-path"], { MEMPALACE_PALACE_PATH: palace }).stdout.trim();
-      assert.equal(bashTokenPath(sb, palace), node);
-    });
-  }
-
   test("tokenPath() is HOME/.mempalace/server/<24 hex>/token, stable before and after the palace exists", () => {
     const sb = fresh();
     const parent = path.dirname(sb.palace);

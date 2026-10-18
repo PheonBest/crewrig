@@ -1,5 +1,5 @@
 // lint.ts — the publication-contract rules for one page, in the shell's order with its messages
-// verbatim (docs/publication-contract.md; the loop body of the former build-docs-index.sh).
+// verbatim (docs/publication-contract.md; the loop body of the former build-docs-index.ts).
 //
 // A published page that passes yields a ROW in the shell's own encoding,
 // "<section>\t<nav_order>\t<path>\t<title>": `render.ts` splits it back exactly as the shell

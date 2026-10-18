@@ -44,7 +44,7 @@ export function claudeArm(ctx: ProbeContext, claudeBin: string): void {
   out(`  Resolved binary: ${resolved}\n`);
   if (embeddedStringPresent(resolved, '"hooks": {')) {
     out("  R9 envelope check: installed binary's own embedded doc shows\n");
-    out("    an ENVELOPE ('\"hooks\": {') — build-claude-plugin.sh's incumbent\n");
+    out("    an ENVELOPE ('\"hooks\": {') — build-claude-plugin.ts's incumbent\n");
     out('    {"hooks": ...} wrapper is confirmed, not merely inherited.\n');
   } else {
     out("  R9 envelope check: no '\"hooks\": {' envelope string found in the\n");

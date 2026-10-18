@@ -1,6 +1,5 @@
 // keep-differential.ts — the harness of setup-usage-capture-keep.test.ts: one configuration run through
-// `usage_capture_keep` (scripts/lib/usage-capture-optin.sh, sourced by bash-libs.ts) and through
-// usageCaptureKeep on two copies, and the outcomes (status, both streams, file bytes, mode, backups).
+// usageCaptureKeep, and the outcome (status, both streams, file bytes, mode, backups).
 
 import fs from "node:fs";
 import path from "node:path";
@@ -8,7 +7,6 @@ import path from "node:path";
 import type { Env } from "../../lib/extension/types.ts";
 import { createSpawner } from "../../lib/setup/spawner.ts";
 import { usageCaptureKeep } from "../../lib/setup/usage-capture-keep.ts";
-import { bashLibs } from "./bash-libs.ts";
 import { read, realTmp, REPO } from "./worktree-fixtures.ts";
 
 export type Cli = "claude" | "gemini" | "copilot";
@@ -126,9 +124,9 @@ export interface Case {
   platform?: NodeJS.Platform;
 }
 
-export function compare(c: Case, p: Paths): { sh: Outcome; ts: Outcome } {
+export function compare(c: Case, p: Paths): { ts: Outcome } {
   const repo = path.join(p.root, "repo");
-  const dirs = { sh: path.join(p.root, "sh"), ts: path.join(p.root, "ts") };
+  const dirs = { ts: path.join(p.root, "ts") };
   for (const d of Object.values(dirs)) {
     fs.mkdirSync(d, { recursive: true });
     if (c.input !== null)
@@ -138,11 +136,6 @@ export function compare(c: Case, p: Paths): { sh: Outcome; ts: Outcome } {
         { mode: 0o644 },
       );
   }
-  const quote = (s: string) => `'${s.replaceAll("'", "'\\''")}'`;
-  const uname = c.platform === "win32" ? "uname() { echo MINGW64_NT-10.0; }\n" : "";
-  const res = bashLibs(
-    `${uname}rc=0\nusage_capture_keep ${c.cli} ${quote(path.join(dirs.sh, "settings.json"))} ${quote(repo)} || rc=$?\nexit $rc`,
-  );
   const out: string[] = [];
   const err: string[] = [];
   const io = {
@@ -163,7 +156,6 @@ export function compare(c: Case, p: Paths): { sh: Outcome; ts: Outcome } {
   });
   const lines = (xs: string[]) => xs.map((l) => `${l}\n`).join("");
   return {
-    sh: observe(dirs.sh, p.root, res.status, res.stdout, res.stderr),
     ts: observe(dirs.ts, p.root, status, lines(out), lines(err)),
   };
 }

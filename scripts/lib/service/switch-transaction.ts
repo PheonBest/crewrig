@@ -1,7 +1,7 @@
 // switch-transaction.ts — switch every present assistant to the shared MemPalace
 // MCP HTTP daemon, all-or-nothing (spec 0252 requirement 18; spec 0113 R3, R4,
 // R11-R15; spec 0176). Ports scripts/switch-mempalace-http.sh and
-// `switch_assistants_to_http` / `_switch_rollback` of scripts/lib/common.sh with
+// `switch_assistants_to_http` / `_switch_rollback` of retired scripts/lib/common.sh with
 // their wording and exit statuses kept.
 //
 // Order: [rotate: remove the token file, purge `.bak.*`] -> install the daemon and

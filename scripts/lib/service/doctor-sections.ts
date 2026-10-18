@@ -52,8 +52,8 @@ function localPin(c: SectionContext): string {
   return path.join(c.scriptDir, "lib", "mempalace_pin.py");
 }
 
-function localCommonSh(c: SectionContext): string {
-  return path.join(c.scriptDir, "lib", "common.sh");
+function localPinFile(c: SectionContext): string {
+  return path.join(c.scriptDir, "lib", "mempalace-pin.json");
 }
 
 async function inspectRegistration(c: SectionContext, cli: Cli): Promise<void> {
@@ -128,7 +128,7 @@ async function inspectRegistration(c: SectionContext, cli: Cli): Promise<void> {
   }
 
   const checkout = checkoutOf(wrapper);
-  const registeredCommonSh = path.join(checkout, "scripts", "lib", "common.sh");
+  const registeredPinFile = path.join(checkout, "scripts", "lib", "mempalace-pin.json");
   const registeredPin = path.join(checkout, "scripts", "lib", "mempalace_pin.py");
   field(write, "launch wrapper:", tildify(wrapper, home));
   field(write, "registered checkout:", tildify(checkout, home));
@@ -162,7 +162,7 @@ async function inspectRegistration(c: SectionContext, cli: Cli): Promise<void> {
       label,
       interp,
       pinModule,
-      commonSh: registeredCommonSh,
+      pinFile: registeredPinFile,
       probeCapture: runProbe(interp, pinModule, c.env),
       home,
       env: c.env,
@@ -212,7 +212,7 @@ function inspectConsoleScript(c: SectionContext, name: string): void {
       label: `PATH:${name}`,
       interp,
       pinModule: localPin(c),
-      commonSh: localCommonSh(c),
+      pinFile: localPinFile(c),
       probeCapture: runProbe(interp, localPin(c), c.env),
       home,
       env: c.env,
@@ -270,7 +270,7 @@ export function sectionFresh(c: SectionContext): void {
         label: "fresh-setup-selection",
         interp: winner,
         pinModule: localPin(c),
-        commonSh: localCommonSh(c),
+        pinFile: localPinFile(c),
         probeCapture: runProbe(winner, localPin(c), env),
         home,
         env,

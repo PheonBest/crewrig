@@ -81,7 +81,7 @@ health-check, deduplicate, or normalize them (spec 0091 *Out of scope*).
 
 - **Reserved names win for the framework (R10).** The names `mempalace` and
   `sequentialthinking` are framework-managed (`MCP_RESERVED_NAMES` in
-  `scripts/lib/common.sh`). An org declaration under a reserved name is **not
+  the retired `scripts/lib/common.sh`). An org declaration under a reserved name is **not
   applied**; setup prints a non-silent warning.
 - **Org wins over an operator's hand-added server (R11).** If an org-declared
   name collides, under a non-reserved name, with a server an operator added by

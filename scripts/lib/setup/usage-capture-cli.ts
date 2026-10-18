@@ -1,6 +1,6 @@
 // usage-capture-cli.ts — the command line of scripts/usage-capture-optin.ts (spec 0256 requirement 33,
 // as modified by delta-01; plan v2 step B3b.4): one subcommand per public function of
-// scripts/lib/usage-capture-optin.sh, with the shell function's positional arguments in the same order and
+// retired scripts/lib/usage-capture-optin.sh, with the shell function's positional arguments in the same order and
 // its standard output, standard error and status. `<subcommand> [--result <file>] [--] <argument>...`:
 // the only flag is `--result`, valid right after the subcommand; the file receives `KEY=0|1` lines from
 // the closed whitelist SR_TRANSCRIPT_WIRED (render) and SR_ALL_HOOKS_DISABLED (merge). Every subcommand

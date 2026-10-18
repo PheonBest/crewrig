@@ -1,6 +1,6 @@
 // component-twins-conformance-migrate.test.ts — `migrateAntigravitySupersededComponents`
 // (scripts/lib/antigravity-migrate.ts) against `migrate_antigravity_superseded_components`
-// (scripts/lib/common.sh), on stdout, stderr, status and the tree left behind (spec 0255, row F2).
+// (retired scripts/lib/common.sh), on stdout, stderr, status and the tree left behind (spec 0255, row F2).
 // Linux and macOS only: it spawns `bash`, and retires with the shell library (row J4).
 
 import { after, describe, test } from "node:test";

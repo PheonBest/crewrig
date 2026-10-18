@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: [main, "release/**"]
     paths:
-      - "scripts/monorepo-release.sh"
       - "scripts/monorepo-release.ts"
       - "scripts/release-sync-manifests.ts"
       - "scripts/release-package-extension.ts"
@@ -28,8 +27,6 @@ on:
       - "scripts/tests/fixtures/release-blackbox/**"
       - ".markdownlintrc"
       - "scripts/tests/fixtures/release/**"
-      - "scripts/release-package-extension.sh"
-      - "scripts/build-extension.sh"
       - "scripts/build-extension.ts"
       - "scripts/lib/extension/**"
       - "scripts/lib/org-mcp.ts"
@@ -39,7 +36,6 @@ on:
   push:
     branches: [main, "release/**"]
     paths:
-      - "scripts/monorepo-release.sh"
       - "scripts/monorepo-release.ts"
       - "scripts/release-sync-manifests.ts"
       - "scripts/release-package-extension.ts"
@@ -63,8 +59,6 @@ on:
       - "scripts/tests/fixtures/release-blackbox/**"
       - ".markdownlintrc"
       - "scripts/tests/fixtures/release/**"
-      - "scripts/release-package-extension.sh"
-      - "scripts/build-extension.sh"
       - "scripts/build-extension.ts"
       - "scripts/lib/extension/**"
       - "scripts/lib/org-mcp.ts"

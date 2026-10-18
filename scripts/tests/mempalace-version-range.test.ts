@@ -1,7 +1,7 @@
 // mempalace-version-range.test.ts — guard the single MemPalace supported-range
 // pin across every literal-text copy in the repository (spec 0263, replaces
 // test-mempalace-version-range.sh; spec 0082 R5 delta-01). The pin is read from
-// scripts/lib/common.sh, never redeclared; the divergent fixture stays a literal
+// scripts/lib/mempalace-pin.json, never redeclared; the divergent fixture stays a literal
 // and is asserted different from the pin. The superseded literal is assembled
 // at runtime so a plain `git grep` never counts this file as an offender.
 

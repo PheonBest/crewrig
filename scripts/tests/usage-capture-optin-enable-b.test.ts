@@ -63,6 +63,8 @@ function spacedCheckout(s: Scratch): { repo: string; abs: string; shAbs: string 
   const repo = path.join(s.tmp, "My Projects", "crewrig");
   fs.mkdirSync(path.join(repo, "scripts", "lib"), { recursive: true });
   fs.cpSync(path.join(REPO, "hooks"), path.join(repo, "hooks"), { recursive: true });
+  // The shim is gone from the repository: this checkout models the legacy layout that still carries one.
+  fs.writeFileSync(path.join(repo, "hooks", "usage-capture.sh"), "");
   for (const d of ["usage-capture", "usage-store"])
     fs.cpSync(path.join(REPO, "scripts/lib", d), path.join(repo, "scripts/lib", d), {
       recursive: true,

@@ -1,4 +1,4 @@
-// antigravity-tokens.ts — twin of `ext_antigravity_resolve_tokens`, scripts/lib/extension-install.sh
+// antigravity-tokens.ts — twin of `ext_antigravity_resolve_tokens`, retired scripts/lib/extension-install.sh
 // (spec 0183 R19; spec 0255 R10). After the tool's own install, the neutral `${extensionRoot}` token
 // is resolved in every string value of the installed `mcp_config.json`. The installed directory is
 // located through the identity the tool reports (the rendered plugin.json `.name`), never the

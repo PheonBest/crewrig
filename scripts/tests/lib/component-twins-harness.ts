@@ -1,7 +1,6 @@
-// component-twins-harness.ts — drives the shell libraries (scripts/lib/common.sh and
-// scripts/lib/component-resolve.sh) and their TypeScript twins over the same sandbox, for the
-// conformance suites of spec 0255 (row F2). POSIX only by design: it spawns `bash`, and it
-// retires with the shell libraries (row J4).
+// component-twins-harness.ts — replays the recorded shell side of the component twins over the
+// same sandbox as their TypeScript twins, for the conformance suites of spec 0255 (row F2). The shell
+// libraries are gone (spec 0266): only the goldens remain.
 //
 // Each side gets its OWN sandbox built from the same layout, so a prune on one side cannot
 // hide a difference on the other. Both sides report `{ status, stdout, stderr }`, the sandbox
@@ -14,7 +13,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { frozen, requireShellLibrary } from "./component-resolve-golden.ts";
+import { frozen } from "./component-resolve-golden.ts";
 
 export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 
@@ -70,41 +69,15 @@ const scrub = (text: string, sb: string): string => text.replaceAll(sb, "<SB>");
 
 /**
  * The shell side, REPLAYED from the goldens (spec 0262 R17): keyed by the layout, body and env.
- * Only the Linux golden container (`COMPONENT_RESOLVE_GOLDEN_REGEN=1`) runs the shell.
+ * The shell is no longer runnable.
  */
 export function runShell(layout: Layout, body: string, env: Record<string, string> = {}): Side {
   const input = [Object.entries(layout).sort(), body, Object.entries(env).sort()];
-  return frozen("component-twins", input, { "<REPO>": REPO }, () =>
-    runShellLive(layout, body, env),
-  );
-}
-
-/** `body` runs after both libraries are sourced, `$SB` is the sandbox. */
-function runShellLive(layout: Layout, body: string, env: Record<string, string>): Side {
-  requireShellLibrary(REPO, "scripts/lib/component-resolve.sh");
-  const sb = sandbox(layout);
-  const script = [
-    "set +e",
-    'INSTALL_MODE="copy"',
-    `SB=${JSON.stringify(sb)}`,
-    'REPO_DIR="$SB"',
-    `. ${JSON.stringify(path.join(REPO, "scripts/lib/common.sh"))}`,
-    `. ${JSON.stringify(path.join(REPO, "scripts/lib/component-resolve.sh"))}`,
-    'dump() { echo "$#"; local l; for l in "$@"; do echo "[$l]"; done; }',
-    'rec() { echo "install $1"; case "$1" in *fail*) return 7 ;; esac; return 0; }',
-    body,
-  ].join("\n");
-  const res = spawnSync("bash", ["-c", script], {
-    encoding: "utf8",
-    cwd: sb,
-    env: { ...process.env, ...env, LC_ALL: "C", HOME: sb },
+  return frozen("component-twins", input, { "<REPO>": REPO }, () => {
+    throw new Error(
+      "the shell libraries are removed (spec 0266): the goldens can no longer be recorded here",
+    );
   });
-  return {
-    status: res.status ?? -1,
-    stdout: scrub(res.stdout, sb),
-    stderr: scrub(res.stderr, sb),
-    tree: listTree(sb),
-  };
 }
 
 /** What a twin callback writes to: both streams are collected whole. */

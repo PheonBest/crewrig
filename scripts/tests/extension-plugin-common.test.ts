@@ -39,7 +39,7 @@ describe("startPlugin", () => {
     assert.equal(startPlugin(cap.ctx, "claude", ext, undefined), null);
     assert.equal(
       cap.out[0],
-      `Error: No extension.json found in ${ext} — run scripts/migrate-extension.sh if this is an old-shape extension (see docs/adoption-guide.md).`,
+      `Error: No extension.json found in ${ext} — run scripts/migrate-extension.ts if this is an old-shape extension (see docs/adoption-guide.md).`,
     );
   });
 

@@ -2,7 +2,7 @@
 // (spec 0256 requirement 44 deviation (r), delta-01).
 //
 // The shell evaluated `min <= version < max` with `packaging.version.Version` in
-// the MemPalace environment (`mempalace_version_in_range`, scripts/lib/common.sh);
+// the MemPalace environment (`mempalace_version_in_range`, retired scripts/lib/common.sh);
 // the setup now evaluates it itself, so the check no longer needs `packaging`.
 // This module reproduces the parse grammar and the ordering of `Version`
 // (PEP 440, as `packaging` 24 implements it): an optional leading `v`, an epoch

@@ -16,7 +16,6 @@ import { after, describe, test } from "node:test";
 
 import { antigravityState, MEASURED_SURFACES } from "../lib/hook-command.ts";
 import { renderTranscriptManifest } from "../lib/hook-transcript-manifest.ts";
-import { bashLibs } from "./lib/bash-libs.ts";
 import { backups, handler, handlers, wiring, type Json } from "./lib/guard-wiring-fixtures.ts";
 import {
   AGY_HOOK,
@@ -272,23 +271,4 @@ describe("a missing hook script drops the transcript handlers with an ERROR (R20
       assert.equal(res.stdout, "");
     }
   });
-
-  test(
-    "through the Bash render: SR_TRANSCRIPT_WIRED=0 and the installed command byte-identical after the merge",
-    { skip: SKIP_POSIX },
-    () => {
-      for (const cli of WIRED) {
-        const co = makeTranscriptCheckout("co", { entry: false });
-        const legacy = 'MEMPALACE_TRANSCRIPT_ENABLED=1 bash "/h/hooks/mempalace-transcript.sh"';
-        const file = writeConfig(co, `${cli}.json`, configOf(cli, [legacy]));
-        const res = bashLibs(
-          `render_session_recording_manifest ${cli} ${q(co.repo)} ${q(co.manifest(cli))} r.json
-         merge_session_recording_hooks ${cli} ${q(file)} r.json; echo "rc=$? wired=$SR_TRANSCRIPT_WIRED"`,
-        );
-        assert.match(res.stdout, /rc=0 wired=0/, res.stdout + res.stderr);
-        assert.match(res.stderr, /ERROR: transcript hook not found/);
-        assert.deepEqual(transcriptCommands(JSON.parse(read(file))), [legacy], cli);
-      }
-    },
-  );
 });

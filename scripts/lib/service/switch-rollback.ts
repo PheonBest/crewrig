@@ -1,6 +1,6 @@
 // switch-rollback.ts — the rollback of the switch transaction (spec 0252
 // requirement 18; spec 0113 R13, R14). Ports `_switch_rollback` of
-// scripts/lib/common.sh: restore every touched assistant's captured
+// retired scripts/lib/common.sh: restore every touched assistant's captured
 // registration and, when a restore itself fails, print the manual-repair report
 // with the current arrangement of every assistant.
 

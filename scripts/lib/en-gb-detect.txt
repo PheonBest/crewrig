@@ -4,7 +4,7 @@
 # whole-word, case-insensitive, applied by the R6 gate over the SAME in-scope
 # set S (same masking pipeline, same X-exclusions) the sweep edits.
 #
-# Invariant (asserted in CI by `sweep-en-us.sh --scope-test`): this list is a
+# Invariant (asserted in CI by `sweep-en-us.ts --scope-test`): this list is a
 # strict SUPERSET of every left-hand key in `en-gb-us-map.txt`. It is
 # deliberately BROADER than the map (it carries en-GB families and inflections
 # not necessarily present in the repo today) so the R6 gate is never weaker
