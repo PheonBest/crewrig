@@ -15,20 +15,6 @@
       "reason": "scripts/lib/tls-exec.sh has no TypeScript twin yet; retargeted when the final library-retirement slice (spec 0266 S5) deletes it"
     },
     {
-      "task": "test-harness-curate",
-      "command": ".sh",
-      "owner": "J2",
-      "issue": "#1343",
-      "reason": "harness-curator test.sh is owned by J2 PR #1688"
-    },
-    {
-      "task": "test-harness-curate",
-      "command": "bash",
-      "owner": "J2",
-      "issue": "#1343",
-      "reason": "harness-curator test.sh is owned by J2 PR #1688"
-    },
-    {
       "task": "check-model-mappings",
       "command": ".sh",
       "owner": "I2",
