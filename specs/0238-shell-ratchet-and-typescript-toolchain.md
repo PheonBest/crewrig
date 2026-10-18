@@ -1,7 +1,7 @@
 ---
 id: "0238"
 slug: shell-ratchet-and-typescript-toolchain
-status: approved
+status: implemented
 complexity: standard
 interaction-mode: MINIMAL
 related-issue: 1321
