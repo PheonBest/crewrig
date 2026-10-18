@@ -498,7 +498,7 @@ The build (`scripts/build-components.ts`) requires:
   build needs neither `yq` nor `jq`.
 
 The extension and plugin builders (`scripts/build-extension.ts` and its
-siblings, TypeScript behind forwarding `.sh` shims, spec 0254) need no `yq` or `jq`:
+siblings, TypeScript since spec 0254; the shell shims were removed) need no `yq` or `jq`:
 they run on Node.js 24 or later with `js-yaml` from the setup dependency step.
 The Bash scripts that have not migrated still need:
 

@@ -56,7 +56,7 @@ these keys:
 | `requires` | iff `portable` | mapping | The engine-agnostic execution requirement: `{runtime, tools, history-depth}` (see *Invocation command and execution requirements*). |
 | `env` | optional | mapping | Optional dictionary of job-scoped environment variable keys and string values (spec 0131). |
 | `cache` | optional | mapping | The cache key-derivation **need**: `{files, env}` (see *Cache*). |
-| `cache-guard` | optional | boolean | Whether the job's `bash scripts/…` commands are wrapped in the coarse `scripts/ci-cache-guard.ts` (default `true`). Set `false` when a command manages its own fine-grained cache (see *Cache*). |
+| `cache-guard` | optional | boolean | Whether the job's hermetic `node … scripts/<tool>.ts` commands are wrapped in the coarse `scripts/ci-cache-guard.ts` (default `true`). Set `false` when a command manages its own fine-grained cache (see *Cache*). |
 | `changeset-gated` | optional | boolean | `true` marks a capability whose `command` list is executed by the exhaustive run (`changeset-coverage`, `scheduled` and `manual`; spec 0147 delta-01 R21), regardless of what changed. It no longer feeds a pull-request-time fail-safe: path ownership is decided by `scripts/check-path-ownership.ts` (see *Path ownership and the exemption lists*). |
 
 **Granularity — one capability is exactly one job (spec 0047 R1).** The steps
@@ -150,7 +150,7 @@ and absent on a `specific` one.
 the job performs, distinct from any engine-specific setup boilerplate
 (checkout, runtime install). It is a **list of strings** so that a capability
 composed of several ordered steps (e.g. the former `check-components` ran
-roughly two dozen `bash scripts/*.sh` invocations) stays **one** capability
+roughly two dozen shell-script invocations) stays **one** capability
 with an ordered command list, never split into several — preserving the
 *Granularity — one capability is exactly one job* rule above. A derivation maps
 the list one-to-one onto the engine's step sequence (GitLab `script:`, a GHA
@@ -226,7 +226,7 @@ check covers the same set of files as its trigger filter (see *What a
 capability's filter must cover*, the cache corollary).
 
 By default, when a capability declares `cache:`, `scripts/build-ci.ts` wraps
-each hermetic `bash scripts/…` command in `scripts/ci-cache-guard.ts` so a
+each hermetic `node … scripts/<tool>.ts` command in `scripts/ci-cache-guard.ts` so a
 cache hit skips re-execution. A capability MAY set `cache-guard: false` to
 opt out of that coarse wrapping — used when a command manages its own
 fine-grained, content-addressed cache, so that the coarse key neither
@@ -243,14 +243,14 @@ reference):
       env: []
     cache-guard: false
     command:
-      - bash scripts/some-self-caching-check.sh
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/some-self-caching-check.ts
 ```
 
 Which capabilities currently use the opt-out is read from the reference
 itself (`grep -n 'cache-guard:' ci/ci-capabilities.yml`); this document does
 not list them, so the list cannot go stale here.
 
-A command that already starts with `bash scripts/` is wrapped whatever it is,
+A command that matches the wrapped-command pattern of `scripts/lib/build-ci/render-job.ts` is wrapped whatever it is,
 including a stray-scanned suite command; the two guards then nest, the cache
 guard outside and the scan inside (see *Stray scan of registered test suites*).
 
@@ -342,7 +342,7 @@ Spec 0251 R14 closes it with the following trigger rule.
 ### What the matcher implements
 
 The check ships its own small matcher (`scripts/lib/glob-engine.ts`) rather
-than bash `[[ == ]]`, whose `*` crosses `/` and whose `**/` requires a slash
+than the shell's `[[ == ]]`, whose `*` crosses `/` and whose `**/` requires a slash
 (R13). It implements exactly:
 
 | Form | Meaning |
@@ -421,8 +421,8 @@ The exhaustive run scans strays too. It executes each reference command with
 `eval`, and every registered suite command is declared in the scanned form
 (see *Stray scan of registered test suites*), so the daily run checks every
 suite for strays through the commands it already runs, with no extra code.
-`check-test-strays.ts` is not diff-scoped any more: it executes no suite and
-only runs `bash -n` over the suites (spec 0170 delta-01 R9), so the exhaustive
+`check-test-strays.ts` was not diff-scoped: it executed no suite and
+formerly only ran `bash -n` over the suites (spec 0170 delta-01 R9), so the exhaustive
 run adds nothing for that command and needs nothing from it.
 
 | Engine | `scheduled` | `manual` |
@@ -543,12 +543,12 @@ running every changed suite a second time in `test-wiring`.
 the reference and in the matching hand-authored GitHub Actions step, as:
 
 ```text
-node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- bash scripts/tests/<suite>
+node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/<suite>.test.ts
 ```
 
 GitLab gets the same line from `scripts/build-ci.ts`; in a capability that
 declares `cache:` the generator adds its cache layer around it
-(`node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir … -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- bash …`),
+(`node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir … -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test …`),
 so the scan runs inside the cache guard and a stray leaves no pass marker.
 `scripts/check-ci-parity.ts` fails, naming the capability and the platform, when
 a GitHub step does not match the declared command.

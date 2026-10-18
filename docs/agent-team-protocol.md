@@ -210,7 +210,7 @@ Tier 2, when a check must *execute* against a clean state, extracts it instead o
 scratch="$(mktemp -d)"
 git fetch crewrig <branch>
 git archive "crewrig/<branch>" | tar -x -C "$scratch"
-( cd "$scratch" && bash scripts/tests/<suite>.sh )
+( cd "$scratch" && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/<suite>.test.ts )
 rm -rf "$scratch"
 ```
 

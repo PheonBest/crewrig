@@ -8,7 +8,7 @@ This page is one stage of the usage feature; the [usage architecture overview](u
 
 ## Architecture overview
 
-The capture step is a **Node module tree** under `scripts/lib/usage-capture/`, invoked by two TypeScript entry points that run as a direct `node` command line, with no POSIX shell in between (spec 0243). The `.sh` files of the same names remain as [forwarding shims](#forwarding-shims):
+The capture step is a **Node module tree** under `scripts/lib/usage-capture/`, invoked by two TypeScript entry points that run as a direct `node` command line, with no POSIX shell in between (spec 0243). The `.sh` files of the same names were retired as [forwarding shims](#forwarding-shims):
 
 - **Live capture:** `hooks/usage-capture.ts` — a sibling hook to `hooks/mempalace-transcript.ts` (session recording, spec 0247), wired by in-repo absolute path into the existing `Stop` / `SessionEnd` / `AfterModel` / `agentStop` events on Claude Code, Gemini CLI, Copilot CLI, and Antigravity (statusline display). On every CLI it is enabled by a **usage-capture opt-in of its own**, independent from the MemPalace session-recording opt-in in both directions (spec 0211): capture works on a machine where MemPalace is absent, and session recording works without capture. The question defaults to `no`; once capture is registered it becomes `keep`/`remove`, and `remove` is the removal path (see *Hook wiring* below; Antigravity keeps its statusline opt-in and removal of spec 0206 R20–R21).
 - **Backfill:** `scripts/usage-backfill.ts` — a command-line tool that replays the same per-CLI adapters against records already present on a machine, taking the same derivation rules the live path uses.
@@ -273,7 +273,7 @@ A capture command is recognised by its whole shape: an optional interpreter or e
 On every run of a setup script, a machine that already has a capture command registered and does not remove it is brought to the direct form:
 
 - **Rewrite.** Each legacy command becomes `node "<abs>/hooks/usage-capture.ts" <cli-id> <Event>`, in the shape of the table above. Event, selector, key order, every other key and every other entry are kept exactly as they were.
-- **Only where the target exists.** A command whose path points at another checkout is rewritten only when a `hooks/usage-capture.ts` sits next to the registered `.sh`. Otherwise it is left as it is — it still works through that checkout's own shell script — and setup says why.
+- **Only where the target exists.** A command whose path points at another checkout is rewritten only when a `hooks/usage-capture.ts` sits next to the registered legacy command's checkout. Otherwise it is left as it is, and setup says why.
 - **One command per event.** When an event holds a legacy and a direct command, exactly one survives, chosen by the live-path rule of spec 0211 R11: the first whose path resolves, else the first whose path cannot be judged (relative, or holding `$` or `~`), else the first.
 - **Idempotent.** A second run writes nothing and creates no backup.
 - **Reported.** Setup names each command it rewrote, left or dropped as a duplicate, with the event and the reason, and ends with a count (`rewrote N, left M, dropped K duplicate(s)`). The disclosure printed before enabling capture names the direct form and the Node.js 24 requirement.
@@ -320,7 +320,7 @@ To run the prior command, the shim hands it, with the payload on standard input,
 
 Moving, renaming, or deleting the checkout breaks the wired absolute path. The triggering CLI then sees a non-zero status from a command that never started, and no capture runs.
 
-**This is the accepted cost of the in-repo absolute path** — the same cost `hooks/worktree-git-guard.ts` has carried since spec 0169 (its `.sh` path is now a forwarding shim, spec 0248), and the one session recording carries since spec 0247 wired `hooks/mempalace-transcript.ts` the same way (`docs/cli-matrix.md` row 8b): a moved checkout stops the recording, and re-running setup from a durable checkout repairs it. Mitigations, in order of operator experience:
+**This is the accepted cost of the in-repo absolute path** — the same cost `hooks/worktree-git-guard.ts` has carried since spec 0169 (its former `.sh` forwarding shim was retired, spec 0248), and the one session recording carries since spec 0247 wired `hooks/mempalace-transcript.ts` the same way (`docs/cli-matrix.md` row 8b): a moved checkout stops the recording, and re-running setup from a durable checkout repairs it. Mitigations, in order of operator experience:
 
 0. **Linked-worktree protection:** Each installer calls `warn_if_linked_worktree` and warns when the checkout is a linked git worktree (detected via `git rev-parse --git-common-dir` differing from `.git`). The warning message is:
 
@@ -341,7 +341,7 @@ Moving, renaming, or deleting the checkout breaks the wired absolute path. The t
 
 The hooks are `node` command lines that Node.js runs by stripping types, which needs **Node.js 24 or later when the hook fires**. Setup checks the floor before it writes the direct form (see *Node.js floor at setup*), but nothing checks it afterwards. A Node.js downgraded after setup makes the hooks fail with Node.js's own non-zero status, and the triggering CLI reports a hook error, until setup is re-run on a supported Node.js. For Claude Code, Gemini CLI and Copilot CLI, the records a failing hook missed can be re-derived with `node scripts/usage-backfill.ts`.
 
-A legacy `.sh` command that setup has not rewritten yet runs the same TypeScript file through its forwarding shim. On a Node.js below 24 the capture shim still exits zero with both streams empty, so capture stops without any visible error until Node.js is upgraded; the status-line shim exits zero too, but lets Node.js's own error text through on standard error.
+A legacy `.sh` command that setup has not rewritten yet no longer runs (the forwarding shims were retired in #1344), so capture stops until setup re-points it to the direct `node` form.
 
 ### Exit status and blocking
 

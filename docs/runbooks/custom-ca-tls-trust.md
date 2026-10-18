@@ -46,7 +46,7 @@ export UV_SYSTEM_CERTS=true
 `UV_NATIVE_TLS` (now deprecated), and a uv that predates both still honours
 `SSL_CERT_FILE`.
 
-The `setup-<cli>-interactive.ts` entries (and their `.sh` shims) offer to
+The `setup-<cli>-interactive.ts` entries offer to
 write exactly these lines to `~/.crewrig/tls-env.sh` for you (see *Automated
 delegation* below).
 
@@ -109,8 +109,8 @@ explicitly (without editing your profile):
   small wrapper that reads `~/.crewrig/tls-env.sh` (if present, parsed and never
   executed) and then runs the real server command with those variables added,
   exiting with its status. A missing file makes the wrapper a transparent no-op.
-  Setup rewrites a registration written by an earlier version
-  (`bash <repo>/scripts/lib/tls-exec.sh ...`) to this form on its next run.
+  Setup rewrites a legacy registration (formerly
+  `bash <repo>/scripts/lib/tls-exec.sh ...`) to this form on its next run.
   The opt-in Playwright MCP server (`task setup:playwright-mcp`, spec 0245) is
   registered the same way on all four assistants; the task requires
   Node.js >= 24. If you ran `task setup:playwright-mcp` before it routed
