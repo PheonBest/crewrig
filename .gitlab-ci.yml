@@ -1485,7 +1485,6 @@ extension-install:
         - "scripts/lib/extension/**"
         - "scripts/lib/org-mcp.ts"
         - "scripts/lib/node-floor-guard.js"
-        - "scripts/build-gemini-agent.sh"
         - "scripts/install-extension-all.sh"
         - "scripts/tests/install-sandbox.test.ts"
         - "scripts/tests/install-workspace.test.ts"
@@ -1545,7 +1544,6 @@ extension-install:
         - "scripts/lib/extension/**"
         - "scripts/lib/org-mcp.ts"
         - "scripts/lib/node-floor-guard.js"
-        - "scripts/build-gemini-agent.sh"
         - "scripts/install-extension-all.sh"
         - "scripts/tests/install-sandbox.test.ts"
         - "scripts/tests/install-workspace.test.ts"
@@ -2028,7 +2026,6 @@ chroma-mcp:
         - "scripts/worktree-claim.sh"
         - "scripts/worktree-claim.ts"
         - "hooks/worktree-git-guard.ts"
-        - "scripts/mcp-daemon.sh"
         - "scripts/repair-mempalace-http.sh"
         - "scripts/switch-mempalace-http.sh"
         - "scripts/lib/**"
@@ -2039,7 +2036,7 @@ chroma-mcp:
     paths:
       - .ci-cache/
   script:
-    - "bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files \"scripts/tests/chroma-wrapper-source.test.ts,scripts/tests/chroma-wrapper-live.test.ts,scripts/tests/chroma-health-race.test.ts,scripts/tests/chroma-fd-limits.test.ts,scripts/tests/mcp-daemon-*.test.ts,scripts/tests/lib/mcp-daemon-rig.ts,scripts/tests/service-launcher-palace-path.test.ts,scripts/tests/repair-restore-modes.test.ts,scripts/tests/repair-report-handoff.test.ts,scripts/tests/repair-common-sh.test.ts,scripts/tests/lib/repair-rig.ts,scripts/tests/switch-rotate-token.test.ts,scripts/worktree-claim.sh,scripts/worktree-claim.ts,hooks/worktree-git-guard.ts,scripts/mcp-daemon.sh,scripts/repair-mempalace-http.sh,scripts/switch-mempalace-http.sh,scripts/lib/**,config/launchd/**,config/systemd/**,config/windows/**,scripts/ci-cache-guard.sh\" --key-env \"\" -- bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/chroma-wrapper-source.test.ts scripts/tests/chroma-wrapper-live.test.ts scripts/tests/chroma-health-race.test.ts scripts/tests/chroma-fd-limits.test.ts scripts/tests/mcp-daemon-token-launcher.test.ts scripts/tests/mcp-daemon-static-guards.test.ts scripts/tests/mcp-daemon-registration.test.ts scripts/tests/mcp-daemon-switch.test.ts scripts/tests/mcp-daemon-status.test.ts scripts/tests/mcp-daemon-replace.test.ts scripts/tests/mcp-daemon-replace-live.test.ts scripts/tests/repair-restore-modes.test.ts scripts/tests/repair-report-handoff.test.ts scripts/tests/repair-common-sh.test.ts scripts/tests/switch-rotate-token.test.ts"
+    - "bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files \"scripts/tests/chroma-wrapper-source.test.ts,scripts/tests/chroma-wrapper-live.test.ts,scripts/tests/chroma-health-race.test.ts,scripts/tests/chroma-fd-limits.test.ts,scripts/tests/mcp-daemon-*.test.ts,scripts/tests/lib/mcp-daemon-rig.ts,scripts/tests/service-launcher-palace-path.test.ts,scripts/tests/repair-restore-modes.test.ts,scripts/tests/repair-report-handoff.test.ts,scripts/tests/repair-common-sh.test.ts,scripts/tests/lib/repair-rig.ts,scripts/tests/switch-rotate-token.test.ts,scripts/worktree-claim.sh,scripts/worktree-claim.ts,hooks/worktree-git-guard.ts,scripts/repair-mempalace-http.sh,scripts/switch-mempalace-http.sh,scripts/lib/**,config/launchd/**,config/systemd/**,config/windows/**,scripts/ci-cache-guard.sh\" --key-env \"\" -- bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/chroma-wrapper-source.test.ts scripts/tests/chroma-wrapper-live.test.ts scripts/tests/chroma-health-race.test.ts scripts/tests/chroma-fd-limits.test.ts scripts/tests/mcp-daemon-token-launcher.test.ts scripts/tests/mcp-daemon-static-guards.test.ts scripts/tests/mcp-daemon-registration.test.ts scripts/tests/mcp-daemon-switch.test.ts scripts/tests/mcp-daemon-status.test.ts scripts/tests/mcp-daemon-replace.test.ts scripts/tests/mcp-daemon-replace-live.test.ts scripts/tests/repair-restore-modes.test.ts scripts/tests/repair-report-handoff.test.ts scripts/tests/repair-common-sh.test.ts scripts/tests/switch-rotate-token.test.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
@@ -2058,7 +2055,6 @@ chroma-mcp:
         - "scripts/worktree-claim.sh"
         - "scripts/worktree-claim.ts"
         - "hooks/worktree-git-guard.ts"
-        - "scripts/mcp-daemon.sh"
         - "scripts/repair-mempalace-http.sh"
         - "scripts/switch-mempalace-http.sh"
         - "scripts/lib/**"
@@ -2082,7 +2078,6 @@ chroma-mcp:
         - "scripts/worktree-claim.sh"
         - "scripts/worktree-claim.ts"
         - "hooks/worktree-git-guard.ts"
-        - "scripts/mcp-daemon.sh"
         - "scripts/repair-mempalace-http.sh"
         - "scripts/switch-mempalace-http.sh"
         - "scripts/lib/**"
@@ -2226,8 +2221,6 @@ misc:
     - "bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-no-machine-paths.test.ts"
     - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-gemini-overlay-enrollment.ts"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts"
-    - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-bash32-portability.sh"
-    - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-pipefail-grep.sh"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-reserve-spec-id.sh"
     - "bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-spec-id-reserved.sh"
   rules:
@@ -2239,9 +2232,6 @@ misc:
         - "scripts/check-gemini-overlay-enrollment.sh"
         - "scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts"
         - "scripts/tests/lib/build-fixture-tree.ts"
-        - "scripts/tests/test-check-bash32-portability.sh"
-        - "scripts/check-pipefail-grep.sh"
-        - "scripts/tests/test-check-pipefail-grep.sh"
         - "scripts/tests/test-reserve-spec-id.sh"
         - "scripts/tests/test-check-spec-id-reserved.sh"
         - "scripts/reserve-spec-id.sh"
@@ -2265,9 +2255,6 @@ misc:
         - "scripts/check-gemini-overlay-enrollment.sh"
         - "scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts"
         - "scripts/tests/lib/build-fixture-tree.ts"
-        - "scripts/tests/test-check-bash32-portability.sh"
-        - "scripts/check-pipefail-grep.sh"
-        - "scripts/tests/test-check-pipefail-grep.sh"
         - "scripts/tests/test-reserve-spec-id.sh"
         - "scripts/tests/test-check-spec-id-reserved.sh"
         - "scripts/reserve-spec-id.sh"
@@ -2495,6 +2482,34 @@ check-claude-agent-layout:
         - "scripts/lib/build-components/**"
         - "scripts/check-claude-agent-layout.ts"
         - "scripts/lib/governance/**"
+
+check-taskfile-commands:
+  image: node:24
+  script:
+    - "npm ci --omit=dev --workspaces=false"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-taskfile-commands.ts"
+    - "bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-taskfile-commands.test.ts scripts/tests/check-tool-binaries.test.ts"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
+      changes:
+        - "Taskfile.yml"
+        - "scripts/check-taskfile-commands.ts"
+        - "scripts/lib/taskfile-command*.ts"
+        - "scripts/lib/taskfile-command-exemptions.json"
+        - "scripts/tests/check-taskfile-commands.test.ts"
+        - "scripts/check-tool-binaries.ts"
+        - "scripts/lib/tool-binaries.ts"
+        - "scripts/tests/check-tool-binaries.test.ts"
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
+      changes:
+        - "Taskfile.yml"
+        - "scripts/check-taskfile-commands.ts"
+        - "scripts/lib/taskfile-command*.ts"
+        - "scripts/lib/taskfile-command-exemptions.json"
+        - "scripts/tests/check-taskfile-commands.test.ts"
+        - "scripts/check-tool-binaries.ts"
+        - "scripts/lib/tool-binaries.ts"
+        - "scripts/tests/check-tool-binaries.test.ts"
 
 markdown-links:
   image: node:24
@@ -2999,15 +3014,12 @@ grep-anti-patterns:
           exit 1
         fi
         echo "Rule 1 clean."
-    - "bash scripts/check-bash32-portability.sh"
-    - "bash scripts/check-pipefail-grep.sh"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
         - "scripts/**"
         - "hooks/**"
         - ".github/workflows/scripting-conventions.yml"
-        - "ci/bash32-forbidden.txt"
 
 audit:
   image: node:22

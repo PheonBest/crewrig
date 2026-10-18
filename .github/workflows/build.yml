@@ -1262,7 +1262,6 @@ jobs:
               - 'scripts/lib/extension/**'
               - 'scripts/lib/org-mcp.ts'
               - 'scripts/lib/node-floor-guard.js'
-              - 'scripts/build-gemini-agent.sh'
               - 'scripts/install-extension-all.sh'
               - 'scripts/tests/install-sandbox.test.ts'
               - 'scripts/tests/install-workspace.test.ts'
@@ -1664,7 +1663,6 @@ jobs:
               - 'scripts/worktree-claim.sh'
               - 'scripts/worktree-claim.ts'
               - 'hooks/worktree-git-guard.ts'
-              - 'scripts/mcp-daemon.sh'
               - 'scripts/repair-mempalace-http.sh'
               - 'scripts/switch-mempalace-http.sh'
               - 'scripts/lib/**'
@@ -1689,10 +1687,10 @@ jobs:
         if: steps.filter.outputs.chroma-mcp == 'true'
         with:
           path: .ci-cache
-          key: ${{ hashFiles('scripts/tests/chroma-wrapper-source.test.ts', 'scripts/tests/chroma-wrapper-live.test.ts', 'scripts/tests/chroma-health-race.test.ts', 'scripts/tests/chroma-fd-limits.test.ts', 'scripts/tests/mcp-daemon-*.test.ts', 'scripts/tests/lib/mcp-daemon-rig.ts', 'scripts/tests/service-launcher-palace-path.test.ts', 'scripts/tests/repair-restore-modes.test.ts', 'scripts/tests/repair-report-handoff.test.ts', 'scripts/tests/repair-common-sh.test.ts', 'scripts/tests/lib/repair-rig.ts', 'scripts/tests/switch-rotate-token.test.ts', 'scripts/worktree-claim.sh', 'scripts/worktree-claim.ts', 'hooks/worktree-git-guard.ts', 'scripts/mcp-daemon.sh', 'scripts/repair-mempalace-http.sh', 'scripts/switch-mempalace-http.sh', 'scripts/lib/**', 'config/launchd/**', 'config/systemd/**', 'config/windows/**', 'scripts/ci-cache-guard.sh') }}
+          key: ${{ hashFiles('scripts/tests/chroma-wrapper-source.test.ts', 'scripts/tests/chroma-wrapper-live.test.ts', 'scripts/tests/chroma-health-race.test.ts', 'scripts/tests/chroma-fd-limits.test.ts', 'scripts/tests/mcp-daemon-*.test.ts', 'scripts/tests/lib/mcp-daemon-rig.ts', 'scripts/tests/service-launcher-palace-path.test.ts', 'scripts/tests/repair-restore-modes.test.ts', 'scripts/tests/repair-report-handoff.test.ts', 'scripts/tests/repair-common-sh.test.ts', 'scripts/tests/lib/repair-rig.ts', 'scripts/tests/switch-rotate-token.test.ts', 'scripts/worktree-claim.sh', 'scripts/worktree-claim.ts', 'hooks/worktree-git-guard.ts', 'scripts/repair-mempalace-http.sh', 'scripts/switch-mempalace-http.sh', 'scripts/lib/**', 'config/launchd/**', 'config/systemd/**', 'config/windows/**', 'scripts/ci-cache-guard.sh') }}
       - name: Test Chroma, MCP Daemon and Repair (TypeScript)
         if: steps.filter.outputs.chroma-mcp == 'true'
-        run: bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files "scripts/tests/chroma-wrapper-source.test.ts,scripts/tests/chroma-wrapper-live.test.ts,scripts/tests/chroma-health-race.test.ts,scripts/tests/chroma-fd-limits.test.ts,scripts/tests/mcp-daemon-*.test.ts,scripts/tests/lib/mcp-daemon-rig.ts,scripts/tests/service-launcher-palace-path.test.ts,scripts/tests/repair-restore-modes.test.ts,scripts/tests/repair-report-handoff.test.ts,scripts/tests/repair-common-sh.test.ts,scripts/tests/lib/repair-rig.ts,scripts/tests/switch-rotate-token.test.ts,scripts/worktree-claim.sh,scripts/worktree-claim.ts,hooks/worktree-git-guard.ts,scripts/mcp-daemon.sh,scripts/repair-mempalace-http.sh,scripts/switch-mempalace-http.sh,scripts/lib/**,config/launchd/**,config/systemd/**,config/windows/**,scripts/ci-cache-guard.sh" --key-env "" -- bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/chroma-wrapper-source.test.ts scripts/tests/chroma-wrapper-live.test.ts scripts/tests/chroma-health-race.test.ts scripts/tests/chroma-fd-limits.test.ts scripts/tests/mcp-daemon-token-launcher.test.ts scripts/tests/mcp-daemon-static-guards.test.ts scripts/tests/mcp-daemon-registration.test.ts scripts/tests/mcp-daemon-switch.test.ts scripts/tests/mcp-daemon-status.test.ts scripts/tests/mcp-daemon-replace.test.ts scripts/tests/mcp-daemon-replace-live.test.ts scripts/tests/repair-restore-modes.test.ts scripts/tests/repair-report-handoff.test.ts scripts/tests/repair-common-sh.test.ts scripts/tests/switch-rotate-token.test.ts
+        run: bash scripts/ci-cache-guard.sh --cache-dir .ci-cache --key-files "scripts/tests/chroma-wrapper-source.test.ts,scripts/tests/chroma-wrapper-live.test.ts,scripts/tests/chroma-health-race.test.ts,scripts/tests/chroma-fd-limits.test.ts,scripts/tests/mcp-daemon-*.test.ts,scripts/tests/lib/mcp-daemon-rig.ts,scripts/tests/service-launcher-palace-path.test.ts,scripts/tests/repair-restore-modes.test.ts,scripts/tests/repair-report-handoff.test.ts,scripts/tests/repair-common-sh.test.ts,scripts/tests/lib/repair-rig.ts,scripts/tests/switch-rotate-token.test.ts,scripts/worktree-claim.sh,scripts/worktree-claim.ts,hooks/worktree-git-guard.ts,scripts/repair-mempalace-http.sh,scripts/switch-mempalace-http.sh,scripts/lib/**,config/launchd/**,config/systemd/**,config/windows/**,scripts/ci-cache-guard.sh" --key-env "" -- bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/chroma-wrapper-source.test.ts scripts/tests/chroma-wrapper-live.test.ts scripts/tests/chroma-health-race.test.ts scripts/tests/chroma-fd-limits.test.ts scripts/tests/mcp-daemon-token-launcher.test.ts scripts/tests/mcp-daemon-static-guards.test.ts scripts/tests/mcp-daemon-registration.test.ts scripts/tests/mcp-daemon-switch.test.ts scripts/tests/mcp-daemon-status.test.ts scripts/tests/mcp-daemon-replace.test.ts scripts/tests/mcp-daemon-replace-live.test.ts scripts/tests/repair-restore-modes.test.ts scripts/tests/repair-report-handoff.test.ts scripts/tests/repair-common-sh.test.ts scripts/tests/switch-rotate-token.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -1943,6 +1941,39 @@ jobs:
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
+  check-taskfile-commands:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            check-taskfile-commands:
+              - 'Taskfile.yml'
+              - 'scripts/check-taskfile-commands.ts'
+              - 'scripts/lib/taskfile-command*.ts'
+              - 'scripts/lib/taskfile-command-exemptions.json'
+              - 'scripts/tests/check-taskfile-commands.test.ts'
+              - 'scripts/check-tool-binaries.ts'
+              - 'scripts/lib/tool-binaries.ts'
+              - 'scripts/tests/check-tool-binaries.test.ts'
+      - uses: actions/setup-node@v4
+        if: steps.filter.outputs.check-taskfile-commands == 'true'
+        with:
+          node-version: 24
+      - name: Install production dependencies
+        if: steps.filter.outputs.check-taskfile-commands == 'true'
+        run: npm ci --omit=dev --workspaces=false
+      - name: Check Taskfile Commands
+        if: steps.filter.outputs.check-taskfile-commands == 'true'
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-taskfile-commands.ts
+      - name: Test Check Taskfile Commands
+        if: steps.filter.outputs.check-taskfile-commands == 'true'
+        run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-taskfile-commands.test.ts scripts/tests/check-tool-binaries.test.ts
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
   misc:
     runs-on: ubuntu-latest
     steps:
@@ -1958,9 +1989,6 @@ jobs:
               - 'scripts/check-gemini-overlay-enrollment.sh'
               - 'scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts'
               - 'scripts/tests/lib/build-fixture-tree.ts'
-              - 'scripts/tests/test-check-bash32-portability.sh'
-              - 'scripts/check-pipefail-grep.sh'
-              - 'scripts/tests/test-check-pipefail-grep.sh'
               - 'scripts/tests/test-reserve-spec-id.sh'
               - 'scripts/tests/test-check-spec-id-reserved.sh'
               - 'scripts/reserve-spec-id.sh'
@@ -1992,12 +2020,6 @@ jobs:
       - name: Test Check Gemini Overlay Enrollment
         if: steps.filter.outputs.misc == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts
-      - name: Test Check Bash32 Portability
-        if: steps.filter.outputs.misc == 'true'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-bash32-portability.sh
-      - name: Test Check Pipefail Grep
-        if: steps.filter.outputs.misc == 'true'
-        run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-pipefail-grep.sh
       - name: Test Reserve Spec Id
         if: steps.filter.outputs.misc == 'true'
         run: bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-reserve-spec-id.sh

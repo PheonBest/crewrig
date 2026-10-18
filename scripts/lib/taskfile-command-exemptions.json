@@ -1,0 +1,95 @@
+{
+  "exemptions": [
+    {
+      "task": "install-mempalace",
+      "command": ".sh",
+      "owner": "J4",
+      "issue": "#1344",
+      "reason": "scripts/lib/tls-exec.sh has no TypeScript twin yet; retargeted when the final library-retirement slice (spec 0266 S5) deletes it"
+    },
+    {
+      "task": "install-mempalace",
+      "command": "bash",
+      "owner": "J4",
+      "issue": "#1344",
+      "reason": "scripts/lib/tls-exec.sh has no TypeScript twin yet; retargeted when the final library-retirement slice (spec 0266 S5) deletes it"
+    },
+    {
+      "task": "check-model-mappings",
+      "command": ".sh",
+      "owner": "I2",
+      "issue": "#1339",
+      "reason": "yq-based task waits for the I2 tool switch"
+    },
+    {
+      "task": "check-model-mappings",
+      "command": "bash",
+      "owner": "I2",
+      "issue": "#1339",
+      "reason": "yq-based task waits for the I2 tool switch"
+    },
+    {
+      "task": "check-model-mappings",
+      "command": "command -v",
+      "owner": "I2",
+      "issue": "#1339",
+      "reason": "yq-based task waits for the I2 tool switch"
+    },
+    {
+      "task": "check-agent-profiles",
+      "command": ".sh",
+      "owner": "I2",
+      "issue": "#1339",
+      "reason": "yq-based task waits for the I2 tool switch"
+    },
+    {
+      "task": "check-agent-profiles",
+      "command": "bash",
+      "owner": "I2",
+      "issue": "#1339",
+      "reason": "yq-based task waits for the I2 tool switch"
+    },
+    {
+      "task": "check-agent-profiles",
+      "command": "command -v",
+      "owner": "I2",
+      "issue": "#1339",
+      "reason": "yq-based task waits for the I2 tool switch"
+    },
+    {
+      "task": "skill:check",
+      "command": "[",
+      "owner": "I2",
+      "issue": "#1339",
+      "reason": "yq-based task waits for the I2 tool switch"
+    },
+    {
+      "task": "skill:check",
+      "command": "yq",
+      "owner": "I2",
+      "issue": "#1339",
+      "reason": "yq-based task waits for the I2 tool switch"
+    },
+    {
+      "task": "skill:check",
+      "command": "awk",
+      "owner": "I2",
+      "issue": "#1339",
+      "reason": "yq-based task waits for the I2 tool switch"
+    },
+    {
+      "task": "skill:check",
+      "command": "grep",
+      "owner": "I2",
+      "issue": "#1339",
+      "reason": "yq-based task waits for the I2 tool switch"
+    },
+    {
+      "task": "skill:check",
+      "command": "command -v",
+      "owner": "I2",
+      "issue": "#1339",
+      "reason": "yq-based task waits for the I2 tool switch"
+    }
+  ]
+}

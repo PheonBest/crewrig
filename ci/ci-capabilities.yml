@@ -1943,7 +1943,6 @@ capabilities:
           - "scripts/lib/extension/**"
           - "scripts/lib/org-mcp.ts"
           - "scripts/lib/node-floor-guard.js"
-          - "scripts/build-gemini-agent.sh"
           - "scripts/install-extension-all.sh"
           - "scripts/tests/install-sandbox.test.ts"
           - "scripts/tests/install-workspace.test.ts"
@@ -2004,7 +2003,6 @@ capabilities:
           - "scripts/lib/extension/**"
           - "scripts/lib/org-mcp.ts"
           - "scripts/lib/node-floor-guard.js"
-          - "scripts/build-gemini-agent.sh"
           - "scripts/install-extension-all.sh"
           - "scripts/tests/install-sandbox.test.ts"
           - "scripts/tests/install-workspace.test.ts"
@@ -2520,7 +2518,6 @@ capabilities:
           - "scripts/worktree-claim.sh"
           - "scripts/worktree-claim.ts"
           - "hooks/worktree-git-guard.ts"
-          - "scripts/mcp-daemon.sh"
           - "scripts/repair-mempalace-http.sh"
           - "scripts/switch-mempalace-http.sh"
           - "scripts/lib/**"
@@ -2545,7 +2542,6 @@ capabilities:
           - "scripts/worktree-claim.sh"
           - "scripts/worktree-claim.ts"
           - "hooks/worktree-git-guard.ts"
-          - "scripts/mcp-daemon.sh"
           - "scripts/repair-mempalace-http.sh"
           - "scripts/switch-mempalace-http.sh"
           - "scripts/lib/**"
@@ -2577,7 +2573,6 @@ capabilities:
         - "scripts/worktree-claim.sh"
         - "scripts/worktree-claim.ts"
         - "hooks/worktree-git-guard.ts"
-        - "scripts/mcp-daemon.sh"
         - "scripts/repair-mempalace-http.sh"
         - "scripts/switch-mempalace-http.sh"
         - "scripts/lib/**"
@@ -2731,9 +2726,6 @@ capabilities:
           - "scripts/check-gemini-overlay-enrollment.sh"
           - "scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts"
           - "scripts/tests/lib/build-fixture-tree.ts"
-          - "scripts/tests/test-check-bash32-portability.sh"
-          - "scripts/check-pipefail-grep.sh"
-          - "scripts/tests/test-check-pipefail-grep.sh"
           - "scripts/tests/test-reserve-spec-id.sh"
           - "scripts/tests/test-check-spec-id-reserved.sh"
           - "scripts/reserve-spec-id.sh"
@@ -2758,9 +2750,6 @@ capabilities:
           - "scripts/check-gemini-overlay-enrollment.sh"
           - "scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts"
           - "scripts/tests/lib/build-fixture-tree.ts"
-          - "scripts/tests/test-check-bash32-portability.sh"
-          - "scripts/check-pipefail-grep.sh"
-          - "scripts/tests/test-check-pipefail-grep.sh"
           - "scripts/tests/test-reserve-spec-id.sh"
           - "scripts/tests/test-check-spec-id-reserved.sh"
           - "scripts/reserve-spec-id.sh"
@@ -2795,8 +2784,6 @@ capabilities:
       - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-no-machine-paths.test.ts
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-gemini-overlay-enrollment.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-bash32-portability.sh
-      - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-pipefail-grep.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-reserve-spec-id.sh
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-spec-id-reserved.sh
 
@@ -3046,6 +3033,40 @@ capabilities:
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-claude-agent-layout.ts
       - bash scripts/ci-cache-guard.sh --stray-scan -- bash scripts/tests/test-check-claude-agent-layout.sh
 
+  - id: check-taskfile-commands
+    name: "Check Taskfile.yml names no POSIX-only command and run the tool-binary check suites"
+    trigger:
+      - on: pull-request
+        branches: [main, "release/**"]
+        paths:
+          - "Taskfile.yml"
+          - "scripts/check-taskfile-commands.ts"
+          - "scripts/lib/taskfile-command*.ts"
+          - "scripts/lib/taskfile-command-exemptions.json"
+          - "scripts/tests/check-taskfile-commands.test.ts"
+          - "scripts/check-tool-binaries.ts"
+          - "scripts/lib/tool-binaries.ts"
+          - "scripts/tests/check-tool-binaries.test.ts"
+      - on: push
+        branches: [main, "release/**"]
+        paths:
+          - "Taskfile.yml"
+          - "scripts/check-taskfile-commands.ts"
+          - "scripts/lib/taskfile-command*.ts"
+          - "scripts/lib/taskfile-command-exemptions.json"
+          - "scripts/tests/check-taskfile-commands.test.ts"
+          - "scripts/check-tool-binaries.ts"
+          - "scripts/lib/tool-binaries.ts"
+          - "scripts/tests/check-tool-binaries.test.ts"
+    portability: portable
+    changeset-gated: true
+    requires:
+      runtime: node@24
+    command:
+      - npm ci --omit=dev --workspaces=false
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-taskfile-commands.ts
+      - bash scripts/ci-cache-guard.sh --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-taskfile-commands.test.ts scripts/tests/check-tool-binaries.test.ts
+
   - id: markdown-links
     name: "Check relative Markdown link integrity"
     trigger:
@@ -3182,7 +3203,8 @@ capabilities:
 
   # Spec 0238 R4-R8, R12, R13: type-check, erasable syntax, Oxlint type-aware
   # strict typing (max-lines as a non-blocking warning) and Oxfmt check mode
-  # on every tracked *.ts outside the built-copy trees. No `paths:` filter: a
+  # on every tracked *.ts outside the built-copy trees (Oxfmt also checks the
+  # JavaScript admitted by ci/js-exceptions.txt, spec 0266 R16). No `paths:` filter: a
   # lockfile, tsconfig.json or lint-config change must re-run it too.
   - id: lint-typescript
     name: "TypeScript type-check, erasable syntax, lint and format"
@@ -3797,7 +3819,6 @@ capabilities:
           - "scripts/**"
           - "hooks/**"
           - ".github/workflows/scripting-conventions.yml"
-          - "ci/bash32-forbidden.txt"
     portability: portable
     command:
       - |
@@ -3822,8 +3843,6 @@ capabilities:
           exit 1
         fi
         echo "Rule 1 clean."
-      - bash scripts/check-bash32-portability.sh
-      - bash scripts/check-pipefail-grep.sh
 
   # security-mcp.yml gates on pull_request to [main] with a path filter on the
   # MCP/dependency manifests (.github/workflows/security-mcp.yml lines 3-11).
