@@ -52,7 +52,7 @@ Shared memory daemon (spec 0113 delta-02): defaulting copilot to HTTP.
   MemPalace reaches shared memory through the HTTP daemon.
 
 Installing library skills to <HOME>/.copilot/skills (automatic)...
-Tier not built (no <REPO>/dist/library/.github/skills) — building automatically via 'bash scripts/build-components.sh --target copilot'...
+Tier not built (no <REPO>/dist/library/.github/skills) — building automatically via 'node scripts/build-components.ts --target copilot'...
 =========================================
   Community Component Builder
   Target: copilot
@@ -62,7 +62,7 @@ Tier not built (no <REPO>/dist/library/.github/skills) — building automaticall
 --- Tier: core (output root: <REPO>) ---
 
 Done.
-  Tier 'library' has no built skills (no <REPO>/dist/library/.github/skills) — run 'bash scripts/build-components.sh --target copilot' first.
+  Tier 'library' has no built skills (no <REPO>/dist/library/.github/skills) — run 'node scripts/build-components.ts --target copilot' first.
 
   Session recording disabled (re-run this script to enable).
 
@@ -100,7 +100,7 @@ MCP servers (from mcp-config.json):
   - sequentialthinking
 
 Copilot looks for skills under .github/skills/ and agents under .github/agents/.
-Run 'bash scripts/build-components.sh --target copilot' to (re)generate them.
+Run 'node scripts/build-components.ts --target copilot' to (re)generate them.
 
 Transcript hooks are installed at two levels:
   - User-level (~/.copilot/hooks/copilot-transcript-hooks.json): fires for ALL projects.

@@ -159,7 +159,7 @@ export function reportUnresolved(
   }
   if (present === 0) {
     text += "No served tier of this type was available at all. Populate one, or run:\n";
-    text += "  bash scripts/build-components.sh\n";
+    text += "  node scripts/build-components.ts\n";
   }
   sink(text);
 }

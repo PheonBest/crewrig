@@ -65,7 +65,7 @@ function installSkillsAndAgents(ctx: TierCtx, cli: "claude" | "gemini", tier: st
   const tilde = TILDE_HOME[cli];
   if (!isDirectory(staging)) {
     ctx.io.out(
-      `  Tier '${tier}' not built (no ${staging}) — run 'bash scripts/build-components.sh' first.`,
+      `  Tier '${tier}' not built (no ${staging}) — run 'node scripts/build-components.ts' first.`,
     );
     return;
   }
@@ -100,7 +100,7 @@ function installCopilotSkills(ctx: TierCtx, tier: string): void {
   const staging = stagingGate(ctx.repoDir, "copilot", tier);
   if (!isDirectory(staging) || fs.readdirSync(staging).length === 0) {
     ctx.io.out(
-      `  Tier '${tier}' has no built skills (no ${staging}) — run 'bash scripts/build-components.sh --target copilot' first.`,
+      `  Tier '${tier}' has no built skills (no ${staging}) — run 'node scripts/build-components.ts --target copilot' first.`,
     );
     return;
   }

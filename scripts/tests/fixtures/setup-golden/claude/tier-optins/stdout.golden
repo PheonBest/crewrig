@@ -60,7 +60,7 @@ Setting up personal profile...
   Copied: PROFILE.md -> rules/30-profile.md
 
 Installing library components to <HOME>/.claude/skills (automatic)...
-Tier not built (no <REPO>/dist/library/.claude) — building automatically via 'bash scripts/build-components.sh --target claude'...
+Tier not built (no <REPO>/dist/library/.claude) — building automatically via 'node scripts/build-components.ts --target claude'...
 =========================================
   Community Component Builder
   Target: claude
@@ -70,7 +70,7 @@ Tier not built (no <REPO>/dist/library/.claude) — building automatically via '
 --- Tier: core (output root: <REPO>) ---
 
 Done.
-  Tier 'library' not built (no <REPO>/dist/library/.claude) — run 'bash scripts/build-components.sh' first.
+  Tier 'library' not built (no <REPO>/dist/library/.claude) — run 'node scripts/build-components.ts' first.
 
   Installed skill: community/community-skill -> ~/.claude/skills/community-skill
   Installed agent: community/community-agent -> ~/.claude/agents/community-agent.md

@@ -1,7 +1,7 @@
 {
   "id": "03-skill-build/copilot/pass",
   "exit": 0,
-  "scenarioTap": "ok 1 - build: scripts/build-components.sh exited 0\nok 2 - side-effect: build manifest written to /out\nok 3 - side-effect: .github/ populated by build\nok 4 - side-effect: skills or agents emitted\nok 5 - structural: first SKILL.md carries metadata: frontmatter\n1..5\n",
+  "scenarioTap": "ok 1 - build: scripts/build-components.ts exited 0\nok 2 - side-effect: build manifest written to /out\nok 3 - side-effect: .github/ populated by build\nok 4 - side-effect: skills or agents emitted\nok 5 - structural: first SKILL.md carries metadata: frontmatter\n1..5\n",
   "dockerCommands": [
     [
       "run",
@@ -16,17 +16,17 @@
       "bash",
       "crewrig/e2e-copilot:latest",
       "-lc",
-      "set -euo pipefail\ncd /repo\nbash scripts/build-components.sh --target copilot\nmanifest=/tmp/e2e-build-manifest.txt\nif [ -d \".github\" ]; then\n  find \".github\" -type f | sort > \"$manifest\"\nelse\n  printf 'MISSING: %s\\n' \".github\" > \"$manifest\"\nfi\ncp \"$manifest\" /out/manifest.txt\n\n# Locate the first SKILL.md for the structural assertion.\nfirst_skill=$(find \".github/skills\" -name 'SKILL.md' -type f 2>/dev/null | sort | head -n1 || true)\nif [ -n \"$first_skill\" ]; then\n  cp \"$first_skill\" /out/first-skill.md\nfi"
+      "set -euo pipefail\ncd /repo\nnode scripts/build-components.ts --target copilot\nmanifest=/tmp/e2e-build-manifest.txt\nif [ -d \".github\" ]; then\n  find \".github\" -type f | sort > \"$manifest\"\nelse\n  printf 'MISSING: %s\\n' \".github\" > \"$manifest\"\nfi\ncp \"$manifest\" /out/manifest.txt\n\n# Locate the first SKILL.md for the structural assertion.\nfirst_skill=$(find \".github/skills\" -name 'SKILL.md' -type f 2>/dev/null | sort | head -n1 || true)\nif [ -n \"$first_skill\" ]; then\n  cp \"$first_skill\" /out/first-skill.md\nfi"
     ]
   ],
   "files": {
     "copilot/03-skill-build/build.stderr": "",
     "copilot/03-skill-build/build.stdout": "",
     "copilot/03-skill-build/exit": "0\n",
-    "copilot/03-skill-build/invocation.txt": "image: crewrig/e2e-copilot:latest\nargv: docker run --rm --name <CONTAINER> -v <TMP>/reports/<RUN_ID>/copilot/03-skill-build/build-work:/repo -v <TMP>/reports/<RUN_ID>/copilot/03-skill-build/out:/out --entrypoint bash crewrig/e2e-copilot:latest -lc $'set -euo pipefail\\ncd /repo\\nbash scripts/build-components.sh --target copilot\\nmanifest=/tmp/e2e-build-manifest.txt\\nif [ -d \".github\" ]; then\\n  find \".github\" -type f | sort > \"$manifest\"\\nelse\\n  printf \\'MISSING: %s\\\\n\\' \".github\" > \"$manifest\"\\nfi\\ncp \"$manifest\" /out/manifest.txt\\n\\n# Locate the first SKILL.md for the structural assertion.\\nfirst_skill=$(find \".github/skills\" -name \\'SKILL.md\\' -type f 2>/dev/null | sort | head -n1 || true)\\nif [ -n \"$first_skill\" ]; then\\n  cp \"$first_skill\" /out/first-skill.md\\nfi'\n",
+    "copilot/03-skill-build/invocation.txt": "image: crewrig/e2e-copilot:latest\nargv: docker run --rm --name <CONTAINER> -v <TMP>/reports/<RUN_ID>/copilot/03-skill-build/build-work:/repo -v <TMP>/reports/<RUN_ID>/copilot/03-skill-build/out:/out --entrypoint bash crewrig/e2e-copilot:latest -lc $'set -euo pipefail\\ncd /repo\\nnode scripts/build-components.ts --target copilot\\nmanifest=/tmp/e2e-build-manifest.txt\\nif [ -d \".github\" ]; then\\n  find \".github\" -type f | sort > \"$manifest\"\\nelse\\n  printf \\'MISSING: %s\\\\n\\' \".github\" > \"$manifest\"\\nfi\\ncp \"$manifest\" /out/manifest.txt\\n\\n# Locate the first SKILL.md for the structural assertion.\\nfirst_skill=$(find \".github/skills\" -name \\'SKILL.md\\' -type f 2>/dev/null | sort | head -n1 || true)\\nif [ -n \"$first_skill\" ]; then\\n  cp \"$first_skill\" /out/first-skill.md\\nfi'\n",
     "copilot/03-skill-build/out/first-skill.md": "---\nname: demo\nmetadata:\n  provenance:\n    version: 1.0.0\n---\nBody\n",
     "copilot/03-skill-build/out/manifest.txt": ".github/skills/demo/SKILL.md\n",
-    "copilot/03-skill-build/scenario.tap": "ok 1 - build: scripts/build-components.sh exited 0\nok 2 - side-effect: build manifest written to /out\nok 3 - side-effect: .github/ populated by build\nok 4 - side-effect: skills or agents emitted\nok 5 - structural: first SKILL.md carries metadata: frontmatter\n1..5\n",
+    "copilot/03-skill-build/scenario.tap": "ok 1 - build: scripts/build-components.ts exited 0\nok 2 - side-effect: build manifest written to /out\nok 3 - side-effect: .github/ populated by build\nok 4 - side-effect: skills or agents emitted\nok 5 - structural: first SKILL.md carries metadata: frontmatter\n1..5\n",
     "copilot/03-skill-build/stderr": "",
     "copilot/03-skill-build/stdout": "OK — copilot/03-skill-build (5 assertions)\n",
     "run.tap": "TAP version 13\nok 1 - copilot/03-skill-build\n1..1\n# pass: 1  fail: 0  skip: 0\n# report dir: <TMP>/reports/<RUN_ID>\n"

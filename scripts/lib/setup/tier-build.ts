@@ -1,6 +1,6 @@
 // tier-build.ts — `ensure_tier_built` of retired scripts/lib/common.sh (spec 0256 requirement 24, plan v2
 // step B2b.5): build a tier's staging tree on the fly when it is absent. Twin of that function:
-// the shell ran `bash scripts/build-components.sh --target <cli>`; here the build is the in-process
+// the shell ran `node scripts/build-components.ts --target <cli>`; here the build is the in-process
 // `main` of scripts/lib/build-components/main.ts, never a shell (parent requirement 23). The
 // announcement line keeps the shell's text byte for byte, command included, because the
 // differential test compares the printed bytes. Layer 2: runs after the dependency step (the
@@ -73,7 +73,7 @@ export async function ensureTierBuilt(
 ): Promise<void> {
   if (isDirectory(stagingDir)) return;
   ctx.io.out(
-    `Tier not built (no ${stagingDir}) — building automatically via 'bash scripts/build-components.sh --target ${cli}'...`,
+    `Tier not built (no ${stagingDir}) — building automatically via 'node scripts/build-components.ts --target ${cli}'...`,
   );
   const build = deps.build ?? defaultBuild;
   let status: number;

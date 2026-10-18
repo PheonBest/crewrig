@@ -88,7 +88,7 @@ describe("installAntigravityTier", () => {
   it("prints the not-built line and returns 0 for a tier with no staging", () => {
     assert.equal(installAntigravityTier(ctxOf(), "org"), 0);
     assert.deepEqual(out, [
-      `  Tier 'org' not built (no ${path.join(repo, "dist/org/.agents")}) — run 'bash scripts/build-components.sh' first.`,
+      `  Tier 'org' not built (no ${path.join(repo, "dist/org/.agents")}) — run 'node scripts/build-components.ts' first.`,
     ]);
   });
 

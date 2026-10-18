@@ -144,7 +144,7 @@ description = "A drawer written by CLI A is read by CLI B via a shared MemPalace
 applies_to  = ["claude", "gemini"]
 
 [scenarios.03-skill-build]
-description = "scripts/build-components.sh emits CLI-specific artefacts inside the container."
+description = "scripts/build-components.ts emits CLI-specific artefacts inside the container."
 applies_to  = ["claude", "gemini", "copilot"]
 
 [scenarios.04-harness-loop]

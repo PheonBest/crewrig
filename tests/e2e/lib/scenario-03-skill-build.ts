@@ -72,7 +72,7 @@ function buildScript(target: string, dir: string, skills: string): string {
   return [
     "set -euo pipefail",
     "cd /repo",
-    `bash scripts/build-components.sh --target ${target}`,
+    `node scripts/build-components.ts --target ${target}`,
     "manifest=/tmp/e2e-build-manifest.txt",
     `if [ -d "${dir}" ]; then`,
     `  find "${dir}" -type f | sort > "$manifest"`,
@@ -156,8 +156,8 @@ export function runScenario03(env: Env, cwd: string, packages: readonly string[]
     };
     emit(
       res.rc === 0,
-      "build: scripts/build-components.sh exited 0",
-      "build: scripts/build-components.sh exited non-zero",
+      "build: scripts/build-components.ts exited 0",
+      "build: scripts/build-components.ts exited non-zero",
     );
 
     const manifest = path.join(hostOut, "manifest.txt");

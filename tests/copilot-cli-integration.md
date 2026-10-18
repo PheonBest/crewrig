@@ -12,7 +12,7 @@ Worktree: `.worktrees/issue-50/`. Date: 2026-05-20.
 | JSON well-formedness — `config/copilot/settings.json.template` | ✅ | parses cleanly |
 | JSON well-formedness — `hooks/copilot-transcript-hooks.json` | ✅ | parses cleanly; 5 hook events declared (SessionStart, UserPromptSubmit, PostToolUse, Stop, SessionEnd) using `${COPILOT_PROJECT_DIR:-$PWD}` |
 | JSON well-formedness — `extension-skeleton/base/.github/copilot/extension.json` | ✅ | parses cleanly at the time of this report (2026-05-20); the file was deleted by issue #1004 (spec 0173 requirement 16) — an unconsumed manifest under a generic-schema render is a build output, not a hand-authored source, and no script ever read it. Historical row, not a live check. |
-| Build target — `bash scripts/build-components.sh --target copilot` | ✅ | exits 0, emits `.github/skills/` and `.github/agents/` |
+| Build target — `node scripts/build-components.ts --target copilot` | ✅ | exits 0, emits `.github/skills/` and `.github/agents/` |
 | Skill parity — count `community-config/skills/` vs `.github/skills/` | ✅ | 14 vs 14 at the time of this report (2026-05-20). **Correction (2026-08-27):** superseded by issue #1077 (spec 0191) — `init-personal-profile` and `init-soul` were promoted to `artifacts/core/commands/` sources, so `.github/skills/` now carries two entries the source count above never had. Historical row, not a live check. |
 | Agent parity — count `community-config/agents/` vs `.github/agents/` | ✅ | 21 vs 21 |
 | Build round-trip — wipe `.github/{skills,agents}` and rebuild | ✅ | full target rebuild is clean; `git status --porcelain` shows no drift on previously-tracked files after `scripts/build-components.sh` |
@@ -27,7 +27,7 @@ Worktree: `.worktrees/issue-50/`. Date: 2026-05-20.
 |---|---|---|
 | `scripts/check-skill-versions.sh` (with `BASE_REF=crewrig/main`) | ✅ | "no existing skill/agent sources modified vs crewrig/main" — exemption rule honored (new components stay at 1.0.0) |
 | `scripts/check-skill-versions.sh` (default base ref) | ⚠️ | Errors locally because default base `origin/main` is unresolved in this worktree — `origin` is not a configured remote (the project uses `crewrig` / `hcross`). CI runs against the PR base ref via `BASE_REF`, so this is environment-only, not a regression. Worth surfacing to the developer in case the same friction is hit by other reviewers. |
-| `bash scripts/build-components.sh` (default, all targets) | ✅ | runs to completion, `Done.` |
+| `node scripts/build-components.ts` (default, all targets) | ✅ | runs to completion, `Done.` |
 
 ## Functional validation — `ollama launch copilot`
 
@@ -126,7 +126,7 @@ parsing errors observed. Agent responded normally.
 
 ```sh
 rm -rf .github/skills .github/agents
-bash scripts/build-components.sh --target copilot
+node scripts/build-components.ts --target copilot
 # → Done. (14 skills, 21 agents regenerated)
 ```
 

@@ -72,7 +72,7 @@ export function installAntigravityTier(ctx: TierCtx, tier: string): number {
   const staging = stagingRoot(ctx.repoDir, "antigravity", tier);
   if (!isDirectory(staging)) {
     ctx.io.out(
-      `  Tier '${tier}' not built (no ${staging}) — run 'bash scripts/build-components.sh' first.`,
+      `  Tier '${tier}' not built (no ${staging}) — run 'node scripts/build-components.ts' first.`,
     );
     return 0;
   }
