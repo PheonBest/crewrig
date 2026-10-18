@@ -17,7 +17,6 @@ import path from "node:path";
 import { after, describe, test } from "node:test";
 
 import { serialiseJson } from "../lib/hook-config.ts";
-import { bashLibs } from "./lib/bash-libs.ts";
 import { backups, handler, mode, wiring, type Json } from "./lib/guard-wiring-fixtures.ts";
 import {
   AGY_GUARD,
@@ -42,14 +41,6 @@ const manifestStop = (co: TranscriptCheckout): Json[] => [
 
 /** The two enable routes; each returns the hooks.json after the run, and the run's output. */
 const ROUTES = {
-  deploy(co: TranscriptCheckout, target: string): string {
-    const res = bashLibs(
-      `deploy_antigravity_transcript_hooks ${q(co.manifest("antigravity"))} "" ${q(path.join(path.dirname(target), "agy-hooks"))} ${q(target)} "" ${q(co.guard)}
-       echo "rc=$? wired=$SR_TRANSCRIPT_WIRED"`,
-    );
-    assert.match(res.stdout, /rc=0 wired=1/, res.stdout + res.stderr);
-    return res.stdout + res.stderr;
-  },
   "antigravity-merge"(co: TranscriptCheckout, target: string): string {
     const rendered = path.join(realTmp("crewrig-agy-rendered-"), "rendered.json");
     const render = wiring(
@@ -163,33 +154,6 @@ describe("R23(c): the enable path, per event of the named hook", { skip: SKIP_PO
     });
   }
 
-  test("deploy: the guard's named hook is refreshed, every other named hook byte-identical, the second run changes nothing", () => {
-    const co = makeTranscriptCheckout();
-    const target = writeHooks(co, {
-      ...OPERATOR_HOOK,
-      [AGY_GUARD]: {
-        PreToolUse: [
-          {
-            matcher: "run_command",
-            hooks: [handler(`bash "${co.repo}/hooks/worktree-git-guard.sh"`)],
-          },
-        ],
-      },
-    });
-    ROUTES.deploy(co, target);
-    const first = read(target);
-    const after = JSON.parse(first) as Json;
-    assert.deepEqual(after["operator-audit"], OPERATOR_HOOK["operator-audit"]);
-    assert.deepEqual(after[AGY_GUARD], {
-      PreToolUse: [
-        { matcher: "run_command", hooks: [handler(`node "${co.guard}"`, { timeout: 5 })] },
-      ],
-    });
-    assert.deepEqual(after[AGY_HOOK], { Stop: manifestStop(co) });
-    ROUTES.deploy(co, target);
-    assert.equal(read(target), first);
-  });
-
   test("antigravity-merge: a non-object hooks.json is refused and left byte-identical", () => {
     const co = makeTranscriptCheckout();
     const target = path.join(path.dirname(co.repo), "hooks.json");
@@ -211,80 +175,3 @@ describe("R23(c): the enable path, per event of the named hook", { skip: SKIP_PO
     assert.deepEqual(backups(target), []);
   });
 });
-
-describe(
-  "the decline path: the in-place rewrite of the named hook (R23, R25, R26)",
-  { skip: SKIP_POSIX },
-  () => {
-    const rewrite = (co: TranscriptCheckout, target: string) =>
-      bashLibs(`transcript_rewrite_installed antigravity ${q(co.repo)} ${q(target)}; echo "rc=$?"`);
-
-    test("direct and legacy-enabled are rewritten; legacy-unmarked, =0, foreign-prefix and other arguments stay", () => {
-      const co = makeTranscriptCheckout();
-      const c = agyCommands(homeWithCopies());
-      const config = {
-        ...OPERATOR_HOOK,
-        [AGY_HOOK]: {
-          Stop: [handler(c.enabled, { timeout: 10 }), handler(c.otherArgs)],
-          PreInvocation: [
-            handler(`node "/old/hooks/mempalace-transcript.ts" antigravity-cli PreInvocation`),
-          ],
-          AfterTool: [
-            handler(c.unmarked.replace(" Stop", " AfterTool")),
-            handler(c.disabled.replace(" Stop", " AfterTool")),
-          ],
-          AfterModel: [
-            handler(c.foreign.replace(" Stop", " AfterModel")),
-            handler(c.otherArgsStop),
-          ],
-        },
-      };
-      const target = writeHooks(co, config);
-      const res = rewrite(co, target);
-      assert.match(res.stdout, /rc=0/, res.stderr);
-      const named = config[AGY_HOOK];
-      const expected = {
-        ...config,
-        [AGY_HOOK]: {
-          ...named,
-          Stop: [handler(agyDirect(co, "Stop"), { timeout: 10 }), handler(c.otherArgs)],
-          PreInvocation: [handler(agyDirect(co, "PreInvocation"))],
-        },
-      };
-      assert.equal(read(target), serialiseJson(expected));
-      assert.match(res.stdout, /disabled and not upgraded/);
-      assert.match(res.stdout, /MEMPALACE_MCP_PORT=\.\.\./);
-      assert.doesNotMatch(res.stdout, /41999/);
-      assert.equal(backups(target).length, 1);
-      assert.equal(mode(target), 0o600);
-
-      const written = read(target);
-      assert.match(rewrite(co, target).stdout, /rc=0/);
-      assert.equal(read(target), written, "a second run writes nothing");
-      assert.equal(backups(target).length, 1, "and makes no backup");
-    });
-
-    test("a hooks.json holding only legacy-unmarked and =0 commands is byte-identical, with no backup", () => {
-      const co = makeTranscriptCheckout();
-      const c = agyCommands(homeWithCopies());
-      const target = writeHooks(co, {
-        [AGY_HOOK]: { Stop: [handler(c.unmarked)], AfterTool: [handler(c.disabled)] },
-      });
-      const before = read(target);
-      const res = rewrite(co, target);
-      assert.match(res.stdout, /rc=0/, res.stderr);
-      assert.equal(read(target), before);
-      assert.deepEqual(backups(target), []);
-      assert.equal((res.stdout.match(/disabled and not upgraded/g) ?? []).length, 2);
-    });
-
-    test("a transcript command outside the named hook is never touched", () => {
-      const co = makeTranscriptCheckout();
-      const c = agyCommands(homeWithCopies());
-      const target = writeHooks(co, { "operator-recording": { Stop: [handler(c.enabled)] } });
-      const before = read(target);
-      assert.match(rewrite(co, target).stdout, /rc=0/);
-      assert.equal(read(target), before);
-    });
-  },
-);

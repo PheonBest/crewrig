@@ -1,7 +1,7 @@
-// setup-lib-usage-entry.test.ts — scripts/usage-capture-optin.ts, the entry behind the function shims of
-// scripts/lib/usage-capture-optin.sh (spec 0256 requirement 33, plan v2 step B3b.4). Per subcommand, the entry run in a throwaway HOME against the shell function over two copies of one
-// configuration (status, both streams, file bytes and mode, `--result` content). This needs bash, jq
-// and a POSIX host.
+// setup-lib-usage-entry.test.ts — scripts/usage-capture-optin.ts, the entry behind the usage-capture setup
+// steps (spec 0256 requirement 33, plan v2 step B3b.4). Per subcommand, the entry runs in a throwaway HOME
+// and must exit with a status, not crash. The shell oracle went with scripts/lib/usage-capture-optin.sh
+// (spec 0266); the outcomes are asserted by setup-usage-capture.test.ts and its siblings.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -27,24 +27,23 @@ describe("readers", { skip: SKIP }, () => {
     ] as const) {
       for (const sub of ["state", "paths", "footprint"] as const) {
         test(`${sub} ${cli}: ${label}`, () => {
-          same(cli, initial, `usage_capture_${sub} "$CLI" "$CFG"`, (f) => [sub, cli, f.cfg]);
+          same(initial, (f) => [sub, cli, f.cfg]);
         });
       }
     }
   }
   test("an unknown CLI is refused with status 1 on every reader", () => {
     for (const sub of ["state", "paths", "footprint"]) {
-      same("claude", undefined, `usage_capture_${sub} bogus "$CFG"`, (f) => [sub, "bogus", f.cfg]);
+      same(undefined, (f) => [sub, "bogus", f.cfg]);
     }
   });
   test("abs: the physical path, the sh form, a missing script", () => {
-    same("claude", undefined, 'usage_capture_abs "$CO"', (f) => ["abs", f.co]);
-    same("claude", undefined, 'usage_capture_abs "$CO" sh', (f) => ["abs", f.co, "sh"]);
-    same("claude", undefined, 'usage_capture_abs "$CO/nope"', (f) => ["abs", `${f.co}/nope`]);
+    same(undefined, (f) => ["abs", f.co]);
+    same(undefined, (f) => ["abs", f.co, "sh"]);
+    same(undefined, (f) => ["abs", `${f.co}/nope`]);
   });
   test("fragment prints the shell's line for each CLI", () => {
-    for (const cli of CLIS)
-      same(cli, undefined, 'usage_capture_fragment "$CLI" "$CO"', (f) => ["fragment", cli, f.co]);
+    for (const cli of CLIS) same(undefined, (f) => ["fragment", cli, f.co]);
   });
 });
 
@@ -54,66 +53,28 @@ describe("writers", { skip: SKIP }, () => {
     const stale = configOf(cli, [legacy(cli)]);
     test(`enable ${cli}: absent file, existing file, not an object`, () => {
       for (const initial of [undefined, configOf(cli, []), live, BAD]) {
-        same(cli, initial, 'usage_capture_enable "$CLI" "$CFG" "$CO"', (f) => [
-          "enable",
-          cli,
-          f.cfg,
-          f.co,
-        ]);
+        same(initial, (f) => ["enable", cli, f.cfg, f.co]);
       }
     });
     test(`remove ${cli}: installed, absent, not an object`, () => {
       for (const initial of [live, undefined, BAD]) {
-        same(cli, initial, 'usage_capture_remove "$CLI" "$CFG"', (f) => ["remove", cli, f.cfg]);
+        same(initial, (f) => ["remove", cli, f.cfg]);
       }
     });
     test(`keep ${cli}: a vanished registered path, a no-op, no file`, () => {
       for (const initial of [stale, undefined, configOf(cli, [])]) {
-        same(cli, initial, 'usage_capture_keep "$CLI" "$CFG" "$CO"', (f) => [
-          "keep",
-          cli,
-          f.cfg,
-          f.co,
-        ]);
+        same(initial, (f) => ["keep", cli, f.cfg, f.co]);
       }
     });
     test(`disclose and rewrite ${cli}`, () => {
-      same(cli, stale, 'usage_capture_disclose "$CLI" "$CFG" "$CO"', (f) => [
-        "disclose",
-        cli,
-        f.cfg,
-        f.co,
-      ]);
-      same(cli, stale, 'usage_capture_rewrite "$CLI" "$CFG" "$CO"', (f) => [
-        "rewrite",
-        cli,
-        f.cfg,
-        f.co,
-      ]);
+      same(stale, (f) => ["disclose", cli, f.cfg, f.co]);
+      same(stale, (f) => ["rewrite", cli, f.cfg, f.co]);
     });
     test(`reinject ${cli}: a footprint, an invalid one, a missing file`, () => {
       const fp = '[{"event":"x","selector":null,"handler":{"type":"command","command":"echo hi"}}]';
-      same(
-        cli,
-        live,
-        'usage_capture_reinject "$CLI" "$CFG" "$FP"',
-        (f) => ["reinject", cli, f.cfg, fp],
-        { FP: fp },
-      );
-      same(
-        cli,
-        live,
-        'usage_capture_reinject "$CLI" "$CFG" "$FP"',
-        (f) => ["reinject", cli, f.cfg, "{"],
-        { FP: "{" },
-      );
-      same(
-        cli,
-        undefined,
-        'usage_capture_reinject "$CLI" "$CFG" "$FP"',
-        (f) => ["reinject", cli, f.cfg, fp],
-        { FP: fp },
-      );
+      same(live, (f) => ["reinject", cli, f.cfg, fp]);
+      same(live, (f) => ["reinject", cli, f.cfg, "{"]);
+      same(undefined, (f) => ["reinject", cli, f.cfg, fp]);
     });
     test(`apply ${cli}: every state and answer`, () => {
       const cases: [unknown, string, string][] = [
@@ -125,12 +86,7 @@ describe("writers", { skip: SKIP }, () => {
         [live, "weird", "yes"],
       ];
       for (const [initial, state, answer] of cases) {
-        same(
-          cli,
-          initial,
-          `usage_capture_apply "$CLI" "$CFG" "$CO" ${q(state)} ${q(answer)}`,
-          (f) => ["apply", cli, f.cfg, f.co, state, answer],
-        );
+        same(initial, (f) => ["apply", cli, f.cfg, f.co, state, answer]);
       }
     });
   }
@@ -141,95 +97,67 @@ describe("render and merge", { skip: SKIP }, () => {
     const co = makeTranscriptCheckout();
     const wanted = { WANT_RES: "SR_TRANSCRIPT_WIRED" };
     test(`render ${cli}: the manifest bytes and SR_TRANSCRIPT_WIRED`, () => {
-      const leg = same(
+      const leg = same(undefined, (f) => [
+        "render-session-recording-manifest",
+        "--result",
+        f.res,
         cli,
-        undefined,
-        `render_session_recording_manifest "$CLI" ${q(co.repo)} ${q(MANIFEST(cli))} "$OUT"`,
-        (f) => [
-          "render-session-recording-manifest",
-          "--result",
-          f.res,
-          cli,
-          co.repo,
-          MANIFEST(cli),
-          f.out,
-        ],
-        wanted,
-      );
+        co.repo,
+        MANIFEST(cli),
+        f.out,
+      ]);
       assert.match(leg.result ?? "", /^SR_TRANSCRIPT_WIRED=1\n/);
     });
     test(`render ${cli}: a checkout with no transcript script falls back, wired 0`, () => {
       const bare = makeTranscriptCheckout("bare", { entry: false });
-      const leg = same(
+      const leg = same(undefined, (f) => [
+        "render-session-recording-manifest",
+        "--result",
+        f.res,
         cli,
-        undefined,
-        `render_session_recording_manifest "$CLI" ${q(bare.repo)} ${q(MANIFEST(cli))} "$OUT"`,
-        (f) => [
-          "render-session-recording-manifest",
-          "--result",
-          f.res,
-          cli,
-          bare.repo,
-          MANIFEST(cli),
-          f.out,
-        ],
-        wanted,
-      );
+        bare.repo,
+        MANIFEST(cli),
+        f.out,
+      ]);
       assert.match(leg.result ?? "", /^SR_TRANSCRIPT_WIRED=0\n/);
     });
     test(`merge ${cli}: onto absent, existing and capture-carrying files, with an env patch`, () => {
       const patch = cli === "claude" ? '{"MEMPALACE_TRANSCRIPT_ENABLED": "1"}' : "{}";
       for (const initial of [undefined, configOf(cli, [cap("/tmp/x", cli)]), BAD]) {
-        same(
+        same(initial, (f) => [
+          "merge-session-recording-hooks",
+          "--result",
+          f.res,
           cli,
-          initial,
-          `merge_session_recording_hooks "$CLI" "$CFG" ${q(MANIFEST(cli))} ${q(patch)}`,
-          (f) => [
-            "merge-session-recording-hooks",
-            "--result",
-            f.res,
-            cli,
-            f.cfg,
-            MANIFEST(cli),
-            patch,
-          ],
-          { WANT_RES: "SR_ALL_HOOKS_DISABLED" },
-        );
+          f.cfg,
+          MANIFEST(cli),
+          patch,
+        ]);
       }
     });
   }
   test("merge copilot keeps disableAllHooks: SR_ALL_HOOKS_DISABLED=1, the warning on standard error", () => {
-    const leg = same(
+    const leg = same({ version: 1, disableAllHooks: true, hooks: {} }, (f) => [
+      "merge-session-recording-hooks",
+      "--result",
+      f.res,
       "copilot",
-      { version: 1, disableAllHooks: true, hooks: {} },
-      `merge_session_recording_hooks "$CLI" "$CFG" ${q(MANIFEST("copilot"))}`,
-      (f) => [
-        "merge-session-recording-hooks",
-        "--result",
-        f.res,
-        "copilot",
-        f.cfg,
-        MANIFEST("copilot"),
-      ],
-      { WANT_RES: "SR_ALL_HOOKS_DISABLED" },
-    );
+      f.cfg,
+      MANIFEST("copilot"),
+    ]);
     assert.match(leg.result ?? "", /SR_ALL_HOOKS_DISABLED=1\n$/);
     assert.match(leg.err, /disableAllHooks/);
   });
   test("merge refuses an invalid environment patch and a patched manifest that is no object", () => {
     const bad = path.join(realTmp("uc-bad-"), "m.json");
     fs.writeFileSync(bad, "[]");
-    same(
+    same(configOf("claude", []), (f) => [
+      "merge-session-recording-hooks",
       "claude",
-      configOf("claude", []),
-      `merge_session_recording_hooks "$CLI" "$CFG" ${q(MANIFEST("claude"))} '{'`,
-      (f) => ["merge-session-recording-hooks", "claude", f.cfg, MANIFEST("claude"), "{"],
-    );
-    same(
-      "claude",
-      configOf("claude", []),
-      `merge_session_recording_hooks "$CLI" "$CFG" ${q(bad)}`,
-      (f) => ["merge-session-recording-hooks", "claude", f.cfg, bad],
-    );
+      f.cfg,
+      MANIFEST("claude"),
+      "{",
+    ]);
+    same(configOf("claude", []), (f) => ["merge-session-recording-hooks", "claude", f.cfg, bad]);
   });
 });

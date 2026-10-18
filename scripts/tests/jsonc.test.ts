@@ -1,24 +1,18 @@
 // jsonc.test.ts — tests for scripts/lib/jsonc.ts (spec 0245 R8, R12; PLAN v2
 // step 9, plan review v1-F2, v1-F4, v2-F3).
 //
-// - `stripJsonComments` against a corpus of the cases the Gemini CLI JSONC
-//   dialect makes tricky, AND byte for byte against the shell reference
-//   `gs_strip_jsonc` (scripts/lib/gemini-settings.sh), so the TypeScript port
-//   cannot drift. The parity check needs `jq`: it skips locally without it and
-//   FAILS when `CI` is set, where the capability declares `tools: [jq]`.
+// - `stripJsonComments` against a corpus of the cases the Gemini CLI JSONC dialect makes tricky
+//   (the expected outputs were checked byte for byte against the shell reference `gs_strip_jsonc`
+//   before it was retired, spec 0266).
 // - `findDuplicateKey` on duplicates at depth, by decoded key value.
 //
 // Run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/jsonc.test.ts
 
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { describe, test } from "node:test";
-import { fileURLToPath } from "node:url";
 
 import { findDuplicateKey, stripJsonComments } from "../lib/jsonc.ts";
-
-const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 // [label, input, expected output]. Each comment becomes exactly ONE space.
 const CORPUS: readonly (readonly [string, string, string])[] = [
@@ -82,44 +76,6 @@ describe("stripJsonComments", () => {
     assert.equal(stripJsonComments(unclosed), unclosed);
     assert.ok(process.hrtime.bigint() - t0 < 250_000_000n, "took over 250 ms (quadratic rescan)");
   });
-});
-
-/** `gs_strip_jsonc` over `input`, raw bytes out (`-j`: no trailing newline). */
-function shellStrip(input: string): string {
-  const result = spawnSync(
-    "bash",
-    [
-      "-c",
-      'source scripts/lib/common.sh </dev/null && source scripts/lib/gemini-settings.sh </dev/null && jq -Rjs "$_GS_JQ_DEFS gs_strip_jsonc"',
-    ],
-    { cwd: REPO, input, encoding: "utf8" },
-  );
-  assert.equal(result.status, 0, `shell reference failed: ${result.stderr}`);
-  return result.stdout;
-}
-
-const hasJq = spawnSync("jq", ["--version"]).status === 0;
-
-describe("stripJsonComments matches gs_strip_jsonc byte for byte", () => {
-  if (!hasJq) {
-    if (process.env["CI"]) {
-      test("jq is available (required under CI)", () => {
-        assert.fail("jq is not on PATH; the parity check is mandatory when CI is set");
-      });
-    } else {
-      test(
-        "parity with gs_strip_jsonc",
-        { skip: "jq is not on PATH (required only under CI)" },
-        () => {},
-      );
-    }
-  } else {
-    for (const [label, input] of CORPUS) {
-      test(label, () => {
-        assert.equal(stripJsonComments(input), shellStrip(input));
-      });
-    }
-  }
 });
 
 describe("findDuplicateKey", () => {

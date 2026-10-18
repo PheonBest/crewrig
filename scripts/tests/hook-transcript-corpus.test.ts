@@ -22,7 +22,6 @@ import {
   type TranscriptClass,
 } from "../lib/transcript-recognition.ts";
 import { lookupHook } from "../lib/hook-registry.ts";
-import { bashLibs } from "./lib/bash-libs.ts";
 import { wiring } from "./lib/guard-wiring-fixtures.ts";
 import { cleanupAll, read, realTmp, REPO, SKIP_POSIX } from "./lib/worktree-fixtures.ts";
 
@@ -73,15 +72,6 @@ const NEVER: readonly string[] = [
   "MEMPALACE_TRANSCRIPT_ENABLED=`cat /x/flag` bash /x/hooks/mempalace-transcript.sh",
   "set NoDefaultCurrentDirectoryInExePath=1&& node C:/x/hooks/mempalace-transcript.ts claude-code && calc",
 ];
-
-/** Run a jq predicate of the Bash library over `file` (a JSON array of `{command}` rows). */
-function bashOver(file: string, predicate: string): string[] {
-  const res = bashLibs(
-    `jq -r --arg shape grouped "$_UC_JQ_DEFS .[] | {type: \\"command\\", command} | ${predicate}" ${JSON.stringify(file)}`,
-  );
-  assert.equal(res.status, 0, res.stderr);
-  return res.stdout.replace(/\n$/, "").split("\n");
-}
 
 function rowsFile(commands: readonly string[]): string {
   const file = path.join(realTmp("crewrig-transcript-corpus-"), "rows.json");
@@ -191,60 +181,5 @@ describe("the generic render/rewrite path refuses the transcript hook (review i1
     assert.match(res.stderr, /transcript render\|rewrite/);
     assert.equal(read(file), before);
     assert.deepEqual(fs.readdirSync(path.dirname(file)), ["settings.json"]);
-  });
-});
-
-describe("the Bash twin agrees (R24)", { skip: SKIP_POSIX }, () => {
-  test("sr_transcript_class returns the corpus class of every row", () => {
-    const got = bashOver(CORPUS_FILE, "sr_transcript_class");
-    assert.equal(got.length, CORPUS.length);
-    CORPUS.forEach((row, i) => {
-      assert.equal(got[i], row.transcript, `${JSON.stringify(row.command)} (${row.note})`);
-    });
-  });
-
-  test("sr_transcript_class says foreign-prefix to every chained, substituted or redirected command (i1-F5)", () => {
-    assert.deepEqual(
-      bashOver(rowsFile(NEVER), "sr_transcript_class"),
-      NEVER.map(() => "foreign-prefix"),
-    );
-  });
-
-  test("sr_is_own is exactly: an owned transcript class, or a guard command", () => {
-    const own = bashOver(CORPUS_FILE, "sr_is_own");
-    const guard = bashOver(CORPUS_FILE, "sr_is_guard");
-    CORPUS.forEach((row, i) => {
-      const expected = OWN_CLASSES.includes(row.transcript) || guard[i] === "true";
-      assert.equal(own[i], String(expected), `${JSON.stringify(row.command)} (${row.note})`);
-    });
-  });
-
-  test("it rejects the foreign-prefix row and accepts the direct row of the scenario", () => {
-    const file = rowsFile([
-      'MEMPALACE_TRANSCRIPT_ENABLED=0 node "/x/hooks/mempalace-transcript.ts" claude-code',
-      'node "/x/hooks/mempalace-transcript.ts" claude-code',
-      'MEMPALACE_TRANSCRIPT_ENABLED=1 bash "/x/hooks/mempalace-transcript.sh" Stop',
-      'node "/x/hooks/mempalace-transcript.ts"',
-    ]);
-    assert.deepEqual(bashOver(file, "sr_is_own"), ["false", "true", "true", "true"]);
-  });
-
-  test("the guard half is unchanged: sr_is_guard gives C2's verdict on C2's corpus", () => {
-    const got = bashOver(GUARD_CORPUS_FILE, "sr_is_guard");
-    GUARD_CORPUS.forEach((row, i) => {
-      assert.equal(got[i], String(row.guard), JSON.stringify(row.command));
-    });
-  });
-
-  test("a guard command is owned whatever the transcript half says of it", () => {
-    const own = bashOver(GUARD_CORPUS_FILE, "sr_is_own");
-    const transcript = bashOver(GUARD_CORPUS_FILE, "sr_is_transcript");
-    GUARD_CORPUS.forEach((row, i) => {
-      assert.equal(
-        own[i],
-        String(row.guard || transcript[i] === "true"),
-        JSON.stringify(row.command),
-      );
-    });
   });
 });

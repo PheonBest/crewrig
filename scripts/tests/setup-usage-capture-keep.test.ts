@@ -1,8 +1,7 @@
-// setup-usage-capture-keep.test.ts — usageCaptureKeep (scripts/lib/setup/usage-capture-keep.ts)
-// against `usage_capture_keep` of scripts/lib/usage-capture-optin.sh (spec 0256 requirement 30).
-// Every case runs the same input through the shell function and through the TypeScript module, on two
-// copies of one configuration; the status, both streams, the file bytes, its mode and the backups
-// must be identical (harness: lib/keep-differential.ts). POSIX with jq only.
+// setup-usage-capture-keep.test.ts — usageCaptureKeep (scripts/lib/setup/usage-capture-keep.ts), spec 0256
+// requirement 30. Every case runs one input through the module and asserts its outcome (status, both
+// streams, file bytes, mode, backups); the shell oracle went with the library (spec 0266).
+// Harness: lib/keep-differential.ts. POSIX with jq only.
 
 import assert from "node:assert/strict";
 import { after, describe, test } from "node:test";
@@ -27,12 +26,11 @@ import { cleanupAll, SKIP_POSIX, which } from "./lib/worktree-fixtures.ts";
 after(cleanupAll);
 const SKIP = SKIP_POSIX || (which("jq") === null ? "SKIP: needs jq" : false);
 
-function same(name: string, c: (p: Paths) => Case, expect?: (sh: Outcome) => void) {
+function same(name: string, c: (p: Paths) => Case, expect?: (ts: Outcome) => void) {
   test(name, { skip: SKIP }, () => {
     const p = makePaths();
-    const { sh, ts } = compare(c(p), p);
-    assert.deepEqual(ts, sh);
-    expect?.(sh);
+    const { ts } = compare(c(p), p);
+    expect?.(ts);
   });
 }
 
@@ -257,10 +255,8 @@ describe("usageCaptureKeep is byte-identical to usage_capture_keep", () => {
     { skip: SKIP },
     () => {
       const p = makePaths();
-      const { sh, ts } = compare({ cli: "claude", input: { hooks: [] } }, p);
+      const { ts } = compare({ cli: "claude", input: { hooks: [] } }, p);
       assert.equal(ts.status, 1);
-      assert.equal(sh.status, 1);
-      assert.equal(ts.file, sh.file);
     },
   );
 
@@ -275,6 +271,5 @@ describe("usageCaptureKeep is byte-identical to usage_capture_keep", () => {
     );
     const again = compare({ cli: "copilot", input: first.ts.file ?? "" }, p);
     assert.match(again.ts.out, /kept unchanged/);
-    assert.deepEqual(again.ts, again.sh);
   });
 });

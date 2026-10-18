@@ -1,7 +1,5 @@
 // usage-capture-rig.ts — fixtures of setup-usage-capture.test.ts: a checkout copied from this repository,
-// configurations of each CLI's shape, and the differential runner that executes the Bash function of
-// scripts/lib/usage-capture-optin.sh and its TypeScript twin over two copies of one configuration and
-// compares exit status, both streams (paths and backup stamps normalised), file bytes and file mode.
+// configurations of each CLI's shape, and the runner of the TypeScript leg over one configuration.
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -9,7 +7,6 @@ import path from "node:path";
 
 import type { SpawnResult, Spawner } from "../../lib/setup/context.ts";
 import type { UcCtx } from "../../lib/setup/usage-capture.ts";
-import { bashLibs } from "./bash-libs.ts";
 import { cleanEnv, realTmp, REPO, SKIP_POSIX, which } from "./worktree-fixtures.ts";
 
 export const SKIP = SKIP_POSIX || (which("jq") === null ? "SKIP: jq is needed" : false);
@@ -93,32 +90,13 @@ export function rig(initial: unknown | string | undefined, co = checkout()): Rig
   return rigged;
 }
 
-/** Run the Bash `body` (variables CLI, CFG, CO, FP) and the TypeScript leg; assert they agree. */
+/** Run the TypeScript leg over the configuration; returns its status, streams and resulting file. */
 export function differential(
-  cli: Cli,
   r: Rig,
-  body: string,
   ts: (run: Run, cfg: string, repo: string) => number,
-  extra: Record<string, string> = {},
 ): { rc: number; out: string[]; err: string[]; file: string | null } {
-  const sh = bashLibs(`${body}\nexit $?`, {
-    ...cleanEnv(),
-    CLI: cli,
-    CFG: r.cfgB,
-    CO: r.co,
-    ...extra,
-  });
   const run = runCtx(r.co);
   const rc = ts(run, r.cfgT, r.co);
-  const norm = (t: string, f: string): string[] => lines(stamp(t.split(f).join("<F>")).trimEnd());
-  assert.equal(rc, sh.status, "exit status");
-  assert.deepEqual(norm(run.out.join("\n"), r.cfgT), norm(sh.stdout, r.cfgB), "stdout");
-  assert.deepEqual(norm(run.err.join("\n"), r.cfgT), norm(sh.stderr, r.cfgB), "stderr");
   const there = fs.existsSync(r.cfgT);
-  assert.equal(there, fs.existsSync(r.cfgB), "file presence");
-  if (there) {
-    assert.equal(fs.readFileSync(r.cfgT, "utf8"), fs.readFileSync(r.cfgB, "utf8"), "file bytes");
-    assert.equal(mode(r.cfgT), mode(r.cfgB), "file mode");
-  }
   return { rc, out: run.out, err: run.err, file: there ? fs.readFileSync(r.cfgT, "utf8") : null };
 }
