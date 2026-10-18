@@ -5,7 +5,7 @@
 // supervisor, so they run on every platform.
 //
 // G6 is the argv-credential static guard (spec 0149 R1, R2, issue #1247). Its
-// sweep covers hooks/mempalace-transcript.sh and this
+// sweep covers hooks/mempalace-transcript.ts and this
 // suite's own files (the glob below, never empty), because a static guard
 // belongs next to the dynamic argv-stub test (mempalace-transcript-hook.test.ts)
 // that already exercises the same regression on that file. The one deliberate
@@ -98,7 +98,7 @@ describe("G6 argv credential static guard (R8, spec 0149, #1247)", () => {
     .filter((n) => /^mcp-daemon-.*\.test\.ts$/.test(n))
     .map((n) => path.join(REPO, "scripts", "tests", n));
   const swept = [
-    path.join(REPO, "hooks", "mempalace-transcript.sh"),
+    path.join(REPO, "hooks", "mempalace-transcript.ts"),
     path.join(REPO, "scripts", "tests", "lib", "mcp-daemon-rig.ts"),
     ...testFiles,
   ];

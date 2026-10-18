@@ -1,6 +1,6 @@
 // mempalace-transcript-hook.test.ts — port of test-mempalace-transcript-hook.sh
-// (spec 0260, row J1a, unit A3). Black box through the forwarding shim
-// `bash hooks/mempalace-transcript.sh` against the loopback stub daemon: what the
+// (spec 0260, row J1a, unit A3). Black box through the entry
+// `node hooks/mempalace-transcript.ts` against the loopback stub daemon: what the
 // hook sends, what it prints, how it exits. Every scenario is a function of the
 // shim path so the same check proves the real hook (must pass) and a mutated
 // temp copy of it (must fail): a mutant that survives is a test that proves nothing.
@@ -17,7 +17,7 @@ import {
   daemonEnv,
   drawerArgs,
   hookEnv,
-  HOOK_SH,
+  HOOK_TS,
   makeHome,
   startStub,
   writeToken,
@@ -34,7 +34,13 @@ const ENABLED = { MEMPALACE_TRANSCRIPT_ENABLED: "1" };
 
 /** Pipe `input` through `bash <shim>` (legacy no-argument form, enabled by the environment). */
 function runShim(shim: string, input: string, env: NodeJS.ProcessEnv, cwd: string) {
-  const r = spawnSync("bash", [shim], { input, env, cwd, encoding: "utf8", timeout: 60_000 });
+  const r = spawnSync(process.execPath, ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", shim], {
+    input,
+    env,
+    cwd,
+    encoding: "utf8",
+    timeout: 60_000,
+  });
   return { status: r.status, stdout: r.stdout, stderr: r.stderr };
 }
 
@@ -190,25 +196,16 @@ const HAVE_BASH = which("bash") !== null;
 
 after(() => cleanupAll());
 
-describe("hook through the shim (bash hooks/mempalace-transcript.sh)", () => {
+describe("hook through its entry (node hooks/mempalace-transcript.ts)", () => {
   for (const [name, scenario] of SCENARIOS) {
     test(name, async (t) => {
-      if (!requireOrSkip(t, HAVE_BASH, "bash is required for the shim", { posixOnly: true }))
-        return;
-      assert.equal(await scenario(HOOK_SH), null);
+      assert.equal(await scenario(HOOK_TS), null);
     });
   }
 });
 
 // Mutation proof: each mutant is a temp copy of the hook; the named scenario must fail on it.
 const MUTANTS: Array<[string, string, string | RegExp, string, string]> = [
-  [
-    "shim forwards to a wrong entry",
-    "hooks/mempalace-transcript.sh",
-    'mempalace-transcript.ts" "$@"',
-    'mempalace-transcript-x.ts" "$@"',
-    "spec-0161-r1/r2: human prompt is [USER] Run the test suite",
-  ],
   [
     "drop the [HARNESS] prefix",
     "scripts/lib/mempalace-transcript/classify.ts",
@@ -270,8 +267,6 @@ const MUTANTS: Array<[string, string, string | RegExp, string, string]> = [
 describe("mutation proof: every mutant of a temp copy is caught", () => {
   for (const [name, file, needle, replacement, caughtBy] of MUTANTS) {
     test(`MUTATION RED ${name} -> ${caughtBy}`, async (t) => {
-      if (!requireOrSkip(t, HAVE_BASH, "bash is required for the shim", { posixOnly: true }))
-        return;
       let copy: MutationCopy | undefined;
       try {
         copy = copyTracked(REPO, ["hooks", "scripts/lib", "package.json"], {
@@ -279,7 +274,7 @@ describe("mutation proof: every mutant of a temp copy is caught", () => {
         });
         applyMutation(copy, file, needle, replacement);
         const scenario = SCENARIOS.find(([n]) => n === caughtBy)![1];
-        const violation = await scenario(path.join(copy.root, "hooks", "mempalace-transcript.sh"));
+        const violation = await scenario(path.join(copy.root, "hooks", "mempalace-transcript.ts"));
         assert.notEqual(violation, null, `mutant survived: ${name}`);
       } finally {
         copy?.dispose();

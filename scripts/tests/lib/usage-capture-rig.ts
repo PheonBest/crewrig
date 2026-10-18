@@ -26,6 +26,8 @@ export function checkout(): string {
       fs.copyFileSync(path.join(REPO, "hooks", name), path.join(co, "hooks", name));
     }
   }
+  // The shim is gone from the repository; a checkout that still carries one is the legacy layout.
+  fs.writeFileSync(path.join(co, "hooks", "usage-capture.sh"), "");
   return co;
 }
 

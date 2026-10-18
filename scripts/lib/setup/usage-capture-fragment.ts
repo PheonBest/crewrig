@@ -84,8 +84,11 @@ export function usageCaptureAbs(
     ctx.io.err(unsafeMessage(repoDir));
     return null;
   }
-  if (!isRegularFile(src)) {
-    ctx.io.err(`  ERROR: capture script not found at ${src}.`);
+  // The `.sh` form names a legacy shim that no checkout ships any more (spec 0266): it is a name only, so
+  // it needs no file; its directory is the one the `.ts` entry lives in.
+  const named = ext === "sh" ? `${repoDir}/hooks/usage-capture.ts` : src;
+  if (!isRegularFile(named)) {
+    ctx.io.err(`  ERROR: capture script not found at ${named}.`);
     return null;
   }
   const dir = fs.realpathSync.native(path.dirname(src));
