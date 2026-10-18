@@ -1,7 +1,7 @@
 ---
 id: "0253"
 slug: history-import-operational-commands-typescript
-status: draft
+status: approved
 complexity: small
 interaction-mode: MINIMAL
 related-issue: 1515
@@ -53,8 +53,9 @@ and the recorded spawn is `[process.execPath, <abs>/scripts/usage-mirror.ts,
 
 **Scenario:** A failed spawn never changes the outcome of the write
 
-Given the setup above, with `process.execPath` made unspawnable in the child under
-test
+Given the setup above, with the spawn made to fail by a `NODE_OPTIONS --require` preload stub loaded in
+the writing process, once as an asynchronous `error` event and once as a
+synchronous throw from `spawn`
 When a usage record is written
 Then the write exits 0 with its record stored, the pending marker exists, nothing
 is written to standard error, and no unhandled `error` event is raised.
@@ -118,9 +119,10 @@ Replacement:
 > `scripts/usage-mirror.ts`, `"--from-write"`], with no shell, `detached: true`,
 > `stdio: 'ignore'` and `windowsHide: true`, then call `unref()`. The spawn is never
 > awaited and adds no latency to the write. An `error` listener SHALL be attached
-> before `unref()` so that a failed spawn (`ENOENT`, `EACCES`, `EMFILE` and the
-> like) never raises an unhandled event and never changes the outcome of the write:
-> the pending marker is the recovery, since the next write's spawn or
+> before `unref()`, and the `spawn` call SHALL sit in a `try`/`catch`, so that a
+> failed spawn (`ENOENT`, `EACCES`, `EMFILE` and the like, asynchronous or a
+> synchronous throw) never raises an unhandled event and never changes the
+> outcome of the write: the pending marker is the recovery, since the next write's spawn or
 > `usage-mirror --reconcile` retries it. No `bash` on `PATH` is required anywhere
 > on this path. The earlier statement that this spec does not edit the JavaScript
 > under `scripts/lib/usage-store/` is withdrawn for this one function.
