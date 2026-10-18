@@ -83,6 +83,20 @@ their rows here.
 | `scripts/monorepo-release.sh` | `node scripts/monorepo-release.ts` | #1344 slice 3c |
 | `scripts/merge-spec-pr.sh` | `node scripts/merge-spec-pr.ts` | #1344 slice 3c |
 | `scripts/sweep-en-us.sh` | `node scripts/sweep-en-us.ts` | #1344 slice 3c |
+| `scripts/lib/common.sh` | The TypeScript setup modules under `scripts/lib/setup/` and the service modules under `scripts/lib/service/`; the MemPalace pin moved to `scripts/lib/mempalace-pin.json` | `#1344 slice 5` |
+| `scripts/lib/gemini-settings.sh` | `scripts/lib/setup/gemini-settings.ts`, `gemini-settings-merge.ts`, `gemini-settings-seed.ts`; `scripts/lib/jsonc.ts` | `#1344 slice 5` |
+| `scripts/lib/mcp-daemon-launcher.sh` | `scripts/lib/service/launcher/mcp-daemon-launcher.ts`, installed by `scripts/lib/service/program-install.ts` | `#1344 slice 5` |
+| `scripts/lib/render-command.sh` | `scripts/lib/render-command.ts` | `#1344 slice 5` |
+| `scripts/lib/usage-capture-optin.sh` | `scripts/usage-capture-optin.ts` and `scripts/lib/setup/usage-capture*.ts`, `session-recording*.ts`, `hooks-rewrite.ts` | `#1344 slice 5` |
+| `scripts/lib/extension-hooks.sh` | `scripts/lib/extension/hooks-emit.ts`, `hooks-resolve.ts`, `hooks-vocab.ts`, `validate-hooks.ts` | `#1344 slice 5` |
+| `scripts/lib/extension-install.sh` | `scripts/lib/install/antigravity-tokens.ts` | `#1344 slice 5` |
+| `scripts/usage-mirror.sh` | `scripts/usage-mirror.ts` | `#1344 slice 5` |
+| `scripts/status-chroma-server.sh` | `scripts/status-chroma-server.ts` | `#1344 slice 5` |
+| `hooks/usage-capture.sh` | `hooks/usage-capture.ts` (an installed `bash .../usage-capture.sh` line is rewritten to `node .../usage-capture.ts` by the next setup run) | `#1344 slice 5` |
+| `hooks/mempalace-transcript.sh` | `hooks/mempalace-transcript.ts` (same rewrite on the next setup run) | `#1344 slice 5` |
+| `hooks/worktree-git-guard.sh` | `hooks/worktree-git-guard.ts` (same rewrite on the next setup run; the guard is absent until then) | `#1344 slice 5` |
+| `scripts/lib/tls-exec.sh` | `scripts/tls-exec.ts` (module `scripts/lib/tls-exec/run.ts`). An installed MCP registration or Chroma unit still naming `bash <repo>/scripts/lib/tls-exec.sh` is rewritten by the next `node scripts/setup-<cli>-interactive.ts` run, and until then it fails with a missing-file error | `#1344 slice 5b` |
+| `scripts/lib/tls-delegation.sh` | `scripts/tls-delegation.ts` (detection `scripts/lib/setup/tls-detect.ts`, offer `scripts/lib/setup/tls-offer.ts`) | `#1344 slice 5b` |
 
 From a built skill directory the same commands read `node scripts/curate.ts`,
 `node scripts/schedule-curator.ts` and `node scripts/setup-labels.ts`; the
