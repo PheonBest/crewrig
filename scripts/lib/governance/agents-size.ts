@@ -2,7 +2,7 @@
 // scripts/check-agents-size.sh).
 //
 // Usage: evaluateSize(path) -> { code, stdout, stderr }
-// Threshold 22000 bytes; a size greater than or equal to it fails (`-ge`).
+// Threshold 19100 bytes; a size greater than or equal to it fails (`-ge`).
 // Bytes are `fs.statSync().size`, never a character count.
 // Exit codes: 0 under the threshold, 1 at or over it or the file is unreadable.
 // Finding-line format: the two historical ERROR lines on stderr, one OK line on
@@ -12,7 +12,7 @@
 
 import { statSync } from "node:fs";
 
-export const THRESHOLD = 22000;
+export const THRESHOLD = 19100;
 
 export interface SizeOutcome {
   code: 0 | 1;
@@ -43,7 +43,7 @@ export function evaluateSize(file: string): SizeOutcome {
       stdout: "",
       stderr:
         `ERROR: AGENTS.md is ${size} bytes — meets or exceeds the ${THRESHOLD}-byte threshold.\n` +
-        "Extract more content to docs/ to bring AGENTS.md below 22 000 bytes.\n",
+        "Extract more content to docs/ to bring AGENTS.md below 19 100 bytes.\n",
     };
   }
   return {
