@@ -884,6 +884,7 @@ jobs:
               - 'scripts/lib/node-floor-guard.js'
               - 'scripts/tests/tar-writer.test.ts'
               - 'scripts/tests/docs-index.test.ts'
+              - 'scripts/tests/docs-index-walk.test.ts'
               - 'scripts/tests/build-docs-index-entry.test.ts'
               - 'scripts/tests/lib/docs-index-entry-tree.ts'
               - 'scripts/tests/packaging-file-size.test.ts'
@@ -932,7 +933,7 @@ jobs:
         run: node scripts/lib/node-floor-guard.js
       - name: Test the TypeScript archive writer, documentation index and release packaging modules
         if: steps.filter.outputs.packaging-modules-ts == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/build-docs-index-entry.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/release-sync-manifests.test.ts scripts/tests/packaging-release-golden-portable.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tar-writer.test.ts scripts/tests/docs-index.test.ts scripts/tests/docs-index-walk.test.ts scripts/tests/build-docs-index-entry.test.ts scripts/tests/packaging-file-size.test.ts scripts/tests/packaging-release-package.test.ts scripts/tests/packaging-release-package-cli.test.ts scripts/tests/packaging-spawn-tiers.test.ts scripts/tests/packaging-entries.test.ts scripts/tests/release-sync-manifests.test.ts scripts/tests/packaging-release-golden-portable.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -1575,6 +1576,9 @@ jobs:
               - 'tests/e2e/**'
               - 'scripts/e2e/**'
               - 'docs/cli-matrix.md'
+              - 'docs/cli-matrix/**'
+              - 'scripts/build-cli-matrix.ts'
+              - 'scripts/lib/build-cli-matrix/**'
               - 'docker/e2e/.versions.lock'
               - '.gitignore'
       - name: Install yq v4.44.3
@@ -3251,6 +3255,41 @@ jobs:
       - name: Setup entries proof
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/tests/lib/windows-setup-proof.ts
 
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
+
+  cli-matrix-fresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            cli-matrix-fresh:
+              - 'docs/cli-matrix.md'
+              - 'docs/cli-matrix/**'
+              - 'scripts/build-cli-matrix.ts'
+              - 'scripts/lib/build-cli-matrix/**'
+              - 'scripts/tests/build-cli-matrix.test.ts'
+              - 'scripts/lib/node-floor-guard.js'
+      - uses: actions/setup-node@v4
+        if: steps.filter.outputs.cli-matrix-fresh == 'true'
+        with:
+          node-version: 24
+      - name: Install Task
+        if: steps.filter.outputs.cli-matrix-fresh == 'true'
+        run: sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+      - name: Floor guard accepts Node.js 24
+        if: steps.filter.outputs.cli-matrix-fresh == 'true'
+        run: node scripts/lib/node-floor-guard.js
+      - name: Check CLI matrix freshness
+        if: steps.filter.outputs.cli-matrix-fresh == 'true'
+        run: task cli-matrix:check
+      - name: Test the CLI matrix generator
+        if: steps.filter.outputs.cli-matrix-fresh == 'true'
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-cli-matrix.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
