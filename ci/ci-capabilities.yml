@@ -1426,6 +1426,7 @@ capabilities:
           - "scripts/tests/governance-*"
           - "scripts/tests/lib/governance-*"
           - "scripts/tests/check-agents-size.test.ts"
+          - "scripts/tests/check-rules-size.test.ts"
       - on: push
         branches: [main, "release/**"]
         paths:
@@ -1435,13 +1436,14 @@ capabilities:
           - "scripts/tests/governance-*"
           - "scripts/tests/lib/governance-*"
           - "scripts/tests/check-agents-size.test.ts"
+          - "scripts/tests/check-rules-size.test.ts"
     portability: portable
     requires:
       runtime: node@24
     command:
       - npm ci --omit=dev --workspaces=false
       - node scripts/lib/node-floor-guard.js
-      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test 'scripts/tests/governance-*.test.ts' scripts/tests/check-agents-size.test.ts
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test 'scripts/tests/governance-*.test.ts' scripts/tests/check-agents-size.test.ts scripts/tests/check-rules-size.test.ts
 
   # Spec 0259 R26-R28 (ticket #1338), PR P0: the governance checks from PowerShell. The production
   # dependencies are installed first, the floor guard runs, then every
@@ -3633,6 +3635,19 @@ capabilities:
       runtime: node@24
     command:
       - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-agents-size.ts
+
+  - id: check-rules-size
+    name: "Check always-loaded core rules size"
+    trigger:
+      - on: pull-request
+        branches: [main, "release/**"]
+      - on: push
+        branches: [main, "release/**"]
+    portability: portable
+    requires:
+      runtime: node@24
+    command:
+      - node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-rules-size.ts
 
   - id: check-feedback-routing
     name: "Enforce upstream-tier feedback routing"

@@ -362,6 +362,7 @@ jobs:
               - 'scripts/tests/governance-*'
               - 'scripts/tests/lib/governance-*'
               - 'scripts/tests/check-agents-size.test.ts'
+              - 'scripts/tests/check-rules-size.test.ts'
       - uses: actions/setup-node@v4
         if: steps.filter.outputs.governance-checks-ts == 'true'
         with:
@@ -375,7 +376,7 @@ jobs:
         run: node scripts/lib/node-floor-guard.js
       - name: Test the governance checks
         if: steps.filter.outputs.governance-checks-ts == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test 'scripts/tests/governance-*.test.ts' scripts/tests/check-agents-size.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test 'scripts/tests/governance-*.test.ts' scripts/tests/check-agents-size.test.ts scripts/tests/check-rules-size.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -3440,6 +3441,20 @@ jobs:
           node-version: 24
       - name: Check AGENTS.md file size
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-agents-size.ts
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
+
+  check-rules-size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check always-loaded core rules size
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-rules-size.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure

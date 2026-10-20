@@ -636,6 +636,7 @@ $ yq '.jobs | keys' .github/workflows/build.yml
 - check-extension-version-bump
 - check-spec-id-reserved
 - check-agents-size
+- check-rules-size
 - check-feedback-routing
 - gitlab-ci-check
 - check-ci-parity

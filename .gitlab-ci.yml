@@ -1067,7 +1067,7 @@ governance-checks-ts:
   script:
     - "npm ci --omit=dev --workspaces=false"
     - "node scripts/lib/node-floor-guard.js"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test 'scripts/tests/governance-*.test.ts' scripts/tests/check-agents-size.test.ts"
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test 'scripts/tests/governance-*.test.ts' scripts/tests/check-agents-size.test.ts scripts/tests/check-rules-size.test.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes:
@@ -1077,6 +1077,7 @@ governance-checks-ts:
         - "scripts/tests/governance-*"
         - "scripts/tests/lib/governance-*"
         - "scripts/tests/check-agents-size.test.ts"
+        - "scripts/tests/check-rules-size.test.ts"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes:
         - "scripts/check-*.ts"
@@ -1085,6 +1086,7 @@ governance-checks-ts:
         - "scripts/tests/governance-*"
         - "scripts/tests/lib/governance-*"
         - "scripts/tests/check-agents-size.test.ts"
+        - "scripts/tests/check-rules-size.test.ts"
 
 model-ci-tooling-ts:
   image: node:24
@@ -2795,6 +2797,14 @@ check-agents-size:
   image: node:24
   script:
     - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-agents-size.ts"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
+
+check-rules-size:
+  image: node:24
+  script:
+    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-rules-size.ts"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'

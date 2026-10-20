@@ -17,7 +17,7 @@ import type { Run } from "./lib/windows-proof-support.ts";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const script = path.join(repo, "scripts", "check-agents-size.ts");
-const threshold = 22000;
+const threshold = 19100;
 
 function withBox<T>(body: (home: string, bin: string) => T): T {
   const root = fs.realpathSync.native(
@@ -86,7 +86,7 @@ describe("windows governance core: check-agents-size", () => {
       );
       assert.match(
         err,
-        /Extract more content to docs\/ to bring AGENTS\.md below 22 000 bytes\./,
+        /Extract more content to docs\/ to bring AGENTS\.md below 19 100 bytes\./,
         why(r, "second line"),
       );
       assert.equal(r.out, "", why(r, "no verdict on stdout"));
