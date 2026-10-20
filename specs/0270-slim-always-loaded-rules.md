@@ -1,7 +1,7 @@
 ---
 id: "0270"
 slug: slim-always-loaded-rules
-status: approved
+status: implemented
 complexity: standard
 interaction-mode: AUTO
 related-issue: 1727
