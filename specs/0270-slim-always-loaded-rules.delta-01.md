@@ -1,7 +1,7 @@
 ---
 id: "0270"
 slug: slim-always-loaded-rules
-status: draft
+status: approved
 complexity: standard
 interaction-mode: AUTO
 related-issue: 1727
@@ -69,17 +69,17 @@ Then  their text is byte-identical
 
 Original requirement 1:
 
-> 1. `artifacts/core/rules/60-tools.md` SHALL keep only instructions an agent
->    needs in every session, and SHALL measure at most 10,240 bytes after this
->    spec is implemented (baseline 32,922).
+> Requirement 1: `artifacts/core/rules/60-tools.md` SHALL keep only instructions an agent
+> needs in every session, and SHALL measure at most 10,240 bytes after this
+> spec is implemented (baseline 32,922).
 
 Replacement:
 
-> 1. `artifacts/core/rules/60-tools.md` SHALL keep only instructions an agent
->    needs in every session, within the relocation set of requirements 2, 2a and
->    4, and SHALL measure at most 25,300 bytes after this spec is implemented
->    (baseline 32,922). The plan stage SHALL record the measured post-move size;
->    the CI budget of requirement 10 derives from it.
+> Requirement 1: `artifacts/core/rules/60-tools.md` SHALL keep only instructions an agent
+> needs in every session, within the relocation set of requirements 2, 2a and
+> 4, and SHALL measure at most 25,300 bytes after this spec is implemented
+> (baseline 32,922). The plan stage SHALL record the measured post-move size;
+> the CI budget of requirement 10 derives from it.
 
 Measurement on `origin/main` (9d737a76), `wc -c` over the line ranges of
 `artifacts/core/rules/60-tools.md`:
@@ -104,42 +104,42 @@ requirement-10 budget is 27,800 B.
 
 Original requirement 3:
 
-> 3. Text that only concerns authors of bundled scripts or maintainers SHALL go to
->    `docs/`; text an agent may need during a session SHALL go to the store.
->    The plan stage SHALL record the destination of each relocated block and the
->    resulting store size, because the optional store mirror copies every store
->    file at session start.
+> Requirement 3: Text that only concerns authors of bundled scripts or maintainers SHALL go to
+> `docs/`; text an agent may need during a session SHALL go to the store.
+> The plan stage SHALL record the destination of each relocated block and the
+> resulting store size, because the optional store mirror copies every store
+> file at session start.
 
 Replacement:
 
-> 3. Destinations are fixed by requirement 2b: every relocated block goes to
->    `docs/`, with the operative clause an agent needs kept in its stub. The
->    system-context store therefore stays at five files totalling 16,319 B
->    (measured on `origin/main`), and the optional store mirror's per-session
->    cost is unchanged. The *Wake-up budget* table, which records the mirror cap
->    (about 16 KB) and the total wake-up (about 24 KB), moves verbatim to its
->    `docs/` page with those figures unchanged, so no cap changes meaning; its
->    16,315 B figure is a pre-existing approximation of 16,319 B and is not
->    edited by this spec. The plan stage SHALL re-verify the store total with
->    `wc -c` before the move.
+> Requirement 3: Destinations are fixed by requirement 2b: every relocated block goes to
+> `docs/`, with the operative clause an agent needs kept in its stub. The
+> system-context store therefore stays at five files totalling 16,319 B
+> (measured on `origin/main`), and the optional store mirror's per-session
+> cost is unchanged. The *Wake-up budget* table, which records the mirror cap
+> (about 16 KB) and the total wake-up (about 24 KB), moves verbatim to its
+> `docs/` page with those figures unchanged, so no cap changes meaning; its
+> 16,315 B figure is a pre-existing approximation of 16,319 B and is not
+> edited by this spec. The plan stage SHALL re-verify the store total with
+> `wc -c` before the move.
 
 Original requirement 15:
 
-> 15. The logbook SHALL record, before and after, E1 measured as the sum of
->     `AGENTS.md`, the files it imports, and every deployed rule on the Claude Code
->     install, itemised per file, together with E2 and the quality indicators Q1
->     to Q4 of epic section 4.2.
+> Requirement 15: The logbook SHALL record, before and after, E1 measured as the sum of
+> `AGENTS.md`, the files it imports, and every deployed rule on the Claude Code
+> install, itemised per file, together with E2 and the quality indicators Q1
+> to Q4 of epic section 4.2.
 
 Replacement:
 
-> 15. The logbook SHALL record, before and after, E1 measured as the sum of
->     `AGENTS.md`, the files it imports, and every deployed rule on the Claude Code
->     install, itemised per file, together with E2 and the quality indicators Q1
->     to Q4 of epic section 4.2. E1 is reported, not gated: the epic target of
->     20 KB is not an acceptance criterion of this ticket. The expected E1 is
->     about 57,000 B (today about 71,660 B; the tools rule falls by about 7,690 B
->     to 25,232 B, and `AGENTS.md` by about 6,900 B to roughly 15,000 B under
->     requirement 7), to be confirmed by the measurement.
+> Requirement 15: The logbook SHALL record, before and after, E1 measured as the sum of
+> `AGENTS.md`, the files it imports, and every deployed rule on the Claude Code
+> install, itemised per file, together with E2 and the quality indicators Q1
+> to Q4 of epic section 4.2. E1 is reported, not gated: the epic target of
+> 20 KB is not an acceptance criterion of this ticket. The expected E1 is
+> about 57,000 B (today about 71,660 B; the tools rule falls by about 7,690 B
+> to 25,232 B, and `AGENTS.md` by about 6,900 B to roughly 15,000 B under
+> requirement 7), to be confirmed by the measurement.
 
 Original scenario *Tools rule within budget*:
 
