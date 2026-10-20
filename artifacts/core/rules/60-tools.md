@@ -151,51 +151,10 @@ storage, a temporal knowledge graph, semantic search, and an agent diary.
 > procedure cannot be expressed via the MCP tools listed in *MCP Tools
 > Reference*, ask the user — do not reach for the CLI as a workaround.
 >
-> **Carve-out for bundled skill/agent scripts.** A skill or agent may
-> ship a versioned, source-controlled script that walks MemPalace
-> directly (e.g. via `from mempalace import …`) when the workload would
-> be infeasible through MCP alone — for instance, batch-reading
-> thousands of drawers, which a per-call MCP loop turns into a runtime
-> and token disaster. Such a script is allowed when **all** of these
-> hold:
->
-> 1. It is checked into the repository alongside the skill/agent that
->    invokes it (auditability replaces the per-call audit trail).
-> 2. It uses the MemPalace **Python library**, not the shell CLI binary,
->    so it inherits the same locking and schema guarantees as the MCP
->    server.
-> 3. It is **read-mostly**; any write path must justify why MCP
->    `mempalace_add_drawer` / `mempalace_update_drawer` cannot be used
->    instead, in a comment at the call site.
-> 4. The agent that invokes the script remains the agent of record —
->    the script is a sub-tool, not a substitute for the agent's MemPalace
->    discipline (Memory Activation Protocol still applies at session
->    start).
->
-> The Harness Curator (`artifacts/library/skills/harness-curator/`) is
-> the canonical user of this carve-out: it batch-reads the
-> `harness-friction` wing, which a per-drawer MCP loop would turn into
-> a multi-thousand-call traversal.
->
-> **Stdout hazard.** `mempalace.mcp_server` swaps `sys.stdout` at import
-> time to protect its own JSON-RPC channel from accidental pollution.
-> Any bundled script that imports from it AND needs to write structured
-> output to its own stdout (e.g. to be piped to another tool) must dup
-> fd 1 **before** the import — even when the import is function-local,
-> route every later print through the duped handle to be safe:
->
-> ```python
-> import os, sys
-> _REAL_STDOUT = os.fdopen(os.dup(1), "w", encoding="utf-8", closefd=False)
-> # ... later, inside a function ...
-> from mempalace.mcp_server import tool_get_drawer  # safe: stdout already duped
-> # ... write JSON through _REAL_STDOUT, not sys.stdout
-> ```
->
-> `closefd=False` is required so the duped fd survives interpreter
-> shutdown; without it, fd 1 closes at GC and any late `atexit` write
-> breaks. The Harness Curator's `curate.py` is the reference
-> implementation.
+> **Carve-out for bundled skill/agent scripts.** A versioned,
+> source-controlled script may use the MemPalace Python library (never the
+> shell CLI) when MCP alone is infeasible. Conditions and the *Stdout hazard*:
+> `docs/mempalace-bundled-scripts.md`.
 
 ### Palace Structure Conventions
 
@@ -277,41 +236,8 @@ system-context store*.
    protocol`;
    `handoff_key` is the bare decimal ticket number, identical across every CLI.
 
-**Reviewer-seat exemption.** A seated pass — an agent instantiated per
-`docs/reviewer-seat.md` → *Instantiating a seated pass*, occupying the
-`specs`, `plan`, or `review` surface, on any pass ordinal of that seat —
-skips step 3 (cross-tool handoff lookup) and step 6 (mandatory checkpoint
-write) of this sweep. It still runs steps 1, 2, 4, and 5 unchanged. Both
-skipped steps read and write the project's `task-handoff` drawer, which
-carries the *authoring session's* own progress notes: reading it would
-hand a cold seat exactly the context its references-only brief forbids,
-and step 6 would log a nonsensical "resumption" for a pass that never
-resumes anything. Every other role — the orchestrator, a `developer` pass,
-an `architect` pass acting outside a seated review, `pr-logbook`, etc. —
-stays fully bound to all six steps. See `AGENTS.md` → *Session Bootstrap*
-and `docs/reviewer-seat.md` → *Session Bootstrap for a seated pass*.
-
-**Why not `mempalace_search` without a wing filter?** The `transcripts`
-wing typically contains thousands of raw transcript drawers, many
-mentioning `[TASK:ongoing]` literally as documentation. Without a wing
-filter, transcript noise overwhelms the BM25 hybrid scoring and buries
-actual handoff entries. The wing+room scoped query above is the only
-deterministic discovery path through the current MCP surface.
-
-**Why not `mempalace_diary_read` for cross-tool resume?** Not because
-the tool lacks a `wing` parameter — it has one, and it works: an
-explicit `wing` on `mempalace_diary_write` determines the wing an
-entry is stored under, and an explicit `wing` on `mempalace_diary_read`
-restricts the read to that wing (confirmed live during issue #416; see
-`mcp-tools-reference.md` for the full corrected note, including the
-still-unresolved omitted-`wing` fallback). The diary lane stays out of
-the cross-tool handoff lane by the project's deliberate lane-mapping
-convention instead (see *Lane mapping* in
-`palace-structure-conventions.md`): the handoff lane is
-`mempalace_add_drawer`/`mempalace_update_drawer` on a project
-`wing`+`room`, while the diary lane is reserved for per-agent
-self-recovery. Use `mempalace_diary_read` for your own provenance
-recovery only.
+**Why not an unscoped search or a diary read for resume?** Rationale:
+`docs/mempalace-sweep-rationale.md`. The steps above are normative.
 
 **Optional — System-context store mirror (MemPalace only).** An opportunistic
 enhancement layered on the six-step sweep above, not a required part of it: when
@@ -323,52 +249,9 @@ MemPalace path of the store retrieval protocol (see *Retrieving the
 system-context store*). When MemPalace is absent, skip silently — the direct
 file read remains the default and no rule becomes unreachable.
 
-**Wake-up budget (bounded).** The session-start sweep above has a largely
-bounded, documented cost — bounded by construction for every core step
-except `mempalace_status`, the one global, unscoped call (see the
-*Overflow rule* below). It is denominated in **bytes** — the unit an
-agent can verify directly (`wc -c`) — with `~4 bytes/token` stated as an
-approximation (the true ratio varies by tokenizer and content).
-
-| Sweep component | Payload | ≈ tokens (@ ~4 B/tok) | Cap |
-|---|---|---|---|
-| Core sweep (the six numbered steps): `mempalace_status` + scoped `[TASK:ongoing]` search + `diary_read(last_n≤5)` + one `kg_query` + conditional checkpoint write | documented estimate (see issue #415) | — | ~8 KB (~2,000 tok) |
-| Optional store mirror: the 5 × `~/.crewrig/system-context/*.md` files, verbatim | 16,315 B | ~4,079 | ~16 KB (~4,000 tok) |
-| **Total wake-up (with mirror)** | | | **~24 KB (~6,000 tok)** |
-
-**Overflow rule.** If the budget would be exceeded, shed the optional
-store-mirror step first — its direct-file-read fallback (see *Retrieving
-the system-context store*) stays always-available, so shedding it leaves
-no rule unreachable. Never shed a core numbered step: the six steps are
-the deterministic resume path, and all but one are scoped by construction
-(the `[TASK:ongoing]` lookup is wing+room-filtered, `diary_read` is
-bounded by `last_n`, the `kg_query` is a single-entity lookup). The
-exception is `mempalace_status` (the sweep's first call): it is **global
-and unscoped** — the MCP surface exposes no scoping parameter — so its
-payload grows with the palace's total wing/room count, dominated by the
-`transcripts` archive, and in a mature multi-project install can alone
-approach or exceed the ~8 KB core cap (observed ~18–20 KB against the
-authoring palace; see issue #415). Its recourse is structural, not a
-smaller payload: `status` is read **once** — to enumerate the wings and
-note which (the `transcripts` archive) to exclude from the scoped steps
-that follow — then discarded, not retained verbatim or re-requested, so
-its transient read size is not a sustained context cost. Treat it as
-**best-effort**, not a figure the ~8 KB cap can guarantee.
-
-**Staleness.** The optional store-mirror step uses
-`mempalace_check_duplicate` (or a stored content hash) to skip drawers
-already mirrored verbatim, so it does not re-read and re-write every
-drawer each session.
-
-**Layered wake-up is not an agent action.** MemPalace's native layered
-wake-up (`L0–L3` / `MemoryStack.wake_up()`, exposed on the CLI as
-`wake-up`) is **not** reachable from an agent's reasoning loop: it is
-absent from the MCP tool surface and is therefore forbidden by the
-**MCP-only access from the agent prompt** guard at the head of this
-MemPalace section. This deterministic sweep (the six numbered steps plus
-the optional store-mirror step) is its bounded substitute — the
-conceptual target it stands in for is MemPalace's `L0+L1` ≈ 600–900
-tokens (see issue #415 and `docs/cli-matrix.md` row 7g).
+**Wake-up budget.** The optional store-mirror step is shed first when the
+budget would be exceeded and is never a core sweep step. Layered wake-up is
+not an agent action. Figures: `docs/mempalace-wakeup-budget.md`.
 
 #### 2. During Work — Continuous Persistence
 
@@ -498,30 +381,13 @@ contract single-sourced and lets future improvements (richer
 `evidence:` format, new recognition signals, etc.) propagate without
 editing every skill body.
 
-The fire-and-forget tag has one **documented failure mode**: the
-MemPalace write path may be unavailable — a peer holds the write lock
-(MCP error `-32001`) or the server is disconnected — so the tag call
-cannot record the friction. **On a machine converted to the shared
-MemPalace MCP HTTP daemon (ADR 0016), a peer-held write lock between
-sibling sessions becomes rare rather than expected**: one process holds
-the palace writer lease on behalf of every session, and MemPalace's own
-lock is re-entrant for the process that already holds it — it passes
-through without re-acquiring rather than refusing — which is what lets
-that one process serve every session's writes without contending with
-itself. **However, on a half-converted machine where the shared MCP daemon
-runs while the active CLI remains configured on stdio, the lockout is not
-rare or transient — it is permanent and total**, because the daemon holds the
-exclusive palace lease while the stdio process is refused on every mutating
-call. **Whenever an agent or operator encounters error `-32001` or a write-lock
-refusal, the first diagnostic step SHALL be running `task mempalace:status`
-(`node scripts/status-mcp-server.ts`)** to identify whether the machine is in a
-half-converted state or a peer collision. The `harness-report` procedure carries
-the operational fallback for this case regardless (file the friction directly as a
-`harness-feedback`-labeled issue on the offender's canonical repository,
-using the forge-appropriate CLI, so the signal still reaches the
-curator's triage lane): the refusal stays a degraded path every agent must
-still handle, converted machine or not. This file states the contract; the
-`SKILL.md` procedure carries the "how".
+The fire-and-forget tag has one documented failure mode: the MemPalace write
+path may be unavailable (MCP error `-32001`, write-lock refusal, or a
+disconnected server). Whenever an agent or operator encounters `-32001` or a
+write-lock refusal, the first diagnostic step SHALL be running
+`task mempalace:status` (`node scripts/status-mcp-server.ts`). The
+`harness-report` procedure carries the fallback. Details:
+`docs/friction-failure-mode.md`.
 
 ### Where to write
 

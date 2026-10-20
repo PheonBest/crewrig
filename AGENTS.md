@@ -5,27 +5,9 @@ The rules and conventions all agents (human or AI) must follow when contributing
 ## What is CrewRig?
 
 CrewRig is a centralized configuration framework for Gemini CLI, Claude Code,
-GitHub Copilot CLI, and Antigravity CLI. Any agent loading this file should
-understand these five pillars without needing to read README.md or ADRs:
-
-1. **Layered context system engineering** — 00–60 priority files deployed to
-   CLI user directories (`~/.gemini/`, `~/.claude/rules/`,
-   `~/.copilot/instructions/`, `~/.gemini/antigravity-cli/`) that shape how AI
-   assistants behave for a specific user's role, team, and seniority.
-2. **Shared cross-tool memory** — MemPalace provides persistent agent memory
-   accessible across tools and sessions, enabling continuity between Gemini
-   CLI, Claude Code, Copilot CLI, and Antigravity CLI.
-3. **Skill/agent/command creation and sharing** — `artifacts/` is the
-   single-source zone where skills, agents, and commands are authored once;
-   `scripts/build-components.ts` compiles them into outputs for all four CLIs.
-4. **Harness engineering** — a built-in feedback loop where agents invoke the
-   `harness-report` skill to tag frictions during real work, and the
-   `harness-curator` skill clusters those frictions into actionable GitHub
-   issues.
-5. **Multi-CLI parity** — features are implemented symmetrically across Claude
-   Code, Gemini CLI, GitHub Copilot CLI, and Antigravity CLI. Silent asymmetry
-   is prohibited; every parity gap requires concrete evidence that the missing
-   mechanism does not exist in the target CLI.
+GitHub Copilot CLI, and Antigravity CLI. Its five pillars are described in
+[`docs/what-is-crewrig.md`](docs/what-is-crewrig.md).
+**Critical rule:** silent asymmetry between CLIs is prohibited.
 
 ## Session Bootstrap
 
@@ -61,72 +43,18 @@ worktrees but removes nothing.
 
 ## Lifecycle
 
-Every non-trivial ticket SHALL flow through the four-stage lifecycle
-**SPECS → PLAN → DEV → REVIEW**. REVIEW loops back into the upstream
-stage corresponding to the class of each finding (`tech` → DEV,
-`arch` → PLAN, `spec` → SPECS). The lifecycle terminates only when a
-full REVIEW pass produces zero findings.
-
-```text
-   user intent
-       │
-       ▼
-┌──────────────┐    spec PR    ┌──────────────┐
-│   SPECS      │ ───────────▶  │  spec merged │
-│  (WHAT)      │  /specs/<id>  │  on main     │
-└──────┬───────┘               └──────┬───────┘
-       │                              │
-       │ (loop on spec finding)       ▼
-       │                       ┌──────────────┐
-       │                       │    PLAN      │  reviewed in
-       │                       │   (HOW)      │  logbook issue
-       │                       └──────┬───────┘
-       │                              │
-       │ (loop on arch finding)       ▼
-       │                       ┌──────────────┐
-       │                       │     DEV      │  feature branch + PR
-       │                       └──────┬───────┘
-       │                              │
-       │ (loop on tech finding)       ▼
-       │                       ┌──────────────┐
-       └───────────────────────│   REVIEW     │
-                               └──────┬───────┘
-                                      │ clean
-                                      ▼
-                                    MERGE
-```
-
-The full contract — stage definitions, transition rules, finding
-taxonomy, routing matrix, complexity tiers, and termination criterion
-— lives in [ADR-0010](docs/adr/0010-spec-plan-review-lifecycle.md).
-The file format for the spec artifact produced by the SPECS stage —
-frontmatter schema, mandatory body sections, delta-spec convention,
-and naming rules — lives in [`docs/spec-format.md`](docs/spec-format.md).
+Every non-trivial ticket flows SPECS → PLAN → DEV → REVIEW, per
+[ADR-0010](docs/adr/0010-spec-plan-review-lifecycle.md) and
+[`docs/spec-format.md`](docs/spec-format.md); diagram in
+[`docs/lifecycle-diagram.md`](docs/lifecycle-diagram.md).
+**Critical rule:** the lifecycle terminates only when a full REVIEW pass
+produces zero findings.
 
 ## Language
 
-All **project content must be written in English**. "Project content" covers
-every artifact that lands in the repository or on GitHub — there are no
-exceptions for "internal" notes, draft documents, or AI-authored prose.
-
-This includes, but is not limited to:
-
-- **File content in the repository** — source code, inline comments,
-  documentation prose, READMEs, ADRs, RFCs, configuration files, shell
-  scripts, and every framework artifact (`SKILL.md`, `AGENT.md`,
-  `AGENTS.md`, `CLAUDE.md`, etc.).
-- **GitHub artifacts** — commit messages, PR titles, PR bodies, PR review
-  comments, issue titles, issue bodies, and every comment posted on an
-  issue or PR (including incremental logbook updates).
-
-**Decision rule:** *Is this landing in the project or on GitHub?* → English
-only.
-
-**Exception:** Interpersonal interactions between the user and the agent
-(chat sessions, transient terminal output) MUST be conducted in the **User
-Preferred Language**. This exception covers only ephemeral dialogue — the
-moment content is committed, pushed, or posted to GitHub, the English-only
-rule takes over.
+Project content (repository files and every GitHub artifact) MUST be in
+English; ephemeral user dialogue uses the user's preferred language. Full rule:
+[`docs/language-policy.md`](docs/language-policy.md).
 
 ## Branching Strategy
 
@@ -362,17 +290,9 @@ Forge access is CLI-only. Forge operations (issues, PRs/MRs, branch protection, 
 
 ## Legacy ticket policy
 
-Tickets opened **before** the merge of PR #176 (which introduced
-[ADR-0010](docs/adr/0010-spec-plan-review-lifecycle.md) and the
-SPECS → PLAN → DEV → REVIEW lifecycle, on `main` on **2026-05-31**)
-were eligible for one-time migration triage under
-[`specs/0008-migration-of-in-flight-tickets.md`](specs/0008-migration-of-in-flight-tickets.md).
-Tickets opened on or after that date SHALL follow the new lifecycle
-by default.
-
-See [`docs/legacy-ticket-policy.md`](docs/legacy-ticket-policy.md) for
-the full cutoff rule, the legacy contract that `keep-legacy` tickets
-run under, and the audit-table reference.
+Tickets opened on or after the PR #176 merge (2026-05-31) follow the lifecycle
+by default. Cutoff rule and legacy contract:
+[`docs/legacy-ticket-policy.md`](docs/legacy-ticket-policy.md).
 
 ## Organization rules extension
 
