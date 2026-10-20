@@ -28,7 +28,8 @@ let n = 0;
 function rulesDir(files: Record<string, number>): string {
   const dir = path.join(tmp, `d${n++}`);
   mkdirSync(dir);
-  for (const [name, bytes] of Object.entries(files)) writeFileSync(path.join(dir, name), "a".repeat(bytes));
+  for (const [name, bytes] of Object.entries(files))
+    writeFileSync(path.join(dir, name), "a".repeat(bytes));
   return dir;
 }
 
@@ -40,7 +41,10 @@ describe("check-rules-size", () => {
   it("passes under the budget and prints total and budget", () => {
     const r = run([rulesDir({ "a.md": 100, "b.md": 200 })]);
     assert.equal(r.status, 0);
-    assert.equal(r.stdout, "OK: core rules total 300 bytes across 2 file(s) (budget: 27800 bytes)\n");
+    assert.equal(
+      r.stdout,
+      "OK: core rules total 300 bytes across 2 file(s) (budget: 27800 bytes)\n",
+    );
     assert.equal(r.stderr, "");
   });
 
@@ -95,15 +99,19 @@ describe("check-rules-size", () => {
     assert.equal(r.stderr, "Error: absent: No such directory\n");
   });
 
-  it("fails closed on an unreadable directory", { skip: process.platform === "win32" || process.getuid?.() === 0 }, () => {
-    const dir = rulesDir({ "a.md": 10 });
-    chmodSync(dir, 0o000);
-    try {
-      const r = run([dir]);
-      assert.equal(r.status, 1);
-      assert.match(r.stderr, /Permission denied/);
-    } finally {
-      chmodSync(dir, 0o755);
-    }
-  });
+  it(
+    "fails closed on an unreadable directory",
+    { skip: process.platform === "win32" || process.getuid?.() === 0 },
+    () => {
+      const dir = rulesDir({ "a.md": 10 });
+      chmodSync(dir, 0o000);
+      try {
+        const r = run([dir]);
+        assert.equal(r.status, 1);
+        assert.match(r.stderr, /Permission denied/);
+      } finally {
+        chmodSync(dir, 0o755);
+      }
+    },
+  );
 });
