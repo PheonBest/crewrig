@@ -1,15 +1,18 @@
 name: Build & Validate
 
 on:
+
   pull_request:
     # Spec 0168 delta-01 R11: the draft/ready transitions must re-run the
     # workflow so R1 is enforced in full after a spec-PR is marked ready.
     types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
     branches: [main, "release/**"]
+
   push:
     branches: [main, "release/**"]
     tags-ignore:
       - "**"
+
   workflow_dispatch:
 
 concurrency:
@@ -73,27 +76,13 @@ jobs:
               - 'crewrig.config.toml'
               - 'package.json'
               - 'package-lock.json'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.component-drift == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Install production dependencies
-        if: steps.filter.outputs.component-drift == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - uses: actions/cache@v4
-        if: steps.filter.outputs.component-drift == 'true'
-        with:
-          path: .ci-cache
-          key: ${{ hashFiles('scripts/build-components.ts', 'scripts/build-components.ts', 'scripts/tests/build-components-canonical-repo.test.ts', 'scripts/tests/agent-profile-*.test.ts', 'scripts/tests/lib/build-sandbox.ts', 'scripts/lib/**', 'artifacts/**', 'extensions/**', '.crewrig/core-paths.txt', 'docs/agent-profile-migration.md', 'model-mappings/**', '.agents/skills/**', '.claude/skills/**', '.gemini/skills/**', '.github/skills/**', '.gemini/commands/**', '.agents/agents/**', '.claude/agents/**', '.gemini/agents/**', '.github/agents/**', 'crewrig.config.toml', 'package.json', 'package-lock.json') }}
-      - name: Floor guard accepts the running Node.js
-        if: steps.filter.outputs.component-drift == 'true'
-        run: node scripts/lib/node-floor-guard.js
-      - name: Build Components
-        if: steps.filter.outputs.component-drift == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "scripts/build-components.ts,scripts/build-components.ts,scripts/tests/build-components-canonical-repo.test.ts,scripts/tests/agent-profile-*.test.ts,scripts/tests/lib/build-sandbox.ts,scripts/lib/**,artifacts/**,extensions/**,.crewrig/core-paths.txt,docs/agent-profile-migration.md,model-mappings/**,.agents/skills/**,.claude/skills/**,.gemini/skills/**,.github/skills/**,.gemini/commands/**,.agents/agents/**,.claude/agents/**,.gemini/agents/**,.github/agents/**,crewrig.config.toml,package.json,package-lock.json" --key-env "" -- node scripts/build-components.ts --target all --check
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: component-drift
+          install: omit-dev
+          cache: true
+          shadow-filter: ${{ steps.filter.outputs.component-drift }}
+
   component-drift-selftest:
     runs-on: ubuntu-latest
     steps:
@@ -116,30 +105,13 @@ jobs:
               - 'taskfiles/ci.yml'
               - '.github/workflows/build.yml'
               - 'ci/ci-capabilities.yml'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.component-drift-selftest == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - uses: actions/cache@v4
-        if: steps.filter.outputs.component-drift-selftest == 'true'
-        with:
-          path: .ci-cache
-          key: ${{ hashFiles('scripts/build-components.ts', 'scripts/lib/**', 'package.json', 'package-lock.json', 'scripts/tests/build-assembly-routing.test.ts', 'scripts/tests/build-components-canonical-repo.test.ts', 'scripts/tests/lib/build-sandbox.ts', 'scripts/tests/lib/build-fixture-tree.ts', 'scripts/tests/fixtures/build-components/**', 'scripts/lib/node-floor-guard.js', 'scripts/ci-cache-guard.ts') }}
-      - name: Install production dependencies
-        if: steps.filter.outputs.component-drift-selftest == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Floor guard accepts Node.js 24
-        if: steps.filter.outputs.component-drift-selftest == 'true'
-        run: node scripts/lib/node-floor-guard.js
-      - name: Run the self-tests
-        if: steps.filter.outputs.component-drift-selftest == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "scripts/build-components.ts,scripts/lib/**,package.json,package-lock.json,scripts/tests/build-assembly-routing.test.ts,scripts/tests/build-components-canonical-repo.test.ts,scripts/tests/lib/build-sandbox.ts,scripts/tests/lib/build-fixture-tree.ts,scripts/tests/fixtures/build-components/**,scripts/lib/node-floor-guard.js,scripts/ci-cache-guard.ts" --key-env "" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-assembly-routing.test.ts
-      - name: Run the self-tests
-        if: steps.filter.outputs.component-drift-selftest == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "scripts/build-components.ts,scripts/lib/**,package.json,package-lock.json,scripts/tests/build-assembly-routing.test.ts,scripts/tests/build-components-canonical-repo.test.ts,scripts/tests/lib/build-sandbox.ts,scripts/tests/lib/build-fixture-tree.ts,scripts/tests/fixtures/build-components/**,scripts/lib/node-floor-guard.js,scripts/ci-cache-guard.ts" --key-env "" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-components-canonical-repo.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: component-drift-selftest
+          install: omit-dev
+          cache: true
+          shadow-filter: ${{ steps.filter.outputs.component-drift-selftest }}
+
   agent-profile-migration:
     runs-on: ubuntu-latest
     steps:
@@ -161,30 +133,14 @@ jobs:
               - 'docs/layers.md'
               - 'docs/agent-profile-migration.md'
               - 'model-mappings/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.agent-profile-migration == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Install production dependencies
-        if: steps.filter.outputs.agent-profile-migration == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Install yq
-        if: steps.filter.outputs.agent-profile-migration == 'true'
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
-          echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
-          sudo chmod +x /usr/local/bin/yq
-      - uses: actions/cache@v4
-        if: steps.filter.outputs.agent-profile-migration == 'true'
-        with:
-          path: .ci-cache
-          key: agent-profile-migration-${{ hashFiles('scripts/build-components.ts', 'scripts/build-components.ts', 'scripts/tests/build-components-canonical-repo.test.ts', 'scripts/tests/agent-profile-*.test.ts', 'scripts/tests/lib/build-sandbox.ts', 'scripts/lib/**', 'artifacts/**', 'extensions/**', '.crewrig/core-paths.txt', 'docs/agent-profile-migration.md', 'model-mappings/**', 'scripts/ci-cache-guard.ts') }}
-      - name: Test Agent Profile Migration
-        if: steps.filter.outputs.agent-profile-migration == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "scripts/build-components.ts,scripts/build-components.ts,scripts/tests/build-components-canonical-repo.test.ts,scripts/tests/agent-profile-*.test.ts,scripts/tests/lib/build-sandbox.ts,scripts/lib/**,artifacts/**,extensions/**,.crewrig/core-paths.txt,docs/agent-profile-migration.md,model-mappings/**,scripts/ci-cache-guard.ts" --key-env "" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/agent-profile-baseline-doc.test.ts scripts/tests/agent-profile-build.test.ts scripts/tests/agent-profile-committed.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: agent-profile-migration
+          install: omit-dev
+          yq: "4.54.1"
+          cache: true
+          shadow-filter: ${{ steps.filter.outputs.agent-profile-migration }}
+
   # Spec 0250 R27: production install (spec 0240 R4), floor guard, `--check` on the
   # real tree, the Linux run of the Windows proof script, then the named suites
   # (the dev-toolchain suite runs in `lint-typescript`). Needs yq for the parity suites.
@@ -192,8 +148,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -245,9 +199,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: build-components-ts
-          node: 24
           install: omit-dev
-          task: true
           yq: "4.54.1"
           shadow-filter: ${{ steps.filter.outputs.build-components-ts }}
 
@@ -257,8 +209,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -300,9 +250,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: extension-builders-ts
-          node: 24
           install: install
-          task: true
           yq: "4.54.1"
           shadow-filter: ${{ steps.filter.outputs.extension-builders-ts }}
 
@@ -313,8 +261,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -336,9 +282,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: skill-scripts-ts
-          node: 24
           install: omit-dev
-          task: true
           yq: "4.44.3"
           shadow-filter: ${{ steps.filter.outputs.skill-scripts-ts }}
 
@@ -348,8 +292,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -381,9 +323,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: governance-checks-ts
-          node: 24
           install: omit-dev
-          task: true
           shadow-filter: ${{ steps.filter.outputs.governance-checks-ts }}
 
   # Spec 0262 R21-R23 (ticket #1339): the model-CI-tooling suites and their shell differential legs.
@@ -393,8 +333,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -409,9 +347,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: model-ci-tooling-ts
-          node: 24
           install: omit-dev
-          task: true
           yq: "4.44.3"
           shadow-filter: ${{ steps.filter.outputs.model-ci-tooling-ts }}
 
@@ -421,8 +357,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -510,11 +444,8 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: install-ts
-          node: 24
           install: omit-dev
-          task: true
           shadow-filter: ${{ steps.filter.outputs.install-ts }}
-
 
   # Spec 0255 R3: the install, manage and link entries print nothing on the oldest Node.js 24 release.
   # No path filter, like `extension-builders-ts-node-24-0`.
@@ -592,6 +523,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -618,23 +551,11 @@ jobs:
               - 'scripts/tests/lib/setup-*.ts'
               - 'scripts/tests/lib/real-home-guard.ts'
               - 'scripts/tests/fixtures/setup-golden/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.setup-differential == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-          cache: npm
-      - name: Floor guard accepts Node.js 24
-        if: steps.filter.outputs.setup-differential == 'true'
-        run: node scripts/lib/node-floor-guard.js
-      - name: Install production dependencies
-        if: steps.filter.outputs.setup-differential == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Test the shell-against-TypeScript parity proof
-        if: steps.filter.outputs.setup-differential == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-differential.test.ts scripts/tests/setup-differential-antigravity.test.ts scripts/tests/setup-differential-claude.test.ts scripts/tests/setup-differential-copilot.test.ts scripts/tests/setup-differential-gemini.test.ts scripts/tests/setup-twins-differential-usage.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: setup-differential
+          install: omit-dev
+          shadow-filter: ${{ steps.filter.outputs.setup-differential }}
 
   # Spec 0256 R40 (ticket #1335), PR B1: the portable unit suites of the TypeScript setup modules,
   # the TLS environment quoting and writer, and the confirm remainder. The POSIX-only suites skip
@@ -643,8 +564,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -769,9 +688,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: setup-modules-ts
-          node: 24
           install: omit-dev
-          task: true
           shadow-filter: ${{ steps.filter.outputs.setup-modules-ts }}
 
   # Spec 0257 (row of epic #1231, ticket #1336), PR 4a: the TypeScript monorepo release driver
@@ -781,8 +698,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -824,9 +739,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: release-driver-modules-ts
-          node: 24
           install: omit-dev
-          task: true
           shadow-filter: ${{ steps.filter.outputs.release-driver-modules-ts }}
 
   # Spec 0257 (ticket #1336), PRs 2 and 3: the deterministic tar.gz archive writer, the
@@ -836,8 +749,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -890,9 +801,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: packaging-modules-ts
-          node: 24
           install: omit-dev
-          task: true
           shadow-filter: ${{ steps.filter.outputs.packaging-modules-ts }}
 
   # Spec 0250 R3, R27: the build entry prints nothing on the oldest Node.js 24
@@ -936,6 +845,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -990,45 +901,19 @@ jobs:
               - 'scripts/lib/governance/**'
               - 'scripts/check-extension-hook-map.ts'
               - 'scripts/check-extension-hook-tokens.ts'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.extension-render == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-          cache: npm
-      - name: Install production dependencies
-        if: steps.filter.outputs.extension-render == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Install yq
-        if: steps.filter.outputs.extension-render == 'true'
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
-          echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
-          sudo chmod +x /usr/local/bin/yq
-      - name: Check Extension Pivot
-        if: steps.filter.outputs.extension-render == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-pivot.ts
-      - name: Test Build Extension
-        if: steps.filter.outputs.extension-render == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-extension-suite-render.test.ts scripts/tests/build-extension-suite-check.test.ts scripts/tests/build-extension-suite-hooks.test.ts scripts/tests/build-extension-suite-context.test.ts scripts/tests/build-extension-suite-scaffold.test.ts scripts/tests/migrate-extension-entry.test.ts scripts/tests/create-extension-combinations.test.ts scripts/tests/create-extension-gap-derivation.test.ts scripts/tests/extension-render-conformance.test.ts scripts/tests/extension-render-conformance-checks.test.ts scripts/tests/extension-sandbox.test.ts
-      - name: Floor guard accepts Node.js 24
-        if: steps.filter.outputs.extension-render == 'true'
-        run: node scripts/lib/node-floor-guard.js
-      - name: Build Extension --check
-        if: steps.filter.outputs.extension-render == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-extension.ts --check
-      - name: Check Extension Hook Tokens
-        if: steps.filter.outputs.extension-render == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-hook-tokens.ts
-      - name: Check Extension Hook Map
-        if: steps.filter.outputs.extension-render == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-hook-map.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: extension-render
+          install: omit-dev
+          yq: "4.54.1"
+          shadow-filter: ${{ steps.filter.outputs.extension-render }}
+
   extension-provenance:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1041,27 +926,18 @@ jobs:
               - 'artifacts/**'
               - 'scripts/check-extension-provenance.ts'
               - 'scripts/lib/governance/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.extension-provenance == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-          cache: npm
-      - name: Install production dependencies
-        if: steps.filter.outputs.extension-provenance == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Check Extension Provenance
-        if: steps.filter.outputs.extension-provenance == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-provenance.ts
-      - name: Test Check Extension Provenance
-        if: steps.filter.outputs.extension-provenance == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-extension-provenance.test.ts scripts/tests/governance-suite-extension-provenance-r4.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: extension-provenance
+          install: omit-dev
+          shadow-filter: ${{ steps.filter.outputs.extension-provenance }}
+
   extension-manifest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1076,23 +952,18 @@ jobs:
               - 'scripts/lib/governance/**'
               - 'scripts/check-extension-manifest-version.ts'
               - 'scripts/lib/extension/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.extension-manifest == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Check Extension Manifest Version
-        if: steps.filter.outputs.extension-manifest == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-manifest-version.ts
-      - name: Test Check Extension Version Bump
-        if: steps.filter.outputs.extension-manifest == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-extension-version-bump.test.ts scripts/tests/governance-suite-extension-version-bump-base.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: extension-manifest
+          install: none
+          shadow-filter: ${{ steps.filter.outputs.extension-manifest }}
+
   extension-install:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1139,33 +1010,19 @@ jobs:
               - 'scripts/lib/antigravity-migrate.ts'
               - 'extensions/**'
               - 'artifacts/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.extension-install == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-          cache: npm
-      - name: Install production dependencies
-        if: steps.filter.outputs.extension-install == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Install yq
-        if: steps.filter.outputs.extension-install == 'true'
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
-          echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
-          sudo chmod +x /usr/local/bin/yq
-      - name: Test Install Extension (TypeScript)
-        if: steps.filter.outputs.extension-install == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/install-claude-plugin-marketplace.test.ts scripts/tests/install-extension-all-real.test.ts
-      - name: Test Install, Manage and Link Entry Points
-        if: steps.filter.outputs.extension-install == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/install-sandbox.test.ts scripts/tests/install-workspace.test.ts scripts/tests/unlink-component.test.ts scripts/tests/unlink-extensions.test.ts scripts/tests/install-extension.test.ts scripts/tests/link-extensions.test.ts scripts/tests/install-copilot-plugin.test.ts scripts/tests/install-antigravity-extension.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: extension-install
+          install: omit-dev
+          yq: "4.54.1"
+          shadow-filter: ${{ steps.filter.outputs.extension-install }}
+
   core-paths:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1188,25 +1045,13 @@ jobs:
               - 'model-mappings/**'
               - 'scripts/check-core-paths.ts'
               - 'scripts/lib/governance/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.core-paths == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Install yq
-        if: steps.filter.outputs.core-paths == 'true'
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
-          echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
-          sudo chmod +x /usr/local/bin/yq
-      - name: Test Sync From Upstream
-        if: steps.filter.outputs.core-paths == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/sync-from-upstream-policies.test.ts scripts/tests/sync-from-upstream-reconcile.test.ts scripts/tests/sync-from-upstream-orphans.test.ts scripts/tests/sync-from-upstream-dirty-report.test.ts scripts/tests/sync-from-upstream-preserve.test.ts scripts/tests/sync-from-upstream-signing.test.ts
-      - name: Test Sync From Upstream Self-Update
-        if: steps.filter.outputs.core-paths == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/sync-from-upstream-self-update.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: core-paths
+          install: none
+          yq: "4.54.1"
+          shadow-filter: ${{ steps.filter.outputs.core-paths }}
+
   ci-parity:
     runs-on: ubuntu-latest
     steps:
@@ -1248,37 +1093,14 @@ jobs:
               - '.gitlab-ci.yml'
               - '.github/workflows/build.yml'
               - 'docs/ci-reference-format.md'
-      - name: Install yq
-        if: steps.filter.outputs.ci-parity == 'true'
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
-          echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
-          sudo chmod +x /usr/local/bin/yq
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.ci-parity == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-          cache: npm
-      - name: Install production dependencies
-        if: steps.filter.outputs.ci-parity == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Floor guard accepts Node.js 24
-        if: steps.filter.outputs.ci-parity == 'true'
-        run: node scripts/lib/node-floor-guard.js
-      - uses: actions/cache@v4
-        if: steps.filter.outputs.ci-parity == 'true'
-        with:
-          path: .ci-cache
-          key: ${{ hashFiles('scripts/check-ci-parity.ts', 'scripts/build-ci.ts', 'scripts/ci-cache-guard.ts', 'scripts/ci-changeset-coverage.ts', 'scripts/tests/ci-parity-positive.test.ts', 'scripts/tests/ci-parity-fail-closed.test.ts', 'scripts/tests/ci-parity-stray-scan.test.ts', 'scripts/tests/ci-parity-path-filters.test.ts', 'scripts/tests/ci-parity-path-filters-undet.test.ts', 'scripts/tests/ci-effective-paths.test.ts', 'scripts/tests/ci-paths-equivalence.test.ts', 'scripts/ci-paths-gate.ts', 'scripts/lib/ci-paths-gate/**', '.github/actions/ci-job/action.yml', 'scripts/tests/ci-paths-gate.test.ts', 'scripts/tests/ci-parity-ci-job.test.ts', 'scripts/tests/ci-job-yq.test.ts', 'scripts/tests/fixtures/ci-paths/**', 'scripts/tests/lib/ci-parity-fixture.ts', 'scripts/tests/lib/ci-parity-blocks.ts', 'scripts/tests/lib/ci-parity-matrix.ts', 'scripts/tests/lib/yaml-lib.ts', 'scripts/tests/build-ci-real-tree.test.ts', 'scripts/tests/build-ci-synthetic.test.ts', 'scripts/tests/build-ci-synthetic-write.test.ts', 'scripts/tests/lib/ci-reference-fixtures.ts', 'ci/ci-capabilities.yml', 'ci/task-pin.json', 'ci/yq-pin.json', '.gitlab-ci.yml', '.github/workflows/build.yml', 'docs/ci-reference-format.md') }}
-      - name: Test Check Ci Parity
-        if: steps.filter.outputs.ci-parity == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "scripts/check-ci-parity.ts,scripts/build-ci.ts,scripts/ci-cache-guard.ts,scripts/ci-changeset-coverage.ts,scripts/tests/ci-parity-positive.test.ts,scripts/tests/ci-parity-fail-closed.test.ts,scripts/tests/ci-parity-stray-scan.test.ts,scripts/tests/ci-parity-path-filters.test.ts,scripts/tests/ci-parity-path-filters-undet.test.ts,scripts/tests/ci-effective-paths.test.ts,scripts/tests/ci-paths-equivalence.test.ts,scripts/ci-paths-gate.ts,scripts/lib/ci-paths-gate/**,.github/actions/ci-job/action.yml,scripts/tests/ci-paths-gate.test.ts,scripts/tests/ci-parity-ci-job.test.ts,scripts/tests/ci-job-yq.test.ts,scripts/tests/fixtures/ci-paths/**,scripts/tests/lib/ci-parity-fixture.ts,scripts/tests/lib/ci-parity-blocks.ts,scripts/tests/lib/ci-parity-matrix.ts,scripts/tests/lib/yaml-lib.ts,scripts/tests/build-ci-real-tree.test.ts,scripts/tests/build-ci-synthetic.test.ts,scripts/tests/build-ci-synthetic-write.test.ts,scripts/tests/lib/ci-reference-fixtures.ts,ci/ci-capabilities.yml,ci/task-pin.json,ci/yq-pin.json,.gitlab-ci.yml,.github/workflows/build.yml,docs/ci-reference-format.md" --key-env "" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/ci-parity-positive.test.ts scripts/tests/ci-parity-fail-closed.test.ts scripts/tests/ci-parity-stray-scan.test.ts scripts/tests/ci-parity-path-filters.test.ts scripts/tests/ci-parity-path-filters-undet.test.ts scripts/tests/ci-effective-paths.test.ts scripts/tests/ci-paths-equivalence.test.ts scripts/tests/ci-paths-gate.test.ts scripts/tests/ci-parity-ci-job.test.ts scripts/tests/ci-job-yq.test.ts
-      - name: Test Build Ci
-        if: steps.filter.outputs.ci-parity == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "scripts/check-ci-parity.ts,scripts/build-ci.ts,scripts/ci-cache-guard.ts,scripts/ci-changeset-coverage.ts,scripts/tests/ci-parity-positive.test.ts,scripts/tests/ci-parity-fail-closed.test.ts,scripts/tests/ci-parity-stray-scan.test.ts,scripts/tests/ci-parity-path-filters.test.ts,scripts/tests/ci-parity-path-filters-undet.test.ts,scripts/tests/ci-effective-paths.test.ts,scripts/tests/ci-paths-equivalence.test.ts,scripts/ci-paths-gate.ts,scripts/lib/ci-paths-gate/**,.github/actions/ci-job/action.yml,scripts/tests/ci-paths-gate.test.ts,scripts/tests/ci-parity-ci-job.test.ts,scripts/tests/ci-job-yq.test.ts,scripts/tests/fixtures/ci-paths/**,scripts/tests/lib/ci-parity-fixture.ts,scripts/tests/lib/ci-parity-blocks.ts,scripts/tests/lib/ci-parity-matrix.ts,scripts/tests/lib/yaml-lib.ts,scripts/tests/build-ci-real-tree.test.ts,scripts/tests/build-ci-synthetic.test.ts,scripts/tests/build-ci-synthetic-write.test.ts,scripts/tests/lib/ci-reference-fixtures.ts,ci/ci-capabilities.yml,ci/task-pin.json,ci/yq-pin.json,.gitlab-ci.yml,.github/workflows/build.yml,docs/ci-reference-format.md" --key-env "" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-ci-real-tree.test.ts scripts/tests/build-ci-synthetic.test.ts scripts/tests/build-ci-synthetic-write.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: ci-parity
+          install: omit-dev
+          yq: "4.54.1"
+          cache: true
+          shadow-filter: ${{ steps.filter.outputs.ci-parity }}
+
   docs-index:
     runs-on: ubuntu-latest
     steps:
@@ -1296,24 +1118,13 @@ jobs:
               - 'scripts/tests/build-docs-index-entry.test.ts'
               - 'scripts/tests/lib/docs-index-entry-tree.ts'
               - 'docs/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.docs-index == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Floor guard accepts Node.js 24
-        if: steps.filter.outputs.docs-index == 'true'
-        run: node scripts/lib/node-floor-guard.js
-      - name: Build Docs Index
-        if: steps.filter.outputs.docs-index == 'true'
-        run: node scripts/build-docs-index.ts --check
-      - uses: actions/cache@v4
-        if: steps.filter.outputs.docs-index == 'true'
-        with:
-          path: .ci-cache
-          key: ${{ hashFiles('scripts/build-docs-index.ts', 'scripts/lib/docs-index/**', 'scripts/lib/paths.ts', 'scripts/lib/line-endings.ts', 'scripts/lib/node-floor-guard.js', 'scripts/tests/build-docs-index-entry.test.ts', 'scripts/tests/lib/docs-index-entry-tree.ts', 'docs/**', 'scripts/ci-cache-guard.ts') }}
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: docs-index
+          install: omit-dev
+          cache: true
+          shadow-filter: ${{ steps.filter.outputs.docs-index }}
+
   docs-index-selftest:
     runs-on: ubuntu-latest
     steps:
@@ -1334,24 +1145,13 @@ jobs:
               - 'taskfiles/ci.yml'
               - '.github/workflows/build.yml'
               - 'ci/ci-capabilities.yml'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.docs-index-selftest == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - uses: actions/cache@v4
-        if: steps.filter.outputs.docs-index-selftest == 'true'
-        with:
-          path: .ci-cache
-          key: ${{ hashFiles('scripts/build-docs-index.ts', 'scripts/lib/docs-index/**', 'scripts/lib/paths.ts', 'scripts/lib/line-endings.ts', 'scripts/lib/node-floor-guard.js', 'scripts/tests/build-docs-index-entry.test.ts', 'scripts/tests/lib/docs-index-entry-tree.ts', 'scripts/tests/lib/worktree-fixtures.ts', 'scripts/ci-cache-guard.ts') }}
-      - name: Floor guard accepts Node.js 24
-        if: steps.filter.outputs.docs-index-selftest == 'true'
-        run: node scripts/lib/node-floor-guard.js
-      - name: Run the self-tests
-        if: steps.filter.outputs.docs-index-selftest == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "scripts/build-docs-index.ts,scripts/lib/docs-index/**,scripts/lib/paths.ts,scripts/lib/line-endings.ts,scripts/lib/node-floor-guard.js,scripts/tests/build-docs-index-entry.test.ts,scripts/tests/lib/docs-index-entry-tree.ts,scripts/tests/lib/worktree-fixtures.ts,scripts/ci-cache-guard.ts" --key-env "" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-docs-index-entry.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: docs-index-selftest
+          install: omit-dev
+          cache: true
+          shadow-filter: ${{ steps.filter.outputs.docs-index-selftest }}
+
   figure-labels:
     runs-on: ubuntu-latest
     steps:
@@ -1384,6 +1184,7 @@ jobs:
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
+
   mempalace:
     runs-on: ubuntu-latest
     steps:
@@ -1475,12 +1276,11 @@ jobs:
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
+
   test-wiring:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1504,16 +1304,13 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: test-wiring
-          node: 24
           install: none
-          task: true
           shadow-filter: ${{ steps.filter.outputs.test-wiring }}
+
   test-wiring-selftest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1533,10 +1330,9 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: test-wiring-selftest
-          node: 24
           install: none
-          task: true
           shadow-filter: ${{ steps.filter.outputs.test-wiring-selftest }}
+
   chroma-mcp:
     runs-on: ubuntu-latest
     steps:
@@ -1587,6 +1383,7 @@ jobs:
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
+
   e2e:
     runs-on: ubuntu-latest
     steps:
@@ -1633,10 +1430,13 @@ jobs:
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
+
   setup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1675,32 +1475,19 @@ jobs:
               - 'scripts/tests/setup-flow-fixtures.ts'
       # The v1-F2 floor guard (spec 0243 R24) refuses to write the direct form on
       # a Node.js below 24, and ubuntu-latest defaults to 22 (#1391 CI).
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.setup == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Install yq
-        if: steps.filter.outputs.setup == 'true'
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
-          echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
-          sudo chmod +x /usr/local/bin/yq
-      - name: Install production dependencies
-        if: steps.filter.outputs.setup == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Test Setup Helpers (TypeScript)
-        if: steps.filter.outputs.setup == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-identity-flow.test.ts scripts/tests/setup-legacy-gemini-md-declaration.test.ts scripts/tests/setup-mcp-merge-policy.test.ts scripts/tests/setup-org-mcp-wiring.test.ts scripts/tests/setup-secrets-fold.test.ts scripts/tests/setup-tier-staging-declared.test.ts
-      - name: Test Tls Delegation and Setup Gemini Settings (TypeScript)
-        if: steps.filter.outputs.setup == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tls-delegation-contract.test.ts scripts/tests/setup-gemini-settings-failure.test.ts scripts/tests/setup-gemini-settings-jsonc.test.ts scripts/tests/setup-gemini-settings-runs.test.ts scripts/tests/setup-gemini-settings-seeds.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: setup
+          install: omit-dev
+          yq: "4.54.1"
+          shadow-filter: ${{ steps.filter.outputs.setup }}
+
   check-model-mappings:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1714,36 +1501,19 @@ jobs:
               - 'scripts/tests/check-model-mappings-selection.test.ts'
               - 'scripts/tests/check-model-mappings-committed.test.ts'
               - 'scripts/tests/lib/model-mapping-fixtures.ts'
-      - name: Install yq
-        if: steps.filter.outputs.check-model-mappings == 'true'
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
-          echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
-          sudo chmod +x /usr/local/bin/yq
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.check-model-mappings == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-          cache: npm
-      - name: Install production dependencies
-        if: steps.filter.outputs.check-model-mappings == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Floor guard accepts Node.js 24
-        if: steps.filter.outputs.check-model-mappings == 'true'
-        run: node scripts/lib/node-floor-guard.js
-      - name: Check Model Mappings
-        if: steps.filter.outputs.check-model-mappings == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-model-mappings.ts
-      - name: Test Check Model Mappings
-        if: steps.filter.outputs.check-model-mappings == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-model-mappings-rejections.test.ts scripts/tests/check-model-mappings-org.test.ts scripts/tests/check-model-mappings-selection.test.ts scripts/tests/check-model-mappings-committed.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: check-model-mappings
+          install: omit-dev
+          yq: "4.54.1"
+          shadow-filter: ${{ steps.filter.outputs.check-model-mappings }}
+
   check-agent-profiles:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1754,32 +1524,19 @@ jobs:
               - 'scripts/tests/check-agent-profiles-rejections.test.ts'
               - 'scripts/tests/check-agent-profiles-green.test.ts'
               - 'scripts/tests/lib/agent-profile-fixtures.ts'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.check-agent-profiles == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Install production dependencies
-        if: steps.filter.outputs.check-agent-profiles == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Install yq
-        if: steps.filter.outputs.check-agent-profiles == 'true'
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
-          echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
-          sudo chmod +x /usr/local/bin/yq
-      - name: Check Agent Profiles
-        if: steps.filter.outputs.check-agent-profiles == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-agent-profiles.ts
-      - name: Test Check Agent Profiles
-        if: steps.filter.outputs.check-agent-profiles == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-agent-profiles-rejections.test.ts scripts/tests/check-agent-profiles-green.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: check-agent-profiles
+          install: omit-dev
+          yq: "4.54.1"
+          shadow-filter: ${{ steps.filter.outputs.check-agent-profiles }}
+
   check-metadata-keys:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1792,27 +1549,18 @@ jobs:
               - 'scripts/lib/render-command.ts'
               - 'scripts/lib/yaml-text.ts'
               - 'scripts/lib/require-dependency.ts'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.check-metadata-keys == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-          cache: npm
-      - name: Install production dependencies
-        if: steps.filter.outputs.check-metadata-keys == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Floor guard accepts Node.js 24
-        if: steps.filter.outputs.check-metadata-keys == 'true'
-        run: node scripts/lib/node-floor-guard.js
-      - name: Check Component Metadata Keys
-        if: steps.filter.outputs.check-metadata-keys == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-component-metadata-keys.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: check-metadata-keys
+          install: omit-dev
+          shadow-filter: ${{ steps.filter.outputs.check-metadata-keys }}
+
   check-claude-agent-layout:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1824,22 +1572,16 @@ jobs:
               - 'scripts/lib/build-components/**'
               - 'scripts/check-claude-agent-layout.ts'
               - 'scripts/lib/governance/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.check-claude-agent-layout == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Check Claude Agent Layout
-        if: steps.filter.outputs.check-claude-agent-layout == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-claude-agent-layout.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: check-claude-agent-layout
+          install: none
+          shadow-filter: ${{ steps.filter.outputs.check-claude-agent-layout }}
+
   check-taskfile-commands:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1860,16 +1602,13 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: check-taskfile-commands
-          node: 24
           install: omit-dev
-          task: true
           shadow-filter: ${{ steps.filter.outputs.check-taskfile-commands }}
+
   check-taskfile-commands-selftest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1892,16 +1631,13 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: check-taskfile-commands-selftest
-          node: 24
           install: omit-dev
-          task: true
           shadow-filter: ${{ steps.filter.outputs.check-taskfile-commands-selftest }}
+
   check-taskfile-tree:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1916,16 +1652,13 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: check-taskfile-tree
-          node: 24
           install: omit-dev
-          task: true
           shadow-filter: ${{ steps.filter.outputs.check-taskfile-tree }}
+
   check-taskfile-tree-selftest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1959,14 +1692,15 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: check-taskfile-tree-selftest
-          node: 24
           install: omit-dev
-          task: true
           shadow-filter: ${{ steps.filter.outputs.check-taskfile-tree-selftest }}
+
   check-task-provisioning:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -1986,25 +1720,18 @@ jobs:
               - 'scripts/lib/glob-engine.ts'
               - 'scripts/tests/check-task-provisioning.test.ts'
               - 'scripts/tests/task-pin-provisioning.test.ts'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.check-task-provisioning == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Install production dependencies
-        if: steps.filter.outputs.check-task-provisioning == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - uses: ./.github/actions/setup-task
-        if: steps.filter.outputs.check-task-provisioning == 'true'
-      - name: Check Task provisioning
-        if: steps.filter.outputs.check-task-provisioning == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-task-provisioning.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: check-task-provisioning
+          install: omit-dev
+          shadow-filter: ${{ steps.filter.outputs.check-task-provisioning }}
+
   check-task-provisioning-selftest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -2021,23 +1748,18 @@ jobs:
               - 'taskfiles/ci.yml'
               - 'ci/ci-capabilities.yml'
               - '.github/workflows/build.yml'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.check-task-provisioning-selftest == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Install production dependencies
-        if: steps.filter.outputs.check-task-provisioning-selftest == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Run the self-tests
-        if: steps.filter.outputs.check-task-provisioning-selftest == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-task-provisioning.test.ts scripts/tests/task-pin-provisioning.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: check-task-provisioning-selftest
+          install: omit-dev
+          shadow-filter: ${{ steps.filter.outputs.check-task-provisioning-selftest }}
+
   ci-pre-push-replay:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -2056,25 +1778,17 @@ jobs:
               - 'docs/**'
               - 'specs/**'
               - 'artifacts/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.ci-pre-push-replay == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Install dependencies
-        if: steps.filter.outputs.ci-pre-push-replay == 'true'
-        run: npm ci
-      - uses: ./.github/actions/setup-task
-        if: steps.filter.outputs.ci-pre-push-replay == 'true'
-      - name: Test Pre-Push Replay
-        if: steps.filter.outputs.ci-pre-push-replay == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/ci-pre-push-replay.test.ts scripts/tests/ci-pre-push-draft-lint.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: ci-pre-push-replay
+          shadow-filter: ${{ steps.filter.outputs.ci-pre-push-replay }}
+
   misc:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -2108,31 +1822,11 @@ jobs:
               - 'scripts/check-gemini-overlay-enrollment.ts'
               - 'scripts/lib/governance/**'
               - 'scripts/check-no-machine-paths.ts'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.misc == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Install production dependencies
-        if: steps.filter.outputs.misc == 'true'
-        run: npm ci --omit=dev --workspaces=false
-      - name: Test Check No Machine Paths
-        if: steps.filter.outputs.misc == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-no-machine-paths.test.ts
-      - name: Check Gemini Overlay Enrollment
-        if: steps.filter.outputs.misc == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-gemini-overlay-enrollment.ts
-      - name: Test Check Gemini Overlay Enrollment
-        if: steps.filter.outputs.misc == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts
-      - name: Test Reserve Spec Id
-        if: steps.filter.outputs.misc == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/reserve-spec-id-contract.test.ts scripts/tests/reserve-spec-id-carrier-reuse.test.ts scripts/tests/reserve-spec-id-races.test.ts
-      - name: Test Check Spec Id Reserved
-        if: steps.filter.outputs.misc == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-spec-id-reserved-blocking.test.ts scripts/tests/check-spec-id-reserved-mark.test.ts scripts/tests/check-spec-id-reserved-origin.test.ts scripts/tests/check-spec-id-reserved-degraded.test.ts scripts/tests/check-spec-id-reserved-base-ref.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: misc
+          install: omit-dev
+          shadow-filter: ${{ steps.filter.outputs.misc }}
   # Spec 0251 R1-R4: the repository-wide scans. No path filter (a catch-all
   # `**` would make path-ownership vacuous), not changeset-gated, no test
   # suite: they run on every pull request and push to main and release/**.
@@ -2140,20 +1834,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: ./.github/actions/ci-job
         with:
           id: repository-scan
-          node: 24
           install: none
-          task: true
+
   frontmatter:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -2199,16 +1888,13 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: frontmatter
-          node: 24
           install: omit-dev
-          task: true
           shadow-filter: ${{ steps.filter.outputs.frontmatter }}
+
   markdown-links:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -2225,9 +1911,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: markdown-links
-          node: 24
           install: none
-          task: true
           shadow-filter: ${{ steps.filter.outputs.markdown-links }}
   # Spec 0147 delta-01 R21, R23: the exhaustive run lives in its own scheduled
   # workflow (changeset-coverage.yml). Its script's regression test stays on the
@@ -2267,21 +1951,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: ./.github/actions/ci-job
         with:
           id: path-ownership
-          node: 24
-          install: ci
-          task: true
 
   path-ownership-selftest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -2306,23 +1983,16 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: path-ownership-selftest
-          node: 24
-          install: ci
-          task: true
           shadow-filter: ${{ steps.filter.outputs.path-ownership-selftest }}
 
   lint-markdown:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: ./.github/actions/ci-job
         with:
           id: lint-markdown
           node: 22
-          install: ci
-          task: true
 
   # Spec 0238 R1-R3: shell / JavaScript / Python footprint ratchet. No path
   # filter: any change may add a shell file. Full history for the merge-base.
@@ -2340,16 +2010,12 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: ratchet
-          node: 24
           install: none
-          task: true
 
   ratchet-selftest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -2364,9 +2030,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: ratchet-selftest
-          node: 24
           install: none
-          task: true
           shadow-filter: ${{ steps.filter.outputs.ratchet-selftest }}
 
   # Spec 0267 R12, R13, R16-R19: test-harness host-safety check. No path
@@ -2386,16 +2050,11 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: host-safety
-          node: 24
-          install: ci
-          task: true
 
   host-safety-selftest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -2413,9 +2072,6 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: host-safety-selftest
-          node: 24
-          install: ci
-          task: true
           shadow-filter: ${{ steps.filter.outputs.host-safety-selftest }}
 
   # Spec 0238 R4-R8: TypeScript type-check, erasable syntax, Oxlint
@@ -2424,21 +2080,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: ./.github/actions/ci-job
         with:
           id: lint-typescript
-          node: 24
-          install: ci
-          task: true
 
   lint-typescript-selftest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -2466,9 +2115,6 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: lint-typescript-selftest
-          node: 24
-          install: ci
-          task: true
           shadow-filter: ${{ steps.filter.outputs.lint-typescript-selftest }}
 
   # Spec 0240 R4-R11, R13, R16: floor guard, production-dependency step and
@@ -2500,7 +2146,6 @@ jobs:
 
       - name: Test the MemPalace helper modules (python detection, version pin)
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/mempalace-python.test.ts scripts/tests/mempalace-python-shebang.test.ts scripts/tests/mempalace-pin.test.ts
-
 
       - name: Test the service module and the MCP launcher (Linux)
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/service-backend.test.ts scripts/tests/service-bundle-closure.test.ts scripts/tests/service-exec.test.ts scripts/tests/service-file-size.test.ts scripts/tests/service-install.test.ts scripts/tests/service-launchd-systemd.test.ts scripts/tests/service-launcher-child.test.ts scripts/tests/service-launcher-record.test.ts scripts/tests/service-launcher-token.test.ts scripts/tests/service-launcher-palace-path.test.ts scripts/tests/service-listener-pid.test.ts scripts/tests/service-names.test.ts scripts/tests/service-os-inspect.test.ts scripts/tests/service-owner-check.test.ts scripts/tests/service-probe.test.ts scripts/tests/service-process-tree.test.ts scripts/tests/service-program-install.test.ts scripts/tests/service-schtasks.test.ts scripts/tests/service-schtasks-uninstall.test.ts scripts/tests/service-snapshot-failure.test.ts scripts/tests/service-task-ownership.test.ts scripts/tests/service-task-snapshot.test.ts scripts/tests/service-task-state.test.ts scripts/tests/service-token-argv.test.ts scripts/tests/service-trust-wrapper.test.ts scripts/tests/service-unit-render.test.ts scripts/tests/service-windows-task-xml.test.ts scripts/tests/mcp-launcher-lifecycle.test.ts
@@ -2582,6 +2227,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -2599,17 +2246,11 @@ jobs:
               - 'scripts/tests/lib/windows-invocation.ts'
               - 'scripts/tests/fixtures/worktree-claim/**'
               - 'scripts/tests/fixtures/worktree-guard/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.worktree-guard == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-
-      - name: Validate the worktree git guard and worktree claim tool
-        if: steps.filter.outputs.worktree-guard == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/worktree-*.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: worktree-guard
+          install: none
+          shadow-filter: ${{ steps.filter.outputs.worktree-guard }}
 
   # Spec 0248 R10: the guard and claim entries print nothing on the oldest
   # Node.js 24 release, where type stripping still emits an ExperimentalWarning.
@@ -2635,6 +2276,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -2658,17 +2301,11 @@ jobs:
               - 'scripts/tests/lib/spawn-spy.ts'
               - 'scripts/tests/lib/windows-invocation.ts'
               - 'scripts/tests/fixtures/mempalace-transcript/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.mempalace-transcript == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-
-      - name: Validate the MemPalace transcript hook and its wiring
-        if: steps.filter.outputs.mempalace-transcript == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/mempalace-transcript-*.test.ts scripts/tests/hook-transcript-*.test.ts
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: mempalace-transcript
+          install: none
+          shadow-filter: ${{ steps.filter.outputs.mempalace-transcript }}
 
   # Spec 0247 R1: the transcript hook entry prints nothing on the oldest
   # Node.js 24 release, where type stripping still emits an ExperimentalWarning.
@@ -3535,8 +3172,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -3551,16 +3186,13 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: cli-matrix-fresh
-          node: 24
           install: none
-          task: true
           shadow-filter: ${{ steps.filter.outputs.cli-matrix-fresh }}
+
   cli-matrix-fresh-selftest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -3576,9 +3208,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: cli-matrix-fresh-selftest
-          node: 24
           install: none
-          task: true
           shadow-filter: ${{ steps.filter.outputs.cli-matrix-fresh-selftest }}
 
   lint-specs:
@@ -3601,16 +3231,12 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: lint-specs
-          node: 24
           install: install
-          task: true
 
   lint-specs-selftest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -3632,9 +3258,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: lint-specs-selftest
-          node: 24
           install: install
-          task: true
           shadow-filter: ${{ steps.filter.outputs.lint-specs-selftest }}
 
   test-harness-curate:
@@ -3664,16 +3288,12 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: check-skill-versions
-          node: 24
           install: none
-          task: true
 
   check-description-length:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -3694,9 +3314,7 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: check-description-length
-          node: 24
           install: omit-dev
-          task: true
           shadow-filter: ${{ steps.filter.outputs.check-description-length }}
 
   check-extension-version-bump:
@@ -3767,47 +3385,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: ./.github/actions/ci-job
         with:
           id: check-agents-size
-          node: 24
           install: none
-          task: true
 
   check-rules-size:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: ./.github/actions/ci-job
         with:
           id: check-rules-size
-          node: 24
           install: none
-          task: true
 
   # Spec 0275 R-E2: author-side size tool; CI only checks the script against committed fixtures, never forge content.
   check-comment-size:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: ./.github/actions/ci-job
         with:
           id: check-comment-size
-          node: 24
           install: none
-          task: true
 
   # Spec 0276 R10-R11: author-side brief linter; CI only checks the script against committed fixtures, never a live brief.
   check-seat-brief:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -3818,19 +3426,11 @@ jobs:
               - 'scripts/lib/governance/report.ts'
               - 'scripts/tests/check-seat-brief*'
               - 'scripts/tests/fixtures/seat-brief/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.check-seat-brief == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Check the seat brief linter accepts the conforming fixture
-        if: steps.filter.outputs.check-seat-brief == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-seat-brief.ts scripts/tests/fixtures/seat-brief/conforming-review.txt
-      - name: Check the seat brief linter rejects the breaching fixture
-        if: steps.filter.outputs.check-seat-brief == 'true'
-        run: "! node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-seat-brief.ts scripts/tests/fixtures/seat-brief/breach-1410.txt"
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: check-seat-brief
+          install: none
+          shadow-filter: ${{ steps.filter.outputs.check-seat-brief }}
 
   # Spec 0277 R19-R20: author-side plan review gate; CI only checks the script against committed fixtures, never a live plan.
   check-plan-review:
@@ -3848,19 +3448,11 @@ jobs:
               - '.crewrig/shared-contract-paths.txt'
               - 'scripts/tests/check-plan-review*'
               - 'scripts/tests/fixtures/plan-review/**'
-      - uses: actions/setup-node@v4
-        if: steps.filter.outputs.check-plan-review == 'true'
+      - uses: ./.github/actions/ci-job
         with:
-          node-version: 24
-      - name: Check the plan review gate skips the small standard fixture
-        if: steps.filter.outputs.check-plan-review == 'true'
-        run: "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-plan-review.ts scripts/tests/fixtures/plan-review/skip-spec.md scripts/tests/fixtures/plan-review/skip-plan.md | grep -qx 'plan-review: skipped'"
-      - name: Check the plan review gate requires the review for the shared-contract fixture
-        if: steps.filter.outputs.check-plan-review == 'true'
-        run: "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-plan-review.ts scripts/tests/fixtures/plan-review/skip-spec.md scripts/tests/fixtures/plan-review/required-plan.md | grep -qx 'plan-review: required'"
-      - name: Cancel workflow on job failure
-        if: failure()
-        uses: ./.github/actions/cancel-on-failure
+          id: check-plan-review
+          install: omit-dev
+          shadow-filter: ${{ steps.filter.outputs.check-plan-review }}
 
   check-feedback-routing:
     runs-on: ubuntu-latest
@@ -3886,8 +3478,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - name: Install yq
         run: |
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
@@ -3896,16 +3486,12 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: gitlab-ci-check
-          node: 24
           install: omit-dev
-          task: true
 
   check-ci-parity:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - name: Install yq
         run: |
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
@@ -3914,6 +3500,4 @@ jobs:
       - uses: ./.github/actions/ci-job
         with:
           id: check-ci-parity
-          node: 24
           install: omit-dev
-          task: true

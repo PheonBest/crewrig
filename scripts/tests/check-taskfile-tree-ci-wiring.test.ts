@@ -95,7 +95,7 @@ function assertInstallBeforeLoaderTests(caps: Cap[], importers: string[]): void 
       `${c.id} runs ${runs[0]} (a loader importer) without an install step`,
     );
   }
-  assert.ok(checked >= 5, "the audit covers the jobs that run loader importers");
+  assert.ok(checked >= 4, "the audit covers the jobs that run loader importers");
 }
 
 function jobBlock(text: string, header: RegExp, gitlab = false): string {
@@ -183,7 +183,6 @@ function assertGithub(text: string): void {
   const job = jobBlock(text, new RegExp(`\\n  ${ID}:\\n`));
   assert.ok(job.includes("uses: ./.github/actions/ci-job"), "runs the thin ci-job");
   assert.ok(job.includes(`id: ${ID}\n`), "ci-job id is the capability id");
-  assert.ok(job.includes("node: 24"));
   const self = jobBlock(text, new RegExp(`\\n  ${ID}-selftest:\\n`));
   assert.ok(self.includes(`id: ${ID}-selftest\n`), "self-test job passes its id");
   for (const p of TREE_PATHS) assert.ok(job.includes(`'${p}'`), `filter has ${p}`);

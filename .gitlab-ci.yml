@@ -39,6 +39,9 @@ build:
 
 component-drift:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   cache:
     key:
       files:
@@ -68,9 +71,7 @@ component-drift:
     paths:
       - .ci-cache/
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node scripts/lib/node-floor-guard.js"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files \"scripts/build-components.ts,scripts/build-components.ts,package.json,package-lock.json,scripts/tests/build-components-canonical-repo.test.ts,scripts/tests/agent-profile-*.test.ts,scripts/tests/lib/build-sandbox.ts,scripts/lib/**,artifacts/**,extensions/**,.crewrig/core-paths.txt,docs/agent-profile-migration.md,model-mappings/**,.agents/skills/**,.claude/skills/**,.gemini/skills/**,.github/skills/**,.gemini/commands/**,.agents/agents/**,.claude/agents/**,.gemini/agents/**,.github/agents/**,crewrig.config.toml\" --key-env \"\" -- node scripts/build-components.ts --target all --check"
+    - "task ci:component-drift"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &component-drift-changes-1
@@ -103,6 +104,9 @@ component-drift:
 
 component-drift-selftest:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   cache:
     key:
       files:
@@ -120,10 +124,7 @@ component-drift-selftest:
     paths:
       - .ci-cache/
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node scripts/lib/node-floor-guard.js"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files \"scripts/build-components.ts,scripts/lib/**,package.json,package-lock.json,scripts/tests/build-assembly-routing.test.ts,scripts/tests/build-components-canonical-repo.test.ts,scripts/tests/lib/build-sandbox.ts,scripts/tests/lib/build-fixture-tree.ts,scripts/tests/fixtures/build-components/**,scripts/lib/node-floor-guard.js,scripts/ci-cache-guard.ts\" --key-env \"\" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-assembly-routing.test.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-components-canonical-repo.test.ts"
+    - "task ci:component-drift-selftest"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &component-drift-selftest-changes-1
@@ -145,6 +146,13 @@ component-drift-selftest:
 
 agent-profile-migration:
   image: node:24
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends wget ca-certificates
+    - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
+    - echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
+    - chmod +x /usr/local/bin/yq
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   cache:
     key:
       files:
@@ -163,8 +171,7 @@ agent-profile-migration:
     paths:
       - .ci-cache/
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files \"scripts/build-components.ts,scripts/build-components.ts,scripts/tests/build-components-canonical-repo.test.ts,scripts/tests/agent-profile-*.test.ts,scripts/tests/lib/build-sandbox.ts,scripts/lib/**,artifacts/**,extensions/**,.crewrig/core-paths.txt,docs/agent-profile-migration.md,model-mappings/**,scripts/ci-cache-guard.ts\" --key-env \"\" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/agent-profile-baseline-doc.test.ts scripts/tests/agent-profile-build.test.ts scripts/tests/agent-profile-committed.test.ts"
+    - "task ci:agent-profile-migration"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &agent-profile-migration-changes-1
@@ -323,8 +330,8 @@ skill-scripts-ts:
     - echo "5942c9b0934e510ee61eb3e30273f1b3fe2590df93933a93d7c58b81d19c8ff5  /usr/local/bin/jq" | sha256sum -c -
     - chmod +x /usr/local/bin/jq
     - apt-get update && apt-get install -y --no-install-recommends wget ca-certificates
-    - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
-    - echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
+    - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.44.3/yq_linux_amd64
+    - echo "a2c097180dd884a8d50c956ee16a9cec070f30a7947cf4ebf87d5f36213e9ed7  /usr/local/bin/yq" | sha256sum -c -
     - chmod +x /usr/local/bin/yq
     - !reference [.task-install, script]
     - npm ci --omit=dev --workspaces=false
@@ -500,10 +507,10 @@ setup-differential:
     - wget -qO /usr/local/bin/jq https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64
     - echo "5942c9b0934e510ee61eb3e30273f1b3fe2590df93933a93d7c58b81d19c8ff5  /usr/local/bin/jq" | sha256sum -c -
     - chmod +x /usr/local/bin/jq
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
-    - "node scripts/lib/node-floor-guard.js"
-    - "npm ci --omit=dev --workspaces=false"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-differential.test.ts scripts/tests/setup-differential-antigravity.test.ts scripts/tests/setup-differential-claude.test.ts scripts/tests/setup-differential-copilot.test.ts scripts/tests/setup-differential-gemini.test.ts scripts/tests/setup-twins-differential-usage.test.ts"
+    - "task ci:setup-differential"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &setup-differential-changes-1
@@ -804,8 +811,8 @@ model-ci-tooling-ts:
     - echo "5942c9b0934e510ee61eb3e30273f1b3fe2590df93933a93d7c58b81d19c8ff5  /usr/local/bin/jq" | sha256sum -c -
     - chmod +x /usr/local/bin/jq
     - apt-get update && apt-get install -y --no-install-recommends wget ca-certificates
-    - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
-    - echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
+    - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.44.3/yq_linux_amd64
+    - echo "a2c097180dd884a8d50c956ee16a9cec070f30a7947cf4ebf87d5f36213e9ed7  /usr/local/bin/yq" | sha256sum -c -
     - chmod +x /usr/local/bin/yq
     - !reference [.task-install, script]
     - npm ci --omit=dev --workspaces=false
@@ -834,14 +841,10 @@ extension-render:
     - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
     - echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
     - chmod +x /usr/local/bin/yq
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-pivot.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-extension-suite-render.test.ts scripts/tests/build-extension-suite-check.test.ts scripts/tests/build-extension-suite-hooks.test.ts scripts/tests/build-extension-suite-context.test.ts scripts/tests/build-extension-suite-scaffold.test.ts scripts/tests/migrate-extension-entry.test.ts scripts/tests/create-extension-combinations.test.ts scripts/tests/create-extension-gap-derivation.test.ts scripts/tests/extension-render-conformance.test.ts scripts/tests/extension-render-conformance-checks.test.ts scripts/tests/extension-sandbox.test.ts"
-    - "node scripts/lib/node-floor-guard.js"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-extension.ts --check"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-hook-tokens.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-hook-map.ts"
+    - "task ci:extension-render"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &extension-render-changes-1
@@ -902,10 +905,11 @@ extension-render:
 
 extension-provenance:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-provenance.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-extension-provenance.test.ts scripts/tests/governance-suite-extension-provenance-r4.test.ts"
+    - "task ci:extension-provenance"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &extension-provenance-changes-1
@@ -921,9 +925,10 @@ extension-provenance:
 
 extension-manifest:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
   script:
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-extension-manifest-version.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-extension-version-bump.test.ts scripts/tests/governance-suite-extension-version-bump-base.test.ts"
+    - "task ci:extension-manifest"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &extension-manifest-changes-1
@@ -950,10 +955,10 @@ extension-install:
     - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
     - echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
     - chmod +x /usr/local/bin/yq
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/install-claude-plugin-marketplace.test.ts scripts/tests/install-extension-all-real.test.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/install-sandbox.test.ts scripts/tests/install-workspace.test.ts scripts/tests/unlink-component.test.ts scripts/tests/unlink-extensions.test.ts scripts/tests/install-extension.test.ts scripts/tests/link-extensions.test.ts scripts/tests/install-copilot-plugin.test.ts scripts/tests/install-antigravity-extension.test.ts"
+    - "task ci:extension-install"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &extension-install-changes-1
@@ -1008,9 +1013,9 @@ core-paths:
     - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
     - echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
     - chmod +x /usr/local/bin/yq
+    - !reference [.task-install, script]
   script:
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/sync-from-upstream-policies.test.ts scripts/tests/sync-from-upstream-reconcile.test.ts scripts/tests/sync-from-upstream-orphans.test.ts scripts/tests/sync-from-upstream-dirty-report.test.ts scripts/tests/sync-from-upstream-preserve.test.ts scripts/tests/sync-from-upstream-signing.test.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/sync-from-upstream-self-update.test.ts"
+    - "task ci:core-paths"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &core-paths-changes-1
@@ -1041,6 +1046,8 @@ ci-parity:
     - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
     - echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
     - chmod +x /usr/local/bin/yq
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   cache:
     key:
       files: &ci-parity-files-1
@@ -1079,10 +1086,7 @@ ci-parity:
     paths:
       - .ci-cache/
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node scripts/lib/node-floor-guard.js"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files \"scripts/check-ci-parity.ts,scripts/build-ci.ts,scripts/ci-cache-guard.ts,scripts/ci-changeset-coverage.ts,scripts/tests/ci-parity-positive.test.ts,scripts/tests/ci-parity-fail-closed.test.ts,scripts/tests/ci-parity-stray-scan.test.ts,scripts/tests/ci-parity-path-filters.test.ts,scripts/tests/ci-parity-path-filters-undet.test.ts,scripts/tests/ci-effective-paths.test.ts,scripts/tests/ci-paths-equivalence.test.ts,scripts/ci-paths-gate.ts,scripts/lib/ci-paths-gate/**,.github/actions/ci-job/action.yml,scripts/tests/ci-paths-gate.test.ts,scripts/tests/ci-parity-ci-job.test.ts,scripts/tests/ci-job-yq.test.ts,scripts/tests/fixtures/ci-paths/**,scripts/tests/lib/ci-parity-fixture.ts,scripts/tests/lib/ci-parity-blocks.ts,scripts/tests/lib/ci-parity-matrix.ts,scripts/tests/lib/yaml-lib.ts,scripts/tests/build-ci-real-tree.test.ts,scripts/tests/build-ci-synthetic.test.ts,scripts/tests/build-ci-synthetic-write.test.ts,scripts/tests/lib/ci-reference-fixtures.ts,ci/ci-capabilities.yml,ci/task-pin.json,ci/yq-pin.json,.gitlab-ci.yml,.github/workflows/build.yml,docs/ci-reference-format.md\" --key-env \"\" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/ci-parity-positive.test.ts scripts/tests/ci-parity-fail-closed.test.ts scripts/tests/ci-parity-stray-scan.test.ts scripts/tests/ci-parity-path-filters.test.ts scripts/tests/ci-parity-path-filters-undet.test.ts scripts/tests/ci-effective-paths.test.ts scripts/tests/ci-paths-equivalence.test.ts scripts/tests/ci-paths-gate.test.ts scripts/tests/ci-parity-ci-job.test.ts scripts/tests/ci-job-yq.test.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files \"scripts/check-ci-parity.ts,scripts/build-ci.ts,scripts/ci-cache-guard.ts,scripts/ci-changeset-coverage.ts,scripts/tests/ci-parity-positive.test.ts,scripts/tests/ci-parity-fail-closed.test.ts,scripts/tests/ci-parity-stray-scan.test.ts,scripts/tests/ci-parity-path-filters.test.ts,scripts/tests/ci-parity-path-filters-undet.test.ts,scripts/tests/ci-effective-paths.test.ts,scripts/tests/ci-paths-equivalence.test.ts,scripts/ci-paths-gate.ts,scripts/lib/ci-paths-gate/**,.github/actions/ci-job/action.yml,scripts/tests/ci-paths-gate.test.ts,scripts/tests/ci-parity-ci-job.test.ts,scripts/tests/ci-job-yq.test.ts,scripts/tests/fixtures/ci-paths/**,scripts/tests/lib/ci-parity-fixture.ts,scripts/tests/lib/ci-parity-blocks.ts,scripts/tests/lib/ci-parity-matrix.ts,scripts/tests/lib/yaml-lib.ts,scripts/tests/build-ci-real-tree.test.ts,scripts/tests/build-ci-synthetic.test.ts,scripts/tests/build-ci-synthetic-write.test.ts,scripts/tests/lib/ci-reference-fixtures.ts,ci/ci-capabilities.yml,ci/task-pin.json,ci/yq-pin.json,.gitlab-ci.yml,.github/workflows/build.yml,docs/ci-reference-format.md\" --key-env \"\" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-ci-real-tree.test.ts scripts/tests/build-ci-synthetic.test.ts scripts/tests/build-ci-synthetic-write.test.ts"
+    - "task ci:ci-parity"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: *ci-parity-files-1
@@ -1091,6 +1095,9 @@ ci-parity:
 
 docs-index:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   cache:
     key:
       files:
@@ -1106,8 +1113,7 @@ docs-index:
     paths:
       - .ci-cache/
   script:
-    - "node scripts/lib/node-floor-guard.js"
-    - "node scripts/build-docs-index.ts --check"
+    - "task ci:docs-index"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &docs-index-changes-1
@@ -1124,6 +1130,9 @@ docs-index:
 
 docs-index-selftest:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   cache:
     key:
       files:
@@ -1139,8 +1148,7 @@ docs-index-selftest:
     paths:
       - .ci-cache/
   script:
-    - "node scripts/lib/node-floor-guard.js"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files \"scripts/build-docs-index.ts,scripts/lib/docs-index/**,scripts/lib/paths.ts,scripts/lib/line-endings.ts,scripts/lib/node-floor-guard.js,scripts/tests/build-docs-index-entry.test.ts,scripts/tests/lib/docs-index-entry-tree.ts,scripts/tests/lib/worktree-fixtures.ts,scripts/ci-cache-guard.ts\" --key-env \"\" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-docs-index-entry.test.ts"
+    - "task ci:docs-index-selftest"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &docs-index-selftest-changes-1
@@ -1481,10 +1489,10 @@ setup:
     - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
     - echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
     - chmod +x /usr/local/bin/yq
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/setup-identity-flow.test.ts scripts/tests/setup-legacy-gemini-md-declaration.test.ts scripts/tests/setup-mcp-merge-policy.test.ts scripts/tests/setup-org-mcp-wiring.test.ts scripts/tests/setup-secrets-fold.test.ts scripts/tests/setup-tier-staging-declared.test.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/tls-delegation-contract.test.ts scripts/tests/setup-gemini-settings-failure.test.ts scripts/tests/setup-gemini-settings-jsonc.test.ts scripts/tests/setup-gemini-settings-runs.test.ts scripts/tests/setup-gemini-settings-seeds.test.ts"
+    - "task ci:setup"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &setup-changes-1
@@ -1524,13 +1532,11 @@ setup:
 
 misc:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-suite-no-machine-paths.test.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-gemini-overlay-enrollment.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/governance-gemini-overlay-enrollment-cases.test.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/reserve-spec-id-contract.test.ts scripts/tests/reserve-spec-id-carrier-reuse.test.ts scripts/tests/reserve-spec-id-races.test.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-spec-id-reserved-blocking.test.ts scripts/tests/check-spec-id-reserved-mark.test.ts scripts/tests/check-spec-id-reserved-origin.test.ts scripts/tests/check-spec-id-reserved-degraded.test.ts scripts/tests/check-spec-id-reserved-base-ref.test.ts"
+    - "task ci:misc"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &misc-changes-1
@@ -1634,11 +1640,10 @@ check-model-mappings:
     - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
     - echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
     - chmod +x /usr/local/bin/yq
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node scripts/lib/node-floor-guard.js"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-model-mappings.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-model-mappings-rejections.test.ts scripts/tests/check-model-mappings-org.test.ts scripts/tests/check-model-mappings-selection.test.ts scripts/tests/check-model-mappings-committed.test.ts"
+    - "task ci:check-model-mappings"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &check-model-mappings-changes-1
@@ -1660,10 +1665,10 @@ check-agent-profiles:
     - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64
     - echo "8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f  /usr/local/bin/yq" | sha256sum -c -
     - chmod +x /usr/local/bin/yq
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-agent-profiles.ts"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-agent-profiles-rejections.test.ts scripts/tests/check-agent-profiles-green.test.ts"
+    - "task ci:check-agent-profiles"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &check-agent-profiles-changes-1
@@ -1677,10 +1682,11 @@ check-agent-profiles:
 
 check-metadata-keys:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node scripts/lib/node-floor-guard.js"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-component-metadata-keys.ts"
+    - "task ci:check-metadata-keys"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &check-metadata-keys-changes-1
@@ -1696,8 +1702,10 @@ check-metadata-keys:
 
 check-claude-agent-layout:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
   script:
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-claude-agent-layout.ts"
+    - "task ci:check-claude-agent-layout"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &check-claude-agent-layout-changes-1
@@ -1823,9 +1831,9 @@ check-task-provisioning:
   image: node:24
   before_script:
     - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-task-provisioning.ts"
+    - "task ci:check-task-provisioning"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &check-task-provisioning-changes-1
@@ -1848,9 +1856,11 @@ check-task-provisioning:
 
 check-task-provisioning-selftest:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
-    - "npm ci --omit=dev --workspaces=false"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-task-provisioning.test.ts scripts/tests/task-pin-provisioning.test.ts"
+    - "task ci:check-task-provisioning-selftest"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &check-task-provisioning-selftest-changes-1
@@ -1872,9 +1882,9 @@ ci-pre-push-replay:
   image: node:24
   before_script:
     - !reference [.task-install, script]
+    - npm ci
   script:
-    - "npm ci"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/ci-pre-push-replay.test.ts scripts/tests/ci-pre-push-draft-lint.test.ts"
+    - "task ci:ci-pre-push-replay"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &ci-pre-push-replay-changes-1
@@ -2282,8 +2292,9 @@ worktree-guard:
     - wget -qO /usr/local/bin/jq https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64
     - echo "5942c9b0934e510ee61eb3e30273f1b3fe2590df93933a93d7c58b81d19c8ff5  /usr/local/bin/jq" | sha256sum -c -
     - chmod +x /usr/local/bin/jq
+    - !reference [.task-install, script]
   script:
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/worktree-*.test.ts"
+    - "task ci:worktree-guard"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &worktree-guard-changes-1
@@ -2312,8 +2323,10 @@ worktree-guard-node-24-0:
 
 mempalace-transcript:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
   script:
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/mempalace-transcript-*.test.ts scripts/tests/hook-transcript-*.test.ts"
+    - "task ci:mempalace-transcript"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &mempalace-transcript-changes-1
@@ -2477,9 +2490,10 @@ check-comment-size:
 
 check-seat-brief:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
   script:
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-seat-brief.ts scripts/tests/fixtures/seat-brief/conforming-review.txt"
-    - "! node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-seat-brief.ts scripts/tests/fixtures/seat-brief/breach-1410.txt"
+    - "task ci:check-seat-brief"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &check-seat-brief-changes-1
@@ -2493,9 +2507,11 @@ check-seat-brief:
 
 check-plan-review:
   image: node:24
+  before_script:
+    - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-plan-review.ts scripts/tests/fixtures/plan-review/skip-spec.md scripts/tests/fixtures/plan-review/skip-plan.md | grep -qx 'plan-review: skipped'"
-    - "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-plan-review.ts scripts/tests/fixtures/plan-review/skip-spec.md scripts/tests/fixtures/plan-review/required-plan.md | grep -qx 'plan-review: required'"
+    - "task ci:check-plan-review"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^main$|^release\//'
       changes: &check-plan-review-changes-1
