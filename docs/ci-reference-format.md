@@ -179,8 +179,9 @@ The requirement is a closed-vocabulary mapping mirroring R12's own enumeration:
 | `runtime` | string, or list of strings | The language runtime(s) and version, as `<name>@<version>`. A capability whose command genuinely needs more than one language (e.g. a job that runs both `bash`/`python3` test scripts and a `node --test` suite) declares each; the FIRST entry is the primary runtime the GitLab derivation bases the job's Docker `image:` on, and any further entry is installed alongside it via `before_script` (never replacing the image). | `node@22`, `python@3.12`, `[python@3.12, node@24]` |
 | `tools` | list of strings | Additional tools the command needs on `PATH`. | `[yq]`, `[task]`, `[jq]` |
 | `history-depth` | enum | `full` when the command needs the complete source history (e.g. a base-ref diff); omitted otherwise. | `full` |
+| `install` | enum | The dependency provisioning the job input carries when `command:` is the single entry `task ci:<id>` (a migrated capability, spec 0283 R1): `ci` (`npm ci`), `install` (`npm install`), `omit-dev` (`npm ci --omit=dev --workspaces=false`) or `none`. Omitted means `none`. A not yet migrated capability keeps its provisioning lines as the first `command:` entries and omits the key. | `ci` |
 
-All three sub-keys are optional **inside** `requires`: a capability whose
+All four sub-keys are optional **inside** `requires`: a capability whose
 command needs only POSIX shell (e.g. `grep-anti-patterns`) may omit `requires`
 entirely. What is *not* optional is consistency — a command that invokes a tool
 or runtime it does not declare is rejected:
@@ -254,6 +255,39 @@ A command that matches the wrapped-command pattern of `scripts/lib/build-ci/rend
 including a stray-scanned suite command; the two guards then nest, the cache
 guard outside and the scan inside (see *Stray scan of registered test suites*).
 
+### Capability-level `paths` (spec 0283 R3)
+
+A capability entry MAY declare a capability-level `paths:` list, next to
+`trigger:`. It is the one authority for the path set of the capability:
+
+- **Inheritance.** A `pull-request` or `push` trigger that declares no `paths:`
+  of its own takes the capability-level list. A trigger-level `paths:` stays
+  accepted and wins. Other trigger kinds never inherit.
+- **Effective path set.** The effective path set of a trigger is its own
+  `paths:`, else the capability-level `paths:` for a `pull-request` or `push`
+  trigger, else none, and a trigger with none is an unfiltered event. Every
+  reader of the reference uses this one rule (the parity harness, the pre-push
+  selection, the path-ownership check and the GitLab generator).
+- **`cache.files` default.** When `cache:` is declared without `files:`, the
+  capability-level `paths:` is the key file list. An explicit `cache.files:`
+  wins.
+- **No `paths-ignore:`.** The reference has no exclusion form. A
+  capability-level `paths-ignore:` is rejected by the generator and reported as
+  a reference-validity error by the parity harness, and a trigger-level one is
+  already outside the filter keys above.
+- **Conversion.** The reference was converted once, mechanically, by the committed
+  one-shot `scripts/convert-ci-paths.ts`: a capability whose `pull-request` and `push`
+  lists were identical carries one capability-level `paths:`; a capability whose two
+  lists differ keeps trigger-level lists; `cache.files` was dropped only where equal
+  to the paths. `scripts/tests/ci-paths-equivalence.test.ts` proves the effective sets
+  are unchanged against a frozen pre-conversion snapshot.
+
+The GitLab generator emits a list that appears twice in one job (the two rules'
+`changes:` lists, or the cache key `files:` equal to them) once under a YAML
+anchor and then by alias. Anchor names are built from the job id and are unique
+per job. The parity reader resolves such aliases through the `resolve` accessor
+of `scripts/lib/yq-accessors`.
+
 ### GitLab generation
 
 The GitLab pipeline generator `scripts/build-ci.ts` (spec 0048) is the
@@ -264,7 +298,7 @@ it emits one job keyed by the capability `id` (the C2 primary path below), with
 entry → `image:`, any further `runtime` entry AND every `tools` entry →
 `before_script:` installs, `history-depth: full` →
 `variables: { GIT_DEPTH: "0" }` — and `command` becoming the job's `script:`.
-The boilerplate is the generator's own output; it is never written back into
+`requires.install` becomes the matching provisioning line at the end of `before_script:` (after the tool installs), and a migrated capability's `script:` is the single `task ci:<id>` entry. The GitHub Actions `ci-job` step must pass an `install` input equal to `requires.install` (omitted means `none`; the action's own default is `ci`, so a job relying on it fails the parity check when the reference omits the key). The boilerplate is the generator's own output; it is never written back into
 the reference (the R12 need-vs-mechanism boundary). Engine-specific
 capabilities are skipped with no placeholder (spec 0048 R4), and the existing
 GitHub Actions workflows are **not** regenerated (spec 0048 R5) — they stay
@@ -820,3 +854,40 @@ mapping of the existing neutral vocabulary (spec 0047 R7, R9):
 
 It **never** edits a capability definition. The capability set and the neutral
 vocabulary are the stable contract; each engine is one mapping over them.
+
+## The `ci-job` thin job (spec 0283 R5, R6)
+
+A migrated GitHub job is a checkout plus `uses: ./.github/actions/ci-job`. The job key is the
+capability id and the `id` input MUST equal it (spec 0049 delta-02 R27a, checked by
+`scripts/check-ci-parity.ts`). Inputs: `id` (required), `node` (default 24), `install` (`ci`,
+`install`, `omit-dev`, `none`; default `ci`), `task` (default true), `cache` (default false) and
+`shadow-filter` (default empty).
+
+Steps, in order: `setup-node`, the path gate (`scripts/ci-paths-gate.ts`), `setup-task` when
+`task` is true, the dependency install, the Node floor guard when `node` is 24, the cache step when
+`cache` is true (key from `scripts/ci-cache-guard.ts --capability <id> --print-key`), `task ci:<id>`,
+and cancel-on-failure. Every step after the gate runs only when the decision is `true`, so a job
+the gate skips finishes green.
+
+Template, at most 15 lines (the `fetch-depth: 2` line counts):
+
+```yaml
+  <capability-id>:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: ./.github/actions/ci-job
+        with:
+          id: <capability-id>
+          node: 24
+          install: ci
+```
+
+Shadow variant (while `dorny/paths-filter` is authoritative; no length cap): the same checkout, then
+the dorny step with `id: filter`, then `ci-job` with `shadow-filter: ${{ steps.filter.outputs.<id> }}`.
+The gate then only annotates `::notice title=ci-paths-gate-shadow::<id> agree ...` or
+`::warning title=ci-paths-gate-shadow::<id> DISAGREE ...`. Concern 6 treats a `ci-job` job with no
+filter as shape A (id and glob checks only) and one that still carries a filter as shape C (those
+checks plus the filter comparison).
