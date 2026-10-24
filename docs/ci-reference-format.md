@@ -136,6 +136,16 @@ or a pull-request review comment that dispatches an assistant (e.g. the
 engine-specific, **never** portable, regardless of how its `trigger` is
 modeled.
 
+**Windows capabilities (spec 0283 R9).** The 24 `windows-*` capabilities stay `specific` (GitLab has
+no Windows runner) but carry `command: [task ci:<id>]` like every migrated capability: their GitHub
+job is a checkout plus `./.github/actions/ci-job` on `windows-latest`, and the task lives in
+`taskfiles/ci.yml`. `windows-hook-probe` keeps its own portable shape.
+
+**Windows trap for adopters.** On `windows-latest` a Git Bash step puts its own `PATH` and `HOME` in
+front of the proofs, and a bare `bash` can then resolve to the WSL stub (`C:\Windows\System32\bash.exe`,
+"Windows Subsystem for Linux has no installed distributions"). For that reason `ci-job` runs the final
+`task ci:<id>` step from `pwsh` on Windows; the other steps (gate, installs) stay `bash`.
+
 ## Invocation command and execution requirements
 
 A `portable` capability is not merely *described* by the reference — its
@@ -839,11 +849,13 @@ platform). It has three carriers and no others: the file itself, the generated `
 (rendered by `scripts/build-ci.ts` from the pin) and the composite action
 `.github/actions/setup-task/action.yml`, which reads the pin at run time and holds neither the
 checksum nor the version. The archive is verified against the pinned SHA-256 before it is
-unpacked, and a `task --version` check ends the install; Windows jobs fail closed until slice 3
-(#1780) adds a Windows archive.
+unpacked, and a `task --version` check ends the install. Linux uses `task_linux_amd64.tar.gz`;
+Windows (Git Bash) uses `task_windows_amd64.zip`, unpacked with the system `tar.exe` (Git Bash's GNU
+`tar` cannot read zip) into `$RUNNER_TEMP/task-bin`, added to `$GITHUB_PATH`; any other platform
+without a pinned checksum fails closed.
 
-To bump the pin by hand: pick the release, copy the `task_linux_amd64.tar.gz` line of its
-`task_checksums.txt`, download the archive and confirm the same value with `sha256sum`, edit
+To bump the pin by hand: pick the release, copy the `task_linux_amd64.tar.gz` and `task_windows_amd64.zip` lines of its
+`task_checksums.txt`, download each archive and confirm the same value with `sha256sum`, edit
 `ci/task-pin.json` (the version must stay at or above the `version:` floor of the root
 `Taskfile.yml`), then run `node scripts/build-ci.ts` and commit the regenerated
 `.gitlab-ci.yml`. The `check-task-provisioning` job installs the pinned Task end to end on both
