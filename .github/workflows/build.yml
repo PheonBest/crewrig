@@ -1337,6 +1337,7 @@ jobs:
               - 'scripts/tests/build-ci-synthetic-write.test.ts'
               - 'scripts/tests/lib/ci-reference-fixtures.ts'
               - 'ci/ci-capabilities.yml'
+              - 'ci/task-pin.json'
               - '.gitlab-ci.yml'
               - '.github/workflows/build.yml'
               - 'docs/ci-reference-format.md'
@@ -1361,13 +1362,13 @@ jobs:
         if: steps.filter.outputs.ci-parity == 'true'
         with:
           path: .ci-cache
-          key: ${{ hashFiles('scripts/check-ci-parity.ts', 'scripts/build-ci.ts', 'scripts/ci-cache-guard.ts', 'scripts/ci-changeset-coverage.ts', 'scripts/tests/ci-parity-positive.test.ts', 'scripts/tests/ci-parity-fail-closed.test.ts', 'scripts/tests/ci-parity-stray-scan.test.ts', 'scripts/tests/ci-parity-path-filters.test.ts', 'scripts/tests/ci-parity-path-filters-undet.test.ts', 'scripts/tests/lib/ci-parity-fixture.ts', 'scripts/tests/lib/ci-parity-blocks.ts', 'scripts/tests/lib/ci-parity-matrix.ts', 'scripts/tests/lib/yaml-lib.ts', 'scripts/tests/build-ci-real-tree.test.ts', 'scripts/tests/build-ci-synthetic.test.ts', 'scripts/tests/build-ci-synthetic-write.test.ts', 'scripts/tests/lib/ci-reference-fixtures.ts', 'ci/ci-capabilities.yml', '.gitlab-ci.yml', '.github/workflows/build.yml', 'docs/ci-reference-format.md') }}
+          key: ${{ hashFiles('scripts/check-ci-parity.ts', 'scripts/build-ci.ts', 'scripts/ci-cache-guard.ts', 'scripts/ci-changeset-coverage.ts', 'scripts/tests/ci-parity-positive.test.ts', 'scripts/tests/ci-parity-fail-closed.test.ts', 'scripts/tests/ci-parity-stray-scan.test.ts', 'scripts/tests/ci-parity-path-filters.test.ts', 'scripts/tests/ci-parity-path-filters-undet.test.ts', 'scripts/tests/lib/ci-parity-fixture.ts', 'scripts/tests/lib/ci-parity-blocks.ts', 'scripts/tests/lib/ci-parity-matrix.ts', 'scripts/tests/lib/yaml-lib.ts', 'scripts/tests/build-ci-real-tree.test.ts', 'scripts/tests/build-ci-synthetic.test.ts', 'scripts/tests/build-ci-synthetic-write.test.ts', 'scripts/tests/lib/ci-reference-fixtures.ts', 'ci/ci-capabilities.yml', 'ci/task-pin.json', '.gitlab-ci.yml', '.github/workflows/build.yml', 'docs/ci-reference-format.md') }}
       - name: Test Check Ci Parity
         if: steps.filter.outputs.ci-parity == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "scripts/check-ci-parity.ts,scripts/build-ci.ts,scripts/ci-cache-guard.ts,scripts/ci-changeset-coverage.ts,scripts/tests/ci-parity-positive.test.ts,scripts/tests/ci-parity-fail-closed.test.ts,scripts/tests/ci-parity-stray-scan.test.ts,scripts/tests/ci-parity-path-filters.test.ts,scripts/tests/ci-parity-path-filters-undet.test.ts,scripts/tests/lib/ci-parity-fixture.ts,scripts/tests/lib/ci-parity-blocks.ts,scripts/tests/lib/ci-parity-matrix.ts,scripts/tests/lib/yaml-lib.ts,scripts/tests/build-ci-real-tree.test.ts,scripts/tests/build-ci-synthetic.test.ts,scripts/tests/build-ci-synthetic-write.test.ts,scripts/tests/lib/ci-reference-fixtures.ts,ci/ci-capabilities.yml,.gitlab-ci.yml,.github/workflows/build.yml,docs/ci-reference-format.md" --key-env "" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/ci-parity-positive.test.ts scripts/tests/ci-parity-fail-closed.test.ts scripts/tests/ci-parity-stray-scan.test.ts scripts/tests/ci-parity-path-filters.test.ts scripts/tests/ci-parity-path-filters-undet.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "scripts/check-ci-parity.ts,scripts/build-ci.ts,scripts/ci-cache-guard.ts,scripts/ci-changeset-coverage.ts,scripts/tests/ci-parity-positive.test.ts,scripts/tests/ci-parity-fail-closed.test.ts,scripts/tests/ci-parity-stray-scan.test.ts,scripts/tests/ci-parity-path-filters.test.ts,scripts/tests/ci-parity-path-filters-undet.test.ts,scripts/tests/lib/ci-parity-fixture.ts,scripts/tests/lib/ci-parity-blocks.ts,scripts/tests/lib/ci-parity-matrix.ts,scripts/tests/lib/yaml-lib.ts,scripts/tests/build-ci-real-tree.test.ts,scripts/tests/build-ci-synthetic.test.ts,scripts/tests/build-ci-synthetic-write.test.ts,scripts/tests/lib/ci-reference-fixtures.ts,ci/ci-capabilities.yml,ci/task-pin.json,.gitlab-ci.yml,.github/workflows/build.yml,docs/ci-reference-format.md" --key-env "" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/ci-parity-positive.test.ts scripts/tests/ci-parity-fail-closed.test.ts scripts/tests/ci-parity-stray-scan.test.ts scripts/tests/ci-parity-path-filters.test.ts scripts/tests/ci-parity-path-filters-undet.test.ts
       - name: Test Build Ci
         if: steps.filter.outputs.ci-parity == 'true'
-        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "scripts/check-ci-parity.ts,scripts/build-ci.ts,scripts/ci-cache-guard.ts,scripts/ci-changeset-coverage.ts,scripts/tests/ci-parity-positive.test.ts,scripts/tests/ci-parity-fail-closed.test.ts,scripts/tests/ci-parity-stray-scan.test.ts,scripts/tests/ci-parity-path-filters.test.ts,scripts/tests/ci-parity-path-filters-undet.test.ts,scripts/tests/lib/ci-parity-fixture.ts,scripts/tests/lib/ci-parity-blocks.ts,scripts/tests/lib/ci-parity-matrix.ts,scripts/tests/lib/yaml-lib.ts,scripts/tests/build-ci-real-tree.test.ts,scripts/tests/build-ci-synthetic.test.ts,scripts/tests/build-ci-synthetic-write.test.ts,scripts/tests/lib/ci-reference-fixtures.ts,ci/ci-capabilities.yml,.gitlab-ci.yml,.github/workflows/build.yml,docs/ci-reference-format.md" --key-env "" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-ci-real-tree.test.ts scripts/tests/build-ci-synthetic.test.ts scripts/tests/build-ci-synthetic-write.test.ts
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --cache-dir .ci-cache --key-files "scripts/check-ci-parity.ts,scripts/build-ci.ts,scripts/ci-cache-guard.ts,scripts/ci-changeset-coverage.ts,scripts/tests/ci-parity-positive.test.ts,scripts/tests/ci-parity-fail-closed.test.ts,scripts/tests/ci-parity-stray-scan.test.ts,scripts/tests/ci-parity-path-filters.test.ts,scripts/tests/ci-parity-path-filters-undet.test.ts,scripts/tests/lib/ci-parity-fixture.ts,scripts/tests/lib/ci-parity-blocks.ts,scripts/tests/lib/ci-parity-matrix.ts,scripts/tests/lib/yaml-lib.ts,scripts/tests/build-ci-real-tree.test.ts,scripts/tests/build-ci-synthetic.test.ts,scripts/tests/build-ci-synthetic-write.test.ts,scripts/tests/lib/ci-reference-fixtures.ts,ci/ci-capabilities.yml,ci/task-pin.json,.gitlab-ci.yml,.github/workflows/build.yml,docs/ci-reference-format.md" --key-env "" -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/build-ci-real-tree.test.ts scripts/tests/build-ci-synthetic.test.ts scripts/tests/build-ci-synthetic-write.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -2026,9 +2027,8 @@ jobs:
       - name: Install production dependencies
         if: steps.filter.outputs.check-taskfile-tree == 'true'
         run: npm ci --omit=dev --workspaces=false
-      - name: Install Task
+      - uses: ./.github/actions/setup-task
         if: steps.filter.outputs.check-taskfile-tree == 'true'
-        run: sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
       - name: Check Taskfile Tree
         if: steps.filter.outputs.check-taskfile-tree == 'true'
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-taskfile-tree.ts
@@ -2076,15 +2076,85 @@ jobs:
         if: steps.filter.outputs.check-taskfile-tree-selftest == 'true'
         with:
           node-version: 24
-      - name: Install Task
+      - uses: ./.github/actions/setup-task
         if: steps.filter.outputs.check-taskfile-tree-selftest == 'true'
-        run: sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
       - name: Install production dependencies
         if: steps.filter.outputs.check-taskfile-tree-selftest == 'true'
         run: npm ci --omit=dev --workspaces=false
       - name: Run the self-tests
         if: steps.filter.outputs.check-taskfile-tree-selftest == 'true'
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/taskfile-tree.test.ts scripts/tests/check-taskfile-tree-layout.test.ts scripts/tests/check-taskfile-tree-contract.test.ts scripts/tests/taskfile-tree-references.test.ts scripts/tests/check-taskfile-tree-ci-wiring.test.ts scripts/tests/ci-pre-push-parity.test.ts scripts/tests/ci-pre-push-select.test.ts scripts/tests/ci-pre-push-refs.test.ts scripts/tests/ci-pre-push-hook.test.ts scripts/tests/ci-pre-push-env-scrub.test.ts scripts/tests/git-env-helpers.test.ts scripts/tests/ci-pre-push-hooks-config.test.ts scripts/tests/ci-selftest-split.test.ts
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
+  check-task-provisioning:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            check-task-provisioning:
+              - '.github/actions/setup-task/**'
+              - 'ci/task-pin.json'
+              - '.github/workflows/**'
+              - '.gitlab-ci.yml'
+              - 'ci/**'
+              - 'taskfiles/ci.yml'
+              - 'scripts/check-task-provisioning.ts'
+              - 'scripts/lib/task-provisioning/**'
+              - 'scripts/lib/build-ci/**'
+              - 'scripts/lib/ci-parity/**'
+              - 'scripts/lib/taskfile-tree*.ts'
+              - 'scripts/lib/glob-engine.ts'
+              - 'scripts/tests/check-task-provisioning.test.ts'
+              - 'scripts/tests/task-pin-provisioning.test.ts'
+      - uses: actions/setup-node@v4
+        if: steps.filter.outputs.check-task-provisioning == 'true'
+        with:
+          node-version: 24
+      - name: Install production dependencies
+        if: steps.filter.outputs.check-task-provisioning == 'true'
+        run: npm ci --omit=dev --workspaces=false
+      - uses: ./.github/actions/setup-task
+        if: steps.filter.outputs.check-task-provisioning == 'true'
+      - name: Check Task provisioning
+        if: steps.filter.outputs.check-task-provisioning == 'true'
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-task-provisioning.ts
+      - name: Cancel workflow on job failure
+        if: failure()
+        uses: ./.github/actions/cancel-on-failure
+  check-task-provisioning-selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            check-task-provisioning-selftest:
+              - '.github/actions/setup-task/**'
+              - 'ci/task-pin.json'
+              - 'scripts/check-task-provisioning.ts'
+              - 'scripts/lib/task-provisioning/**'
+              - 'scripts/lib/build-ci/**'
+              - 'scripts/lib/ci-parity/**'
+              - 'scripts/tests/check-task-provisioning.test.ts'
+              - 'scripts/tests/task-pin-provisioning.test.ts'
+              - 'taskfiles/ci.yml'
+              - 'ci/ci-capabilities.yml'
+              - '.github/workflows/build.yml'
+      - uses: actions/setup-node@v4
+        if: steps.filter.outputs.check-task-provisioning-selftest == 'true'
+        with:
+          node-version: 24
+      - name: Install production dependencies
+        if: steps.filter.outputs.check-task-provisioning-selftest == 'true'
+        run: npm ci --omit=dev --workspaces=false
+      - name: Run the self-tests
+        if: steps.filter.outputs.check-task-provisioning-selftest == 'true'
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/check-task-provisioning.test.ts scripts/tests/task-pin-provisioning.test.ts
       - name: Cancel workflow on job failure
         if: failure()
         uses: ./.github/actions/cancel-on-failure
@@ -2117,9 +2187,8 @@ jobs:
       - name: Install dependencies
         if: steps.filter.outputs.ci-pre-push-replay == 'true'
         run: npm ci
-      - name: Install Task
+      - uses: ./.github/actions/setup-task
         if: steps.filter.outputs.ci-pre-push-replay == 'true'
-        run: sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
       - name: Test Pre-Push Replay
         if: steps.filter.outputs.ci-pre-push-replay == 'true'
         run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ci-cache-guard.ts --stray-scan -- node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/tests/ci-pre-push-replay.test.ts scripts/tests/ci-pre-push-draft-lint.test.ts
@@ -3693,9 +3762,8 @@ jobs:
         if: steps.filter.outputs.cli-matrix-fresh == 'true'
         with:
           node-version: 24
-      - name: Install Task
+      - uses: ./.github/actions/setup-task
         if: steps.filter.outputs.cli-matrix-fresh == 'true'
-        run: sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
       - name: Floor guard accepts Node.js 24
         if: steps.filter.outputs.cli-matrix-fresh == 'true'
         run: node scripts/lib/node-floor-guard.js
@@ -3750,8 +3818,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install Task
-        run: sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+      - uses: ./.github/actions/setup-task
 
       - name: Lint specs
         env:
