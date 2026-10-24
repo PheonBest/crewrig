@@ -886,8 +886,11 @@ vocabulary are the stable contract; each engine is one mapping over them.
 A migrated GitHub job is a checkout plus `uses: ./.github/actions/ci-job`. The job key is the
 capability id and the `id` input MUST equal it (spec 0049 delta-02 R27a, checked by
 `scripts/check-ci-parity.ts`). Inputs: `id` (required), `node` (default 24), `install` (`ci`,
-`install`, `omit-dev`, `none`; default `ci`), `task` (default true), `cache` (default false),
-`yq` (default empty: none), `apt` (default empty: none) and `python` (default empty: none).
+`install`, `omit-dev`, `none`; default `omit-dev`), `task` (default true), `cache` (default false),
+`yq` (default empty: none), `apt` (default empty: none), `python` (default empty: none) and `gate`
+(default true). `gate: false` skips the path gate and the production install that only feeds it, and
+the action still decides to run; the parity guard fails it for a capability that has `paths:`
+(spec 0285 R7). With `gate: false` and `install: omit-dev` the install runs once.
 
 The `yq` input is a version key of `ci/yq-pin.json` (a flat map of version to the sha256 of
 `yq_linux_amd64`; today `4.44.3` and `4.54.1`). The step runs before `setup-task`, only when the gate
@@ -910,8 +913,10 @@ before `task ci:<id>`. The list MUST equal the packages implied by the capabilit
 The `python` input is a `x.y` version (anchored `^[0-9]+\.[0-9]+$`, validated through `env`) provisioned
 with `actions/setup-python@v5`. It MUST equal the version of the capability's secondary `runtime` entry
 `python@<version>`; `scripts/check-ci-parity.ts` fails a mismatch in either direction. The GitLab side only
-installs the unversioned Debian `python3` for a secondary python runtime (`secondaryRuntimeInstallLines`),
-so the version equality is enforced between the reference and GitHub, not against the GitLab package.
+installs the Debian `python3` of the node image (3.11 on node:24, bookworm) for a secondary python runtime
+(`secondaryRuntimeInstallLines`) and the generator fails for any other secondary `python@<version>`, so a
+version the GitLab image cannot provide is never silently approximated. GitLab output is not verified on a
+live runner: a green parity check is not a live-runner proof (spec 0285 R6).
 
 Steps, in order: a first step that deepens a shallow checkout to two commits (`git fetch --depth=2`
 of the current `HEAD`, skipped on a full clone), `setup-node`, the path gate (`scripts/ci-paths-gate.ts`), an optional pinned `yq`, the optional `apt` install and `setup-python`, `setup-task` when
