@@ -9,9 +9,19 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-const SURFACES = [".github/workflows/build.yml", "ci/ci-capabilities.yml", ".gitlab-ci.yml"];
-const FLOOR = 8880; // spec 0280 R10, not lowered
-const PIN = 8651; // the achieved total; 8631 plus 20 timeout-minutes lines (spec 0264 delta-01 R19)
+const WORKFLOW_DIR = ".github/workflows";
+/** `build.yml` plus every staged callee `_ci-*.yml` (spec 0287 R13; none exists before the split). */
+const workflowSurfaces = (): string[] => [
+  `${WORKFLOW_DIR}/build.yml`,
+  ...fs
+    .readdirSync(path.join(REPO, WORKFLOW_DIR))
+    .filter((f) => /^_ci-.*\.yml$/.test(f))
+    .sort()
+    .map((f) => `${WORKFLOW_DIR}/${f}`),
+];
+const SURFACES = [...workflowSurfaces(), "ci/ci-capabilities.yml", ".gitlab-ci.yml"];
+const FLOOR = 9000; // spec 0280 R10 floor 8880, raised by spec 0287 R13 (staged callees)
+const PIN = 8960; // measured 8952 with the six staged callees and the two top-level jobs (spec 0287 R1, R21)
 const COMMENT_LIMIT = 322; // spec 0285 R2: half of the 644 comment lines of a67ca65e
 
 const lines = (rel: string): string[] => {

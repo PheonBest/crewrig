@@ -3,16 +3,18 @@
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 
-import yaml from "js-yaml";
+import { yamlLib as yaml } from "./lib/yaml-lib.ts";
 
 const REPO = path.resolve(import.meta.dirname, "..", "..");
 // Composed so the root-reader guard stays quiet: the fixture root gets a copy, nothing is read here.
 const ROOT_FILES = [["Task", "file.yml"].join(""), "taskfiles"];
 
 import { checkTaskProvisioning } from "../lib/task-provisioning/index.ts";
+import { readWorkflowUnionYaml } from "./lib/workflow-union.ts";
 import {
   capOf,
   editYaml,
@@ -225,7 +227,7 @@ test("gate: false on a capability that has paths: fails naming the job", () => {
 
 test("gate: false on a capability without paths: passes (the committed windows jobs)", () => {
   const root = makeFixture();
-  const text = fs.readFileSync(wf(root), "utf8");
+  const text = fs.readFileSync(path.join(root, ".github", "workflows", "_ci-windows.yml"), "utf8");
   assert.ok(text.includes("          id: windows-node-floor-guard\n          gate: false\n"));
   assert.ok(!runCheck(root).stderr.includes(GATE_MSG));
 });
@@ -257,8 +259,8 @@ function unboundedWindowsJobs(text: string): string[] {
     .map(([name]) => name);
 }
 
-test("R18: every windows-latest job of build.yml declares timeout-minutes of at least 10", () => {
-  const text = fs.readFileSync(path.join(REPO, WF), "utf8");
+test("R18: every windows-latest job of the workflows declares timeout-minutes of at least 10", () => {
+  const text = readWorkflowUnionYaml(REPO);
   assert.deepEqual(unboundedWindowsJobs(text), []);
 });
 
@@ -267,4 +269,181 @@ test("R18: a windows-latest job without a limit, or under the floor, is named", 
     `  ${name}:\n    runs-on: windows-latest\n${extra}    steps: []\n`;
   const text = `jobs:\n${job("a", "")}${job("b", "    timeout-minutes: 5\n")}${job("c", "    timeout-minutes: 10\n")}  d:\n    runs-on: ubuntu-latest\n    steps: []\n`;
   assert.deepEqual(unboundedWindowsJobs(text), ["a", "b"]);
+});
+
+// ---- Spec 0287 R9: the staged layout of Build & Validate, asserted on the committed files ----
+
+const GROUP_NAMES = ["gate", "modules", "governance", "extensions", "integration", "windows"];
+// The R3 counts; the membership lives in `ci/ci-capabilities.yml` (`group`), compared below.
+const R3_COUNTS: Record<string, number> = {
+  gate: 19,
+  modules: 15,
+  governance: 28,
+  extensions: 14,
+  integration: 8,
+  windows: 24,
+};
+const LINUX_MIDDLE = ["modules", "governance", "extensions"];
+const TOP_LEVEL = ["ratchet", "lint-typescript"];
+const LINUX_NEEDS = ["gate", ...TOP_LEVEL];
+
+type Doc = Record<string, unknown>;
+const asMap = (v: unknown): Doc => (typeof v === "object" && v !== null ? (v as Doc) : {});
+const loadYaml = (f: string): Doc => asMap(yaml.load(fs.readFileSync(f, "utf8")));
+
+/** Throws on the first violation of the seven-file layout under `root` (a repo-shaped directory). */
+function assertStagedLayout(root: string): void {
+  const dir = path.join(root, ".github", "workflows");
+  const callerDoc = loadYaml(path.join(dir, "build.yml"));
+  const reference = loadYaml(path.join(root, "ci", "ci-capabilities.yml"));
+  const groupOf = new Map<string, string>();
+  for (const c of reference["capabilities"] as Doc[]) {
+    const cap = asMap(c);
+    if (typeof cap["group"] === "string") groupOf.set(String(cap["id"]), cap["group"]);
+  }
+
+  // R1: build.yml plus exactly six `_ci-<group>.yml`.
+  const callees = fs
+    .readdirSync(dir)
+    .filter((f) => f.startsWith("_ci-"))
+    .sort();
+  assert.deepEqual(callees, GROUP_NAMES.map((g) => `_ci-${g}.yml`).sort(), "callee files");
+
+  // Caller: permissions, one `uses` job per group, no steps, no `if:`, the needs graph (R4).
+  assert.deepEqual(callerDoc["permissions"], { contents: "read", actions: "write" });
+  const callerJobs = asMap(callerDoc["jobs"]);
+  assert.deepEqual(
+    Object.keys(callerJobs).sort(),
+    [...GROUP_NAMES, ...TOP_LEVEL].sort(),
+    "caller jobs",
+  );
+  for (const [k, v] of Object.entries(callerJobs)) {
+    const j = asMap(v);
+    if (TOP_LEVEL.includes(k)) {
+      // Spec 0287 delta-01 R21: the two required contexts are ordinary top-level jobs with steps.
+      assert.ok(Array.isArray(j["steps"]), `${k}: a top-level job has steps`);
+      assert.ok(!("uses" in j), `${k}: a top-level job has no uses`);
+      assert.equal(j["needs"], undefined, `${k}: no needs`);
+      continue;
+    }
+    assert.equal(j["uses"], `./.github/workflows/_ci-${k}.yml`, `${k}: uses`);
+    assert.ok(!("steps" in j), `${k}: a caller job has no steps`);
+    assert.ok(!("if" in j), `${k}: a caller job has no if`);
+  }
+  const needs = (k: string) => asMap(callerJobs[k])["needs"];
+  assert.equal(needs("gate"), undefined, "gate has no needs");
+  for (const k of LINUX_MIDDLE) assert.deepEqual(needs(k), LINUX_NEEDS, `${k}: needs`);
+  assert.ok(
+    [JSON.stringify(LINUX_NEEDS), JSON.stringify([...LINUX_NEEDS, ...LINUX_MIDDLE])].includes(
+      JSON.stringify(needs("integration")),
+    ),
+    "integration needs",
+  );
+  assert.equal(needs("windows"), undefined, "windows has no needs");
+
+  // Callees: workflow_call only, no concurrency, no secrets; job keys unique; group of each job.
+  const seen = new Map<string, string>();
+  const counts: Record<string, number> = {};
+  for (const f of callees) {
+    const group = f.slice("_ci-".length, -".yml".length);
+    const doc = loadYaml(path.join(dir, f));
+    const on = asMap(doc["on"]);
+    assert.deepEqual(Object.keys(on), ["workflow_call"], `${f}: trigger`);
+    assert.ok(!("concurrency" in doc), `${f}: no concurrency`);
+    assert.ok(!JSON.stringify(doc).includes("secrets."), `${f}: no secrets`);
+    for (const key of Object.keys(asMap(doc["jobs"]))) {
+      assert.ok(!TOP_LEVEL.includes(key), `${f}: '${key}' must be a top-level job of build.yml`);
+      assert.ok(!seen.has(key), `job key '${key}' is in both ${seen.get(key)} and ${f}`);
+      seen.set(key, f);
+      assert.equal(groupOf.get(key), group, `job '${key}' in ${f} has group ${groupOf.get(key)}`);
+      counts[group] = (counts[group] ?? 0) + 1;
+    }
+  }
+  for (const k of TOP_LEVEL) {
+    seen.set(k, "build.yml");
+    const g = groupOf.get(k) ?? "";
+    counts[g] = (counts[g] ?? 0) + 1;
+  }
+  assert.deepEqual(counts, R3_COUNTS, "R3 counts");
+  assert.deepEqual(
+    [...seen.keys()].sort(),
+    [...groupOf.keys()].sort(),
+    "keys equal capability ids",
+  );
+
+  const gateJobs = Object.keys(asMap(loadYaml(path.join(dir, "_ci-gate.yml"))["jobs"]));
+  assert.equal(gateJobs.length, 17, "_ci-gate.yml holds the other 17 gate jobs");
+  for (const k of TOP_LEVEL) assert.equal(groupOf.get(k), "gate", `${k} stays in group gate`);
+}
+
+test("the committed layout is the seven-file staged layout of spec 0287 (R1-R4, R9)", () => {
+  assertStagedLayout(REPO);
+});
+
+/** A mkdtemp copy of ci/ and .github/workflows, mutated through `edit` (file name, parsed doc). */
+function mutated(file: string, edit: (doc: Doc) => void): string {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "staged-layout-"));
+  fs.cpSync(path.join(REPO, "ci"), path.join(root, "ci"), { recursive: true });
+  fs.cpSync(path.join(REPO, ".github", "workflows"), path.join(root, ".github", "workflows"), {
+    recursive: true,
+  });
+  const f = path.join(root, ".github", "workflows", file);
+  const doc = loadYaml(f);
+  edit(doc);
+  fs.writeFileSync(f, yaml.dump(doc, { lineWidth: -1 }));
+  return root;
+}
+const firstKey = (file: string) =>
+  Object.keys(asMap(loadYaml(path.join(REPO, ".github", "workflows", file))["jobs"]))[0] ?? "";
+
+test("mutation proofs: each broken layout fails the assertion function", () => {
+  const roots: string[] = [];
+  const mutate = (file: string, edit: (doc: Doc) => void) => {
+    const r = mutated(file, edit);
+    roots.push(r);
+    return r;
+  };
+  try {
+    const dupKey = firstKey("_ci-modules.yml");
+    const dup = mutate("_ci-gate.yml", (d) => {
+      asMap(d["jobs"])[dupKey] = { "runs-on": "ubuntu-latest", steps: [] };
+    });
+    assert.throws(() => assertStagedLayout(dup), /is in both|R3 counts|group/);
+
+    const missing = mutate("_ci-modules.yml", (d) => {
+      delete asMap(d["jobs"])[dupKey];
+    });
+    assert.throws(() => assertStagedLayout(missing), /R3 counts|keys equal/);
+
+    const winNeeds = mutate("build.yml", (d) => {
+      asMap(asMap(d["jobs"])["windows"])["needs"] = ["gate"];
+    });
+    assert.throws(() => assertStagedLayout(winNeeds), /windows has no needs/);
+
+    const noGate = mutate("build.yml", (d) => {
+      delete asMap(asMap(d["jobs"])["modules"])["needs"];
+    });
+    assert.throws(() => assertStagedLayout(noGate), /modules: needs/);
+
+    // Delta-01 R21: moving a required job into _ci-gate.yml, or dropping it from a Linux group's needs.
+    for (const k of TOP_LEVEL) {
+      const root = mutate("build.yml", (d) => {
+        delete asMap(d["jobs"])[k];
+      });
+      const gateFile = path.join(root, ".github", "workflows", "_ci-gate.yml");
+      const gd = loadYaml(gateFile);
+      asMap(gd["jobs"])[k] = { "runs-on": "ubuntu-latest", steps: [] };
+      fs.writeFileSync(gateFile, yaml.dump(gd, { lineWidth: -1 }));
+      assert.throws(() => assertStagedLayout(root), /caller jobs|must be a top-level/);
+
+      const dropped = mutate("build.yml", (d) => {
+        const m = asMap(asMap(d["jobs"])["modules"]);
+        m["needs"] = (m["needs"] as string[]).filter((n) => n !== k);
+      });
+      assert.throws(() => assertStagedLayout(dropped), /modules: needs/);
+    }
+  } finally {
+    // Only directories created by mkdtemp above.
+    for (const r of roots) fs.rmSync(r, { recursive: true, force: true });
+  }
 });
