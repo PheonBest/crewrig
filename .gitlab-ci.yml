@@ -1368,6 +1368,7 @@ test-wiring-selftest:
   image: node:24
   before_script:
     - !reference [.task-install, script]
+    - npm ci --omit=dev --workspaces=false
   script:
     - "task ci:test-wiring-selftest"
   rules:
@@ -1376,14 +1377,13 @@ test-wiring-selftest:
         - "scripts/check-test-wiring.ts"
         - "scripts/check-test-strays.ts"
         - "scripts/lib/governance/**"
-        - "scripts/tests/governance-check-test-wiring-cases.test.ts"
-        - "scripts/tests/governance-check-test-strays-cases.test.ts"
         - "scripts/tests/lib/governance-*.ts"
         - "scripts/ci-cache-guard.ts"
         - "scripts/lib/ci-cache-guard/**"
         - "taskfiles/ci.yml"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
+        - "scripts/tests/**"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
       changes: *test-wiring-selftest-changes-1
 

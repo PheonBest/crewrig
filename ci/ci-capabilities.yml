@@ -1769,8 +1769,6 @@ capabilities:
       - "scripts/check-test-strays.ts"
       - "scripts/lib/governance/**"
       - "scripts/check-test-wiring.ts"
-      # Not sourced by this capability any more; its unit case lives in
-      # governance-base-ref.test.ts (case r), so a change to it still reruns the guards.
       - "scripts/tests/**"
       - "hooks/worktree-git-guard.ts"
       - "hooks/mempalace-transcript.ts"
@@ -1802,19 +1800,19 @@ capabilities:
       - "scripts/check-test-wiring.ts"
       - "scripts/check-test-strays.ts"
       - "scripts/lib/governance/**"
-      - "scripts/tests/governance-check-test-wiring-cases.test.ts"
-      - "scripts/tests/governance-check-test-strays-cases.test.ts"
       - "scripts/tests/lib/governance-*.ts"
       - "scripts/ci-cache-guard.ts"
       - "scripts/lib/ci-cache-guard/**"
       - "taskfiles/ci.yml"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
+      - "scripts/tests/**"
     portability: portable
     changeset-gated: true
     requires:
       runtime: node@24
       tools: [task]
+      install: omit-dev
     command:
       - task ci:test-wiring-selftest
 
