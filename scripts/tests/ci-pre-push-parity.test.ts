@@ -9,6 +9,7 @@ import { describe, it } from "node:test";
 import {
   CONTROL_TASKS,
   capabilityTaskName,
+  expandFileVars,
   isProvisioning,
   normalizeCommand,
   taskCallRefs,
@@ -19,7 +20,7 @@ import { makeSandbox, REPO, runEntry } from "./lib/governance-sandbox.ts";
 const ENTRY = path.join(REPO, "scripts", "check-ci-pre-push-parity.ts");
 const ROOT_NAME = ["Task", "file.yml"].join("");
 
-const ROOT = `version: '3.39'
+const ROOT = `version: '3.54'
 vars:
   REPO_DIR: '{{.PWD}}'
 includes:
@@ -41,7 +42,7 @@ const CAPS = (cmds: readonly string[]): string => `capabilities:
 ${cmds.map((c) => `      - ${JSON.stringify(c)}`).join("\n")}
 `;
 
-const CI_TASK = (cmds: readonly string[]): string => `version: '3.39'
+const CI_TASK = (cmds: readonly string[]): string => `version: '3.54'
 tasks:
   alpha:
     cmds:
@@ -89,6 +90,15 @@ describe("normalize.ts units", () => {
   it("strips the REPO_DIR prefix, a trailing CLI_ARGS and collapses whitespace", () => {
     assert.equal(normalizeCommand("node  {{.REPO_DIR}}/x.ts   {{.CLI_ARGS}}"), "node x.ts");
     assert.equal(normalizeCommand("a {{.CLI_ARGS}} b"), "a {{.CLI_ARGS}} b");
+  });
+
+  it("expands file variables one level deep before the REPO_DIR strip", () => {
+    const vars = new Map([["NODE_SCRIPTS", "node {{.REPO_DIR}}/scripts"]]);
+    assert.equal(
+      normalizeCommand(expandFileVars("{{.NODE_SCRIPTS}}/x.ts", vars)),
+      "node scripts/x.ts",
+    );
+    assert.equal(expandFileVars("{{.OTHER}}/x", vars), "{{.OTHER}}/x");
   });
 
   it("recognises provisioning only as a leading npm ci / npm install word", () => {
@@ -177,7 +187,7 @@ describe("check-ci-pre-push-parity CLI on fixture trees", () => {
 
   it("fails an unanchored task call that also exists as ci:<name>, passes the anchored form", () => {
     const withCall = (ref: string): string =>
-      `version: '3.39'
+      `version: '3.54'
 tasks:
   alpha:
     cmds:
@@ -202,8 +212,42 @@ tasks:
     assert.match(good.stderr, /no-capability: ci:lint-md/);
   });
 
+  it("applies the anchoring check to a file under taskfiles/ci/ (spec 0278 R24, R26)", () => {
+    const control = `version: '3.54'
+includes:
+  gate: { taskfile: ./ci/gate.yml, flatten: true }
+tasks:
+  pre-push:
+    cmds:
+      - echo control
+`;
+    const gate = (ref: string): string => `version: '3.54'
+tasks:
+  alpha:
+    cmds:
+      - task: ${ref}
+  lint-md:
+    cmds:
+      - echo shadow
+`;
+    const staged = (ref: string): string => {
+      const dir = stage({
+        ci: control,
+        caps: CAPS(['markdownlint --ignore node_modules "**/*.md"']),
+      });
+      fs.mkdirSync(path.join(dir, "taskfiles", "ci"));
+      fs.writeFileSync(path.join(dir, "taskfiles", "ci", "gate.yml"), gate(ref));
+      return dir;
+    };
+    const bad = parity(staged("lint-md"));
+    assert.equal(bad.status, 1);
+    assert.match(bad.stderr, /unanchored-call: ci:alpha: '- task: lint-md' must be written/);
+    const good = parity(staged('":lint-md"'));
+    assert.match(good.stderr, /^(?![\s\S]*unanchored-call)/);
+  });
+
   it("expands a capability-side `task <name>` against the Taskfile side", () => {
-    const ci = `version: '3.39'
+    const ci = `version: '3.54'
 tasks:
   alpha:
     cmds:
@@ -217,7 +261,7 @@ tasks:
   });
 
   it("reports an unresolvable task call as unresolved", () => {
-    const ci = `version: '3.39'
+    const ci = `version: '3.54'
 tasks:
   alpha:
     cmds:
@@ -229,6 +273,32 @@ tasks:
     const r = parity(stage({ ci }));
     assert.equal(r.status, 1);
     assert.match(r.stderr, /unresolved: ci:alpha:/);
+  });
+
+  // Spec 0278 R22 b / R26 / R28 c: a file variable whose value itself contains `{{.REPO_DIR}}/`
+  // is expanded before the prefix strip, so it never produces a finding.
+  const VARS_CI = (a: string): string => `version: '3.54'
+vars:
+  NODE_SCRIPTS: "node {{.REPO_DIR}}/scripts"
+tasks:
+  alpha:
+    cmds:
+      - '{{.NODE_SCRIPTS}}/a.ts ${a}'
+      - node scripts/b.ts
+  pre-push:
+    cmds:
+      - echo control
+`;
+
+  it("expands a file variable containing REPO_DIR and passes the expanded capability text", () => {
+    const r = parity(stage({ ci: VARS_CI("--flag --ignore x") }));
+    assert.equal(r.status, 0, r.stderr);
+  });
+
+  it("still fails a real command difference behind a file variable", () => {
+    const r = parity(stage({ ci: VARS_CI("--other --ignore x") }));
+    assert.equal(r.status, 1);
+    assert.match(r.stderr, /command-mismatch: ci:alpha: capability 'alpha' command #1 differs/);
   });
 
   it("exits 2 with a NOTICE when the tier file is absent", () => {

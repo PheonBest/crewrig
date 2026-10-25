@@ -3,9 +3,9 @@
 // Usage: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-taskfile-tree.ts
 // Override the repository root with CREWRIG_REPO_DIR (default: the parent of scripts/).
 //
-// Checks: every taskfiles/*.yml is reachable from the root includes; no script outside the
+// Checks: every taskfiles/**/*.yml is reachable from the root includes; no script outside the
 // allow-list reads the root Taskfile directly; the root defines only `default`; every Taskfile
-// declares version '3.39'; no included file uses TASKFILE_DIR; every `deps:` and `- task:`
+// declares version '3.54'; no included file uses TASKFILE_DIR; every `deps:` and `- task:`
 // reference resolves from its file's namespace; no include sets dir, excludes or aliases; and the
 // loader's task names equal `task --list-all --json` (a NOTICE on stderr when task is absent).
 // Exit: 0 clean, 1 findings (stderr), 2 unreadable or unparsable tree.

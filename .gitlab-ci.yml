@@ -138,7 +138,7 @@ component-drift-selftest:
         - "scripts/tests/lib/build-fixture-tree.ts"
         - "scripts/tests/fixtures/build-components/**"
         - "scripts/lib/node-floor-guard.js"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -1162,7 +1162,7 @@ docs-index-selftest:
         - "scripts/tests/build-docs-index-entry.test.ts"
         - "scripts/tests/lib/docs-index-entry-tree.ts"
         - "scripts/tests/lib/worktree-fixtures.ts"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -1199,7 +1199,7 @@ cli-matrix-fresh-selftest:
         - "scripts/lib/build-cli-matrix/**"
         - "scripts/tests/build-cli-matrix.test.ts"
         - "scripts/lib/node-floor-guard.js"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -1380,7 +1380,7 @@ test-wiring-selftest:
         - "scripts/tests/lib/governance-*.ts"
         - "scripts/ci-cache-guard.ts"
         - "scripts/lib/ci-cache-guard/**"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
         - "scripts/tests/**"
@@ -1765,7 +1765,7 @@ check-taskfile-commands-selftest:
         - "scripts/tests/check-tool-binaries.test.ts"
         - "scripts/ci-cache-guard.ts"
         - "scripts/lib/ci-cache-guard/**"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -1822,7 +1822,7 @@ check-taskfile-tree-selftest:
         - "scripts/tests/git-env-helpers.test.ts"
         - "scripts/lib/git-env.ts"
         - "scripts/tests/lib/**"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -1843,7 +1843,7 @@ check-task-provisioning:
         - ".github/workflows/**"
         - ".gitlab-ci.yml"
         - "ci/**"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - "scripts/check-task-provisioning.ts"
         - "scripts/lib/task-provisioning/**"
         - "scripts/lib/build-ci/**"
@@ -1873,7 +1873,7 @@ check-task-provisioning-selftest:
         - "scripts/lib/ci-parity/**"
         - "scripts/tests/check-task-provisioning.test.ts"
         - "scripts/tests/task-pin-provisioning.test.ts"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - "ci/ci-capabilities.yml"
         - ".github/workflows/build.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -2000,7 +2000,7 @@ path-ownership-selftest:
         - "scripts/tests/ci-node-test-arguments.test.ts"
         - "package.json"
         - "package-lock.json"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -2042,7 +2042,7 @@ ratchet-selftest:
         - "scripts/check-ratchet.ts"
         - "scripts/lib/ratchet-lists.ts"
         - "scripts/tests/check-ratchet.test.ts"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -2078,7 +2078,7 @@ host-safety-selftest:
         - "scripts/tests/lib/host-safety-fixtures.ts"
         - "package.json"
         - "package-lock.json"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -2121,7 +2121,7 @@ lint-typescript-selftest:
         - "tsconfig.json"
         - "package.json"
         - "package-lock.json"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -2395,7 +2395,7 @@ lint-specs-selftest:
         - ".markdownlintrc"
         - "scripts/ci-cache-guard.ts"
         - "scripts/lib/ci-cache-guard/**"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -2911,7 +2911,7 @@ alert-scheduled-failure-selftest:
         - "scripts/check-alert-scheduled-failure.ts"
         - "scripts/tests/ci-alert-scheduled-failure.test.ts"
         - ".github/workflows/changeset-coverage.yml"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'
@@ -2931,7 +2931,7 @@ alert-scheduled-failure-check:
         - "scripts/check-alert-scheduled-failure.ts"
         - "scripts/tests/ci-alert-scheduled-failure.test.ts"
         - ".github/workflows/changeset-coverage.yml"
-        - "taskfiles/ci.yml"
+        - "taskfiles/**"
         - ".github/workflows/build.yml"
         - "ci/ci-capabilities.yml"
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^main$|^release\//'

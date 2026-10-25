@@ -121,7 +121,7 @@ capabilities:
       - "scripts/tests/lib/build-fixture-tree.ts"
       - "scripts/tests/fixtures/build-components/**"
       - "scripts/lib/node-floor-guard.js"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
     portability: portable
@@ -1558,7 +1558,7 @@ capabilities:
       - "scripts/tests/build-docs-index-entry.test.ts"
       - "scripts/tests/lib/docs-index-entry-tree.ts"
       - "scripts/tests/lib/worktree-fixtures.ts"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
     portability: portable
@@ -1616,7 +1616,7 @@ capabilities:
       - "scripts/lib/build-cli-matrix/**"
       - "scripts/tests/build-cli-matrix.test.ts"
       - "scripts/lib/node-floor-guard.js"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
     portability: portable
@@ -1803,7 +1803,7 @@ capabilities:
       - "scripts/tests/lib/governance-*.ts"
       - "scripts/ci-cache-guard.ts"
       - "scripts/lib/ci-cache-guard/**"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
       - "scripts/tests/**"
@@ -2214,7 +2214,7 @@ capabilities:
       - "scripts/tests/check-tool-binaries.test.ts"
       - "scripts/ci-cache-guard.ts"
       - "scripts/lib/ci-cache-guard/**"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
     portability: portable
@@ -2281,7 +2281,7 @@ capabilities:
       - "scripts/tests/git-env-helpers.test.ts"
       - "scripts/lib/git-env.ts"
       - "scripts/tests/lib/**"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
     portability: portable
@@ -2306,7 +2306,7 @@ capabilities:
       - ".github/workflows/**"
       - ".gitlab-ci.yml"
       - "ci/**"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - "scripts/check-task-provisioning.ts"
       - "scripts/lib/task-provisioning/**"
       - "scripts/lib/build-ci/**"
@@ -2340,7 +2340,7 @@ capabilities:
       - "scripts/lib/ci-parity/**"
       - "scripts/tests/check-task-provisioning.test.ts"
       - "scripts/tests/task-pin-provisioning.test.ts"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - "ci/ci-capabilities.yml"
       - ".github/workflows/build.yml"
     portability: portable
@@ -2487,7 +2487,7 @@ capabilities:
       - "scripts/tests/ci-node-test-arguments.test.ts"
       - "package.json"
       - "package-lock.json"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
     portability: portable
@@ -2545,7 +2545,7 @@ capabilities:
       - "scripts/check-ratchet.ts"
       - "scripts/lib/ratchet-lists.ts"
       - "scripts/tests/check-ratchet.test.ts"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
     portability: portable
@@ -2591,7 +2591,7 @@ capabilities:
       - "scripts/tests/lib/host-safety-fixtures.ts"
       - "package.json"
       - "package-lock.json"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
     portability: portable
@@ -2645,7 +2645,7 @@ capabilities:
       - "tsconfig.json"
       - "package.json"
       - "package-lock.json"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
     portability: portable
@@ -3026,7 +3026,7 @@ capabilities:
       - ".markdownlintrc"
       - "scripts/ci-cache-guard.ts"
       - "scripts/lib/ci-cache-guard/**"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
     portability: portable
@@ -3756,7 +3756,7 @@ capabilities:
       - "scripts/check-alert-scheduled-failure.ts"
       - "scripts/tests/ci-alert-scheduled-failure.test.ts"
       - ".github/workflows/changeset-coverage.yml"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
     portability: portable
@@ -3780,7 +3780,7 @@ capabilities:
       - "scripts/check-alert-scheduled-failure.ts"
       - "scripts/tests/ci-alert-scheduled-failure.test.ts"
       - ".github/workflows/changeset-coverage.yml"
-      - "taskfiles/ci.yml"
+      - "taskfiles/**"
       - ".github/workflows/build.yml"
       - "ci/ci-capabilities.yml"
     portability: portable

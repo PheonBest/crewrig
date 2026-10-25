@@ -149,7 +149,7 @@ passes silently.
 
 - Node 24 or later (the hook tests `process.getBuiltinModule` first and names
   the floor when it is missing).
-- Task 3.39 or later (every Taskfile declares `version: '3.39'`).
+- Task 3.54 or later (every Taskfile declares `version: '3.54'`).
 - `task` missing from `PATH`, a missing `node_modules`, an unreadable
   capability file or any internal error of the wrapper all block the push with
   a message naming the cause and the fix. The hook runs no `npm` command and no
@@ -206,13 +206,18 @@ per-CLI script, hook file or wiring (see row 45 of the
 ## Add a `ci:<id>` task
 
 Each fast-tier capability `<id>` of `ci/ci-capabilities.yml` has a task
-`ci:<id>` in `taskfiles/ci.yml`. The rule is that the task runs **exactly the
+`ci:<id>` in one of the group files `taskfiles/ci/<group>.yml` (flattened under `ci:` by
+`taskfiles/ci.yml`; put the task in the file of its stage group, and keep every file
+within 200 lines). The rule is that the task runs **exactly the
 capability's command**, so the hook and CI cannot drift:
 
 - Reuse an existing domain task through a colon-anchored call
   (`- task: :lint-markdown`), never an unanchored `- task: lint-markdown`.
   Commands the capability spells out are copied verbatim, with repository paths
   written `{{.REPO_DIR}}/...`.
+- A new group file is included from `taskfiles/ci.yml` with `dir: ..`
+  (`{ taskfile: ./ci/<group>.yml, flatten: true, dir: .. }`) so its tasks run from the
+  repository root; `scripts/tests/ci-taskfile-dir.test.ts` fails when it is missing.
 - Provisioning steps (`npm ci`, `npm install`) are not copied. Replace them with
   a precondition that fails with `Run: task lint-bootstrap`.
 - Run `node scripts/check-ci-pre-push-parity.ts`. It normalises both sides
