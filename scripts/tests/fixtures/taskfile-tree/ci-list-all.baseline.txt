@@ -6,6 +6,7 @@ task: Available tasks for this project:
 * build-components-claude:                   Build community components for Claude Code only (Node.js 24)
 * build-components-copilot:                  Build community components for GitHub Copilot CLI only (Node.js 24)
 * build-components-gemini:                   Build community components for Gemini CLI only (Node.js 24)
+* build-components-kiro:                     Build community components for Kiro only (Node.js 24)
 * build-copilot-plugin:                      Build a Copilot CLI plugin from an extension (task build-copilot-plugin EXT=hello-world)
 * check-agent-profiles:                      Check agent capability-profile conformance against spec 0195 (local mirror of the CI guard, spec 0198)
 * check-claude-agent-layout:                 Check the compiled .claude/agents/ tree holds only flat <name>.md files (local mirror of the CI guard, spec 0201)

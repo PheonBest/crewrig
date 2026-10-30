@@ -282,8 +282,8 @@ The Taskfile runs exactly the commands CI runs:
 | `task format-ts` | Oxfmt check mode on `*.ts` and on the JavaScript admitted by `ci/js-exceptions.txt` |
 | `task format-ts:fix` | rewrite every tracked `*.ts` with Oxfmt (local convenience) |
 
-Run `task lint-bootstrap` once to install the toolchain. The four built
-trees (`.claude/`, `.gemini/`, `.github/`, `.agents/`) are excluded from
+Run `task lint-bootstrap` once to install the toolchain. The five built
+trees (`.claude/`, `.gemini/`, `.github/`, `.agents/`, `.kiro/`) are excluded from
 every check.
 
 **JavaScript formatting scope (spec 0266 R16).** `oxfmt --check` covers every

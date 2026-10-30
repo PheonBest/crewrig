@@ -28,6 +28,10 @@
     "desc": "Build community components for Gemini CLI only (Node.js 24)"
   },
   {
+    "name": "build-components-kiro",
+    "desc": "Build community components for Kiro only (Node.js 24)"
+  },
+  {
     "name": "build-copilot-plugin",
     "desc": "Build a Copilot CLI plugin from an extension (task build-copilot-plugin EXT=hello-world)"
   },

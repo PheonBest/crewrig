@@ -28,7 +28,7 @@ import type { BaseCtx, CliId, SourceDoc } from "./types.ts";
 
 /** `[ "$TARGET" = "<cli>" ] || [ "$TARGET" = "all" ]`: the whole `--target` text is compared. */
 export function selects(ctx: Pick<BaseCtx, "opts">, cli: CliId): boolean {
-  return ctx.opts.target === cli || ctx.opts.target === "all";
+  return ctx.opts.target === cli || (ctx.opts.target === "all" && cli !== "kiro");
 }
 
 /** The shell's `[ -d ]`. */

@@ -29,6 +29,7 @@
     ".gemini/**",
     ".github/**",
     ".agents/**",
+    ".kiro/**",
     "**/node_modules/**",
     "**/dist/**",
     "**/*.js",

@@ -11,7 +11,13 @@ import { closeSync, lstatSync, openSync, readFileSync, readSync } from "node:fs"
 import path from "node:path";
 
 /** Generated built-copy trees, excluded from every check (spec 0238 R2, R12). */
-export const BUILT_TREES: readonly string[] = [".claude/", ".gemini/", ".github/", ".agents/"];
+export const BUILT_TREES: readonly string[] = [
+  ".claude/",
+  ".gemini/",
+  ".github/",
+  ".agents/",
+  ".kiro/",
+];
 
 /** Thrown for a wiring fault: the caller maps it to exit code 2. */
 export class WiringError extends Error {}

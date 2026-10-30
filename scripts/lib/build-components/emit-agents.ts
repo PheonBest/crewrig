@@ -55,9 +55,16 @@ function emitGemini(ctx: Ctx, model: ResolveContext, job: AgentJob): void {
   checkOrWrite(ctx, target, content, null, job.outRoot);
 }
 
+/** `claude.tools` (a list) becomes the agent's `tools:` line; absent, the agent inherits every tool. No shell twin. */
 function emitClaude(ctx: Ctx, model: ResolveContext, job: AgentJob): void {
   const resolved = resolveFor(ctx, model, job, "claude");
-  const frontmatter = [...head(job, resolved), ...licenseLines(job.source), ...resolved.fmLines];
+  const tools = job.source.lines(["claude", "tools"]);
+  const frontmatter = [
+    ...head(job, resolved),
+    ...licenseLines(job.source),
+    ...(tools.length === 0 ? [] : [`tools: ${tools.join(", ")}`]),
+    ...resolved.fmLines,
+  ];
   const target = joinRoot(ctx.platform, job.outRoot, `.claude/agents/${job.name}.md`);
   checkOrWrite(ctx, target, markdownFile(frontmatter, job.source.body), job.source, job.outRoot);
 }
@@ -66,6 +73,25 @@ function emitCopilot(ctx: Ctx, model: ResolveContext, job: AgentJob): void {
   const resolved = resolveFor(ctx, model, job, "copilot");
   const frontmatter = [...head(job, resolved), ...resolved.fmLines];
   const target = joinRoot(ctx.platform, job.outRoot, `.github/agents/${job.name}.md`);
+  checkOrWrite(ctx, target, markdownFile(frontmatter, job.source.body), job.source, job.outRoot);
+}
+
+/**
+ * Kiro: `.kiro/agents/<name>.md`. The shared lines, then the source's `kiro:` mapping
+ * verbatim (`tools`, `excludedTools`, `permissions`, ...), which Kiro reads from the
+ * frontmatter and which has no counterpart in the other CLIs. No capability profile is
+ * resolved: no Kiro mapping exists, and a build must not note its absence per agent.
+ * No shell twin.
+ */
+function emitKiro(ctx: Ctx, job: AgentJob): void {
+  const frontmatter = [
+    `name: ${job.name}`,
+    `description: "${job.description}"`,
+    ...licenseLines(job.source),
+  ];
+  const native = job.source.raw(["kiro"]);
+  if (native !== "") frontmatter.push(...native.split("\n"));
+  const target = joinRoot(ctx.platform, job.outRoot, `.kiro/agents/${job.name}.md`);
   checkOrWrite(ctx, target, markdownFile(frontmatter, job.source.body), job.source, job.outRoot);
 }
 
@@ -91,5 +117,6 @@ export function buildAgents(
     if (selects(ctx, "claude")) emitClaude(ctx, model, job);
     if (selects(ctx, "copilot")) emitCopilot(ctx, model, job);
     if (selects(ctx, "antigravity")) emitAntigravityAgent(ctx, model, job);
+    if (selects(ctx, "kiro")) emitKiro(ctx, job);
   }
 }

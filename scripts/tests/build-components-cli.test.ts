@@ -198,6 +198,7 @@ describe("R5 --list-output-dirs", () => {
     assert.deepEqual(lines("claude"), [".claude/agents", ".claude/skills"]);
     assert.deepEqual(lines("antigravity"), [".agents/agents", ".agents/skills"]);
     assert.deepEqual(lines("copilot"), [".github/agents", ".github/skills"]);
+    assert.deepEqual(lines("kiro"), [".kiro/agents", ".kiro/skills"]);
     assert.deepEqual(lines("github"), lines("copilot"));
   });
 
