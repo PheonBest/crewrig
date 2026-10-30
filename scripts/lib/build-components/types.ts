@@ -24,7 +24,7 @@ import type { YamlEntry, YamlPath, YamlText } from "../yaml-text.ts";
 export type Env = Readonly<Record<string, string | undefined>>;
 
 /** The four CLIs a build targets (`--target` accepts these, `all`, and anything else). */
-export type CliId = "gemini" | "claude" | "copilot" | "antigravity";
+export type CliId = "gemini" | "claude" | "copilot" | "antigravity" | "kiro";
 
 /**
  * Where the build writes. `out` and `err` append the line feed themselves (the
@@ -106,6 +106,8 @@ export interface SourceDoc {
   alt(path: YamlPath): string;
   /** `yq -r '<path> // [] | .[]'` read line by line: trailing blank lines dropped, `[]` when none. */
   lines(path: YamlPath): string[];
+  /** The YAML text of the node at `path` (a mapping, a sequence or a scalar); empty when absent or null. */
+  raw(path: YamlPath): string;
   /** `has(<last key>)` of the mapping at the rest of `path`: true when the key is present. */
   has(path: YamlPath): boolean;
   /** `<path> | to_entries | .[]`: key, kind and text of each entry, in document order. */

@@ -18,11 +18,11 @@ import {
   source,
 } from "./fixtures/build-components/entry-kit.ts";
 
-function build(extra: readonly string[], body = "Agent body.\n") {
+function build(extra: readonly string[], body = "Agent body.\n", args: readonly string[] = []) {
   const tree = createFixtureTree();
   tree.config(CONFIG);
   tree.artifact("core/agents/ag/AGENT.md", agent("ag", body, extra));
-  const res = tree.run([]);
+  const res = tree.run([...args]);
   assert.equal(res.status, 0, res.stderr + res.stdout);
   assert.equal(res.stderr, "", "an agent without a capability profile resolves silently");
   return tree;
@@ -54,6 +54,49 @@ describe("the four CLI shapes (R13)", () => {
     const tree = build([]);
     assert.equal(tree.exists(".agents/agents/ag/AGENT.md"), true);
     assert.equal(tree.exists(".agents/agents/ag.md"), false);
+  });
+});
+
+describe("the Claude Code tools line", () => {
+  test("claude.tools becomes one comma-separated tools: line; allowed-tools stays unread", () => {
+    const tree = build([
+      "claude:",
+      "  tools:",
+      "    - Read",
+      "    - Write",
+      "  allowed-tools:",
+      "    - Bash",
+    ]);
+    assert.equal(
+      tree.read(".claude/agents/ag.md"),
+      '---\nname: ag\ndescription: "An agent."\ntools: Read, Write\n---\n\nAgent body.\n',
+    );
+  });
+});
+
+describe("the Kiro CLI shape", () => {
+  test("shared lines, then the kiro: mapping verbatim in .kiro/agents/<name>.md", () => {
+    const tree = build(
+      ["license: MIT", "kiro:", "  tools: [read, write]", "  excludedTools:", "    - shell"],
+      undefined,
+      ["--target", "kiro"],
+    );
+    assert.equal(
+      tree.read(".kiro/agents/ag.md"),
+      '---\nname: ag\ndescription: "An agent."\nlicense: MIT\ntools:\n  - read\n  - write\nexcludedTools:\n  - shell\n---\n\nAgent body.\n',
+    );
+  });
+
+  test("--target all leaves Kiro out", () => {
+    assert.equal(build([]).exists(".kiro/agents/ag.md"), false);
+  });
+
+  test("without a kiro: mapping the file carries the shared lines alone", () => {
+    const tree = build([], undefined, ["--target", "kiro"]);
+    assert.equal(
+      tree.read(".kiro/agents/ag.md"),
+      '---\nname: ag\ndescription: "An agent."\n---\n\nAgent body.\n',
+    );
   });
 });
 

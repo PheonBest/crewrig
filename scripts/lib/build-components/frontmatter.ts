@@ -40,6 +40,7 @@ function sourceDoc(yaml: YamlText, file: string): SourceDoc {
       const joined = withoutTrailingLf(yaml.seq(doc, path).join("\n"));
       return joined === "" ? [] : joined.split("\n");
     },
+    raw: (path) => yaml.dump(doc, path),
     has: (path) => yaml.has(doc, path),
     entries: (path) => yaml.entries(doc, path),
   };

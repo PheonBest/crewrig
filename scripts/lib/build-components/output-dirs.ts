@@ -20,8 +20,10 @@ const DIRS_BY_TARGET: ReadonlyMap<string, readonly string[]> = new Map([
   ["copilot", [".github/skills", ".github/agents"]],
   ["github", [".github/skills", ".github/agents"]],
   ["antigravity", [".agents/skills", ".agents/agents"]],
+  ["kiro", [".kiro/skills", ".kiro/agents"]],
 ]);
 
+/** `all` is the four upstream CLIs; Kiro is opt-in (`--target kiro`) so no `.kiro/` tree is committed upstream. */
 const ALL_TARGETS = ["gemini", "claude", "copilot", "antigravity"];
 
 /**

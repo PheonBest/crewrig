@@ -31,12 +31,13 @@ interface SkillTarget {
   readonly dir: string;
 }
 
-/** Shell order: Gemini, Claude Code, Copilot, Antigravity. */
+/** Shell order: Gemini, Claude Code, Copilot, Antigravity; Kiro follows (no shell twin). */
 const TARGETS: readonly SkillTarget[] = [
   { cli: "gemini", dir: ".gemini/skills" },
   { cli: "claude", dir: ".claude/skills" },
   { cli: "copilot", dir: ".github/skills" },
   { cli: "antigravity", dir: ".agents/skills" },
+  { cli: "kiro", dir: ".kiro/skills" },
 ];
 
 /** The `claude.*` keys written after the shared lines, each when neither empty nor `null`. */

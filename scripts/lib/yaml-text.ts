@@ -62,6 +62,8 @@ export interface YamlText {
   plain(doc: YamlDoc | null, path: YamlPath): string;
   alt(doc: YamlDoc | null, path: YamlPath): string;
   seq(doc: YamlDoc | null, path: YamlPath): string[];
+  /** The block-style YAML of the node at `path` (typed tree), no trailing line feed; `` when absent or null. */
+  dump(doc: YamlDoc | null, path: YamlPath): string;
   has(doc: YamlDoc | null, path: YamlPath): boolean;
   entries(doc: YamlDoc | null, path: YamlPath): YamlEntry[];
 }
@@ -262,6 +264,12 @@ export function createYamlText(lib: YamlLib): YamlText {
       if (isSequence(text)) return text.map((item) => render(item));
       if (isMapping(text)) return Object.values(text).map((item) => render(item));
       return [];
+    },
+
+    dump(doc, path) {
+      const node = walk(doc, keysOf(path));
+      if (node === null || node.core === undefined || node.core === null) return "";
+      return withoutTrailingLf(lib.dump(node.core, { lineWidth: -1 }));
     },
 
     has(doc, path) {

@@ -167,7 +167,17 @@ describe("C5, C6 and the degraded inputs", () => {
     const bad = makeRun(
       REPO,
       {},
-      { yaml: { parse: boom, plain: boom, alt: boom, seq: boom, has: boom, entries: boom } },
+      {
+        yaml: {
+          parse: boom,
+          plain: boom,
+          alt: boom,
+          seq: boom,
+          dump: boom,
+          has: boom,
+          entries: boom,
+        },
+      },
     );
     assert.deepEqual(resolveAgent(bad.ctx, "probe", src, "claude"), {
       offeringId: "",

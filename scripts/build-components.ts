@@ -3,7 +3,7 @@
 // spec 0250). It replaces the shell tool of the same name, which stays as a
 // forwarding shim.
 //
-// Usage: node scripts/build-components.ts [--target gemini|claude|copilot|antigravity|all]
+// Usage: node scripts/build-components.ts [--target gemini|claude|copilot|antigravity|kiro|all]
 //          [--tier <name>]... [--check] [--list-output-dirs]
 //          [--resolve <source> <target>] [--diagnostics <path>]
 // Run `node scripts/lib/node-floor-guard.js` first on an unverified Node.js: the

@@ -13,6 +13,12 @@ tasks:
       - node {{.REPO_DIR}}/scripts/lib/node-floor-guard.js
       - node {{.REPO_DIR}}/scripts/build-components.ts --target antigravity
 
+  build-components-kiro:
+    desc: "Build community components for Kiro only (Node.js 24)"
+    cmds:
+      - node {{.REPO_DIR}}/scripts/lib/node-floor-guard.js
+      - node {{.REPO_DIR}}/scripts/build-components.ts --target kiro
+
   # --- Community component build ---
   build-components:
     desc: "Build all community components for Gemini CLI, Claude Code, and GitHub Copilot CLI (Node.js 24)"

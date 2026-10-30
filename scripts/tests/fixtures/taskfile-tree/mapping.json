@@ -6,6 +6,7 @@
   "build-components-claude": "taskfiles/components.yml",
   "build-components-copilot": "taskfiles/components.yml",
   "build-components-gemini": "taskfiles/components.yml",
+  "build-components-kiro": "taskfiles/components.yml",
   "build-copilot-plugin": "taskfiles/extensions.yml",
   "check-agent-profiles": "taskfiles/governance.yml",
   "check-claude-agent-layout": "taskfiles/governance.yml",

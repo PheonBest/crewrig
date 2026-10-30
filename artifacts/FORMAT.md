@@ -124,6 +124,36 @@ source-authored `claude.model` or `claude.effort` is read by no build step
 deleted, because `model-mappings/claude.yml` grounds both of its
 frontmatter items on a citation of this record.
 
+**Agent `tools` (optional, agent sources only).** `claude.tools`, a list, is
+written as the compiled Claude Code agent's `tools:` line (comma-separated).
+Without it the agent inherits every tool. It is distinct from
+`claude.allowed-tools`, which an agent source does not use for Claude Code.
+
+### Kiro Overrides (optional, agent sources only)
+
+Kiro receives skills in `.kiro/skills/<name>/SKILL.md`
+(same shape as Gemini CLI and Copilot CLI) and agents in
+`.kiro/agents/<name>.md`. An agent's `kiro:` section is copied into the
+compiled frontmatter as it is written, after `name`, `description` and
+`license`. Use it for the keys Kiro reads and no other CLI has, such as
+`tools`, `excludedTools` and `permissions`:
+
+```yaml
+kiro:
+  tools: [read, write]
+  excludedTools: [shell, subagent]
+  permissions:
+    rules:
+      - capability: fs_read
+        effect: allow
+```
+
+Kiro is opt-in: `--target kiro` (or `task build-components-kiro`) builds it,
+`--target all` does not, so no `.kiro/` tree is committed here. No capability
+profile (`metadata.model:`) is resolved for Kiro: no
+`model-mappings/kiro.yml` exists. Kiro is not wired to the MemPalace daemon
+or to the setup scripts; it is a build target only.
+
 ### `metadata.model:` (optional, agent sources only)
 
 An **agent** source (`type: agent`) MAY declare a CLI-agnostic **capability
